@@ -42,7 +42,9 @@
 				{{ readableIso(row.item.created) }} <p style="margin-bottom: 0px;" class="text-muted"><small>{{ friendlyDate(row.item.created) }} ago</small></p>
 			</template>
 			<template slot="title" slot-scope="row">
-				<h5 class="mb-1">{{ preferredLanguage(row.item.title) }}</h5>
+				<h5 class="mb-1">{{ preferredLanguage(row.item.title) }}
+					<b-badge v-if="row.item.next !== null" variant="warning" class="old-version">Old version</b-badge>
+				</h5>
 				<p v-if="row.item.description" class="text-muted" style="display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 24rem; margin: 0px;">
 					<small>{{ preferredLanguage(row.item.description) }}</small>
 				</p>
@@ -90,6 +92,14 @@
 
 
 <style>
+	.old-version {
+		color: white;
+		margin-left: 0em;
+		margin-top: 0.2em;
+		position: relative;
+		bottom: 0.12em;
+	}
+
 	/* controls */
 	.dataset-filter__button.btn-outline-success:focus {
 		box-shadow: none !important;
@@ -97,7 +107,7 @@
 
 	table#dataset-list thead > tr > th {
 		border-bottom: 0px;
-    	border-top: 0px;
+		border-top: 0px;
 	}
 
 
@@ -107,7 +117,7 @@
 	}
 
 	table#dataset-list.table-striped tbody tr:nth-of-type(odd) {
-    	background-color: rgba(0, 146, 199, 0.1);
+		background-color: rgba(0, 146, 199, 0.1);
 	}
 </style>
 
