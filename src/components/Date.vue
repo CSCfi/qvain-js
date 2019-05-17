@@ -1,30 +1,54 @@
 <template>
-	<div>
-		<legend class="col-form-label pt-0">{{ property.charAt(0).toUpperCase() + property.slice(1) }}</legend>
-		<div class="wrapper">
-			<p>Select date:</p>
-			<datepicker class="widget ml-2"
-				placeholder="Click to select"
-				v-model="date">
-			</datepicker>
+	<record-field :wrapped="wrapped">
+		<title-component slot="title" :title="uiLabel" />
+		<div slot="header-right">
+			<InfoIcon :description="uiDescription"/>
 		</div>
-	</div>
+
+		<div slot="input">
+			<div class="wrap">
+				<p>Select date:</p>
+				<datepicker class="widget ml-2"
+					placeholder="Click to select"
+					v-model="date">
+				</datepicker>
+			</div>
+
+			<delete-button v-if="date !== null" @click="clear()" />
+		</div>
+	</record-field>
 </template>
 
 <script>
-import datepicker from 'vuejs-datepicker'
+import Datepicker from 'vuejs-datepicker'
 import SchemaBase from '@/widgets/base.vue'
+import DeleteButton from '@/partials/DeleteButton.vue'
+import InfoIcon from '@/partials/InfoIcon.vue'
+import RecordField from '@/composites/RecordField.vue'
+import TitleComponent from '@/partials/Title.vue'
 
 export default {
 	name: 'date',
 	extends: SchemaBase,
 	components: {
-		datepicker,
+		Datepicker,
+		DeleteButton,
+		InfoIcon,
+		RecordField,
+		TitleComponent,
+	},
+	props: {
+		wrapped: { type: Boolean, default: false },
 	},
 	data() {
 		return {
 			date: null,
 		}
+	},
+	methods: {
+		clear() {
+			this.date = null
+		},
 	},
 	computed: {
 		dateString() {
@@ -53,12 +77,13 @@ export default {
 
 
 <style lang="scss" scoped>
-	.wrapper {
+	.wrap {
 		display: inline-flex;
 		> p {
 			line-height: 40px;
 			vertical-align: middle;
 		}
+		margin-right: 6px;
 	}
 </style>
 

@@ -9,7 +9,7 @@ export default {
 		{ label: 'Extra', uri: null },
 	],
 	//'': { 'tab': 'description' },
-	'': { 'tab': 'extra', 'order': ["title", "description", "language"] },
+	'': { 'tab': 'extra', 'order': ["title", "description", "issued", "language"] },
 	//'': { 'tab': 'extra' },
 	'#/definitions/langString': {
 		'widget': 'i18n-string',
@@ -53,6 +53,16 @@ export default {
 		'widget': "schema-array",
 		'props': {
 			'tabFormat': false,
+		},
+	},
+	'/properties/issued': {
+		'tab': 'description',		
+		'title': 'Issued',
+		'label': 'Issued',
+		'description': 'Date of formal issuance (e.g., publication) of the resource. This value does not affect or reflect the visibility of the dataset itself.',
+		'widget': 'date',
+		'props': {
+			'wrapped': true,
 		},
 	},
 	'/properties/language': {
@@ -627,6 +637,7 @@ export default {
 	},
 	'/properties/access_rights/properties/available': {
 		'widget': 'date',
+		'description': "Date when the resource became or will become available.",
 	},
 	'/properties/access_rights/properties/restriction_grounds': {
 		'widget': 'reference-data',
@@ -665,12 +676,6 @@ export default {
 		'tab': 'extra',
 		'title': "Publisher",
 		'description': "*** description for publisher goes here ***",
-	},
-	'/properties/issued': {
-		'tab': 'extra',
-		'title': "Issued",
-		'description': "*** description for issued goes here ***",
-		'widget': 'date',
 	},
 	'/properties/modified': {
 		'tab': 'extra',
