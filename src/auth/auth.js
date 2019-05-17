@@ -1,5 +1,6 @@
 import {parseJwt, getRandomString} from './jwt.js'
 
+
 const TokenName = "jwt"
 
 function User() {
@@ -91,7 +92,13 @@ function Auth(url) {
 	})
 
 	Object.defineProperty(Auth.prototype, "loginUrl", {
-		get: function() { return this.url + '?' + getRandomString(8) },
+		get: function() {
+			if (process.env.NODE_ENV === "development" && process.env.VUE_APP_DEV_TOKEN) {
+				return this.url + '?token=' + process.env.VUE_APP_DEV_TOKEN
+			} else {
+				return this.url + '?' + getRandomString(8)
+			}
+		},
 	})
 }
 Auth.prototype.constructor = Auth
@@ -119,7 +126,8 @@ Auth.prototype.logout = function() {
 
 Auth.prototype.localLogin = function() {
 	const token = localStorage.getItem(TokenName)
-	if (token && !isExpiredToken(token)) {
+	const isExpired = isExpiredToken(token) && process.env.NODE_ENV !== "development"
+	if (token && !isExpired) {
 		return this.login(token)
 	}
 	localStorage.removeItem(TokenName)
