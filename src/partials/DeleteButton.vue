@@ -1,5 +1,5 @@
 <template functional>
-	<span class="delete-button" variant="link" v-on:click="listeners.click">
+	<span class="pointer delete-button" variant="link" v-on:click="listeners.click">
 		<font-awesome-icon icon="times" fixed-width class="icon" />
 	</span>
 </template>
