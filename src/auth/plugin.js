@@ -7,11 +7,14 @@ function addGlobalGuard(router, auth, loginPage) {
 	}
 
 	router.beforeEach((to, from, next) => {
+		// check for login token in local storage
+		if (!auth.loggedIn) {
+			auth.localLogin()
+		}
 		// if the route needs authentication...
 		if (to.matched.some(record => record.meta.auth)) {
-			// this route requires auth, check if logged in
-			// if not logged in, try token in local storage, else send to login page
-			if (!auth.loggedIn && !auth.localLogin()) {
+			// this route requires auth, check if logged in, else send to login page
+			if (!auth.loggedIn) {
 				next({
 					path: loginPage,
 					query: { redirect: to.fullPath },

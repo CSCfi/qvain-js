@@ -160,6 +160,9 @@ function getExpirationDateFromToken(token) {
 // isExpiredToken checks if a token is expired by comparing the 'exp' field with the current date;
 // invalid dates will return null, which will evaluate to 0 (true, expired), undefined dates will evaluate to NaN (false, not expired).
 function isExpiredToken(token) {
+	if (!token) {
+		return null
+	}
 	const date = getExpirationDateFromToken(token)
 	return date < new Date()
 }
