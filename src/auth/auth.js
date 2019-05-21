@@ -1,6 +1,5 @@
 import {parseJwt, getRandomString} from './jwt.js'
 
-
 const TokenName = "jwt"
 
 function User() {
