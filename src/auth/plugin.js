@@ -6,10 +6,10 @@ function addGlobalGuard(router, auth, loginPage) {
 		loginPage = "/login"
 	}
 
-	router.beforeEach((to, from, next) => {
-		// check for login token in local storage
+	router.beforeEach(async (to, from, next) => {
+		// check for existing session
 		if (!auth.loggedIn) {
-			auth.localLogin()
+			await auth.resumeSession()
 		}
 		// if the route needs authentication...
 		if (to.matched.some(record => record.meta.auth)) {
@@ -32,6 +32,8 @@ function addGlobalGuard(router, auth, loginPage) {
 // options:
 //   router: vue router object
 //   loginUrl: url to login api
+//   logoutUrl: url to logout api
+//   sessionUrl: url to sessions api
 //   cbUrl: url to component that handles token callback
 function plugin(Vue, options) {
 	if (plugin.installed) {
@@ -49,7 +51,7 @@ function plugin(Vue, options) {
 		console.warn("auth plugin: Vue.util.defineReactive not found on Vue instance")
 	}
 
-	const auth = new Auth(options.loginUrl)
+	const auth = new Auth(options.loginUrl, options.logoutUrl, options.sessionsUrl)
 
 	if (options['router']) {
 		addGlobalGuard(options.router, auth, options['cbUrl'])

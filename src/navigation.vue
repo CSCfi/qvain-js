@@ -152,10 +152,12 @@ export default {
 		},
 	},
 	methods: {
-		logout() {
-			this.$auth.logout()
-			this.$root.showAlert("User signed out.", "primary")
-			this.$router.push({ name: 'home' })
+		async logout() {
+			if (await this.$auth.logout()) {
+				this.$root.showAlert("User signed out.", "primary")
+			} else {
+				this.$root.showAlert("Failed to sign out. Please try again later.", "danger")
+			}
 		},
 	},
 }

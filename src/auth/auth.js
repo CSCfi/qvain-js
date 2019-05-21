@@ -1,3 +1,4 @@
+import axios from 'axios'
 import {parseJwt, getRandomString} from './jwt.js'
 
 const TokenName = "jwt"
@@ -67,9 +68,7 @@ function filterGroups(prefix, groups) {
 	return groups.filter(grp => grp.startsWith(prefix)).map(grp => grp.substring(prefix.length)).filter(grp => !isNaN(grp))
 }
 
-function Auth(url) {
-	this.url = url
-
+function Auth(loginUrl, logoutUrl, sessionsUrl) {
 	// might be Vue's reactive setter
 	this.defineProperty(Auth.prototype, "_user", {
 		value: null,
@@ -93,10 +92,22 @@ function Auth(url) {
 	Object.defineProperty(Auth.prototype, "loginUrl", {
 		get: function() {
 			if (process.env.NODE_ENV === "development" && process.env.VUE_APP_DEV_TOKEN) {
-				return this.url + '?token=' + process.env.VUE_APP_DEV_TOKEN
+				return loginUrl + '?token=' + process.env.VUE_APP_DEV_TOKEN
 			} else {
-				return this.url + '?' + getRandomString(8)
+				return loginUrl + '?' + getRandomString(8)
 			}
+		},
+	})
+
+	Object.defineProperty(Auth.prototype, "logoutUrl", {
+		get: function() {
+			return logoutUrl
+		},
+	})
+
+	Object.defineProperty(Auth.prototype, "sessionsUrl", {
+		get: function() {
+			return sessionsUrl
 		},
 	})
 }
@@ -117,19 +128,60 @@ Auth.prototype.login = function(token) {
 	return false
 }
 
-Auth.prototype.logout = function() {
-	// TODO: maybe empty object?
+Auth.prototype.logout = async function() {
+	try {
+		// delete backend session
+		await axios.post(
+			this.logoutUrl, {
+				timeout: 5000,
+				responseType: 'json',
+				headers: {
+					'Accept': 'application/json',
+				},
+			})
+	} catch (error) {
+		// a non-401 error here means the backend session probably wasn't deleted
+		if (error.response.status != 401) {
+			return false
+		}
+	}
+
+	// clear user and stored token
 	this.setUser(null)
 	localStorage.removeItem(TokenName)
+	return true
 }
 
-Auth.prototype.localLogin = function() {
-	const token = localStorage.getItem(TokenName)
-	const isExpired = isExpiredToken(token) && process.env.NODE_ENV !== "development"
-	if (token && !isExpired) {
-		return this.login(token)
+Auth.prototype.getSession = async function() {
+	try {
+		const response = await axios.get(
+			this.sessionsUrl, {
+				timeout: 5000,
+				responseType: 'json',
+				headers: {
+					'Accept': 'application/json',
+				},
+			})
+		return response.data
+	} catch (error) {
+		return null
 	}
-	localStorage.removeItem(TokenName)
+}
+
+Auth.prototype.resumeSession = async function() {
+	// If there is an ID token in localStorage, check if we have an 
+	// existing session and can login with the token. If not, remove token.
+	let success = false
+	const token = localStorage.getItem(TokenName)
+	if (token) {
+		const session = await this.getSession()
+		if (session) {
+			success = this.login(token)
+		}
+	}
+	if (!success) {
+		localStorage.removeItem(TokenName)
+	}
 	return false
 }
 
@@ -143,28 +195,6 @@ function parseUnixTime(secs) {
 		return null
 	}
 	return date
-}
-
-// getExpirationDateFromToken returns a date based on the the 'exp' field from a JWT or undefined if that field wasn't set.
-function getExpirationDateFromToken(token) {
-	const jwt = parseJwt(token)
-
-	if (!jwt || !('exp' in jwt)) {
-		//return null
-		return undefined
-	}
-
-	return parseUnixTime(jwt.exp)
-}
-
-// isExpiredToken checks if a token is expired by comparing the 'exp' field with the current date;
-// invalid dates will return null, which will evaluate to 0 (true, expired), undefined dates will evaluate to NaN (false, not expired).
-function isExpiredToken(token) {
-	if (!token) {
-		return null
-	}
-	const date = getExpirationDateFromToken(token)
-	return date < new Date()
 }
 
 export default Auth

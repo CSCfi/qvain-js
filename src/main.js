@@ -21,6 +21,8 @@ Vue.use(BootstrapVue)
 Vue.use(AuthPlugin, {
 	router: router,
 	loginUrl: "/api/auth/login",
+	logoutUrl: "/api/sessions/logout",
+	sessionsUrl: "/api/sessions/",
 	cbUrl: "/token",
 })
 
@@ -90,15 +92,6 @@ const app = new Vue({
 		},
 	},
 	created() {
-		//this.language = "en"
-
-		// we can't log in from a dev instance, so load a "fake" token
-		//if (process.env.NODE_ENV === "development" && process.env.VUE_APP_DEV_TOKEN) {
-		//	console.log("fake login:", this.$auth.login(process.env.VUE_APP_DEV_TOKEN))
-		//}
-		//console.log("localStorage token login:", this.$auth.localLogin(), this.$auth.loggedIn, this.$auth.user, this.$auth.user.name)
-		//console.log("logged in?", this.$auth.loggedIn, this.$auth.user, this.$auth._user)
-
 		// set configuration on root component
 		this.$config = getConfig()
 	},
