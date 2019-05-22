@@ -62,7 +62,7 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 			<b-collapse is-nav id="app-subbar-collapse">
 				<b-navbar-nav>
 					<b-nav-item v-if="$route.path !== '/datasets'" to="/datasets">My Datasets</b-nav-item>
-					<b-nav-item v-else to="/dataset/new">Editor</b-nav-item>
+					<b-nav-item v-else :to="editorUrl">Editor</b-nav-item>
 				</b-navbar-nav>
 			</b-collapse>
 		</b-navbar>
@@ -139,6 +139,17 @@ export default {
 	data: function() {
 		return {
 		}
+	},
+	computed: {
+		editorUrl() {
+			if (this.$store.state.metadata.id) {
+				return "/dataset/" + this.$store.state.metadata.id
+			} else if (this.$store.state.record) {
+				return "/dataset/edit"
+			} else {
+				return "/dataset/new"
+			}
+		},
 	},
 	methods: {
 		logout() {

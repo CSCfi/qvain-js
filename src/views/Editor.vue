@@ -87,6 +87,18 @@
 					<b-btn v-b-tooltip.hover title="Publish makes the saved dataset public. Remember to always save the datset before publishing (only the latest saved version gets published)." @click="confirmPublish" :disabled="rateLimited" ref="dataset-publish-button">Publish</b-btn>
 				</b-button-group>
 			</div>
+
+			<div v-else :style="{'padding': '20px'}">
+				Please select one option from "Where are my files" menu. Note that the selected option cannot be changed without creating a new dataset.
+				<br>
+				<br>
+				Where are your files related to this dataset:
+				<ul>
+					<li>In Fairdata IDA (you want to select files from IDA)" and "I want to select Fairdata IDA files"</li>
+					<li>Somewhere else (you want to link files from remote location)</li>
+				</ul>
+			</div>
+
 		</div>
 		<div v-else>
 			<font-awesome-icon icon="circle-notch" spin />
@@ -160,6 +172,15 @@ export default {
 		getSchemas(bundle) {
 			return Bundle[bundle]
 		},
+		getSchemaForId(schemaId) {
+			for (const bundle in Bundle) {
+				const schema = Object.values(Bundle[bundle]).find(schema=>schema.id==schemaId)
+				if (schema) {
+					return schema
+				}
+			}
+			return null
+		},
 		confirmPublish() {
 			const isExisting = !!this.$store.state.metadata.id
 			if (!isExisting) {
@@ -178,10 +199,8 @@ export default {
 				if (isExisting) {
 					const response = await apiClient.post("/datasets/" + this.$store.state.metadata.id + "/publish", {})
 					this.$root.showAlert("Dataset successfully published", "primary")
-					this.createNewRecord() // clear editor dataset
-					this.$nextTick(()=>{
-						this.$router.replace({ path: '/datasets'}) // redirect to datasets page
-					})
+					this.clearRecord() // clear editor dataset
+					this.$router.replace({ name: "datasets"}) // redirect to datasets page
 				} else {
 					this.$root.showAlert("Please save your dataset first", "danger")
 				}
@@ -220,7 +239,7 @@ export default {
 					const { data: { id }} = await apiClient.post("/datasets/", payload)
 
 					this.$store.commit('setMetadata', { id })
-					this.$router.replace({ name: 'tab', params: { id }})
+					this.$router.replace({ name: 'editor', params: { id }})
 
 					this.$root.showAlert("Success! Created as " + id, "success")
 				}
@@ -236,8 +255,7 @@ export default {
 				this.clearRecord()
 				this.initDataset()
 				this.loading = false
-				this.selectedSchema = null
-				this.$store.commit('loadSchema', {})
+				this.$router.replace({ name: 'editor', params: { id: "new" }})
 			})
 		},
 		/* not used atm due to not working
@@ -258,25 +276,26 @@ export default {
 		},
 
 		clearRecord() {
-			this.$router.replace({ name: 'tab', params: { id: 'new', tab: 'description' }})
+			this.selectedSchema = null
+			this.$store.commit('loadSchema', {})
+			this.$store.commit('loadHints', {})
 			this.$store.commit('loadData', undefined)
 			this.$store.commit('resetMetadata')
 		},
-		cloneCurrentRecord() {
-			this.$router.replace({ name: 'tab', params: { id: 'new', tab: 'description' }})
-			this.$store.commit('resetMetadata')
-		},
+		/* cloneCurrentRecord() {
+			// Not implemented
+		}, */
 		async openRecord(id) {
 			try {
 				this.loading = true
 
 				const { data } = await apiClient.get(`/datasets/${id}`)
-				const schemas = this.getSchemas('fairdata')
-				this.selectedSchema = data.schema === 'metax-ida' ? schemas.ida : schemas.att
+				this.$store.commit('resetMetadata')
+				this.selectedSchema = this.getSchemaForId(data.schema)
 				this.$store.commit('loadSchema', this.selectedSchema.schema)
 				this.$store.commit('loadHints', this.selectedSchema.ui)
 				this.$store.commit('loadData', Object(data.dataset))
-				this.$store.commit('setMetadata', { id })
+				this.$store.commit('setMetadata', { id, schemaId: this.selectedSchema.id })
 			} finally {
 				this.loading = false
 			}
@@ -285,10 +304,26 @@ export default {
 			if (this.selectedSchema !== null) {
 				this.$store.commit('loadSchema', this.selectedSchema.schema)
 				this.$store.commit('loadHints', this.selectedSchema.ui)
-				console.log('selectSchema starts validator');
+				this.$store.commit('setMetadata', { schemaId: this.selectedSchema.id })
 				this.startValidator()
+				this.checkTab()
 			} else {
 				this.$store.commit('loadSchema', {})
+			}
+		},
+		checkTab() {
+			// if tab is unset or invalid (not in tabs list), try to read tab from store or use the first tab
+			const tabUris = this.tabs.map(tab=>tab.uri)
+			if (!this.$route.params.tab || !tabUris.includes(this.$route.params.tab)) {
+				let newTab = tabUris.includes(this.$store.state.metadata.tab) ? this.$store.state.metadata.tab : null
+				if (!newTab && this.tabs.length > 0) {
+					newTab = this.tabs[0].uri
+				}
+				if (newTab) {
+					this.$router.replace({ name: 'tab', params: { id: this.$route.params.id, tab: newTab  }})
+				} else {
+					this.$router.replace({ name: 'editor', params: { id: this.$route.params.id }})
+				}
 			}
 		},
 		startValidator() {
@@ -304,7 +339,7 @@ export default {
 					this.validator.validateData(this.$store.state.record)
 				}
 			})
-		}
+		},
 	},
 	computed: {
 		tabs() {
@@ -323,24 +358,36 @@ export default {
 		},
 	},
 	watch: {
+		'$route.params.tab': async function(newTab, oldTab) {
+			this.$store.commit('setMetadata', { tab: newTab })
+			this.checkTab()
+		},
 		'$route.params.id': async function(newId, oldId) {
-			if (this.id !== 'new') {
-				await this.openRecord(this.id)
-			} else {
+			if (this.id === 'new') {
 				this.clearRecord()
+			} else if (this.id !== 'edit') {
+				await this.openRecord(this.id)
 			}
 		},
 	},
 	async mounted() {
-		if (this.id !== 'new') {
+		if (this.id === 'new') {
+			this.clearRecord()
+		} else if (this.id !== 'edit' && this.$store.state.metadata.id !== this.id) {
 			await this.openRecord(this.id)
 		}
+
+		// if schema is not set, try to read schema from store
+		if (!this.selectedSchema && this.$store.state.metadata.schemaId) {
+			this.selectedSchema = this.getSchemaForId(this.$store.state.metadata.schemaId)
+		}
+
 		if (this.selectedSchema) {
 			this.startValidator()
 		}
 
-		//this.initDataset() // should this be called
-	}
+		this.checkTab()
+	},
 }
 </script>
 

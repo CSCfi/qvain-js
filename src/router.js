@@ -23,7 +23,7 @@ const routes = [
 	{ path: '/', name: "home", component: Welcome, props: true },
 	{ path: '/token', component: Token, props: false },
 	{ path: '/records', component: RecordList, props: false, meta: { auth: true } },
-	{ path: '/datasets', component: Datasets, props: false, meta: { auth: true } },
+	{ path: '/datasets', name: "datasets", component: Datasets, props: false, meta: { auth: true } },
 	{ path: '/viewschema', component: SchemaViewer, props: false },
 	{ path: '/autocomplete', component: testAutoComplete, props: false },
 	{ path: '/orcid', component: OrcidSearch, props: false },
@@ -33,11 +33,10 @@ const routes = [
 	{ path: '/config', component: Config, props: false },
 	{ path: '/userinfo', component: UserInfo, props: false, meta: { auth: true } },
 	{ path: '/dataset/:id', name: "editor", component: Editor, props: true, meta: { auth: true }, children: [
-		{ path: '', redirect: { name: 'tab' } },
 		{ path: ':tab', name: "tab", component: SingleTab },
 		{ path: ':tab/:project?/:relpath*', name: 'files', component: SingleTab }, // what is this for?
 	]},
-	{ path: '*', redirect: { name: 'home' } }
+	{ path: '*', redirect: { name: 'home' } },
 ]
 
 // mode: history or hash

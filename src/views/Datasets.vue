@@ -192,7 +192,7 @@ export default {
 			}
 		},
 		open(id) { // should maybe later be changed to link so that accessability is better
-			this.$router.push({ name: 'tab', params: { id: id, tab: 'description' }})
+			this.$router.push({ name: 'editor', params: { id: id }})
 		},
 		async del() {
 			this.error = null
@@ -259,7 +259,7 @@ export default {
 			this.$store.commit('loadSchema', {})
 			this.$store.commit('loadHints', {})
 
-			this.$router.replace({ name: 'tab', params: { id: 'new', tab: 'description' }})
+			this.$router.replace({ name: 'editor', params: { id: 'new' }})
 		},
 	},
 	computed: {
