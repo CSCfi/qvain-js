@@ -88,17 +88,15 @@
 				</b-button-group>
 			</div>
 
-			<div v-else :style="{'padding': '20px'}">
-				Please select one option from "Where are my files" menu. Note that the selected option cannot be changed without creating a new dataset.
-				<br>
-				<br>
-				Where are your files related to this dataset:
-				<ul>
-					<li>In Fairdata IDA (you want to select files from IDA)" and "I want to select Fairdata IDA files"</li>
-					<li>Somewhere else (you want to link files from remote location)</li>
-				</ul>
-			</div>
+			<div v-else class="schema-help-text">
+				<p>Please select one option from "Where are my files" menu. Note that the selected option cannot be changed without creating a new dataset.</p>
 
+				<p>Where are your files related to this dataset:
+				<ul>
+				<li>In Fairdata IDA (you want to select files from IDA)" and "I want to select Fairdata IDA files"</li>
+				<li>Somewhere else (you want to link files from remote location)</li>
+				</ul></p>
+			</div>
 		</div>
 		<div v-else>
 			<font-awesome-icon icon="circle-notch" spin />
@@ -414,5 +412,9 @@ export default {
 
 .limited-width {
 	max-width: 1100px;
+}
+
+.schema-help-text {
+	padding: 20px;
 }
 </style>
