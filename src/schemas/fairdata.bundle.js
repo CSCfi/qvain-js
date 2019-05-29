@@ -55,8 +55,7 @@ export default {
 	ida: {
 		schema: FairdataIdaSchema,
 		ui: FairdataIdaUi,
-		name: "I want to select IDA files", // "Fairdata (IDA)",
-		shortName: "IDA",
+		name: "Select IDA files", // "Fairdata (IDA)",
 		id: "metax-ida",
 		family: 2,
 		cloneFunc: clone,
@@ -72,8 +71,7 @@ export default {
 	att: {
 		schema: FairdataAttSchema,
 		ui: FairdataAttUi,
-		name: "I want to link Remote resources", // "Fairdata (ATT)",
-		shortName: "Remote resource",
+		name: "Link Remote resources", // "Fairdata (ATT)",
 		id: "metax-att",
 		family: 2,
 		cloneFunc: clone,

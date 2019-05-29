@@ -14,7 +14,7 @@
 				<b-input-group size="sm" prepend="Where are my files">
 					<b-form-select value="fairdata" v-model="selectedSchema" :disabled="!!selectedSchema" @change="selectSchema">
 						<optgroup :label="bundle" v-for="(bundle, index) in bundles" :key="index">
-							<option :value="val" v-for="(val, id) in getSchemas(bundle)" :key="id">{{ !selectedSchema ? val.name : val.shortName }}</option>
+							<option :value="val" v-for="(val, id) in getSchemas(bundle)" :key="id">{{ val.name }}</option>
 						</optgroup>
 						<option v-if="selectedSchema === null" :value="null" hidden>Select one</option>
 					</b-form-select>
@@ -91,10 +91,10 @@
 			<div v-else class="schema-help-text">
 				<p>Please select one option from "Where are my files" menu. Note that the selected option cannot be changed without creating a new dataset.</p>
 
-				<p>Where are your files related to this dataset:
+				<p>Where are your files related to this dataset?
 				<ul>
-				<li>In Fairdata IDA (you want to select files from IDA)" and "I want to select Fairdata IDA files"</li>
-				<li>Somewhere else (you want to link files from remote location)</li>
+				<li>In Fairdata IDA (you want to select files from IDA): "Select IDA files"</li>
+				<li>Somewhere else (you want to link files from remote location): "Link Remote Resources"</li>
 				</ul></p>
 			</div>
 		</div>
