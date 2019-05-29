@@ -6,7 +6,7 @@
 		</b-alert>
 		</transition>
 
-		<b-navbar id="app-topbar" toggleable="md" type="dark" variant="primary">
+		<b-navbar id="app-topbar" toggleable="sm" type="dark" variant="primary">
 
 			<b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
@@ -57,7 +57,7 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 			</b-collapse>
 		</b-navbar>
 
-		<b-navbar toggleable="md" type="dark" id="app-subbar">
+		<b-navbar :toggleable="false" type="dark" id="app-subbar">
 			<b-nav-toggle target="app-subbar-collapse"></b-nav-toggle>
 			<b-collapse is-nav id="app-subbar-collapse">
 				<b-navbar-nav>

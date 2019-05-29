@@ -4,14 +4,14 @@
 
 		<div>
 			<b-button-toolbar class="tool-bar" aria-label="Dataset toolbar">
-				<b-button-group size="sm" class="mx-1">
+				<b-button-group size="sm">
 					<b-btn v-b-tooltip.hover title="Create new empty dataset" @click="createNewRecord()">New dataset</b-btn>
 					<!-- hidden due to need of redesign in editor to support this
 					<b-btn v-b-tooltip.hover title="Clone this dataset as new dataset" @click="createCloneRecord()">Clone current dataset</b-btn>
 					-->
 				</b-button-group>
 
-				<b-input-group size="sm" class="w-25 mx-1" prepend="Where are my files">
+				<b-input-group size="sm" prepend="Where are my files">
 					<b-form-select value="fairdata" v-model="selectedSchema" :disabled="!!selectedSchema" @change="selectSchema">
 						<optgroup :label="bundle" v-for="(bundle, index) in bundles" :key="index">
 							<option :value="val" v-for="(val, id) in getSchemas(bundle)" :key="id">{{ !selectedSchema ? val.name : val.shortName }}</option>
@@ -20,16 +20,16 @@
 					</b-form-select>
 				</b-input-group>
 
-				<b-input-group size="sm" class="w-25 mx-1" prepend="owner">
+				<b-input-group size="sm" prepend="Owner">
 					<b-form-select :value="$auth.user ? $auth.user.name : 'you'" :options="[ $auth.user ? $auth.user.name : 'you' ]"></b-form-select>
 				</b-input-group>
 
-				<b-button-group size="sm" class="mx-1">
+				<b-button-group size="sm" class="save-pub-btns">
 					<b-btn v-b-tooltip.hover title="Save as a draft. Saving does not make your dataset public nor visible to anyone. You can save as many times as you want before publishing." @click="save" :disabled="rateLimited" ref="dataset-save-button">Save</b-btn>
 					<b-btn v-b-tooltip.hover title="Publish makes the saved dataset public. Remember to always save the datset before publishing (only the latest saved version gets published)." @click="confirmPublish" :disabled="rateLimited" ref="dataset-publish-button">Publish</b-btn>
 				</b-button-group>
 
-				<b-button-group size="sm" class="mx-1" v-if="!inDev">
+				<b-button-group size="sm" v-if="!inDev">
 					<b-btn variant="outline-light" v-b-tooltip.hover title="View dataset JSON" v-b-modal="'dataset-json-modal'">json</b-btn>
 					<b-btn variant="outline-light" v-b-tooltip.hover title="Overview" v-b-modal="'dataset-overview-modal'">overview</b-btn>
 					<b-btn variant="outline-light" v-b-tooltip.hover title="Publish" v-b-modal="'publish-modal'">publish</b-btn>
@@ -406,8 +406,23 @@ export default {
 
 <style lang="scss" scoped>
 .tool-bar {
-	padding-top: 10px;
 	padding-bottom: 10px;
+	margin: -2px -4px;
+
+	> * {
+		margin: 2px 4px;
+		flex: 1 1 auto;
+	}
+
+	select {
+		padding-right: 1.5rem;
+	}
+
+	.save-pub-btns {
+		max-width: 20em;
+		margin-left: auto;
+		padding-left: 4px;
+	}
 }
 
 .limited-width {

@@ -3,18 +3,18 @@
 		<h1 class="component-title">My datasets</h1>
 
 		<!-- controls -->
-		<b-button-toolbar class="mb-4">
-			<b-button-group size="sm">
+		<b-button-toolbar class="mb-4 tool-bar">
+			<b-button-group class="filter-buttons" size="sm">
 				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'all'" @click="() => showDatasetState = 'all'" variant="outline-success" v-b-tooltip.hover.bottom title="show draft datasets">All</b-btn>
 				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'draft'" @click="() => showDatasetState = 'draft'" variant="outline-success" v-b-tooltip.hover.bottom title="show draft datasets">Draft</b-btn>
 				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'published'" @click="() => showDatasetState = 'published'" variant="outline-success" v-b-tooltip.hover.bottom title="show published datasets">Published</b-btn>
 			</b-button-group>
 
-			<b-input-group size="sm" class="ml-2" :style="{'flex-grow': '1'}" v-b-tooltip.hover.bottom title="Search from titles" prepend="Search">
+			<b-input-group class="search" size="sm" v-b-tooltip.hover.bottom title="Search from titles" prepend="Search">
 				<b-form-input v-model="filterString" placeholder="title" />
 			</b-input-group>
 
-			<b-button-group class="ml-2 new-record" size="sm">
+			<b-button-group class="new-record" size="sm">
 				<b-btn class="new-record__button" variant="primary" @click="createNewRecord">Create new record</b-btn>
 			</b-button-group>
 		</b-button-toolbar>
@@ -82,6 +82,19 @@
 </template>
 
 <style lang="scss" scoped>
+	.tool-bar {
+		margin: -2px -4px;
+
+		> * {
+			margin: 2px 4px;
+			flex-grow: 1;
+		}
+
+		.search {
+			flex-grow: 10000;
+		}
+	}
+
 	.actions {
 		width: 265px !important;
 		button {
