@@ -2,7 +2,7 @@ export default {
 	tabs: [
 		{ label: 'Content Description', uri: 'description' },
 		{ label: 'Actors', uri: 'actors' },
-		{ label: 'Rights and Licences', uri: 'rights' },
+		{ label: 'Rights and Licenses', uri: 'rights' },
 		{ label: 'Temporal and Spatial Coverage', uri: 'coverage' },
 		{ label: 'Relations and History', uri: 'relations' },
 		{ label: 'Files', uri: 'files' },
@@ -100,7 +100,7 @@ export default {
 	'/properties/theme': {
 		'tab': 'description',
 		'title': "Subject heading",
-		'description': "Choose subject headings from the General Finnish Ontology (YSO). It also has English and Swedish translations of the terms.",
+		'description': "Choose subject headings from the KOKO Ontology. It also has English and Swedish translations of the terms.",
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -171,8 +171,8 @@ export default {
 		},
 		'placeholder': "– choose location –",
 		'label': "location",
-		'description': "This is some fancy optional description for the location field",
-		'help': "This is the optional help text for the location field",
+		'description': "Location for the dataset (YSO places), e.g. location of observations.",
+		'help': "Start typing the location in order to get the list to choose from.",
 	},
 
 	// "producer project"
@@ -194,8 +194,8 @@ export default {
 		},
 		'placeholder': "– choose funder type –",
 		'label': "funder type",
-		'description': "This is some fancy optional description for the funder field",
-		'help': "This is the optional help text for the funder field",
+		'description': "Funding type.",
+		'help': "Select the funding type.",
 	},
 	'/properties/creator': {
 		'tab': 'actors',
@@ -215,8 +215,8 @@ export default {
 		},
 		'placeholder': "– choose contributor type –",
 		'label': "contributor type",
-		'description': "This is some fancy optional description for the contributor type field",
-		'help': "This is the optional help text for the contributor type field",
+		'description': "Type of contribution the given creator had on the dataset.",
+		'help': "Select the type of contribution the creator had on the dataset.",
 	},
 	'/properties/creator/*/oneOf/*/properties/member_of/properties/contributor_type': {
 		'widget': 'reference-data',
@@ -231,8 +231,8 @@ export default {
 		},
 		'placeholder': "– choose contributor type –",
 		'label': "contributor type",
-		'description': "This is some fancy optional description for the contributor type field",
-		'help': "This is the optional help text for the contributor type field",
+		'description': "Type of contribution the creator had on the dataset.",
+		'help': "Select the type of contribution the creator had on the dataset.",
 	},
 	'/properties/creator/*/oneOf/*/properties/contributor_role': {
 		'widget': 'reference-data',
@@ -247,8 +247,8 @@ export default {
 		},
 		'placeholder': "– choose contributor role –",
 		'label': "contributor role",
-		'description': "This is some fancy optional description for the contributor role field",
-		'help': "This is the optional help text for the contributor role field",
+		'description': "Role of the creator regarding this dataset.",
+		'help': "What was the role of the given creator on this dataset.",
 	},
 	'/properties/creator/*/oneOf/*/properties/telephone': {
 		'props': {
@@ -317,8 +317,8 @@ export default {
 		},
 		'placeholder': "– choose contributor role –",
 		'label': "contributor role",
-		'description': "This is some fancy optional description for the contributor role field",
-		'help': "This is the optional help text for the contributor role field",
+		'description': "Role of the contributor regarding this dataset.",
+		'help': "What was the role of the given contributor on this dataset.",
 	},
 	'/properties/contributor/*/oneOf/*/properties/contributor_type': {
 		'widget': 'reference-data',
@@ -333,8 +333,8 @@ export default {
 		},
 		'placeholder': "– choose contributor type –",
 		'label': "contributor type",
-		'description': "This is some fancy optional description for the contributor type field",
-		'help': "This is the optional help text for the contributor type field",
+		'description': "Type of contribution the given actor had on the dataset.",
+		'help': "Select the type of contribution the given actor had on the dataset.",
 	},
 	'/properties/contributor/*/oneOf/*/properties/member_of/properties/contributor_type': {
 		'widget': 'reference-data',
@@ -349,8 +349,8 @@ export default {
 		},
 		'placeholder': "– choose contributor type –",
 		'label': "contributor type",
-		'description': "This is some fancy optional description for the contributor type field",
-		'help': "This is the optional help text for the contributor type field",
+		'description': "Type of contribution the given actor had on the dataset.",
+		'help': "Select the type of contribution the given actor had on the dataset.",
 	},
 	'/properties/curator': {
 		'tab': 'actors',
@@ -370,8 +370,8 @@ export default {
 		},
 		'placeholder': "– choose contributor role –",
 		'label': "contributor role",
-		'description': "This is some fancy optional description for the contributor role field",
-		'help': "This is the optional help text for the contributor role field",
+		'description': "Role of the curator regarding this dataset.",
+		'help': "What was the role of the given curator on this dataset.",
 	},
 	'/properties/curator/*/oneOf/*/properties/contributor_type': {
 		'widget': 'reference-data',
@@ -386,8 +386,8 @@ export default {
 		},
 		'placeholder': "– choose contributor type –",
 		'label': "contributor type",
-		'description': "This is some fancy optional description for the contributor type field",
-		'help': "This is the optional help text for the contributor type field",
+		'description': "Type of contribution the given actor had on the dataset.",
+		'help': "Select the type of contribution the given actor had on the dataset.",
 	},
 	'/properties/curator/*/oneOf/*/properties/member_of/properties/contributor_type': {
 		'widget': 'reference-data',
@@ -402,8 +402,8 @@ export default {
 		},
 		'placeholder': "– choose contributor type –",
 		'label': "contributor type",
-		'description': "This is some fancy optional description for the contributor type field",
-		'help': "This is the optional help text for the contributor type field",
+		'description': "Type of contribution the given actor had on the dataset.",
+		'help': "Select the type of contribution the given actor had on the dataset.",
 	},
 	// rights holder, also owner
 	'/properties/rights_holder': {
@@ -424,8 +424,8 @@ export default {
 		},
 		'placeholder': "– choose contributor role –",
 		'label': "contributor role",
-		'description': "This is some fancy optional description for the contributor role field",
-		'help': "This is the optional help text for the contributor role field",
+		'description': "Role of the rights holder regarding this dataset.",
+		'help': "What was the role of the given rights holder on this dataset.",
 	},
 	'/properties/rights_holder/*/oneOf/*/properties/contributor_type': {
 		'widget': 'reference-data',
@@ -440,8 +440,8 @@ export default {
 		},
 		'placeholder': "– choose contributor type –",
 		'label': "contributor type",
-		'description': "This is some fancy optional description for the contributor type field",
-		'help': "This is the optional help text for the contributor type field",
+		'description': "Type of contribution the given rights holder had on the dataset.",
+		'help': "Select the type of contribution the given rights holder had on the dataset.",
 	},
 	'/properties/rights_holder/*/oneOf/*/properties/member_of/properties/contributor_type': {
 		'widget': 'reference-data',
@@ -456,8 +456,8 @@ export default {
 		},
 		'placeholder': "– choose contributor type –",
 		'label': "contributor type",
-		'description': "This is some fancy optional description for the contributor type field",
-		'help': "This is the optional help text for the contributor type field",
+		'description': "Type of contribution the given rights holder had on the dataset.",
+		'help': "Select the type of contribution the given rights holder had on the dataset.",
 	},
 	'/properties/relation': {
 		'tab': 'relations',
@@ -477,8 +477,8 @@ export default {
 		},
 		'placeholder': "– choose relation type –",
 		'label': "relation type",
-		'description': "This is some fancy optional description for the relation type field",
-		'help': "This is the optional help text for the relation type field",
+		'description': "Relation type; how is this resource related to the dataset.",
+		'help': "What is the relation type of this resource towards the dataset?",
 	},
 	'/properties/relation/*/properties/entity/properties/type': {
 		'widget': 'reference-data',
@@ -493,8 +493,8 @@ export default {
 		},
 		'placeholder': "– choose entity relation type –",
 		'label': "entity relation type",
-		'description': "This is some fancy optional description for the entity relation type field",
-		'help': "This is the optional help text for the entity relation type field",
+		'description': "Type of this resource.",
+		'help': "Select the type of this resource.",
 	},
 	//path:"/properties/relation/0/properties/entity/properties/type/properties/identifier"
 
@@ -517,8 +517,8 @@ export default {
 		},
 		'placeholder': "– choose location –",
 		'label': "location",
-		'description': "This is some fancy optional description for the location field",
-		'help': "This is the optional help text for the location field",
+		'description': "Location for the dataset (YSO places), e.g. location of observations.",
+		'help': "Start typing the location in order to get the list to choose from.",
 	},
 	'/properties/provenance/*/properties/lifecycle_event': {
 		'widget': 'reference-data',
@@ -533,8 +533,8 @@ export default {
 		},
 		'placeholder': "– choose type –",
 		'title': "lifecycle event type",
-		'description': "This is some fancy optional description for the type field",
-		'help': "This is the optional help text for the type field",
+		'description': "Event type; what was done.",
+		'help': "Select what was done.",
 	},
 	'/properties/provenance/*/properties/preservation_event': {
 		'widget': 'reference-data',
@@ -549,8 +549,8 @@ export default {
 		},
 		'placeholder': "– choose type –",
 		'title': "preservation event type",
-		'description': "This is some fancy optional description for the type field",
-		'help': "This is the optional help text for the type field",
+		'description': "Event type; what happened.",
+		'help': "Select what happened.",
 	},
 	'/properties/provenance/*/properties/event_outcome': {
 		'widget': 'reference-data',
@@ -565,8 +565,8 @@ export default {
 		},
 		'placeholder': "– choose type –",
 		'title': "Event outcome",
-		'description': "This is some fancy optional description for the event outcome field",
-		'help': "This is the optional help text for the event outcome field",
+		'description': "Succeeded/Failed",
+		'help': "Select whether the event succeeded or failed",
 	},
 	'/properties/provenance/*/properties/used_entity/*/properties/type': {
 		'widget': 'reference-data',
@@ -581,8 +581,8 @@ export default {
 		},
 		'placeholder': "– choose type –",
 		'title': "Resource type",
-		'description': "This is some fancy optional description for the resource type field",
-		'help': "This is the optional help text for the resource type field",
+		'description': "Resource type of the entity",
+		'help': "Select the resource type for this entity.",
 	},
 	'/properties/provenance/*/properties/was_associated_with/*/oneOf/*/properties/member_of/properties/contributor_type': {
 		'widget': 'reference-data',
@@ -597,8 +597,8 @@ export default {
 		},
 		'placeholder': "– choose contributor type –",
 		'label': "contributor type",
-		'description': "This is some fancy optional description for the contributor type field",
-		'help': "This is the optional help text for the contributor type field",
+		'description': "Type of contribution the given person or organization had on the entity used on the dataset.",
+		'help': "Select the type of contribution the given person or organization had on the entity used on the dataset.",
 	},
 	'/properties/provenance/*/properties/temporal': {
 		'widget': 'date-range',
@@ -616,7 +616,6 @@ export default {
 	'/properties/access_rights': {
 		'tab': 'rights',
 		'title': "Access rights",
-		'description': "*** description for access rights goes here ***",
 		'ignored': ["access_process"],
 	},
 	'/properties/access_rights/properties/access_type': {
@@ -632,12 +631,12 @@ export default {
 		},
 		'placeholder': "– choose access type –",
 		'title': "access type",
-		'description': "This is some fancy optional description for the access type field",
-		'help': "This is the optional help text for the access type field",
+		'description': "Define whether the data in this dataset can be accessed freely (Open) or if it has restrictions.",
+		'help': "Please provide also restriction grounds (own field) if there are restrsictions.",
 	},
 	'/properties/access_rights/properties/available': {
 		'widget': 'date',
-		'description': "Date when the resource became or will become available.",
+		'description': "Date when the resource (the data in this dataset) became or will become available (embargo related field).",
 	},
 	'/properties/access_rights/properties/restriction_grounds': {
 		'widget': 'reference-data',
@@ -652,8 +651,8 @@ export default {
 		},
 		'placeholder': "– choose restriction grounds –",
 		'title': "restriction grounds",
-		'description': "This is some fancy optional description for the restriction grounds field",
-		'help': "This is the optional help text for the restriction grounds field",
+		'description': "Please select the grounds for restrictions.",
+		'help': "Can be left empty if the Access Type is Open.",
 	},
 	'/properties/access_rights/properties/license': {
 		'widget': 'reference-data',
@@ -669,18 +668,16 @@ export default {
 		},
 		'placeholder': "– choose license –",
 		'title': "license",
-		'description': "This is some fancy optional description for the license field",
-		'help': "This is the optional help text for the license field",
+		'description': "A license agreement signifies what a user is allowed to do with the data.",
+		'help': "Select a license agreement for your dataset.",
 	},
 	'/properties/publisher': {
 		'tab': 'extra',
 		'title': "Publisher",
-		'description': "*** description for publisher goes here ***",
 	},
 	'/properties/modified': {
 		'tab': 'extra',
 		'title': "modified",
-		'description': "*** description for modified goes here ***",
 		'widget': 'date',
 	},
 	'/properties/infrastructure': {
@@ -697,47 +694,37 @@ export default {
 		},
 		'placeholder': "– choose infrastructure –",
 		'title': "infrastructure",
-		'description': "This is some fancy optional description for the intrastructure field",
-		'help': "This is the optional help text for the infrastructure field",
 	},
 	'/properties/metadata_version_identifier': {
 		'tab': 'extra',
 		'title': "Metadata version identifier",
-		'description': "*** description for metadata version identifier goes here ***",
 	},
 	'/properties/preferred_identifier': {
 		'tab': 'extra',
 		'title': "Preferred identifier",
-		'description': "*** description for preferred identifier goes here ***",
 	},
 	'/properties/other_identifier': {
 		'tab': 'extra',
 		'title': "Other identifier",
-		'description': "*** description for other identifier goes here ***",
 	},
 	'/properties/total_ida_byte_size': {
 		'tab': 'extra',
 		'title': "Total ida byte size",
-		'description': "*** description for total ida byte size goes here ***",
 	},
 	'/properties/total_remote_resources_byte_size': {
 		'tab': 'extra',
 		'title': "Total remote resources byte size",
-		'description': "*** description for total remote resources byte size goes here ***",
 	},
 	'/properties/value': {
 		'tab': 'extra',
 		'label': "Quality",
-		'description': "Metadata quality value calculated in some manner.",
 	},
 	'/properties/version_info': {
 		'tab': 'extra',
 		'title': "Version info",
-		'description': "*** description for version info goes here ***",
 	},
 	'/properties/version_notes': {
 		'tab': 'extra',
 		'title': "Version notes",
-		'description': "*** description for version notes goes here ***",
 	},
 }
