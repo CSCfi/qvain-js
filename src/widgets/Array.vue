@@ -49,7 +49,7 @@
 				</b-tab>
 
 				<div slot="tabs" class="input__controls">
-					<b-btn class="input__control mr-2" type="button" variant="secondary"><font-awesome-icon icon="list" fixed-width/> <span>{{ minimum || "–" }} / {{ value.length }} / {{ maximum || "–" }}</span></b-btn>
+			<!--	<b-btn class="input__control mr-2" type="button" variant="secondary"><font-awesome-icon icon="list" fixed-width/> <span>{{ minimum || "–" }} / {{ value.length }} / {{ maximum || "–" }}</span></b-btn> -->
 					<b-btn class="input__control" type="button" variant="primary" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
 				</div>
 
@@ -71,7 +71,7 @@
 						:key="'array-' + index" />
 				</b-list-group-item>
 				<div class="input__controls">
-					<b-btn class="input__control mr-2" type="button" variant="secondary"><font-awesome-icon icon="list" fixed-width/> <span>{{ minimum || "–" }} / {{ value.length }} / {{ maximum || "–" }}</span></b-btn>
+			<!--	<b-btn class="input__control mr-2" type="button" variant="secondary"><font-awesome-icon icon="list" fixed-width/> <span>{{ minimum || "–" }} / {{ value.length }} / {{ maximum || "–" }}</span></b-btn> -->
 					<b-btn class="input__control" type="button" variant="primary" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
 				</div>
 			</b-list-group>
