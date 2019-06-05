@@ -182,7 +182,7 @@ Auth.prototype.resumeSession = async function() {
 	if (!success) {
 		localStorage.removeItem(TokenName)
 	}
-	return false
+	return success
 }
 
 Auth.prototype.defineProperty = Object.defineProperty
