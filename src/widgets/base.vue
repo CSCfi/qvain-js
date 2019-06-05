@@ -32,6 +32,12 @@ export default {
 		},
 	},
 	computed: {
+		visible() {
+			return this.ui.visible ? this.ui.visible(this.$store.state.record) : true;
+		},
+		isRequired() {
+			return this.ui.required ? this.ui.required(this.$store.state.record) : this.required;
+		},
 		isValid() {
 			const statefromStore = this.$store.state.vState[this.path].v
 			return statefromStore !== null ? statefromStore : true;

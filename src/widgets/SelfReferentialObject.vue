@@ -1,9 +1,9 @@
 <template>
 	<wrapper :wrapped="false" :style="listItemStyle(depth)">
-		<h3 @click="visible = !visible" class="margin-left" :aria-controls="domId + '-props'" :aria-expanded="visible ? 'true' : 'false'">
-			<font-awesome-icon v-if="!visible" :icon="expandArrow" class="text-dark"/> {{ uiTitle }}
+		<h3 @click="opened = !opened" class="margin-left" :aria-controls="domId + '-props'" :aria-expanded="opened ? 'true' : 'false'">
+			<font-awesome-icon v-if="!opened" :icon="expandArrow" class="text-dark"/> {{ uiTitle }}
 		</h3>
-		<b-collapse :id="domId + '-props'" v-model="visible">
+		<b-collapse :id="domId + '-props'" v-model="opened">
 			<p class="ml-4 card-text text-muted" v-if="uiDescription">
 				<sup><font-awesome-icon icon="quote-left" class="text-muted" /></sup>
 				{{ uiDescription }}
@@ -16,7 +16,7 @@
 				<b-btn v-if="i > 0" class="btn-outline-secondary danger-on-hover border-0" @click="remove(i)">
 					<font-awesome-icon icon="trash" />
 				</b-btn>
-				<b-collapse :id="domId + '-accordion-' + i" visible :accordion="domId + '-accordion'" role="tabpanel">
+				<b-collapse :id="domId + '-accordion-' + i" :visible="opened" :accordion="domId + '-accordion'" role="tabpanel">
 					<FlatObject :schema="schema"
 						:path="path"
 						:value="org"
@@ -60,7 +60,7 @@ export default {
 	},
 	data: function() {
 		return {
-			visible: true,
+			opened: true,
 		}
 	},
 	methods: {
@@ -115,9 +115,6 @@ export default {
 			}
 			return depth + 1
 		},
-		expandArrow() {
-			return this.visible ? "ellipsis-v" : "angle-right"
-		},
 		flattened() {
 			let obj = this.value
 			let arr = []
@@ -142,9 +139,6 @@ export default {
 		"value.email"() {
 			console.log("SelfReferentialObject(): email watcher trigger:", this.flattened)
 		},
-	},
-	created() {
-		if ('visible' in this.ui) this.visible = this.ui['visible']
 	},
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-	<record-field :required="required" :wrapped="wrapped">
+	<record-field v-if="visible" :required="isRequired" :wrapped="wrapped">
 		<title-component slot="title" :title="uiLabel" />
 		<div slot="header-right" class="header__right">
 			<!--<ValidationStatus :status="validationStatus" />-->
@@ -255,7 +255,7 @@ export default {
 		}
 
 		if (!this.isMultiselect && !this.isEmptyObject) {
-			if (!this.value.identifier) {
+			if (!(this.value && this.value.identifier)) {
 				this.selectedOptions = null
 			} else {
 				const { identifier } = this.value
@@ -281,7 +281,7 @@ export default {
 				return { identifier, [this.labelNameInSchema]: { sv, en, fi, und } }
 			}
 
-			let storableOptions
+			let storableOptions = '' // this default allows item to be removed at updateValue
 			if (this.isMultiselect && selectedValueIsSet) {
 				storableOptions = this.selectedOptions.map(mapToStore)
 			}
@@ -290,7 +290,7 @@ export default {
 				storableOptions = mapToStore(this.selectedOptions)
 			}
 
-			storableOptions && this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: storableOptions })
+			this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: storableOptions })
 		},
 	},
 }

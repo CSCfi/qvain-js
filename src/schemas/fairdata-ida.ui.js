@@ -56,7 +56,7 @@ export default {
 		},
 	},
 	'/properties/issued': {
-		'tab': 'description',		
+		'tab': 'description',
 		'title': 'Issued',
 		'label': 'Issued',
 		'description': 'Date of formal issuance (e.g., publication) of the resource. This value does not affect or reflect the visibility of the dataset itself.',
@@ -617,7 +617,12 @@ export default {
 		'tab': 'rights',
 		'title': "Access rights",
 		'description': "*** description for access rights goes here ***",
-		'ignored': ["access_process"],
+		'ignored': [
+			"description",
+			"access_process",
+			"access_url",
+		],
+		'order': ["license", "access_type", "restriction_grounds", "available"],
 	},
 	'/properties/access_rights/properties/access_type': {
 		'widget': 'reference-data',
@@ -638,6 +643,10 @@ export default {
 	'/properties/access_rights/properties/available': {
 		'widget': 'date',
 		'description': "Date when the resource became or will become available.",
+		'required': record => record.access_rights.access_type &&
+			record.access_rights.access_type.identifier === 'http://uri.suomi.fi/codelist/fairdata/access_type/code/embargo',
+		'visible': record => record.access_rights.access_type &&
+			record.access_rights.access_type.identifier === 'http://uri.suomi.fi/codelist/fairdata/access_type/code/embargo',
 	},
 	'/properties/access_rights/properties/restriction_grounds': {
 		'widget': 'reference-data',
@@ -654,6 +663,12 @@ export default {
 		'title': "restriction grounds",
 		'description': "This is some fancy optional description for the restriction grounds field",
 		'help': "This is the optional help text for the restriction grounds field",
+		'required': record => record.access_rights.access_type &&
+			record.access_rights.access_type.identifier &&
+			record.access_rights.access_type.identifier !== 'http://uri.suomi.fi/codelist/fairdata/access_type/code/open',
+		'visible': record => record.access_rights.access_type &&
+			record.access_rights.access_type.identifier &&
+			record.access_rights.access_type.identifier !== 'http://uri.suomi.fi/codelist/fairdata/access_type/code/open',
 	},
 	'/properties/access_rights/properties/license': {
 		'widget': 'reference-data',
@@ -671,6 +686,7 @@ export default {
 		'title': "license",
 		'description': "This is some fancy optional description for the license field",
 		'help': "This is the optional help text for the license field",
+		'required': () => true,
 	},
 	'/properties/publisher': {
 		'tab': 'extra',

@@ -6041,15 +6041,6 @@
 						"type": "string"
 					}
 				},
-				"available": {
-					"@id": "http://purl.org/dc/terms/available",
-					"title": "Date Available",
-					"description": "Date (often a range) that the resource became or will become available.",
-					"@type": "http://www.w3.org/2001/XMLSchema#date",
-					"minLength": 1,
-					"type": "string",
-					"format": "date"
-				},
 				"access_type": {
 					"@id": "http://www.w3.org/2004/02/skos/core#Concept",
 					"title": "Access type",
@@ -6354,10 +6345,22 @@
 						"identifier"
 					],
 					"additionalProperties": false
+				},
+				"available": {
+					"@id": "http://purl.org/dc/terms/available",
+					"title": "Date Available",
+					"description": "Date (often a range) that the resource became or will become available.",
+					"@type": "http://www.w3.org/2001/XMLSchema#date",
+					"minLength": 1,
+					"type": "string",
+					"format": "date"
 				}
 			},
 			"required": [
-				"access_type"
+				"access_type",
+				"license",
+				"restriction_grounds",
+				"available"
 			],
 			"additionalProperties": false
 		},
