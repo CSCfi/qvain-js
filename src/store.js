@@ -177,7 +177,20 @@ export default new Vuex.Store({
 		},
 		// uiForPath returns the UI overrides for the given path (if any)
 		uiForPath: (state) => (path) => {
-			return state.hints[path.replace(/(\/|^)[0-9]+(\/|$)/g, "$1*$2")] || {}
+			const searchPath = path
+				.split('/')
+				.filter(key => key !== '')
+				.map((key, index, array) => {
+					if (isNaN(key)) {
+						return key
+					} else if (array[index - 1] === 'oneOf') {
+						return key
+					} else {
+						return '*'
+					}
+				}).join('/')
+
+			return state.hints['/' + searchPath] || {}
 		},
 		// uiValidKeywordsList returns a static array of valid keywords
 		uiValidKeywordsList: (state) => {
