@@ -192,7 +192,26 @@ Auth.prototype.resumeSession = async function() {
 	if (!success) {
 		localStorage.removeItem(TokenName)
 	}
+	this.loading.state = false
 	return success
+}
+
+// waitForResumeSession resolves when resumeSession finishes (loading.state === false)
+Auth.prototype.waitForResumeSession = async function() {
+	const loading = this.loading
+	if (loading.state === false) {
+		return
+	}
+
+	return new Promise((resolve) => {
+		// watch for changes with a dummy Vue instance https://github.com/vuejs/vue/issues/9509
+		const unwatch = new Vue().$watch(() => loading.state, (value) => {
+			if (value === false) {
+				unwatch() // remove watcher
+				resolve()
+			}
+		})
+	})
 }
 
 Auth.prototype.defineProperty = Object.defineProperty

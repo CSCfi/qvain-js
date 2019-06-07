@@ -7,11 +7,8 @@ function addGlobalGuard(router, auth, loginPage) {
 	}
 
 	router.beforeEach(async (to, from, next) => {
-		// check for existing session
-		if (!auth.loggedIn) {
-			await auth.resumeSession()
-		}
-		auth.loading.state = false
+		// wait until session is loaded
+		await auth.waitForResumeSession()
 
 		// if the route needs authentication...
 		if (to.matched.some(record => record.meta.auth)) {
@@ -54,6 +51,7 @@ function plugin(Vue, options) {
 	}
 
 	const auth = new Auth(options.loginUrl, options.logoutUrl, options.sessionsUrl)
+	auth.resumeSession()
 
 	if (options['router']) {
 		addGlobalGuard(options.router, auth, options['cbUrl'])
