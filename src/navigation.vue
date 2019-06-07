@@ -26,7 +26,7 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 
 
 				<!-- right-aligned items -->
-				<b-navbar-nav class="ml-auto">
+				<b-navbar-nav class="ml-auto right-nav-items">
 
 					<!-- language dropdown -->
 					<!--
@@ -38,20 +38,27 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 					-->
 
 					<!-- login dropdown -->
-					<b-nav-item-dropdown v-if="$auth.loggedIn" right>
 
-						<template slot="text">
-							<span style="font-weight: bold;">User</span>
-						</template>
+					<transition name="fade">
+						<b-nav-text class="user-nav load-placeholder" key="user-loading" v-if="$auth.loading.state">
+							<font-awesome-icon icon="circle-notch" spin />
+						</b-nav-text>
 
-						<b-dropdown-header>
-							<font-awesome-icon icon="user" class="text-primary mr-2" fixed-width /> <a>{{ $auth.user.name }}</a>
-						</b-dropdown-header>
-						<b-dropdown-divider></b-dropdown-divider>
-						<b-dropdown-item to="/userinfo">About me</b-dropdown-item>
-						<b-dropdown-item @click="logout()">Sign out</b-dropdown-item>
-					</b-nav-item-dropdown>
-					<b-nav-item v-else :href="$auth.loginUrl">Login</b-nav-item>
+						<b-nav-item-dropdown class="user-nav" key="user-dropdown" v-else-if="$auth.loggedIn" right>
+							<template slot="text">
+								<span style="font-weight: bold;">User</span>
+							</template>
+
+							<b-dropdown-header>
+								<font-awesome-icon icon="user" class="text-primary mr-2" fixed-width /> <a>{{ $auth.user.name }}</a>
+							</b-dropdown-header>
+							<b-dropdown-divider></b-dropdown-divider>
+							<b-dropdown-item to="/userinfo">About me</b-dropdown-item>
+							<b-dropdown-item @click="logout()">Sign out</b-dropdown-item>
+						</b-nav-item-dropdown>
+
+						<b-nav-item class="user-nav" key="user-login" v-else :href="$auth.loginUrl">Login</b-nav-item>
+					</transition>
 
 				</b-navbar-nav>
 			</b-collapse>
@@ -60,76 +67,56 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 		<b-navbar :toggleable="false" type="dark" id="app-subbar">
 			<b-nav-toggle target="app-subbar-collapse"></b-nav-toggle>
 			<b-collapse is-nav id="app-subbar-collapse">
-				<b-navbar-nav>
-					<b-nav-item v-if="$route.path !== '/datasets'" to="/datasets">My Datasets</b-nav-item>
-					<b-nav-item v-else :to="editorUrl">Editor</b-nav-item>
-				</b-navbar-nav>
+				<transition name="fade" tag="b-navbar-nav">
+					<b-nav-text v-if="$auth.loading.state" key="loading" class="load-placeholder"></b-nav-text>
+					<b-navbar-nav v-else key="links">
+						<b-nav-item v-if="$route.path !== '/datasets'" key="datasets" to="/datasets">My Datasets</b-nav-item>
+						<b-nav-item v-else key="editor" :to="editorUrl">Editor</b-nav-item>
+					</b-navbar-nav>
+				</transition>
 			</b-collapse>
 		</b-navbar>
 	</div>
 </template>
 
-<style>
-.slideinout-enter-active {
-	animation: fadein-top .5s;
+<style lang="scss" scoped>
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.2s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+.fade-leave-active {
+	position: absolute;
+}
+.fade-move {
+	transition: transform 0.2s;
 }
 
-.slideinout-leave-active {
-	animation: fadeout-top 1s;
-}
-
-@-webkit-keyframes fadein-top {
-	from {top: 0; opacity: 0;}
-	to {top: 1rem; opacity: 0.90;}
-}
-
-@keyframes fadein-top {
-	from {top: 0; opacity: 0;}
-	to {top: 1rem; opacity: 0.90;}
-}
-
-@-webkit-keyframes fadeout-top {
-	from {top: 1rem; opacity: 1;}
-	to {top: 0; opacity: 0;}
-}
-
-@keyframes fadeout-top {
-	from {top: 1rem; opacity: 1;}
-	to {top: 0; opacity: 0;}
-}
-
-.bounce-enter-active {
-	animation: bounce-in .5s;
-}
-.bounce-leave-active {
-	animation: bounce-in .5s reverse;
-}
-@keyframes bounce-in {
-	0% {
-		transform: scale(0);
+.user-nav {
+	width: 4em;
+	text-align: center;
+	&.dropdown {
+		z-index:10000;
 	}
-	50% {
-		transform: scale(1.2);
-	}
-	100% {
-		transform: scale(1);
+	&.fade-leave-active {
+		right: 0;
+		top: 0;
 	}
 }
 
-/* Enter and leave animations can use different */
-/* durations and timing functions.              */
-.slide-fade-enter-active {
-	transition: all .3s ease;
-}
-.slide-fade-leave-active {
-	transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
-}
-.slide-fade-enter, .slide-fade-leave-to
-/* .slide-fade-leave-active below version 2.1.8 */ {
-	transform: translateX(10px);
-	opacity: 0;
+
+.load-placeholder {
+	height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
+.right-nav-items {
+	position: relative;
+}
 </style>
 
 

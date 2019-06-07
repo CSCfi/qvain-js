@@ -1,5 +1,6 @@
 import axios from 'axios'
 import {parseJwt, getRandomString} from './jwt.js'
+import Vue from 'vue'
 
 const TokenName = "jwt"
 
@@ -69,6 +70,11 @@ function filterGroups(prefix, groups) {
 }
 
 function Auth(loginUrl, logoutUrl, sessionsUrl) {
+	// reactive indicator for when session is being loaded from the back-end
+	this.loading = Vue.observable({
+		state: !!this.getToken(), // true if there is a token in localStorage
+	})
+
 	// might be Vue's reactive setter
 	this.defineProperty(Auth.prototype, "_user", {
 		value: null,
@@ -168,11 +174,15 @@ Auth.prototype.getSession = async function() {
 	}
 }
 
+Auth.prototype.getToken = function() {
+	return localStorage.getItem(TokenName)
+}
+
 Auth.prototype.resumeSession = async function() {
-	// If there is an ID token in localStorage, check if we have an 
+	// If there is an ID token in localStorage, check if we have an
 	// existing session and can login with the token. If not, remove token.
 	let success = false
-	const token = localStorage.getItem(TokenName)
+	const token = this.getToken()
 	if (token) {
 		const session = await this.getSession()
 		if (session) {

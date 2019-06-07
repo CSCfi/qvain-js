@@ -11,6 +11,8 @@ function addGlobalGuard(router, auth, loginPage) {
 		if (!auth.loggedIn) {
 			await auth.resumeSession()
 		}
+		auth.loading.state = false
+
 		// if the route needs authentication...
 		if (to.matched.some(record => record.meta.auth)) {
 			// this route requires auth, check if logged in, else send to login page
