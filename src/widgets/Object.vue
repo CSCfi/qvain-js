@@ -25,7 +25,6 @@
 	</div>
 </template>
 
-
 <script>
 import vSchemaBase from './base.vue'
 import keysWithOrder from '@/lib/keysWithOrder.js'
@@ -37,8 +36,15 @@ export default {
 	name: 'SchemaObject',
 	description: "generic object",
 	schematype: 'object',
+	data() {
+		return {
+			q: "not set",
+			visible: true,
+		}
+	},
 	methods: {
 		shouldCreateProp(prop) {
+			if (prop === '@type') return false
 			if (this.isPostponedProp(prop) || this.isIgnoredProp(prop)) return false
 			if (prop in this.value) return true
 			return false
