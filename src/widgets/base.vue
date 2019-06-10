@@ -41,9 +41,6 @@ export default {
 		isValid() {
 			const statefromStore = this.$store.state.vState[this.path].v
 			return statefromStore !== null ? statefromStore : true;
-
-
-			//return (this.$store.state.vState[this.path].e || []).length === 0
 		},
 		errors() {
 			const errorsFromStore = this.$store.state.vState[this.path].e

@@ -202,6 +202,18 @@ export default {
 		'title': "Creator of the dataset",
 		'description': "The principal researcher or researchers involved in producing the data.",
 	},
+	'/properties/creator/*/oneOf/0/properties/name': {
+		'description': 'Please write your name in first_name last_name fashion if possible',
+	},
+	'/properties/contributor/*/oneOf/0/properties/name': {
+		'description': 'Please write your name in first_name last_name fashion if possible',
+	},
+	'/properties/rights_holder/*/oneOf/0/properties/name': {
+		'description': 'Please write your name in first_name last_name fashion if possible',
+	},
+	'/properties/curator/*/oneOf/0/properties/name': {
+		'description': 'Please write your name in first_name last_name fashion if possible',
+	},
 	'/properties/creator/*/oneOf/*/properties/contributor_type': {
 		'widget': 'reference-data',
 		'props': {
