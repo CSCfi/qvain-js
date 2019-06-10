@@ -53,7 +53,10 @@ export default {
 	computed: {
 		dateString() {
 			if (!this.date) {
-				return null
+				return '';
+				// CSCQVAIN-129:
+				// Set update payload to '' so that store empties the value.
+				// This is a hack but proper implementation would require more sophisticated logic.
 			}
 
 			if (this.schema.format === 'date') {
