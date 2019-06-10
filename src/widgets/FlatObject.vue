@@ -38,13 +38,12 @@ export default {
 	},
 	methods: {
 		shouldCreateProp(prop) {
+			if (prop === '@type') return false
 			if (prop === 'is_part_of') {
-				console.log("should not render is_part_of")
 				return false
 			}
 			if (!this.isPostponedProp(prop)) return true
 			if (prop in this.value) return true
-			console.log("shouldCreateProp():", false)
 			return false
 		},
 		isPostponedProp(prop) {
@@ -78,24 +77,18 @@ export default {
 		},
 		sortedProps() {
 			if (!this.schema['properties']) {
-				//console.log("sortedProps(): no props")
 				return []
 			}
 
 			if (typeof this.ui['order'] === 'object') {
-				//console.log("sortedProps(): found order:", this.ui['order'])
 				return keysWithOrder(this.schema['properties'], this.ui['order'])
 			} else {
-				//console.log("sortedProps(): props not ordered", Object.keys(this.schema['properties']))
 				return Object.keys(this.schema['properties'])
 			}
 		},
 		postponedProps() {
 			return this.ui['postponed'] || []
 		},
-	},
-	created() {
-		console.log("FlatObject(): created() called", this.schema, this.value)
 	},
 }
 </script>
