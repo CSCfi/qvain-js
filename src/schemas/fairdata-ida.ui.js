@@ -56,7 +56,7 @@ export default {
 		},
 	},
 	'/properties/issued': {
-		'tab': 'description',		
+		'tab': 'description',
 		'title': 'Issued',
 		'label': 'Issued',
 		'description': 'Date of formal issuance (e.g., publication) of the resource. This value does not affect or reflect the visibility of the dataset itself.',
@@ -616,7 +616,13 @@ export default {
 	'/properties/access_rights': {
 		'tab': 'rights',
 		'title': "Access rights",
-		'ignored': ["access_process"],
+		'description': "*** description for access rights goes here ***",
+		'ignored': [
+			"description",
+			"access_process",
+			"access_url",
+		],
+		'order': ["license", "access_type", "restriction_grounds", "available"],
 	},
 	'/properties/access_rights/properties/access_type': {
 		'widget': 'reference-data',
@@ -636,6 +642,10 @@ export default {
 	},
 	'/properties/access_rights/properties/available': {
 		'widget': 'date',
+		'required': record => record.access_rights.access_type &&
+			record.access_rights.access_type.identifier === 'http://uri.suomi.fi/codelist/fairdata/access_type/code/embargo',
+		'visible': record => record.access_rights.access_type &&
+			record.access_rights.access_type.identifier === 'http://uri.suomi.fi/codelist/fairdata/access_type/code/embargo',
 		'description': "Date when the resource (the data in this dataset) became or will become available (embargo related field).",
 	},
 	'/properties/access_rights/properties/restriction_grounds': {
@@ -651,6 +661,12 @@ export default {
 		},
 		'placeholder': "– choose restriction grounds –",
 		'title': "restriction grounds",
+		'required': record => record.access_rights.access_type &&
+			record.access_rights.access_type.identifier &&
+			record.access_rights.access_type.identifier !== 'http://uri.suomi.fi/codelist/fairdata/access_type/code/open',
+		'visible': record => record.access_rights.access_type &&
+			record.access_rights.access_type.identifier &&
+			record.access_rights.access_type.identifier !== 'http://uri.suomi.fi/codelist/fairdata/access_type/code/open',
 		'description': "Please select the grounds for restrictions.",
 		'help': "Can be left empty if the Access Type is Open.",
 	},
@@ -668,6 +684,7 @@ export default {
 		},
 		'placeholder': "– choose license –",
 		'title': "license",
+		'required': () => true,
 		'description': "A license agreement signifies what a user is allowed to do with the data.",
 		'help': "Select a license agreement for your dataset.",
 	},
