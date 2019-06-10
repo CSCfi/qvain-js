@@ -12,10 +12,6 @@ function User() {
 }
 User.prototype.constructor = User
 
-User.prototype.getId = function() {
-	this._id.length > 0 ? this._id : null
-}
-
 function UserFromToken(token) {
 	let jwt = parseJwt(token)
 
