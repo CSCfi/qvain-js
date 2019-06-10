@@ -32,7 +32,7 @@ export default {
 		},
 	},
 	computed: {
-		visible() {
+		isVisible() {
 			return this.ui.visible ? this.ui.visible(this.$store.state.record) : true;
 		},
 		isRequired() {

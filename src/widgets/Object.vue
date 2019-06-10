@@ -19,8 +19,6 @@
 						:activeTab="activeTab"
 						:depth="depth"
 						:key="propName" />
-					<!-- commented out make it clear that this kind of functionality used to exist -->
-					<!-- <b-btn @click="addProp(propName)" v-else-if="isPostponedProp(propName)">add {{ propName }}</b-btn>-->
 				</b-list-group-item>
 			</b-list-group>
 		</section>

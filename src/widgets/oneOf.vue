@@ -9,9 +9,6 @@
 						{{ sub['title'] || '#'+i }}
 					</b-dropdown-item>
 				</b-dropdown>
-				<!--<span class="text-muted">oneOf "{{ schema.title }}", chosen: #{{ chosen }} ({{ chosen !== null ? schema['oneOf'][chosen]['title'] || "[no name]" : "" }})</span>-->
-				<!--<p>currentType: {{ currentType }}</p>-->
-				<!--<p>possibleTypes: {{ possibleTypes }}</p>-->
 			</div>
 			<b-textarea v-if="false" :rows="15" :value="JSON.stringify(schemaForChosen, null, 2)"></b-textarea>
 			<TabSelector
