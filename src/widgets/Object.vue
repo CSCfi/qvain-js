@@ -1,13 +1,13 @@
 <template>
 	<div :style="listItemStyle(depth)">
 		<header>
-			<h3 class="title" @click="visible = !visible" :aria-controls="domId + '-props'" :aria-expanded="visible ? 'true' : 'false'">
+			<h3 class="title" :aria-controls="domId + '-props'">
 				{{ uiTitle }}
 			</h3>
 		</header>
 		<section>
 			<b-list-group flush>
-				<b-list-group-item class="border-0" v-for="propName in sortedProps" :key="propName">
+				<b-list-group-item v-for="propName in sortedProps" :key="propName" class="border-0">
 					<TabSelector
 						:required="(schema.required || []).includes(propName)"
 						:schema="schema['properties'][propName]"
@@ -18,9 +18,7 @@
 						:tab="myTab"
 						:activeTab="activeTab"
 						:depth="depth"
-						:key="propName"
-						v-if="shouldCreateProp(propName)" />
-						<b-btn @click="addProp(propName)" v-else-if="isPostponedProp(propName)">add {{ propName }}</b-btn>
+						:key="propName" />
 				</b-list-group-item>
 			</b-list-group>
 		</section>
@@ -47,7 +45,7 @@ export default {
 	methods: {
 		shouldCreateProp(prop) {
 			if (prop === '@type') return false
-			if (!this.isPostponedProp(prop) && !this.isIgnoredProp(prop)) return true
+			if (this.isPostponedProp(prop) || this.isIgnoredProp(prop)) return false
 			if (prop in this.value) return true
 			return false
 		},
@@ -75,15 +73,18 @@ export default {
 			},
 		},
 		sortedProps() {
+			let keys = []
 			if (!this.schema['properties']) {
-				return []
+				keys = []
 			}
 
 			if (typeof this.ui['order'] === 'object') {
-				return keysWithOrder(this.schema['properties'], this.ui['order'])
+				keys = keysWithOrder(this.schema['properties'], this.ui['order'])
 			} else {
-				return Object.keys(this.schema['properties'])
+				keys = Object.keys(this.schema['properties'])
 			}
+			return keys.filter(key => !this.isPostponedProp(key))
+				.filter(key => !this.isIgnoredProp(key))
 		},
 		postponedProps() {
 			return this.ui['postponed'] || []
@@ -91,12 +92,6 @@ export default {
 		ignoredProps() {
 			return this.ui['ignored'] || []
 		},
-		expandArrow() {
-			return this.visible ? "ellipsis-v" : "angle-right"
-		},
-	},
-	created() {
-		if ('visible' in this.ui) this.visible = this.ui['visible']
 	},
 }
 </script>

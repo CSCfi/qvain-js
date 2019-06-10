@@ -1,5 +1,5 @@
 <template>
-	<record-field :wrapped="wrapped">
+	<record-field v-if="isVisible" :required="isRequired" :wrapped="wrapped">
 		<title-component slot="title" :title="uiLabel" />
 		<div slot="header-right">
 			<InfoIcon :description="uiDescription"/>

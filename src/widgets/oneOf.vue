@@ -1,29 +1,43 @@
 <template>
 	<wrapper :wrapped="!inArray">
-		<div v-if="chosen === null" class="conditional-wrapper">
-			<b-dropdown class="m-2" text="Choose type" variant="primary">
-				<b-dropdown-item v-for="(sub, i) in schema['oneOf']"
-					:key="'oneOfSel' + i"
-					@click="setChosen(i)">
-					{{ sub['title'] || '#'+i }}
-				</b-dropdown-item>
-			</b-dropdown>
-			<!--<span class="text-muted">oneOf "{{ schema.title }}", chosen: #{{ chosen }} ({{ chosen !== null ? schema['oneOf'][chosen]['title'] || "[no name]" : "" }})</span>-->
-			<!--<p>currentType: {{ currentType }}</p>-->
-			<!--<p>possibleTypes: {{ possibleTypes }}</p>-->
-		</div>
-		<b-textarea v-if="false" :rows="15" :value="JSON.stringify(schemaForChosen, null, 2)"></b-textarea>
-		<TabSelector
-			v-if="chosen !== null"
-			:schema="schemaForChosen"
-			:path="newPath('oneOf/' + chosen)"
-			:value="value"
-			:parent="parent"
-			:property="property"
-			:tab="myTab"
-			:activeTab="activeTab"
-			:depth="depth"
-			:key="'oneOf-'+chosen" />
+		<template v-if="!both">
+			<div v-if="chosen === null" class="conditional-wrapper">
+				<b-dropdown class="m-2" text="Choose type" variant="primary">
+					<b-dropdown-item v-for="(sub, i) in schema['oneOf']"
+						:key="'oneOfSel' + i"
+						@click="setChosen(i)">
+						{{ sub['title'] || '#'+i }}
+					</b-dropdown-item>
+				</b-dropdown>
+			</div>
+			<b-textarea v-if="false" :rows="15" :value="JSON.stringify(schemaForChosen, null, 2)"></b-textarea>
+			<TabSelector
+				v-if="chosen !== null"
+				:schema="schemaForChosen"
+				:path="newPath('oneOf/' + chosen)"
+				:value="value"
+				:parent="parent"
+				:property="property"
+				:tab="myTab"
+				:activeTab="activeTab"
+				:depth="depth"
+				:key="'oneOf-'+chosen" />
+		</template>
+		<template v-else>
+			<div v-for="propName in schema.oneOf.map(obj => obj.title)" :key="propName" style="padding-top: 12px; padding-bottom: 12px;">
+				<TabSelector
+					:required="(schema.required || []).includes(propName)"
+					:schema="schema.oneOf.find(item => item.title === propName)"
+					:path="newPath('oneOf/' + propName)"
+					:value="value[propName]"
+					:parent="value"
+					:property="propName"
+					:tab="myTab"
+					:activeTab="activeTab"
+					:depth="depth"
+					:key="propName" />
+			</div>
+		</template>
 	</wrapper>
 </template>
 
@@ -33,7 +47,6 @@
 	display: inline-flex;
 	justify-content: center;
 }
-
 </style>
 
 
@@ -52,7 +65,13 @@ export default {
 	components: {
 		Wrapper,
 	},
-	data: function() {
+	props: {
+		both: {
+			type: Boolean,
+			default: false
+		}
+	},
+	data() {
 		return {
 			chosen: null,
 		}
@@ -83,22 +102,16 @@ export default {
 		},
 	},
 	watch: {
-		chosen() {
-			console.log("type changed, must delete data", this.property, this.value)
-		},
 		currentType: {
 			immediate: true,
 			handler(val) {
-				console.log("currentType watcher called with val", val, this.possibleTypes)
-				if (!val) return
-
-				let index = this.possibleTypes.indexOf(this.currentType)
-				this.chosen = index >= 0 ? index : null
+				if (!val) return;
+				let index = this.possibleTypes.indexOf(this.currentType);
+				this.chosen = index >= 0 ? index : null;
 			},
 		},
 	},
 	created() {
-		console.warn("oneOf created()")
 	},
 }
 </script>
