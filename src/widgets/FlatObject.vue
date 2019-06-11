@@ -13,7 +13,8 @@
 					:activeTab="activeTab"
 					:depth="depth"
 					:key="propName"
-					v-if="shouldCreateProp(propName)">
+					v-if="shouldCreateProp(propName)"
+					v-show="propName !== '@type'">
 				</TabSelector>
 			</b-list-group-item>
 		</b-list-group>
@@ -38,7 +39,6 @@ export default {
 	},
 	methods: {
 		shouldCreateProp(prop) {
-			if (prop === '@type') return false
 			if (prop === 'is_part_of') {
 				return false
 			}

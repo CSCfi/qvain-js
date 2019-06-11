@@ -7,7 +7,7 @@
 		</header>
 		<section>
 			<b-list-group flush>
-				<b-list-group-item v-for="propName in sortedProps" :key="propName" class="border-0">
+				<b-list-group-item v-show="propName !== '@type'" v-for="propName in sortedProps" :key="propName" class="border-0">
 					<TabSelector
 						:required="(schema.required || []).includes(propName)"
 						:schema="schema['properties'][propName]"
