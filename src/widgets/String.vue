@@ -2,7 +2,6 @@
 	<record-field :required="required" :wrapped="false" :header="!inArray">
 		<title-component slot="title" :title="uiLabel" />
 		<div slot="header-right" class="header__right">
-			<!--<ValidationStatus :status="validationStatus" />-->
 			<InfoIcon :description="uiDescription"/>
 		</div>
 
@@ -12,7 +11,7 @@
 				:type="inputType"
 				:placeholder="uiPlaceholder"
 				:value="value"
-				:state="isValid"
+				:state="isValid ? null : false"
 				@input.native="updateValue">
 			</b-form-input>
 			<span class="input__delete">
