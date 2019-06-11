@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/CSCfi/qvain-js.svg?branch=next)](https://travis-ci.org/CSCfi/qvain-js)
 
 # Qvain
 -------
