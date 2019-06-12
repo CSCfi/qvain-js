@@ -235,9 +235,8 @@ export default {
 					this.$root.showAlert("Dataset successfully saved", "primary")
 				} else {
 					const { data: { id }} = await apiClient.post("/datasets/", payload)
-
 					this.$store.commit('setMetadata', { id })
-					this.$router.replace({ name: 'editor', params: { id }})
+					this.$router.replace({ name: 'tab', params: { id: id, tab: this.$route.params.tab }})
 
 					this.$root.showAlert("Success! Created as " + id, "success")
 				}
@@ -363,7 +362,7 @@ export default {
 		'$route.params.id': async function(newId, oldId) {
 			if (this.id === 'new') {
 				this.clearRecord()
-			} else if (this.id !== 'edit') {
+			} else if (this.id !== 'edit' && this.$store.state.metadata.id !== this.id) {
 				await this.openRecord(this.id)
 			}
 		},
