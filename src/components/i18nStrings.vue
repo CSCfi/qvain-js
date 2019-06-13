@@ -24,7 +24,7 @@
 				Start by selecting the language. You may add as many languages as you wish by clicking them from the dropdown below.
 			</p>
 			<div class="language-row">
-				<language-select class="input-width" @change="addPair" />
+				<language-select class="input-width" @input="addPair" />
 			</div>
 		</div>
 	</record-field>
@@ -127,12 +127,15 @@ export default {
 		},
 	},
 	watch: {
-		state(newState, oldState) {
-			const shouldClearValidation = Object.keys(newState).length < Object.keys(oldState).length
-			this.updateValue()
-			if (shouldClearValidation) {
-				this.$store.commit('cleanStateFor', this.path)
-			}
+		state: {
+			handler(newState, oldState) {
+				const shouldClearValidation = Object.keys(newState).length < Object.keys(oldState).length
+				this.updateValue()
+				if (shouldClearValidation) {
+					this.$store.commit('cleanStateFor', this.path)
+				}
+			},
+      		deep: true
 		},
 	},
 	created() {
