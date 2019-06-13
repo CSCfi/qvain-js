@@ -24,7 +24,7 @@
 				Start by selecting the language. You may add as many languages as you wish by clicking them from the dropdown below.
 			</p>
 			<div class="language-row">
-				<language-select class="input-width" @input="addPair" />
+				<language-select class="input-width" @change="addPair" />
 			</div>
 		</div>
 	</record-field>
