@@ -5,14 +5,6 @@
 			<p :key="error" v-for="error in errors" class="error-message">{{ error }}</p>
 			<ValidationStatus v-if="!isValid" :status="'invalid'" />
 			<InfoIcon :description="uiDescription"/>
-			<!-- validation debuging data
-			<div>
-				required: {{ required }} <br>
-				minItems: {{ schema.minItems }} <br>
-				isValid: {{ isValid }} <br>
-				errors: {{ errors }} <br>
-			</div>
-			-->
 		</div>
 		<div slot="input">
 			<!--
@@ -20,17 +12,10 @@
 				This could be code smell but at the moment the best solution is just to patch this. See https://github.com/xianshenglu/blog/issues/47 for reference.
 			-->
 			<b-tabs v-if="forceArrayUpdateHack && tabFormat" :value="tabIndex" class="tab-array-margin" pills>
-				<!--
-					There is a bug in bootstrap-vue preventing correct update of tab title template (template is not reactive)
-					By making the actual tab component depend on the tabTitle function we make it emit tab change every time tabTitle is update.
-					The class update_trigger_hack itself does nothing.
-					https://github.com/bootstrap-vue/bootstrap-vue/issues/1677
-				-->
 				<b-tab
 					v-for="(child, index) in value"
 					style="{margin-top: 5px}"
-					:key="index"
-					:title-link-class="{ 'update_trigger_hack': !!tabTitle(index) }">
+					:key="index">
 					<template slot="title">
 						{{ tabTitle(index) }} <font-awesome-icon icon="times" @click="deleteElement(index)" />
 					</template>
@@ -112,10 +97,6 @@
 
 <script>
 import vSchemaBase from './base.vue'
-//import ValidationPopover from '@/components/ValidationPopover.vue'
-//import Wrapper from '@/components/Wrapper.vue'
-//import TabSelector from '@/widgets/TabSelector.vue'
-//import ValidationStatus from '@/partials/ValidationStatus.vue'
 import RecordField from '@/composites/RecordField.vue'
 import TitleComponent from '@/partials/Title.vue'
 import InfoIcon from '@/partials/InfoIcon.vue'
@@ -216,7 +197,6 @@ export default {
 		init: function() {
 			this.minimum = typeof this.schema['minItems'] === 'number' && this.schema['minItems'] > 0 ? this.schema.minItems : 0
 			this.maximum = typeof this.schema['maxItems'] === 'number' && this.schema['maxItems'] > 0 ? this.schema.maxItems : undefined
-			//console.log("schema-array: set min/max", this.minimum, this.maximum)
 			if (this.isTuple && !this.allowAdditional) this.maximum = this.schema['items'].length
 		},
 	},
