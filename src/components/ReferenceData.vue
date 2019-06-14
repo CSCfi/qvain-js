@@ -58,7 +58,7 @@
 					@search-change="search">
 					<div slot="noResult">No elements found. Consider changing the search query. You may have to type at least 3 letters.</div>
 					<div slot="selection" slot-scope="{ values, search, isOpen }">
-						<span class="multiselect__single" v-if="values.length &amp;&amp; !isOpen">{{ placeholder }} options selected</span>
+						<span class="multiselect__single" v-if="values.length &amp;&amp; !isOpen">{{ placeholder }}</span>
 					</div>
 				</Multiselect>
 			</div>
