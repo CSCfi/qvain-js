@@ -21,7 +21,7 @@
 			</b-input-group>
 
 			<p class="intro-text" v-if="Object.keys(state).length === 0">
-				Start by selecting the language. You may add as many languages as you wish by clicking them from the dropdown below. -Shreyas
+				Start by selecting the language. You may add as many languages as you wish by clicking them from the dropdown below.
 			</p>
 			<div class="language-row">
 				<language-select class="input-width" @input="addPair" />
