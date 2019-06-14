@@ -21,6 +21,7 @@ export default new Vuex.Store({
 		schema: {},
 		hints: {},
 		metadata: {},
+        languages: {'fi':true,'en':true,'sv':true},
 		UI_VALID_KEYWORDS: [
 			'widget',
 			'option',
@@ -164,6 +165,9 @@ export default new Vuex.Store({
 		},
 		cleanStateFor(state, path) {
 			Vue.delete(state.vState, path)
+		},
+        setLanguages(state, payload) {
+			state.languages = Object.assign({}, state.languages, payload)
 		},
 	},
 	getters: {

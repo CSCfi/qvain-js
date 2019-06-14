@@ -112,7 +112,7 @@ export default {
 		ValidationStatus,
 		RecordField,
 		TitleComponent,
-		InfoIcon,
+        InfoIcon,
 	},
 	data() {
 		return {
@@ -148,7 +148,7 @@ export default {
 				this.focusOnTabWithLanguage(lang)
 				return
 			}
-			this.$set(this.state, lang, '')
+            this.$set(this.state, lang, '')
 			this.updateValue()
 			this.focusOnLastTab()
 		},
@@ -212,9 +212,24 @@ export default {
 			}
 			this.addTab(lang)
 		},
+	"$store.state.languages":function(languages){
+        for (const lang in languages) {
+            if(languages[lang]){
+               this.addTab(lang)
+			}
+		}
+	},
+
 	},
 	created() {
 		this.state = this.value || {}
+
+         const languages = this.$store.state.languages
+         for (const lang in languages) {
+               if(languages[lang]){
+               this.addTab(lang)
+               }
+		   }
 	},
 }
 </script>

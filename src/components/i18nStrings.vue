@@ -21,7 +21,7 @@
 			</b-input-group>
 
 			<p class="intro-text" v-if="Object.keys(state).length === 0">
-				Start by selecting the language. You may add as many languages as you wish by clicking them from the dropdown below.
+				Start by selecting the language. You may add as many languages as you wish by clicking them from the dropdown below. -Shreyas
 			</p>
 			<div class="language-row">
 				<language-select class="input-width" @input="addPair" />
@@ -103,6 +103,8 @@ export default {
 			if (!lang || lang in this.state) return
 			this.$set(this.state, lang, '')
 			// wait for rendering so that the ref is present in dom before focus
+			
+			this.$store.commit('setLanguages', {[lang]:true})
 			this.$nextTick(() => this.$refs[lang][0].$el.focus())
 		},
 		deleteLanguage(lang) {
@@ -135,11 +137,26 @@ export default {
 					this.$store.commit('cleanStateFor', this.path)
 				}
 			},
-      		deep: true
-		},
+			  deep: true,
+			  
+        	"$store.state.languages":function(languages){
+           		for (const lang in languages) {
+               		if(languages[lang]){
+               		this.addPair(lang)
+               		}
+           		}
+			},
+		}
 	},
 	created() {
-		this.state = this.value
+        this.state = this.value
+         const languages = this.$store.state.languages
+         for (const lang in languages) {
+               if(languages[lang]){
+               this.addPair(lang)
+               }
+           }
 	},
 }
+
 </script>
