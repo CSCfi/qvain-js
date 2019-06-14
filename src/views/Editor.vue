@@ -397,6 +397,18 @@ export default {
 	border-color: #dee2e6 #dee2e6 #fff;
 }
 
+.tab-field-link {
+	display: flex;
+	height: 38px;
+	align-items: center;
+	justify-content: space-between;
+	padding: 4px 2px 4px 10px;
+}
+
+.tab-field-link .delete-button {
+	margin: 0px 2px 0px 2px;
+}
+
 .no-padding {
 	padding-left: 0;
 	padding-right: 0;

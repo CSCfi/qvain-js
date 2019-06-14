@@ -320,7 +320,7 @@ export default {
 	background: #007fad;
 	border-radius: 5px;
 
-	padding: 4px 8px 4px 10px;
+	padding: 4px 4px 4px 10px;
 	margin: 2px;
 	flex-grow: 1;
 
@@ -342,7 +342,7 @@ export default {
 }
 
 .remove-button {
-	margin-left: 8px;
+	margin-left: 4px;
 }
 
 .option__child {

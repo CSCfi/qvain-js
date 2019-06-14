@@ -36,8 +36,8 @@
 	display: inline-block;
 }
 .remove-button {
-	padding: 10px;
-    padding-left: 2px;
+	margin: 0 10px 0 2px;
+	display: flex;
 }
 .intro-text {
 	text-align: center;

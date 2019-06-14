@@ -15,9 +15,11 @@
 				<b-tab
 					v-for="(child, index) in value"
 					style="{margin-top: 5px}"
-					:key="index">
+					:key="index"
+					title-link-class="tab-field-link">
 					<template slot="title">
-						{{ tabTitle(index) }} <font-awesome-icon icon="times" @click="deleteElement(index)" />
+						{{ tabTitle(index) }}
+						<delete-button @click="deleteElement(index)" />
 					</template>
 
 					<TabSelector
@@ -75,11 +77,10 @@
 	}
 }
 
-
 .list-item {
 	margin-top: 10px;
 	margin-bottom: 0px;
-    border-bottom: 0;
+	border-bottom: 0;
 	border-top: 0;
 	padding: 0;
 }
@@ -101,6 +102,7 @@ import RecordField from '@/composites/RecordField.vue'
 import TitleComponent from '@/partials/Title.vue'
 import InfoIcon from '@/partials/InfoIcon.vue'
 import ValidationStatus from '@/partials/ValidationStatus.vue'
+import DeleteButton from '@/partials/DeleteButton.vue'
 
 export default {
 	extends: vSchemaBase,
@@ -112,6 +114,7 @@ export default {
 		TitleComponent,
 		InfoIcon,
 		ValidationStatus,
+		DeleteButton,
 	},
 	props: {
 		tabFormat: { type: Boolean, default: true },
