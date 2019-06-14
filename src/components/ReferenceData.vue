@@ -317,15 +317,29 @@ export default {
 	background: #007fad;
 	border-radius: 5px;
 
-	padding-left: 5px;
-	margin-bottom: 0px;
-    margin-right: 10px;
+	padding: 4px 8px 4px 10px;
+	margin: 2px;
+	flex-grow: 1;
+
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
+
 .tag__list {
+	margin: -2px;
 	display: inline-flex;
+	flex-wrap: wrap;
+
+	/* avoid stretching tags in last row */
+	&::after {
+		content: '';
+		flex-grow: 10000;
+	}
 }
+
 .remove-button {
-	vertical-align: top;
+	margin-left: 8px;
 }
 
 .option__child {
