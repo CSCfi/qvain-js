@@ -301,14 +301,17 @@ export default {
 .input-row__inline {
 	width: 100%;
 	display: inline-flex;
+	flex-wrap: wrap;
 	margin-bottom: 5px;
 
 	.lang-select {
-		width: 300px;
+		width: 140px;
 		padding-right: 5px;
+		flex-grow: 1;
 	}
 	.value-select {
-		flex-grow: 1;
+		flex-grow: 10;
+		width: 200px;
 	}
 }
 
@@ -385,5 +388,14 @@ export default {
 	border-radius: 0;
 	border-bottom: solid 1px lightgray;
 	height: 40px;
+}
+
+.multiselect__single,
+.multiselect__placeholder,
+.multiselect__input {
+	text-overflow: ellipsis;
+	width: 100%;
+	overflow: hidden;
+	white-space: nowrap;
 }
 </style>
