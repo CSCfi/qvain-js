@@ -1,4 +1,5 @@
 const path = require('path')
+const child_process = require('child_process')
 
 module.exports = {
 	publicPath: process.env.VUE_APP_PUBLIC_PATH,
@@ -20,6 +21,7 @@ module.exports = {
 				Object.assign(args[0]['process.env'], {
 					VUE_APP_MODE: JSON.stringify(process.env.VUE_CLI_MODE || process.env.NODE_ENV),
 					VUE_APP_VERSION: JSON.stringify(require('./package.json').version),
+					VUE_APP_COMMIT_HASH: JSON.stringify(child_process.execSync('git rev-parse HEAD').toString().trim()),
 				})
 				return args
 			})

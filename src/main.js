@@ -43,6 +43,8 @@ function getConfig() {
 		EtsinApiUrl: process.env['VUE_APP_ETSIN_API_URL'],
 		// Qvain (js) version
 		Version: process.env['VUE_APP_VERSION'],
+		// Qvain (js) commit hash
+		CommitHash: process.env['VUE_APP_COMMIT_HASH'],
 		// application execution environment (testing, stable, production)
 		Environment: process.env['VUE_APP_ENVIRONMENT'],
 		// node environment

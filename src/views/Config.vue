@@ -22,7 +22,7 @@ export default {
 	name: "config",
 	data: function() {
 		return {
-			vueKeys: ["METAX_API_URL", "ES_API_URL", "ETSIN_API_URL", "VERSION", "ENVIRONMENT"],
+			vueKeys: ["METAX_API_URL", "ES_API_URL", "ETSIN_API_URL", "VERSION", "COMMIT_HASH", "ENVIRONMENT"],
 		}
 	},
 	methods: {
