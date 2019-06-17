@@ -37,7 +37,7 @@
 }
 .remove-button {
 	padding: 10px;
-    padding-left: 2px;
+	padding-left: 2px;
 }
 .intro-text {
 	text-align: center;
@@ -137,25 +137,25 @@ export default {
 					this.$store.commit('cleanStateFor', this.path)
 				}
 			},
-			  deep: true,
-			  
-        	"$store.state.languages":function(languages){
-           		for (const lang in languages) {
-               		if(languages[lang]){
-               		this.addPair(lang)
-               		}
-           		}
+			deep: true,
+			
+			"$store.state.languages": function(languages) {
+				for (const lang in languages) {
+					if (languages[lang]) {
+						this.addPair(lang)
+					}
+				}
 			},
-		}
+		},
 	},
 	created() {
-        this.state = this.value
-         const languages = this.$store.state.languages
-         for (const lang in languages) {
-               if(languages[lang]){
-               this.addPair(lang)
-               }
-           }
+		this.state = this.value
+		const languages = this.$store.state.languages
+		for (const lang in languages) {
+			if(languages[lang]) {
+				this.addPair(lang)
+			}
+		}
 	},
 }
 
