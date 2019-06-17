@@ -3,7 +3,7 @@
 		<b-input-group-text class="height" slot="prepend">
 			<font-awesome-icon icon="plus" fixed-width class="text-dark" />
 		</b-input-group-text>
-		<b-form-select class="select" :options="languages" v-bind="$attrs" v-on="$listeners">
+		<b-form-select class="select" v-model="state" :options="languages" v-bind="$attrs" v-on="$listeners" @change="reset">
 			<template slot="first">
 				<option :value="undefined" disabled class="text-muted">{{ placeholder }}</option>
 			</template>
@@ -40,7 +40,13 @@ export default {
 	data() {
 		return {
 			languages: langCodes2,
+			state: undefined,
 		}
 	},
+	methods: {
+		reset() {
+			this.state = undefined
+		}
+	}
 }
 </script>
