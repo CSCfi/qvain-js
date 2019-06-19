@@ -116,6 +116,13 @@ export default {
 				val: this.state,
 			})
 		},
+		populateLanguages(languages) {
+			for (const lang in languages) {
+				if (languages[lang]) {
+					this.addPair(lang)
+				}
+			}
+		},
 	},
 	computed: {
 		hasEmptyValues() {
@@ -139,22 +146,13 @@ export default {
 			deep: true,
 			
 			"$store.state.languages": function(languages) {
-				for (const lang in languages) {
-					if (languages[lang]) {
-						this.addPair(lang)
-					}
-				}
+				this.populateLanguages(languages)
 			},
 		},
 	},
 	created() {
 		this.state = this.value
-		const languages = this.$store.state.languages
-		for (const lang in languages) {
-			if (languages[lang]) {
-				this.addPair(lang)
-			}
-		}
+		this.populateLanguages(this.$store.state.languages)
 	},
 }
 

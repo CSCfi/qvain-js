@@ -192,6 +192,13 @@ export default {
 				ref && ref.$el && ref.$el.focus()
 			})
 		},
+		populateLanguages(languages) {
+			for (const lang in languages) {
+				if (languages[lang]) {
+					this.addTab(lang)
+				}
+			}
+		},
 	},
 	watch: {
 		selectedLanguage(lang) {
@@ -201,22 +208,13 @@ export default {
 			this.addTab(lang)
 		},
 		"$store.state.languages": function(languages) {
-			for (const lang in languages) {
-				if (languages[lang]) {
-					this.addTab(lang)
-				}
-			}
+			this.populateLanguages(languages)
 		},
 
 	},
 	created() {
 		this.state = this.value || {}
-		const languages = this.$store.state.languages
-		for (const lang in languages) {
-			if (languages[lang]) {
-				this.addTab(lang)
-			}
-		}
+		this.populateLanguages(this.$store.state.languages)
 		this.focusOnTabWithLanguage('fi')
 	},
 }
