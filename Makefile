@@ -1,4 +1,7 @@
 all:
+	cd vendor/validator && npm install
+	cd vendor/json-pointer && npm install
+	npm install
 	npm run build
 
 security: dependency-check
