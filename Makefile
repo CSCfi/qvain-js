@@ -9,9 +9,9 @@ security: dependency-check
 	make audit
 
 audit:
-	npm audit
-	cd vendor/validator && npm audit
-	cd vendor/json-pointer && npm audit
+	-npm audit
+	-cd vendor/validator && npm audit
+	-cd vendor/json-pointer && npm audit
 
 dependency-check:
 	curl -sLS "https://bintray.com/jeremy-long/owasp/download_file?file_path=dependency-check-5.0.0-release.zip" > dependency-check-5.0.0-release.zip
