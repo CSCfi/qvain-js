@@ -1,6 +1,6 @@
 SHELL:=/bin/bash
 
-all:
+all: lint
 	@echo
 	@echo "== downloading all npm packages =="
 	@cd vendor/validator && npm install --no-audit
@@ -19,6 +19,9 @@ security: dependency-check
 	-@./dependency-check/bin/dependency-check.sh --format JSON --scan . --enableExperimental --disableOssIndex --prettyPrint --failOnCVSS 1 --exclude dependency-check --disableJar --disableNugetconf --disableNuspec --disableAssembly
 	@echo "== Completed OWASP Dependency Check =="
 	@make audit
+
+lint:
+	-@./node_modules/.bin/eslint src  --ext .js
 
 audit:
 	@echo
