@@ -29,15 +29,15 @@ lint:
 audit:
 	@echo
 	@echo "== npm audit > . =="
-	-@npm audit --parseable
+	-@npm audit
 	@echo "== Completed npm audit > . =="
 	@echo
 	@echo "== npm audit > vendor/validator =="
-	-@cd vendor/validator && npm audit --parseable
+	-@cd vendor/validator && npm audit
 	@echo "== Completed npm audit > vendor/validator =="
 	@echo
 	@echo "== npm audit > vendor/json-pointer =="
-	-@cd vendor/json-pointer && npm audit --parseable
+	-@cd vendor/json-pointer && npm audit
 	@echo "== Completed npm audit > vendor/json-pointer =="
 	@echo
 
