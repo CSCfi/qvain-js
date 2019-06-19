@@ -58,7 +58,7 @@
 					@search-change="search">
 					<div slot="noResult">No elements found. Consider changing the search query. You may have to type at least 3 letters.</div>
 					<div slot="selection" slot-scope="{ values, search, isOpen }">
-						<span class="multiselect__single" v-if="values.length &amp;&amp; !isOpen">{{ placeholder }} options selected</span>
+						<span class="multiselect__single" v-if="values.length &amp;&amp; !isOpen">{{ placeholder }}</span>
 					</div>
 				</Multiselect>
 			</div>
@@ -229,6 +229,8 @@ export default {
 
 			this.isLoading = true
 			if (this.async) {
+				// remove special characters, see for list: http://lucene.apache.org/core/3_4_0/queryparsersyntax.html
+				searchQuery = searchQuery.replace(/(\+|-|&&|\|\||!|\(|\)|{|}|\[|\]|\^|"|~|\*|\?|:|\\)/g,"")
 				const q = this.selectedLang ?
 					`label.${this.selectedLang.id}:*${searchQuery}*`:
 					`*${searchQuery}*`
@@ -299,14 +301,17 @@ export default {
 .input-row__inline {
 	width: 100%;
 	display: inline-flex;
+	flex-wrap: wrap;
 	margin-bottom: 5px;
 
 	.lang-select {
-		width: 300px;
+		width: 140px;
 		padding-right: 5px;
+		flex-grow: 1;
 	}
 	.value-select {
-		flex-grow: 1;
+		flex-grow: 10;
+		width: 200px;
 	}
 }
 
@@ -315,15 +320,29 @@ export default {
 	background: #007fad;
 	border-radius: 5px;
 
-	padding-left: 5px;
-	margin-bottom: 0px;
-    margin-right: 10px;
+	padding: 4px 8px 4px 10px;
+	margin: 2px;
+	flex-grow: 1;
+
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
+
 .tag__list {
+	margin: -2px;
 	display: inline-flex;
+	flex-wrap: wrap;
+
+	/* avoid stretching tags in last row */
+	&::after {
+		content: '';
+		flex-grow: 10000;
+	}
 }
+
 .remove-button {
-	vertical-align: top;
+	margin-left: 8px;
 }
 
 .option__child {
@@ -369,5 +388,14 @@ export default {
 	border-radius: 0;
 	border-bottom: solid 1px lightgray;
 	height: 40px;
+}
+
+.multiselect__single,
+.multiselect__placeholder,
+.multiselect__input {
+	text-overflow: ellipsis;
+	width: 100%;
+	overflow: hidden;
+	white-space: nowrap;
 }
 </style>
