@@ -1,16 +1,19 @@
 SHELL:=/bin/bash
 
-all: lint
+all:
+	@echo
+	@echo "== Build project =="
+	@npm run build
+	@echo "== Completed Build project =="
+	@echo
+
+node_modules:
 	@echo
 	@echo "== downloading all npm packages =="
 	@cd vendor/validator && npm install --no-audit
 	@cd vendor/json-pointer && npm install --no-audit
 	@npm install --no-audit
 	@echo "== Completed downloading all npm packages =="
-	@echo
-	@echo "== Build project =="
-	@npm run build
-	@echo "== Completed Build project =="
 	@echo
 
 security: dependency-check
@@ -21,7 +24,7 @@ security: dependency-check
 	@make audit
 
 lint:
-	-@./node_modules/.bin/eslint src  --ext .js
+	-@./node_modules/.bin/eslint --ext .js --ignore-path ./src/schemas/*.js src
 
 audit:
 	@echo
@@ -45,3 +48,5 @@ dependency-check:
 	@unzip dependency-check-5.0.0-release.zip
 	@echo "== Completed Downloading dependency check =="
 	@echo
+
+check: node_modules lint security audit
