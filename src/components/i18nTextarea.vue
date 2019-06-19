@@ -202,7 +202,7 @@ export default {
 		},
 		"$store.state.languages": function(languages) {
 			for (const lang in languages) {
-				if(languages[lang]) {
+				if (languages[lang]) {
 					this.addTab(lang)
 				}
 			}
@@ -211,10 +211,9 @@ export default {
 	},
 	created() {
 		this.state = this.value || {}
-
 		const languages = this.$store.state.languages
 		for (const lang in languages) {
-			if(languages[lang]) {
+			if (languages[lang]) {
 				this.addTab(lang)
 			}
 		}

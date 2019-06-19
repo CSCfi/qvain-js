@@ -101,10 +101,9 @@ export default {
 	methods: {
 		addPair(lang) {
 			if (!lang || lang in this.state) return
-			this.$set(this.state, lang, '')
-			// wait for rendering so that the ref is present in dom before focus
-			
+			this.$set(this.state, lang, '')			
 			this.$store.commit('setLanguages', {[lang]:true})
+			// wait for rendering so that the ref is present in dom before focus
 			this.$nextTick(() => this.$refs[lang][0].$el.focus())
 		},
 		deleteLanguage(lang) {
@@ -152,7 +151,7 @@ export default {
 		this.state = this.value
 		const languages = this.$store.state.languages
 		for (const lang in languages) {
-			if(languages[lang]) {
+			if (languages[lang]) {
 				this.addPair(lang)
 			}
 		}
