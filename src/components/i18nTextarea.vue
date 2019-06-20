@@ -163,33 +163,21 @@ export default {
 				val: this.state,
 			})
 		},
-		focusOnLastTab: function() {
+		async focusOnLastTab() {
 			const last = Object.keys(this.value || {}).length - 1
-
-			// wait for tab to appear in DOM before switching to it;
-			// works for Chrome, but not Firefox
-			this.$nextTick(function() {
-				this.tabIndex = last
-				this.focusOnTextarea()
-			})
-
-			// In Firefox, for some reason, $nextTick only ever fires before the tab gets added,
-			// no matter how many times it gets called. So check again after a short delay.
-			setTimeout(() => {
-				if (this.tabIndex !== last) {
-					console.warn("setTimeout(): retry tab switch from", this.tabIndex, "to", last)
-					this.tabIndex = last
-					this.focusOnTextarea()
-				}
-			}, 300)
+			// bootstrap-vue takes a couple ticks to add a new tab to the DOM
+			await this.$nextTick()
+			await this.$nextTick()
+			this.tabIndex = last
+			this.focusOnTextarea()
 		},
-		focusOnTabWithLanguage(lang) {
+		async focusOnTabWithLanguage(lang) {
 			const i = Object.keys(this.value || {}).indexOf(lang)
 			if (i >= 0) {
-				// use $nextTick so this (hopefully) also works when adding a new tab that might not be in the DOM immediately
-				this.$nextTick(function() {
-					this.tabIndex = i
-				})
+				// bootstrap-vue takes a couple ticks to add a new tab to the DOM
+				await this.$nextTick()
+				await this.$nextTick()
+				this.tabIndex = i
 				return true
 			}
 			return false
@@ -204,6 +192,13 @@ export default {
 				ref && ref.$el && ref.$el.focus()
 			})
 		},
+		populateLanguages(languages) {
+			for (const lang in languages) {
+				if (languages[lang]) {
+					this.addTab(lang)
+				}
+			}
+		},
 	},
 	watch: {
 		selectedLanguage(lang) {
@@ -212,9 +207,15 @@ export default {
 			}
 			this.addTab(lang)
 		},
+		"$store.state.languages": function(languages) {
+			this.populateLanguages(languages)
+		},
+
 	},
 	created() {
 		this.state = this.value || {}
+		this.populateLanguages(this.$store.state.languages)
+		this.focusOnTabWithLanguage(this.$store.state.defaultDescriptionLang)
 	},
 }
 </script>
