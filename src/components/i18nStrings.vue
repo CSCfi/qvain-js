@@ -102,6 +102,7 @@ export default {
 		addPair(lang) {
 			if (!lang || lang in this.state) return
 			this.$set(this.state, lang, '')
+			this.$store.commit('setLanguages', {[lang]:true})
 			// wait for rendering so that the ref is present in dom before focus
 			this.$nextTick(() => this.$refs[lang][0].$el.focus())
 		},
@@ -114,6 +115,13 @@ export default {
 				prop: this.property,
 				val: this.state,
 			})
+		},
+		populateLanguages(languages) {
+			for (const lang in languages) {
+				if (languages[lang]) {
+					this.addPair(lang)
+				}
+			}
 		},
 	},
 	computed: {
@@ -135,11 +143,16 @@ export default {
 					this.$store.commit('cleanStateFor', this.path)
 				}
 			},
-      		deep: true
+			deep: true,
+
+			"$store.state.languages": function(languages) {
+				this.populateLanguages(languages)
+			},
 		},
 	},
 	created() {
 		this.state = this.value
+		this.populateLanguages(this.$store.state.languages)
 	},
 }
 </script>
