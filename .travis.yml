@@ -1,4 +1,9 @@
 language: node_js
 node_js:
-  - "10"
-script: npm run build
+- '10'
+script:
+- make
+- make security
+notifications:
+  flowdock:
+    secure: HajIqFFcOdQPSi6cODPGloEhPJyQOxKdRwPyVLt+h78QBKQiBqMFU11t22wq9LoRT4ZhTQq2XVpjkNw8RvIyAI9CAhcOJ1qEoDkHHfh8oMeJK916VULTIGzWbVqK4nOyoPl47qMJjabHgycCNkDFiSc+F7cfbOLhIANqdP2hiWKwiTvC1bnmFG0nQhIM4uSBkTc2s9a1hu0caB+D72i5lqa6C0/hk6AFMWpzz14foSuDKWMbT13Sy4gHHYl9DiPg6oRu9ymjh0rHCtrXKvR9rwXUnV5A+SqPMTjx5dDyGPKX5aTpImQkCEXHzFWVZINeWtTMrC8fn8HK+jGA/rK/0HxGTZ2UH8CS+fHlLO7WYxbNxv4xWauufydgd8XmRoOTjms/mVJH7874vpfU38Tbh9TZE5bykv/75N1BWaZ2Q7a6o/GADq+FVUeGVDbEMJOo0WOMOBLcax15jHElV8bz1Pcl6DMt9yMfmxEiAO3siJMnkxC4/0nkJBFZfJ+DaqZiHNIjAfznYWv4APiMAbhoSfNhpjVt0HFzHNUqTVI7vnSro53BykjNZl930vZUphYQIIt/yYuwMd9Nf1PRQczHnT/qWCRvkL1LKCPyFRZ4uYJH7cs/SrXCz97MsPo2MY8A52uc/DPLaG5ZrIGTyyuHEHGrTWQWB/WQFONvqU0cnIQ=
