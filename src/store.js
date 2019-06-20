@@ -22,6 +22,7 @@ export default new Vuex.Store({
 		hints: {},
 		metadata: {},
 		languages: { 'fi':true, 'en':true, 'sv':true },
+		defaultDescriptionLang: 'fi',
 		UI_VALID_KEYWORDS: [
 			'widget',
 			'option',

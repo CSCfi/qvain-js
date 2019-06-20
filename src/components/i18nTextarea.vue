@@ -215,7 +215,7 @@ export default {
 	created() {
 		this.state = this.value || {}
 		this.populateLanguages(this.$store.state.languages)
-		this.focusOnTabWithLanguage('fi')
+		this.focusOnTabWithLanguage(this.$store.state.defaultDescriptionLang)
 	},
 }
 </script>
