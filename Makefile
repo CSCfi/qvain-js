@@ -19,17 +19,17 @@ node_modules:
 	@echo "== Completed downloading all npm packages =="
 	@echo
 
-security: dependency-check
+security: node_modules dependency-check
 	@echo
 	@echo "== OWASP Dependency Check =="
 	-@./dependency-check/bin/dependency-check.sh --format JSON --scan . --enableExperimental --disableOssIndex --prettyPrint --failOnCVSS 1 --exclude dependency-check --disableJar --disableNugetconf --disableNuspec --disableAssembly
 	@echo "== Completed OWASP Dependency Check =="
 	@make audit
 
-lint:
+lint: node_modules
 	-@./node_modules/.bin/eslint --ext .js --ignore-path ./src/schemas/*.js src
 
-audit:
+audit: node_modules
 	@echo
 	@echo "== npm audit > . =="
 	@npm audit
