@@ -36,8 +36,8 @@
 	display: inline-block;
 }
 .remove-button {
-	padding: 10px;
-	padding-left: 2px;
+	margin: 0 10px 0 2px;
+	display: flex;
 }
 .intro-text {
 	text-align: center;
@@ -101,7 +101,7 @@ export default {
 	methods: {
 		addPair(lang) {
 			if (!lang || lang in this.state) return
-			this.$set(this.state, lang, '')			
+			this.$set(this.state, lang, '')
 			this.$store.commit('setLanguages', {[lang]:true})
 			// wait for rendering so that the ref is present in dom before focus
 			this.$nextTick(() => this.$refs[lang][0].$el.focus())
@@ -144,7 +144,7 @@ export default {
 				}
 			},
 			deep: true,
-			
+
 			"$store.state.languages": function(languages) {
 				this.populateLanguages(languages)
 			},
@@ -155,5 +155,4 @@ export default {
 		this.populateLanguages(this.$store.state.languages)
 	},
 }
-
 </script>

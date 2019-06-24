@@ -12,9 +12,8 @@
 					placeholder="Click to select"
 					v-model="date">
 				</datepicker>
+				<delete-button v-if="date !== null" @click="clear()" />
 			</div>
-
-			<delete-button v-if="date !== null" @click="clear()" />
 		</div>
 	</record-field>
 </template>
@@ -82,11 +81,12 @@ export default {
 <style lang="scss" scoped>
 	.wrap {
 		display: inline-flex;
+
 		> p {
-			line-height: 40px;
-			vertical-align: middle;
+			margin: 0;
+			display: flex;
+			align-items: center;
 		}
-		margin-right: 6px;
 	}
 </style>
 

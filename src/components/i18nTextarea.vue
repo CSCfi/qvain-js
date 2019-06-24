@@ -8,10 +8,10 @@
 
 		<div slot="input">
 			<b-tabs class="tabs-nav" v-model="tabIndex" pills>
-				<b-tab v-for="key in languageKeys" :key="key" no-body>
+				<b-tab v-for="key in languageKeys" :key="key" no-body title-link-class="tab-field-link">
 					<template slot="title">
 						{{ languages[key] }}
-						<font-awesome-icon icon="times" @click="deleteLang(key)" />
+						<delete-button @click="deleteLang(key)" />
 					</template>
 
 					<b-form-textarea
@@ -64,16 +64,7 @@
     font-family: Arial, Helvetica, Sans-serif;
     padding: 8px;
 }
-.delete-icon {
-	float: right;
-	margin: 10px;
-	&:hover {
-		color: grey;
-	}
-}
-.tabs-nav .nav-item .nav-link {
-	height: 38px;
-}
+
 .intro-text {
 	text-align: center;
 }
@@ -87,7 +78,6 @@
 		width: 220px;
 	}
 }
-
 </style>
 
 
@@ -99,6 +89,7 @@ import ValidationStatus from '@/partials/ValidationStatus.vue'
 import RecordField from '@/composites/RecordField.vue'
 import TitleComponent from '@/partials/Title.vue'
 import InfoIcon from '@/partials/InfoIcon.vue'
+import DeleteButton from '@/partials/DeleteButton.vue'
 
 import autosize from 'autosize'
 
@@ -113,6 +104,7 @@ export default {
 		RecordField,
 		TitleComponent,
 		InfoIcon,
+		DeleteButton,
 	},
 	data() {
 		return {

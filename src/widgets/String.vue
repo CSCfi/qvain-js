@@ -15,7 +15,7 @@
 				@input.native="updateValue">
 			</b-form-input>
 			<span class="input__delete">
-				<DeleteButton v-if="inArray" @click="deleteMe" />
+				<delete-button v-if="inArray" @click="deleteMe" />
 			</span>
 		</div>
 	</record-field>
@@ -25,18 +25,16 @@
 .input {
 	width: 100%;
 	display: inline-flex;
+	align-items: center;
 
 	.input__number {
-		padding: 10px;
-		margin: 0;
+		margin: 0 10px;
 	}
 
 	.input__delete {
-		padding: 10px !important;
-	}
-
-	> * {
-		height: 40px;
+		align-self: stretch;
+		margin: 0 10px 0 2px;
+		display: flex;
 	}
 }
 
