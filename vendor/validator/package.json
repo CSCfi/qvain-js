@@ -25,6 +25,8 @@
     "mocha": "^5.2.0"
   },
   "babel": {
-    "presets": ["env"]
+    "presets": [
+      "env"
+    ]
   }
 }

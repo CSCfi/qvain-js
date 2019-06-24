@@ -29,7 +29,7 @@ lint:
 audit:
 	@echo
 	@echo "== npm audit > . =="
-	-@npm audit
+	@npm audit
 	@echo "== Completed npm audit > . =="
 	@echo
 	@echo "== npm audit > vendor/validator =="
