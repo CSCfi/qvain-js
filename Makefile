@@ -37,7 +37,7 @@ audit:
 	@echo "== Completed npm audit > vendor/validator =="
 	@echo
 	@echo "== npm audit > vendor/json-pointer =="
-	-@cd vendor/json-pointer && npm audit
+	@cd vendor/json-pointer && npm audit
 	@echo "== Completed npm audit > vendor/json-pointer =="
 	@echo
 
