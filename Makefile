@@ -23,8 +23,8 @@ security: dependency-check
 	@echo "== Completed OWASP Dependency Check =="
 	@make audit
 
-lint:
-	-@./node_modules/.bin/eslint --ext .js --ignore-path ./src/schemas/*.js src
+lint: node_modules
+	@./node_modules/.bin/eslint --ext .js --ignore-path ./src/schemas/*.js src
 
 audit:
 	@echo

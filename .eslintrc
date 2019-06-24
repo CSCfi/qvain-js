@@ -1,6 +1,6 @@
 {
   "root": true,
-  "extends": ["plugin:vue/recommended", "eslint:all"],
+  "extends": ["plugin:vue/recommended", "eslint:recommended"],
   "env": {
     "browser": true,
     "node": true
@@ -10,15 +10,21 @@
   },
   "rules": {
     "indent": ["warn", "tab"],
-    "no-tabs": 0,
     "semi": ["warn", "never"],
     "semi-spacing": ["warn", { "before": false, "after": true }],
     "no-unexpected-multiline": "warn",
     "no-var": "warn",
+    "array-bracket-spacing": ["error", "always", {
+      "singleValue": false,
+      "objectsInArrays": false,
+      "arraysInArrays": false
+    }],
+    "object-curly-spacing": ["error", "always", {
+      "objectsInObjects": false
+    }],
     "space-before-blocks": ["warn", "always"],
     "space-in-parens": ["warn", "never"],
     "no-unused-vars": "warn",
-    "no-console": 0,
     "comma-dangle": ["error", "always-multiline"],
     "vue/no-parsing-error": [2, {
       "invalid-first-character-of-tag-name": false
