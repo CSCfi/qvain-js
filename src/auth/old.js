@@ -1,5 +1,4 @@
 /* ADD_LICENSE_HEADER */
-
 // https://github.com/auth0/jwt-decode
 
 // http://stackoverflow.com/a/38552302
