@@ -133,7 +133,7 @@ Auth.prototype.login = function(token) {
 Auth.prototype.logout = async function() {
 	try {
 		// delete backend session
-		await axios.post(
+		const response = await axios.post(
 			this.logoutUrl, {
 				timeout: 5000,
 				responseType: 'json',
@@ -141,11 +141,12 @@ Auth.prototype.logout = async function() {
 					'Accept': 'application/json',
 				},
 			})
-	} catch (error) {
-		// a non-401 error here means the backend session probably wasn't deleted
-		if (error.response.status != 401) {
-			return false
+		// redirect to fairdata logout
+		if (response.data && response.data.redirect) {
+			window.location.href = response.data.redirect
 		}
+	} catch (error) {
+		return false // logout failed
 	}
 
 	// clear user and stored token
