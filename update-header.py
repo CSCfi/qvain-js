@@ -14,7 +14,7 @@
 """Replace license headers.
 
 Usage:
-  update_header.py --license_file=file <path>...
+  update_header.py --license_file=file [--exclude=file...] <path>...
   update_header.py (-h | --help)
   update_header.py --version
 
@@ -36,13 +36,19 @@ if __name__ == '__main__':
     license_header = ""
     with open(arguments['--license_file'],"r") as header:
         license_header = header.read()
+    excludes = arguments['--exclude']
 
     for path in arguments['<path>']:
         repo = Repo(path)
         for root, dirs, files in os.walk(path, topdown = False):
+            skip = False
+            for exclude in excludes:
+                if exclude in root:
+                    skip = True
+            if skip: continue
+
             for name in files:
                 file_name = os.path.join(root, name)
-                
                 
                 if not file_name.endswith("js") and \
                    not file_name.endswith("vue") and \

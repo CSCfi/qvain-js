@@ -58,7 +58,7 @@ venv:
 	@source venv/bin/activate && pip3 install -r requirements.txt
 
 headers: venv
-	@$(PYTHON_CMD) update-header.py --license_file=.license-header .
+	@$(PYTHON_CMD) update-header.py --license_file=.license-header --exclude=venv --exclude=tmp --exclude=node_modules .
 
 clean:
 	@rm -rf venv
