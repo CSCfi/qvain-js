@@ -54,7 +54,7 @@ import { faFile, faFolder } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
 
 const metaxAPI = axios.create({
-	baseURL: process.env.VUE_APP_METAX_API_URL || '/api/proxy',
+	baseURL: process.env.VUE_APP_METAX_FILEAPI_URL || '/api/proxy',
 	timeout: 3000,
 	responseType: 'json',
 })
