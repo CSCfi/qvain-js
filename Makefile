@@ -50,7 +50,14 @@ dependency-check:
 	@echo "== Completed Downloading dependency check =="
 	@echo
 
-check: node_modules lint security audit
+license: node_modules
+	@echo
+	@echo "== Licenses =="
+	@export PATH=$(PATH):./node_modules/.bin; license-checker --summary
+	@echo "== Completed licenses =="
+	@echo
+
+check: node_modules lint security audit license
 
 changes:
 	@echo "== Changes since $(LATEST_TAG) =="
