@@ -38,7 +38,7 @@
 				</b-tab>
 
 				<div slot="tabs" class="input__controls">
-					<b-btn class="input__control" type="button" variant="primary" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
+					<b-btn :id="property + '_array_button_add'" class="input__control" type="button" variant="primary" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
 				</div>
 
 			</b-tabs>
