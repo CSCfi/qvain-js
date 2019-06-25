@@ -65,7 +65,7 @@ if __name__ == '__main__':
                 authors_list = ""
                 for author in authors.keys():
                     authors_list += "\t{name} <{email}>\n".format(name=author, email=authors[author])
-                license_header = license_header.replace("<ADD_AUTHORS_HERE>", authors_list)
+                license_header_to_apply = license_header.replace("<ADD_AUTHORS_HERE>", authors_list)
 
                 with open(file_name, "r+") as f:
                     was_found = False
@@ -75,13 +75,13 @@ if __name__ == '__main__':
                     PYTHON_COMMENT="# ADD_LICENSE_HEADER"
                     if JS_COMMENT in data:
                         was_found = True
-                        data = "/*\n{license}\n*/\n".format(license=license_header)
+                        data = "/*\n{license}\n*/\n".format(license=license_header_to_apply)
                     elif HTML_COMMENT in data:
                         was_found = True
-                        data = "<!--\n{license}\n-->\n".format(license=license_header)
+                        data = "<!--\n{license}\n-->\n".format(license=license_header_to_apply)
                     elif PYTHON_COMMENT in data:
                         was_found = True
-                        data = "{license}\n".format(license=textwrap.indent(license_header, "# ", lambda line: True))
+                        data = "{license}\n".format(license=textwrap.indent(license_header_to_apply, "# ", lambda line: True))
                     if was_found:
                         data += f.read()
                         f.seek(0)
