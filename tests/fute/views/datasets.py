@@ -139,6 +139,9 @@ class Datasets(object):
 
     def show(self):
         self.testcase.open_frontpage()
+
+        time.sleep(2)
+
         # lets tap the navigation bar where we should see the link
         self.testcase.find_element_by_text("My Datasets").click()
 

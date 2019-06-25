@@ -41,7 +41,7 @@ class TestCreateDataset(QvainTestCase):
         # valid dataset, unpublished
         self.mark_memory_measure("created valid unpublished dataset")
         editor.show()
-        editor.select_schema("I want to link Remote resources")
+        editor.select_schema("Link Remote resources")
         editor.show_content_description_tab()
         editor.set_title("test_create_new_dataset_valid_unpublished")
         editor.set_description("dataset description")
@@ -61,7 +61,7 @@ class TestCreateDataset(QvainTestCase):
         # invalid dataset, unpublished
         self.mark_memory_measure("created invalid unpublished dataset")
         editor.show()
-        editor.select_schema("I want to link Remote resources")
+        editor.select_schema("Link Remote resources")
         editor.show_content_description_tab()
         editor.set_title("test_create_new_dataset_invalid_unpublished")
         editor.set_description("dataset description")

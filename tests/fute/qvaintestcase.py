@@ -29,8 +29,7 @@ class QvainTestCase(TauhkaTestCase):
 
     def verify_that_user_is_logged_in(self):
         self.open_usermenu()
-        usermenu_fullname = self.find_element_by_xpath(
-            '//*[@id="usermenu"]/div/h6/a')
+        usermenu_fullname = self.find_element("usermenu_fullname")
         error_msg = "the user ({user} != {expected}) is not logged in"
         was_user_fullname = os.environ["TEST_FULLNAME"] in usermenu_fullname.text
         assert was_user_fullname, error_msg.format(user=usermenu_fullname.text, expected=os.environ["TEST_FULLNAME"])

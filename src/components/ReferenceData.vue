@@ -1,6 +1,6 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<record-field v-if="isVisible" :required="isRequired" :wrapped="wrapped">
+	<record-field :id="property + '_referenceData'" v-if="isVisible" :required="isRequired" :wrapped="wrapped">
 		<title-component slot="title" :title="uiLabel" />
 		<div slot="header-right" class="header__right">
 			<!--<ValidationStatus :status="validationStatus" />-->
@@ -12,12 +12,14 @@
 				<Multiselect v-if="showLang"
 					v-model="selectedLang"
 					:options="languages"
+					:id="property + '_language-select'"
 					placeholder="Select language"
 					label="language"
 					class="lang-select"/>
 
 				<Multiselect v-if="optionsShouldBeGrouped"
 					class="value-select"
+					:id="property + '_value-select'"
 					v-model="selectedOptions"
 					track-by="identifier"
 					:internalSearch="!async"
@@ -42,6 +44,7 @@
 
 				<Multiselect v-else
 					class="value-select"
+					:id="property + '_value-select'"
 					v-model="selectedOptions"
 					track-by="identifier"
 					:internalSearch="!async"
@@ -63,7 +66,7 @@
 					</div>
 				</Multiselect>
 			</div>
-			<div v-if="isMultiselect" class="tag__list">
+			<div :id="property + '_taglist'" v-if="isMultiselect" class="tag__list">
 				<p v-for="(option, index) in Array.from(selectedOptions)" :key="option.identifier" class="tag">
 					{{customLabel(option)}}
 					<span class="remove-button">
@@ -71,7 +74,7 @@
 					</span>
 				</p>
 			</div>
-			<div v-if="!isMultiselect && !Array.isArray(selectedOptions)" class="tag__list">
+			<div :id="property + '_taglist'" v-if="!isMultiselect && !Array.isArray(selectedOptions)" class="tag__list">
 				<p class="tag" :style="{visibility: selectedOptions === null ? 'hidden' : 'visible'}">
 					{{customLabel(selectedOptions)}}
 					<span class="remove-button">
