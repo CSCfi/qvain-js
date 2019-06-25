@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 let _testTabSchema = {
 	tabs: ['first', 'second'],
 	'/properties/user': {

@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 // build file for Qvain Javascript code
 //
 // This webpack config file packs the javascript code for Qvain into two bundles:

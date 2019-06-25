@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<b-jumbotron style="color: rgb(70,70,70); background-color: rgb(231,233,237);" fluid>
 		<template slot="header">

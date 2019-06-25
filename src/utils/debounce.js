@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 // debounce function from underscore.js
 const debounce = (func, wait, immediate) => {
 	let timeout

@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 export default {
 	'TabSelector': require('./TabSelector.vue').default,
 	'SchemaString': require('./String.vue').default,

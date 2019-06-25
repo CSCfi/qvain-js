@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<div>
 		<h1 class="my-3">Configuration</h1>

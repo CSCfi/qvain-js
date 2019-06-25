@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<div v-bind:class="{ wrapper: wrapped, error: error }">
 		<slot></slot>

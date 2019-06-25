@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<b-card class="rounded-0" no-body>
 		<b-card-body class="d-flex py-1 align-items-center">

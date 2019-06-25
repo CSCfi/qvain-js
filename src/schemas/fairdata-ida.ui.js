@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 export default {
 	tabs: [
 		{ label: 'Content Description', uri: 'description' },

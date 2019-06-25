@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<div :style="listItemStyle(depth)">
 		<header>

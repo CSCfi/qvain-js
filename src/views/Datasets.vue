@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<b-container fluid>
 		<h1 class="component-title">My datasets</h1>

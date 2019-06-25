@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 const path = require('path')
 const child_process = require('child_process')
 

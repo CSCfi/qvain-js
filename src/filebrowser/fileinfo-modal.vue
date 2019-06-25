@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<b-modal id="actual-fileinfo-modal" ref="actual-fileinfo-modal" size="lg" title="file info" cancel-title="cancel" ok-title="close" @ok="save()" @show="open()" @hidden="clear()" :cancel-disabled="true" ok-only>
 		<!-- fileinfo modal -->

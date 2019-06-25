@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<wrapper :wrapped="wrapped" :error="error">
 		<div v-if="header" class="header">

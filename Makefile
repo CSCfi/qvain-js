@@ -1,3 +1,4 @@
+# ADD_LICENSE_HEADER
 SHELL:=/bin/bash
 
 all:
@@ -50,3 +51,6 @@ dependency-check:
 	@echo
 
 check: node_modules lint security audit
+
+headers:
+	@./update-header.py --license_file=.license-header .

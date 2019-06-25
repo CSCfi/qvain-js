@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<b-modal id="dataset-versions-modal" ref="dataset-versions-modal" size="lg" centered @shown="fetch(dataset)" @hide="reset" title="published versions" ok-only ok-title="close">
 		<b-alert variant="danger" :show="!!error">API error: {{ error }}</b-alert>

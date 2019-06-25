@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 import { foreachSchema } from './lib/foreach_schema.js'
 //import jsonpointer from 'json-pointer'
 

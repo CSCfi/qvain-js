@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<b-card :id="testing_id + '_card'" class="cursor-reset bg-light">
 		<h4>File metadata for PAS</h4>

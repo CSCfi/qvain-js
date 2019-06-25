@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<div>
 		<span v-for="(parent, i) in parents" :key="parent" style="color: #aaaaaa;" :style="{'margin-left': 18*i}">

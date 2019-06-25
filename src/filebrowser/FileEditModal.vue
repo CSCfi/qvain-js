@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
   <b-modal id="actual-fileedit-modal" ref="actual-fileinfo-modal" @hide="reset" title="Set metadata" @ok="save">
     <div v-if="item">

@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<wrapper :wrapped="wrapped">
 		<b-form-group class="qwidget" :label-cols="2" :description="uiDescription" :label="uiLabel" :state="isValid">

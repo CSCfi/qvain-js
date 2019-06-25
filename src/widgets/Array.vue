@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<record-field class="min-height" :required="required" :wrapped="wrapped" :header="!inArray" :error="!isValid">
 		<title-component slot="title" :title="uiLabel" />

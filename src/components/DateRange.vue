@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<div>
 		<legend class="col-form-label pt-0">{{ title }}</legend>

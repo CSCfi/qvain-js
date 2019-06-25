@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<b-modal id="modal1" ref="edit-modal" size="lg" title="Edit schema UI" cancel-title="cancel" ok-title="set" @ok="save()" @show="open()">
 		<!-- hint editor -->
