@@ -1,5 +1,6 @@
 # ADD_LICENSE_HEADER
 SHELL:=/bin/bash
+PYTHON_CMD:=source venv/bin/activate && python3
 
 all:
 	@echo
@@ -52,5 +53,12 @@ dependency-check:
 
 check: node_modules lint security audit
 
-headers:
-	@./update-header.py --license_file=.license-header .
+venv:
+	@python3 -m venv venv
+	@source venv/bin/activate && pip3 install -r requirements.txt
+
+headers: venv
+	@$(PYTHON_CMD) update-header.py --license_file=.license-header .
+
+clean:
+	@rm -rf venv
