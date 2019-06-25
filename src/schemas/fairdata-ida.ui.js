@@ -197,6 +197,22 @@ export default {
 		'description': "Funding type.",
 		'help': "Select the funding type.",
 	},
+	'/properties/is_output_of/*/properties/source_organization/*/properties/contributor_type': {
+		'widget': 'reference-data',
+		'props': {
+			'esIndex': "reference_data",
+			'esDoctype': "contributor_type",
+			'typeahead': true,
+			'tags': false,
+			'async': false,
+			'count': 100,
+			'grouped': false,
+		},
+		'placeholder': "– choose contributor type –",
+		'label': "contributor type",
+		'description': "Type of contribution the given creator had on the dataset.",
+		'help': "Select the type of contribution the creator had on the dataset.",
+	},
 	'/properties/creator': {
 		'tab': 'actors',
 		'title': "Creator of the dataset",
