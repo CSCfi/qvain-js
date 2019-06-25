@@ -3,7 +3,7 @@
 # This file is part of Qvain -project.
 #
 # Author(s):
-# <ADD_AUTHORS_HERE>
+#   Juhapekka Piiroinen <juhapekka.piiroinen@csc.fi>
 #
 # License: GPLv3
 # See LICENSE file for more information.
