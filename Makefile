@@ -1,4 +1,5 @@
 SHELL:=/bin/bash
+LATEST_TAG:=$(shell git tag|tail -n 1)
 
 all:
 	@echo
@@ -57,3 +58,8 @@ license: node_modules
 	@echo
 
 check: node_modules lint security audit license
+
+changes:
+	@echo "== Changes since $(LATEST_TAG) =="
+	@git log --pretty=oneline --abbrev-commit $(LATEST_TAG)..HEAD --format="%h %C(auto) %ad %d %s" --no-merges --first-parent --date=short
+	@echo "================================="
