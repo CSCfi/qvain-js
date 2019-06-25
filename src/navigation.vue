@@ -140,9 +140,7 @@ export default {
 	},
 	methods: {
 		async logout() {
-			if (await this.$auth.logout()) {
-				this.$root.showAlert("User signed out.", "primary")
-			} else {
+			if (!await this.$auth.logout()) {
 				this.$root.showAlert("Failed to sign out. Please try again later.", "danger")
 			}
 		},
