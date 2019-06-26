@@ -91,7 +91,3 @@ if __name__ == '__main__':
                     print("[FIX] {filename}".format(filename=file_name))
                 else:
                     print("[OK] {filename}".format(filename=file_name))
-
-
-    #with open(sys.argv[1])
-
