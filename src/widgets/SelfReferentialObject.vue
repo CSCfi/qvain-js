@@ -67,11 +67,9 @@ export default {
 	methods: {
 		add() {
 			let obj = this.value
-			console.log("add() called", obj)
 			while (this.refField in obj) {
 				obj = obj[this.refField]
 			}
-			console.log("add() called (after loop)", obj)
 			this.$store.commit('updateValue', {
 				p: obj,
 				prop: this.refField,
