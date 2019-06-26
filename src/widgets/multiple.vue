@@ -10,6 +10,7 @@
 			:tab="myTab"
 			:activeTab="activeTab"
 			:depth="depth" />
+		<!--
 		<TabSelector
 			:required="true"
 			:schema="schema.oneOf[1]"
@@ -20,6 +21,7 @@
 			:tab="myTab"
 			:activeTab="activeTab"
 			:depth="depth" />
+		-->
 	</wrapper>
 </template>
 
