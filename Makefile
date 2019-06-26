@@ -1,6 +1,7 @@
 # ADD_LICENSE_HEADER
 SHELL:=/bin/bash
 PYTHON_CMD:=source venv/bin/activate && python3
+LATEST_TAG:=$(shell git tag|tail -n 1)
 
 all:
 	@echo
@@ -51,8 +52,6 @@ dependency-check:
 	@echo "== Completed Downloading dependency check =="
 	@echo
 
-check: node_modules lint security audit
-
 venv:
 	@python3 -m venv venv
 	@source venv/bin/activate && pip3 install -r requirements.txt
@@ -62,3 +61,17 @@ headers: venv
 
 clean:
 	@rm -rf venv
+
+license: node_modules
+	@echo
+	@echo "== Licenses =="
+	@export PATH=$(PATH):./node_modules/.bin; license-checker --summary
+	@echo "== Completed licenses =="
+	@echo
+
+check: node_modules lint security audit license
+
+changes:
+	@echo "== Changes since $(LATEST_TAG) =="
+	@git log --pretty=oneline --abbrev-commit $(LATEST_TAG)..HEAD --format="%h %C(auto) %ad %d %s" --no-merges --first-parent --date=short
+	@echo "================================="
