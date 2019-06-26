@@ -113,6 +113,7 @@ export default {
 		wrapped: { type: Boolean, default: false },
 		labelNameInSchema: { type: String, default: 'pref_label' },
 		grouped: { type: Boolean, required: false },
+		defaultValue: { type: Object | Array, required: false }
 	},
 	data() {
 		return {
@@ -254,7 +255,9 @@ export default {
 	},
 	async created() {
 		if (this.isMultiselect && this.isArray) {
-			this.selectedOptions = this.value.map(v => ({ identifier: v.identifier, label: v[this.labelNameInSchema] }))
+			this.selectedOptions = this.value.map(v => ({
+				identifier: v.identifier, label: v[this.labelNameInSchema]
+			}))
 		}
 
 		if (!this.isMultiselect && !this.isEmptyObject) {
@@ -267,6 +270,10 @@ export default {
 			}
 		}
 
+		if (this.defaultValue && this.isEmptyObject) {
+			this.selectedOptions = this.defaultValue
+		}
+
 		if (!this.async) {
 			this.getAllReferenceData()
 		}
@@ -274,7 +281,6 @@ export default {
 	watch: {
 		selectedOptions() {
 			const selectedValueIsSet = this.selectedOptions !== null && typeof this.selectedOptions !== 'undefined'
-
 			const mapToStore = option => {
 				if (typeof option === 'undefined') {
 					return option
