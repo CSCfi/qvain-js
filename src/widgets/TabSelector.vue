@@ -8,7 +8,7 @@
 		-->
 
 		<!-- schema-tab-selector -->
-		<div v-if="showWidgets">
+		<!--<div v-if="showWidgets">
 			<p>ui widgets</p>
 			<select v-model="customWidget">
 				<option v-for="(constructor, name) in this.$options.components" :key="constructor">{{ name }}</option>
@@ -23,7 +23,7 @@
 					{{ type }}
 				</option>
 			</select>
-		</div>
+		</div>-->
 
 		<!-- actual component -->
 		<!-- keep-alive -->
@@ -62,6 +62,7 @@ import FlatObject from './FlatObject.vue'
 import ReferenceData from '../components/ReferenceData.vue'
 import DateRange from '../components/DateRange.vue'
 import Date from '../components/Date.vue'
+import Multiple from '@/widgets/multiple.vue'
 
 const COMBINERS = ['anyOf', 'allOf', 'oneOf', 'not']
 
@@ -312,6 +313,7 @@ export default {
 		FlatObject,
 		'date-range': DateRange,
 		'date': Date,
+		'multiple': Multiple,
 	},
 	created() {
 		// fail-safe for inadvertent VNode recycling

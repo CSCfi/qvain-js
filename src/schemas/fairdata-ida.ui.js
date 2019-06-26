@@ -683,6 +683,9 @@ export default {
 		'help': "Can be left empty if the Access Type is Open.",
 	},
 	'/properties/access_rights/properties/license': {
+		'widget': 'multiple'
+	},
+	'/properties/access_rights/properties/license/oneOf/0': {
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -699,6 +702,9 @@ export default {
 		'required': () => true,
 		'description': "A license agreement signifies what a user is allowed to do with the data.",
 		'help': "Select a license agreement for your dataset.",
+	},
+	'/properties/access_rights/properties/license/oneOf/1': {
+		'title': ' '
 	},
 	'/properties/publisher': {
 		'tab': 'extra',

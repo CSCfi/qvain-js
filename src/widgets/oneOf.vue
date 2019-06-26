@@ -1,43 +1,26 @@
 <template>
-	<wrapper :wrapped="!inArray">
-		<template v-if="!both">
-			<div v-if="chosen === null" class="conditional-wrapper">
-				<b-dropdown class="m-2" text="Choose type" variant="primary">
-					<b-dropdown-item v-for="(sub, i) in schema['oneOf']"
-						:key="'oneOfSel' + i"
-						@click="setChosen(i)">
-						{{ sub['title'] || '#'+i }}
-					</b-dropdown-item>
-				</b-dropdown>
-			</div>
-			<b-textarea v-if="false" :rows="15" :value="JSON.stringify(schemaForChosen, null, 2)"></b-textarea>
-			<TabSelector
-				v-if="chosen !== null"
-				:schema="schemaForChosen"
-				:path="newPath('oneOf/' + chosen)"
-				:value="value"
-				:parent="parent"
-				:property="property"
-				:tab="myTab"
-				:activeTab="activeTab"
-				:depth="depth"
-				:key="'oneOf-'+chosen" />
-		</template>
-		<template v-else>
-			<div v-for="propName in schema.oneOf.map(obj => obj.title)" :key="propName" style="padding-top: 12px; padding-bottom: 12px;">
-				<TabSelector
-					:required="(schema.required || []).includes(propName)"
-					:schema="schema.oneOf.find(item => item.title === propName)"
-					:path="newPath('oneOf/' + propName)"
-					:value="value[propName]"
-					:parent="value"
-					:property="propName"
-					:tab="myTab"
-					:activeTab="activeTab"
-					:depth="depth"
-					:key="propName" />
-			</div>
-		</template>
+	<wrapper :wrapped="typeof wrapped === 'undefined' ? !inArray : wrapped">
+		<div v-if="chosen === null" class="conditional-wrapper">
+			<b-dropdown class="m-2" text="Choose type" variant="primary">
+				<b-dropdown-item v-for="(sub, i) in schema['oneOf']"
+					:key="'oneOfSel' + i"
+					@click="setChosen(i)">
+					{{ sub['title'] || '#'+i }}
+				</b-dropdown-item>
+			</b-dropdown>
+		</div>
+		<b-textarea v-if="false" :rows="15" :value="JSON.stringify(schemaForChosen, null, 2)"></b-textarea>
+		<TabSelector
+			v-if="chosen !== null"
+			:schema="schemaForChosen"
+			:path="newPath('oneOf/' + chosen)"
+			:value="value"
+			:parent="parent"
+			:property="property"
+			:tab="myTab"
+			:activeTab="activeTab"
+			:depth="depth"
+			:key="'oneOf-'+chosen" />
 	</wrapper>
 </template>
 
@@ -66,9 +49,9 @@ export default {
 		Wrapper,
 	},
 	props: {
-		both: {
+		wrapped: {
 			type: Boolean,
-			default: false
+			required: false
 		}
 	},
 	data() {
