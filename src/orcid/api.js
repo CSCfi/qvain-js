@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 import axios from 'axios'
 
 const apiUrl = "https://pub.orcid.org/v2.1"

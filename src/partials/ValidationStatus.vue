@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<font-awesome-icon v-if="status === 'uncertain'"
 		icon="exclamation-triangle"

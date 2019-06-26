@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<div class="container-fluid">
 		<!-- Map widget -->

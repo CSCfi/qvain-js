@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template functional>
 	<p class="title">
 		{{ props.title }}

@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 import axios from 'axios'
 import {parseJwt, getRandomString} from './jwt.js'
 import Vue from 'vue'

@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 //import schemaIow from '../schema/schema.json'
 //import schemaIowDeref from '../schema/deref.json'
 import schemaFairDataDeref from '../schema/qvain-fairdata-deref.json'

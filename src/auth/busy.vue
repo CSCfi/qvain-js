@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
   <div>
     <figure style="width: 300px;">

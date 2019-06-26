@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<TabSelector v-if="Object.keys($store.state.schema).length > 0" :schema="$store.state.schema" path="" :parent="$store.state" property="record" :value="$store.state.record" :activeTab="$route.params.tab" :depth="0"></TabSelector>
 </template>

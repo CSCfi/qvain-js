@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 // keysWithOrder takes an object and array and returns the keys of that object with those in the array sorted first (and then the rest).
 export default function keysWithOrder(obj, order) {
 	// NOTE: IE11 doesn't support Set(iterator)

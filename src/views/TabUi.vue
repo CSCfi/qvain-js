@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<div class="container-fluid my-4">
 		<h2>Fairdata dataset schema</h2>

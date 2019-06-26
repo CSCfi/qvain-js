@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<b-input-group>
 		<b-input-group-text class="height" slot="prepend">

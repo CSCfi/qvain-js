@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<record-field :required="required" :wrapped="true" :error="!isValid">
 		<title-component slot="title" :title="uiLabel" />

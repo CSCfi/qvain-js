@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 import Vue from 'vue'
 import Vuex from 'vuex'
 //import jsonPointer from 'json-pointer'

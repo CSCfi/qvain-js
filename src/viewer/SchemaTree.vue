@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<li>
 		<div class="treeview-branch" :class="{bold: isFolder}" @click="toggle" @dblclick="changeType">

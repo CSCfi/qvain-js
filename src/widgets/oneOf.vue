@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<wrapper :wrapped="!inArray">
 		<template v-if="!both">

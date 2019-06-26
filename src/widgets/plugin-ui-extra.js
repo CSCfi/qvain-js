@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 import widgetGoogleMaps from './extra/widget-googlemaps.vue'
 
 // vue plugin

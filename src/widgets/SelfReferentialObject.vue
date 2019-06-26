@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<wrapper :wrapped="false" :style="listItemStyle(depth)">
 		<h3 @click="opened = !opened" class="margin-left" :aria-controls="domId + '-props'" :aria-expanded="opened ? 'true' : 'false'">

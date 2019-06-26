@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<record-field v-if="isVisible" :required="isRequired" :wrapped="wrapped">
 		<title-component slot="title" :title="uiLabel" />

@@ -1,4 +1,6 @@
+# ADD_LICENSE_HEADER
 SHELL:=/bin/bash
+PYTHON_CMD:=source venv/bin/activate && python3
 LATEST_TAG:=$(shell git tag|tail -n 1)
 
 all:
@@ -49,6 +51,16 @@ dependency-check:
 	@unzip dependency-check-5.0.0-release.zip
 	@echo "== Completed Downloading dependency check =="
 	@echo
+
+venv:
+	@python3 -m venv venv
+	@source venv/bin/activate && pip3 install -r requirements.txt
+
+headers: venv
+	@$(PYTHON_CMD) update-header.py --license_file=.license-header --exclude=venv --exclude=tmp --exclude=node_modules .
+
+clean:
+	@rm -rf venv
 
 license: node_modules
 	@echo
