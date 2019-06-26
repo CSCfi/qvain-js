@@ -133,13 +133,5 @@ export default {
 			return arr
 		},
 	},
-	watch: {
-		value() {
-			console.log("SelfReferentialObject(): watcher trigger:", this.flattened)
-		},
-		"value.email"() {
-			console.log("SelfReferentialObject(): email watcher trigger:", this.flattened)
-		},
-	},
 }
 </script>
