@@ -69,7 +69,8 @@ license: node_modules
 	@echo "== Completed licenses =="
 	@echo
 
-check: node_modules lint security audit license
+check:
+	cd tests && make check
 
 changes:
 	@echo "== Changes since $(LATEST_TAG) =="
