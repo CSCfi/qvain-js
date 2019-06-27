@@ -1,4 +1,18 @@
-<!-- ADD_LICENSE_HEADER -->
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Eemeli Kouhia <eemeli.kouhia@gofore.com>
+	Aaron Hakala <aaron.hakala@metropolia.fi>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
 	<wrapper :wrapped="wrapped">
 		<b-form-group class="qwidget" :label-cols="2" :description="uiDescription" :label="uiLabel" :state="isValid">

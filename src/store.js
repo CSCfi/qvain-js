@@ -1,4 +1,20 @@
-/* ADD_LICENSE_HEADER */
+/*
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Shreyas Deshpande <31839853+ShreyasDeshpande@users.noreply.github.com>
+	Kauhia <Kauhia@users.noreply.github.com>
+	Aaron Hakala <aaron.hakala@metropolia.fi>
+	Eemeli Kouhia <eemeli.kouhia@gofore.com>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+*/
 import Vue from 'vue'
 import Vuex from 'vuex'
 //import jsonPointer from 'json-pointer'
