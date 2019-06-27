@@ -303,6 +303,7 @@ export default {
 				this.$store.commit('loadSchema', this.selectedSchema.schema)
 				this.$store.commit('loadHints', this.selectedSchema.ui)
 				this.$store.commit('setMetadata', { schemaId: this.selectedSchema.id })
+
 				this.startValidator()
 				this.checkTab()
 			} else {

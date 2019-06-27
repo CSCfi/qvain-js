@@ -91,7 +91,21 @@ export default new Vuex.Store({
 		initValue(state, payload) {
 			//console.log("store init for", payload.p, "payload:", payload, "state:", state)
 			//payload.p[payload.prop] = payload.val
-			Vue.set(payload.p, payload.prop, payload.val)
+
+			// set default value for license if ida schema
+			if (typeof state.metadata.id === 'undefined' && state.metadata.schemaId === 'metax-ida' && payload.prop === 'license') {
+				console.log('set default for license')
+				Vue.set(payload.p, payload.prop, [{
+					"identifier":"http://uri.suomi.fi/codelist/fairdata/license/code/CC-BY-4.0",
+					"title": {
+						"sv": '',
+						"en":"Creative Commons Attribution 4.0 International (CC BY 4.0)",
+						"fi":"Creative Commons Nimeä 4.0 Kansainvälinen (CC BY 4.0)",
+						"und":"Creative Commons Nimeä 4.0 Kansainvälinen (CC BY 4.0)"
+				}}])
+			} else {
+				Vue.set(payload.p, payload.prop, payload.val)
+			}
 		},
 		updateValue(state, payload) {
 			Vue.set(payload.p, payload.prop, payload.val)

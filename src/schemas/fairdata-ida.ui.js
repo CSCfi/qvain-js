@@ -710,7 +710,7 @@ export default {
 			'count': 100,
 			'grouped': false,
 			'labelNameInSchema': 'title',
-			'defaultValue': [{
+			/*'defaultValue': [{
 				"identifier":"http://uri.suomi.fi/codelist/fairdata/license/code/CC-BY-4.0",
 				"label": {
 					"sv": '',
@@ -718,7 +718,7 @@ export default {
 					"fi":"Creative Commons Nimeä 4.0 Kansainvälinen (CC BY 4.0)",
 					"und":"Creative Commons Nimeä 4.0 Kansainvälinen (CC BY 4.0)"
 				}
-			}]
+			}]*/
 		},
 		'placeholder': "– choose license –",
 		'title': "license",
