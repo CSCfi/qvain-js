@@ -42,14 +42,17 @@ class TestCreateDataset(QvainTestCase):
         self.mark_memory_measure("created valid unpublished dataset")
         editor.show()
         editor.select_schema("Link Remote resources")
+
         editor.show_content_description_tab()
         editor.set_title("test_create_new_dataset_valid_unpublished")
         editor.set_description("dataset description")
+
         editor.show_actors_tab()
         editor.set_creator_organization("Test Organization")
+
         editor.show_rights_and_licenses_tab()
-        editor.set_access_rights_description("Test Access Rights Description")
         editor.set_access_type("Open")
+        editor.set_license("Apache Software License 2.0")
 
         (test_1_my_datasets_valid_unpublished_id, was_resave) = editor.save()
         assert not was_resave, "Expected to see first time save"
@@ -62,9 +65,11 @@ class TestCreateDataset(QvainTestCase):
         self.mark_memory_measure("created invalid unpublished dataset")
         editor.show()
         editor.select_schema("Link Remote resources")
+
         editor.show_content_description_tab()
         editor.set_title("test_create_new_dataset_invalid_unpublished")
         editor.set_description("dataset description")
+
         (test_1_my_datasets_invalid_unpublished_id, was_resave) = editor.save()
         assert not was_resave, "Expected to see first time save"
         self.diff_memory_measure_and_report("created invalid unpublished dataset")

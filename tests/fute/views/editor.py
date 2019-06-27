@@ -103,15 +103,11 @@ class Editor(object):
         self.testcase.clear_text(elemId)
         self.testcase.enter_text(elemId, organizationName)
 
-    def set_access_rights_description(self, accessRightsDescription):
-        access_rights_object = self.testcase.find_element("access_rights_object")
-        self.testcase.select_option("description_language-select", self.language)
-        elemId = "description_{language_short}_input".format(language_short=self.language_short)
-        self.testcase.clear_text(elemId)
-        self.testcase.enter_text(elemId, accessRightsDescription)
-
     def set_access_type(self, access_type):
-        self.testcase.select_option_from_multiselect("access_type_object", "Open")
+        self.testcase.select_option_from_multiselect("access_type_object", access_type)
+
+    def set_license(self, dataset_license):
+        self.testcase.select_option_from_multiselect("license_array", dataset_license)
 
     def verify_owner(self, owner):
         assert self.testcase.is_option_selected(

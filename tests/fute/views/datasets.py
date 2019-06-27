@@ -86,6 +86,7 @@ class Datasets(object):
         return self.testcase.elem_is_not_found("dataset-list__row_{id}".format(id=dataset_id))
 
     def remove(self, dataset_id):
+        self.scroll_list_to(dataset_id)
         dataset_id = self.workaround_cscqvain_171(dataset_id)
         # find the correct row and the actions cell
         row = self.testcase.find_element("dataset-list__row_{id}".format(id=dataset_id))

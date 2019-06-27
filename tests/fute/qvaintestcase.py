@@ -12,8 +12,11 @@
 # All Rights Reserved.
 ################################################################
 import os
+import time
 from tauhka.testcase import TauhkaTestCase
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support import expected_conditions as EC
 
 
 class QvainTestCase(TauhkaTestCase):
@@ -95,10 +98,12 @@ class QvainTestCase(TauhkaTestCase):
 
     def open_usermenu(self):
         userDropdown = self.find_element("usermenu")
+        self.wait_until_visible(userDropdown)
         userDropdown.click()
 
     def close_usermenu(self):
         userDropdown = self.find_element("usermenu")
+        self.wait_until_visible(userDropdown)
         userDropdown.click()
 
     def logout(self):
@@ -161,6 +166,7 @@ class QvainTestCase(TauhkaTestCase):
                     # once we found it we click on it
                     self.wait_until_visible(option)
                     option.click()
+                    self.wait.until(EC.invisibility_of_element_located(option))
                     return
 
             errors.append("Unable to find " + optionValue)
