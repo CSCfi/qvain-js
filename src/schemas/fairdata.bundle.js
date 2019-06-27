@@ -1,3 +1,18 @@
+/*
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
+	Kauhia <Kauhia@users.noreply.github.com>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+*/
 import FairdataIdaSchema from './fairdata-ida.schema.json'
 import FairdataIdaOldSchema from './fairdata-ida-old.schema.json'
 import FairdataAttSchema from './fairdata-att.schema.json'
@@ -55,8 +70,7 @@ export default {
 	ida: {
 		schema: FairdataIdaSchema,
 		ui: FairdataIdaUi,
-		name: "I want to select IDA files", // "Fairdata (IDA)",
-		shortName: "IDA",
+		name: "Select IDA files", // "Fairdata (IDA)",
 		id: "metax-ida",
 		family: 2,
 		cloneFunc: clone,
@@ -72,8 +86,7 @@ export default {
 	att: {
 		schema: FairdataAttSchema,
 		ui: FairdataAttUi,
-		name: "I want to link Remote resources", // "Fairdata (ATT)",
-		shortName: "Remote resource",
+		name: "Link Remote resources", // "Fairdata (ATT)",
 		id: "metax-att",
 		family: 2,
 		cloneFunc: clone,

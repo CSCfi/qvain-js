@@ -1,3 +1,18 @@
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Kauhia <Kauhia@users.noreply.github.com>
+	Eemeli Kouhia <eemeli.kouhia@gofore.com>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
 	<div>
 	</div>
@@ -32,12 +47,15 @@ export default {
 		},
 	},
 	computed: {
+		isVisible() {
+			return this.ui.visible ? this.ui.visible(this.$store.state.record) : true;
+		},
+		isRequired() {
+			return this.ui.required ? this.ui.required(this.$store.state.record) : this.required;
+		},
 		isValid() {
 			const statefromStore = this.$store.state.vState[this.path].v
 			return statefromStore !== null ? statefromStore : true;
-
-
-			//return (this.$store.state.vState[this.path].e || []).length === 0
 		},
 		errors() {
 			const errorsFromStore = this.$store.state.vState[this.path].e

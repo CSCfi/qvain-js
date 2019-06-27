@@ -1,5 +1,21 @@
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Eemeli Kouhia <eemeli.kouhia@gofore.com>
+	Kauhia <Kauhia@users.noreply.github.com>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
-	<record-field :required="required" :wrapped="wrapped">
+	<record-field v-if="isVisible" :required="isRequired" :wrapped="wrapped">
 		<title-component slot="title" :title="uiLabel" />
 		<div slot="header-right" class="header__right">
 			<!--<ValidationStatus :status="validationStatus" />-->
@@ -58,7 +74,7 @@
 					@search-change="search">
 					<div slot="noResult">No elements found. Consider changing the search query. You may have to type at least 3 letters.</div>
 					<div slot="selection" slot-scope="{ values, search, isOpen }">
-						<span class="multiselect__single" v-if="values.length &amp;&amp; !isOpen">{{ placeholder }} options selected</span>
+						<span class="multiselect__single" v-if="values.length &amp;&amp; !isOpen">{{ placeholder }}</span>
 					</div>
 				</Multiselect>
 			</div>
@@ -112,6 +128,7 @@ export default {
 		wrapped: { type: Boolean, default: false },
 		labelNameInSchema: { type: String, default: 'pref_label' },
 		grouped: { type: Boolean, required: false },
+		defaultValue: { type: Object | Array, required: false }
 	},
 	data() {
 		return {
@@ -229,6 +246,8 @@ export default {
 
 			this.isLoading = true
 			if (this.async) {
+				// remove special characters, see for list: http://lucene.apache.org/core/3_4_0/queryparsersyntax.html
+				searchQuery = searchQuery.replace(/(\+|-|&&|\|\||!|\(|\)|{|}|\[|\]|\^|"|~|\*|\?|:|\\)/g,"")
 				const q = this.selectedLang ?
 					`label.${this.selectedLang.id}:*${searchQuery}*`:
 					`*${searchQuery}*`
@@ -251,17 +270,23 @@ export default {
 	},
 	async created() {
 		if (this.isMultiselect && this.isArray) {
-			this.selectedOptions = this.value.map(v => ({ identifier: v.identifier, label: v[this.labelNameInSchema] }))
+			this.selectedOptions = this.value.map(v => ({
+				identifier: v.identifier, label: v[this.labelNameInSchema]
+			}))
 		}
 
 		if (!this.isMultiselect && !this.isEmptyObject) {
-			if (!this.value.identifier) {
+			if (!(this.value && this.value.identifier)) {
 				this.selectedOptions = null
 			} else {
 				const { identifier } = this.value
 				const label = this.value[this.labelNameInSchema]
 				this.selectedOptions = { identifier, label }
 			}
+		}
+
+		if (this.defaultValue && this.isEmptyObject) {
+			this.selectedOptions = this.defaultValue
 		}
 
 		if (!this.async) {
@@ -271,7 +296,6 @@ export default {
 	watch: {
 		selectedOptions() {
 			const selectedValueIsSet = this.selectedOptions !== null && typeof this.selectedOptions !== 'undefined'
-
 			const mapToStore = option => {
 				if (typeof option === 'undefined') {
 					return option
@@ -281,7 +305,7 @@ export default {
 				return { identifier, [this.labelNameInSchema]: { sv, en, fi, und } }
 			}
 
-			let storableOptions
+			let storableOptions = '' // this default allows item to be removed at updateValue
 			if (this.isMultiselect && selectedValueIsSet) {
 				storableOptions = this.selectedOptions.map(mapToStore)
 			}
@@ -290,7 +314,7 @@ export default {
 				storableOptions = mapToStore(this.selectedOptions)
 			}
 
-			storableOptions && this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: storableOptions })
+			this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: storableOptions })
 		},
 	},
 }
@@ -299,14 +323,17 @@ export default {
 .input-row__inline {
 	width: 100%;
 	display: inline-flex;
+	flex-wrap: wrap;
 	margin-bottom: 5px;
 
 	.lang-select {
-		width: 300px;
+		width: 140px;
 		padding-right: 5px;
+		flex-grow: 1;
 	}
 	.value-select {
-		flex-grow: 1;
+		flex-grow: 10;
+		width: 200px;
 	}
 }
 
@@ -315,15 +342,29 @@ export default {
 	background: #007fad;
 	border-radius: 5px;
 
-	padding-left: 5px;
-	margin-bottom: 0px;
-    margin-right: 10px;
+	padding: 4px 4px 4px 10px;
+	margin: 2px;
+	flex-grow: 1;
+
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
+
 .tag__list {
+	margin: -2px;
 	display: inline-flex;
+	flex-wrap: wrap;
+
+	/* avoid stretching tags in last row */
+	&::after {
+		content: '';
+		flex-grow: 10000;
+	}
 }
+
 .remove-button {
-	vertical-align: top;
+	margin-left: 4px;
 }
 
 .option__child {
@@ -369,5 +410,14 @@ export default {
 	border-radius: 0;
 	border-bottom: solid 1px lightgray;
 	height: 40px;
+}
+
+.multiselect__single,
+.multiselect__placeholder,
+.multiselect__input {
+	text-overflow: ellipsis;
+	width: 100%;
+	overflow: hidden;
+	white-space: nowrap;
 }
 </style>

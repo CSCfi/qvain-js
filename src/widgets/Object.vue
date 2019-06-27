@@ -1,14 +1,28 @@
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Eemeli Kouhia <eemeli.kouhia@gofore.com>
+	Kauhia <Kauhia@users.noreply.github.com>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
 	<div :style="listItemStyle(depth)">
 		<header>
-			<h3 class="title" @click="visible = !visible" :aria-controls="domId + '-props'" :aria-expanded="visible ? 'true' : 'false'">
-				<!--<font-awesome-icon v-if="!visible" :icon="expandArrow" class="text-dark"/>-->
+			<h3 class="title" :aria-controls="domId + '-props'">
 				{{ uiTitle }}
 			</h3>
 		</header>
 		<section>
 			<b-list-group flush>
-				<b-list-group-item class="border-0" v-for="propName in sortedProps" :key="propName">
+				<b-list-group-item v-show="propName !== '@type'" v-for="propName in sortedProps" :key="propName" class="border-0">
 					<TabSelector
 						:required="(schema.required || []).includes(propName)"
 						:schema="schema['properties'][propName]"
@@ -19,42 +33,12 @@
 						:tab="myTab"
 						:activeTab="activeTab"
 						:depth="depth"
-						:key="propName"
-						v-if="shouldCreateProp(propName)" />
-						<b-btn @click="addProp(propName)" v-else-if="isPostponedProp(propName)">add {{ propName }}</b-btn>
+						:key="propName" />
 				</b-list-group-item>
 			</b-list-group>
 		</section>
 	</div>
-	<!--<b-card no-body header-class="with-fd-bg" class="my-3">
-		<h2 slot="header" @click="visible = !visible" :aria-controls="domId + '-props'" :aria-expanded="visible ? 'true' : 'false'">
-			<font-awesome-icon v-if="!visible" :icon="expandArrow" class="text-dark"/> {{ uiTitle }}
-		</h2>
-
-		<b-collapse :id="domId + '-props'" v-model="visible">
-			<b-card-body>
-				<p class="card-text text-muted" v-if="uiDescription"><sup><font-awesome-icon icon="quote-left" class="text-muted" /></sup> {{ uiDescription }}</p>
-			</b-card-body>
-
-			<b-list-group flush>
-				<b-list-group-item class="border-0" v-for="propName in sortedProps" :key="propName">
-					<TabSelector :schema="schema['properties'][propName]" :path="newPath('properties/' + propName)" :value="value[propName]" :parent="value" :property="propName" :tab="myTab" :activeTab="activeTab" :depth="depth" :key="propName" v-if="shouldCreateProp(propName)"></TabSelector>
-					<b-btn @click="addProp(propName)" v-else>add {{ propName }}</b-btn>
-
-					TabSelector :schema="propSchema" :path="newPath('properties/' + propName)" :value="value[propName]" :parent="value" :property="propName" :tab="myTab" :activeTab="activeTab"
-				:depth="depth" :key="propName"></TabSelector
-				</b-list-group-item>
-			</b-list-group>
-		</b-collapse>
-	</b-card>-->
 </template>
-
-<style>
-div:empty {
-	/* background: lime; */
-	/* display: none; */
-}
-</style>
 
 <script>
 import vSchemaBase from './base.vue'
@@ -67,27 +51,16 @@ export default {
 	name: 'SchemaObject',
 	description: "generic object",
 	schematype: 'object',
-	data: function() {
+	data() {
 		return {
 			q: "not set",
 			visible: true,
 		}
 	},
-	/*
-	watch: {
-		schema: {
-			handler(val) {
-				//this.q = this.schema['.q']
-				this.q = val['.q'] || "not set 2"
-				console.log("OBJECT SCHEMA WATCHER RAN for", this.path, "val:", val)
-			},
-			deep: true,
-		},
-	},
-	*/
 	methods: {
 		shouldCreateProp(prop) {
-			if (!this.isPostponedProp(prop) && !this.isIgnoredProp(prop)) return true
+			if (prop === '@type') return false
+			if (this.isPostponedProp(prop) || this.isIgnoredProp(prop)) return false
 			if (prop in this.value) return true
 			return false
 		},
@@ -114,21 +87,19 @@ export default {
 				return this.vState[this.path] || {}
 			},
 		},
-		/*
-		myState() {
-			return this.vState[this.path] || {}
-		},
-		*/
 		sortedProps() {
+			let keys = []
 			if (!this.schema['properties']) {
-				return []
+				keys = []
 			}
 
 			if (typeof this.ui['order'] === 'object') {
-				return keysWithOrder(this.schema['properties'], this.ui['order'])
+				keys = keysWithOrder(this.schema['properties'], this.ui['order'])
 			} else {
-				return Object.keys(this.schema['properties'])
+				keys = Object.keys(this.schema['properties'])
 			}
+			return keys.filter(key => !this.isPostponedProp(key))
+				.filter(key => !this.isIgnoredProp(key))
 		},
 		postponedProps() {
 			return this.ui['postponed'] || []
@@ -136,16 +107,6 @@ export default {
 		ignoredProps() {
 			return this.ui['ignored'] || []
 		},
-		expandArrow() {
-			return this.visible ? "ellipsis-v" : "angle-right"
-		},
-	},
-	created() {
-		//console.log("registered components:", this.$options.components)
-		//console.log("object:", this, "path:", this.path, "children:", this.$children, "slots:", this.$slots)
-		if ('visible' in this.ui) this.visible = this.ui['visible']
-		// console.log("xxx Object: jsonPointer:", this.path)
-		//, jsonPointer.get(this.path))
 	},
 }
 </script>

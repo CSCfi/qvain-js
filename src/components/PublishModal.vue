@@ -1,3 +1,16 @@
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
 	<b-modal size="lg" ok-only title="Publish: error" v-bind="$attrs" v-on="$listeners">
 		<p class="mb-1" v-if="isValidationError">The upstream service isn't happy with the provided data. Most likely a required field is missing.</p>

@@ -1,3 +1,17 @@
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
 	<b-modal id="dataset-versions-modal" ref="dataset-versions-modal" size="lg" centered @shown="fetch(dataset)" @hide="reset" title="published versions" ok-only ok-title="close">
 		<b-alert variant="danger" :show="!!error">API error: {{ error }}</b-alert>

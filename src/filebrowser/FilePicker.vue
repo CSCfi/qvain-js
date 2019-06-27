@@ -1,3 +1,18 @@
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Eemeli Kouhia <eemeli.kouhia@gofore.com>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
 	<div>
 		<b-dropdown text="Change project" class="my-3">
@@ -54,7 +69,7 @@ import { faFile, faFolder } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
 
 const metaxAPI = axios.create({
-	baseURL: process.env.VUE_APP_METAX_API_URL || '/api/proxy',
+	baseURL: process.env.VUE_APP_METAX_FILEAPI_URL || '/api/proxy',
 	timeout: 3000,
 	responseType: 'json',
 })

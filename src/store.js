@@ -1,3 +1,20 @@
+/*
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Shreyas Deshpande <31839853+ShreyasDeshpande@users.noreply.github.com>
+	Kauhia <Kauhia@users.noreply.github.com>
+	Aaron Hakala <aaron.hakala@metropolia.fi>
+	Eemeli Kouhia <eemeli.kouhia@gofore.com>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+*/
 import Vue from 'vue'
 import Vuex from 'vuex'
 //import jsonPointer from 'json-pointer'
@@ -21,6 +38,8 @@ export default new Vuex.Store({
 		schema: {},
 		hints: {},
 		metadata: {},
+		languages: { 'fi':true, 'en':true, 'sv':true },
+		defaultDescriptionLang: 'fi',
 		UI_VALID_KEYWORDS: [
 			'widget',
 			'option',
@@ -93,7 +112,7 @@ export default new Vuex.Store({
 		updateValue(state, payload) {
 			Vue.set(payload.p, payload.prop, payload.val)
 			Vue.nextTick(() => {
-				if (payload.val === '') {
+				if (payload.val === '') { // Note: for objects we may not want to remove the key?
 					Vue.delete(payload.p, payload.prop)
 				}
 			})
@@ -165,6 +184,9 @@ export default new Vuex.Store({
 		cleanStateFor(state, path) {
 			Vue.delete(state.vState, path)
 		},
+		setLanguages(state, payload) {
+			state.languages = Object.assign({}, state.languages, payload)
+		},
 	},
 	getters: {
 		// prunedDataset returns a deep-clone of the dataset discarding empty leaves
@@ -177,7 +199,31 @@ export default new Vuex.Store({
 		},
 		// uiForPath returns the UI overrides for the given path (if any)
 		uiForPath: (state) => (path) => {
-			return state.hints[path.replace(/(\/|^)[0-9]+(\/|$)/g, "$1*$2")] || {}
+			const searchPathOneOfSensitive = path
+				.split('/')
+				.filter(key => key !== '')
+				.map((key, index, array) => {
+					if (isNaN(key)) {
+						return key
+					} else if (array[index - 1] === 'oneOf') {
+						return key
+					} else {
+						return '*'
+					}
+				}).join('/')
+
+			const searchPathNoNumber = path
+				.split('/')
+				.filter(key => key !== '')
+				.map((key, index, array) => {
+					if (isNaN(key)) {
+						return key
+					} else {
+						return '*'
+					}
+				}).join('/')
+
+			return state.hints['/' + searchPathOneOfSensitive] || state.hints['/' + searchPathNoNumber] || {}
 		},
 		// uiValidKeywordsList returns a static array of valid keywords
 		uiValidKeywordsList: (state) => {

@@ -1,8 +1,23 @@
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Eemeli Kouhia <eemeli.kouhia@gofore.com>
+	Kauhia <Kauhia@users.noreply.github.com>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
 	<record-field :required="required" :wrapped="false" :header="!inArray">
 		<title-component slot="title" :title="uiLabel" />
 		<div slot="header-right" class="header__right">
-			<!--<ValidationStatus :status="validationStatus" />-->
 			<InfoIcon :description="uiDescription"/>
 		</div>
 
@@ -12,11 +27,11 @@
 				:type="inputType"
 				:placeholder="uiPlaceholder"
 				:value="value"
-				:state="isValid"
+				:state="isValid ? null : false"
 				@input.native="updateValue">
 			</b-form-input>
 			<span class="input__delete">
-				<DeleteButton v-if="inArray" @click="deleteMe" />
+				<delete-button v-if="inArray" @click="deleteMe" />
 			</span>
 		</div>
 	</record-field>
@@ -26,18 +41,16 @@
 .input {
 	width: 100%;
 	display: inline-flex;
+	align-items: center;
 
 	.input__number {
-		padding: 10px;
-		margin: 0;
+		margin: 0 10px;
 	}
 
 	.input__delete {
-		padding: 10px !important;
-	}
-
-	> * {
-		height: 40px;
+		align-self: stretch;
+		margin: 0 10px 0 2px;
+		display: flex;
 	}
 }
 

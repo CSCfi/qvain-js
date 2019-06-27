@@ -1,35 +1,50 @@
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Eemeli Kouhia <eemeli.kouhia@gofore.com>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
 	<div class="container-fluid limited-width">
 		<h1 class="component-title">Dataset <small class="secondary-text text-muted" v-if="title">{{ title }}</small></h1>
 
 		<div>
 			<b-button-toolbar class="tool-bar" aria-label="Dataset toolbar">
-				<b-button-group size="sm" class="mx-1">
+				<b-button-group size="sm">
 					<b-btn v-b-tooltip.hover title="Create new empty dataset" @click="createNewRecord()">New dataset</b-btn>
 					<!-- hidden due to need of redesign in editor to support this
 					<b-btn v-b-tooltip.hover title="Clone this dataset as new dataset" @click="createCloneRecord()">Clone current dataset</b-btn>
 					-->
 				</b-button-group>
 
-				<b-input-group size="sm" class="w-25 mx-1" prepend="Where are my files">
-					<b-form-select value="fairdata" v-model="selectedSchema" placeholder="None" :disabled="!!selectedSchema" @change="selectSchema">
+				<b-input-group size="sm" prepend="Where are my files">
+					<b-form-select value="fairdata" v-model="selectedSchema" :disabled="!!selectedSchema" @change="selectSchema">
 						<optgroup :label="bundle" v-for="(bundle, index) in bundles" :key="index">
-							<option :value="val" v-for="(val, id) in getSchemas(bundle)" :key="id">{{ !selectedSchema ? val.name : val.shortName }}</option>
+							<option :value="val" v-for="(val, id) in getSchemas(bundle)" :key="id">{{ val.name }}</option>
 						</optgroup>
-						<option v-if="selectedSchema === null" :value="null">None</option>
+						<option v-if="selectedSchema === null" :value="null" hidden>Select one</option>
 					</b-form-select>
 				</b-input-group>
 
-				<b-input-group size="sm" class="w-25 mx-1" prepend="owner">
+				<b-input-group size="sm" prepend="Owner">
 					<b-form-select :value="$auth.user ? $auth.user.name : 'you'" :options="[ $auth.user ? $auth.user.name : 'you' ]"></b-form-select>
 				</b-input-group>
 
-				<b-button-group size="sm" class="mx-1">
+				<b-button-group size="sm" class="save-pub-btns">
 					<b-btn v-b-tooltip.hover title="Save as a draft. Saving does not make your dataset public nor visible to anyone. You can save as many times as you want before publishing." @click="save" :disabled="rateLimited" ref="dataset-save-button">Save</b-btn>
 					<b-btn v-b-tooltip.hover title="Publish makes the saved dataset public. Remember to always save the datset before publishing (only the latest saved version gets published)." @click="confirmPublish" :disabled="rateLimited" ref="dataset-publish-button">Publish</b-btn>
 				</b-button-group>
 
-				<b-button-group size="sm" class="mx-1" v-if="!inDev">
+				<b-button-group size="sm" v-if="!inDev">
 					<b-btn variant="outline-light" v-b-tooltip.hover title="View dataset JSON" v-b-modal="'dataset-json-modal'">json</b-btn>
 					<b-btn variant="outline-light" v-b-tooltip.hover title="Overview" v-b-modal="'dataset-overview-modal'">overview</b-btn>
 					<b-btn variant="outline-light" v-b-tooltip.hover title="Publish" v-b-modal="'publish-modal'">publish</b-btn>
@@ -86,6 +101,16 @@
 					<b-btn v-b-tooltip.hover title="Save as a draft. Saving does not make your dataset public nor visible to anyone. You can save as many times as you want before publishing." @click="save" :disabled="rateLimited" ref="dataset-save-button">Save</b-btn>
 					<b-btn v-b-tooltip.hover title="Publish makes the saved dataset public. Remember to always save the datset before publishing (only the latest saved version gets published)." @click="confirmPublish" :disabled="rateLimited" ref="dataset-publish-button">Publish</b-btn>
 				</b-button-group>
+			</div>
+
+			<div v-else class="schema-help-text">
+				<p>Please select one option from "Where are my files" menu. Note that the selected option cannot be changed without creating a new dataset.</p>
+
+				<p>Where are your files related to this dataset?
+				<ul>
+				<li>In Fairdata IDA (you want to select files from IDA): "Select IDA files"</li>
+				<li>Somewhere else (you want to link files from remote location): "Link Remote Resources"</li>
+				</ul></p>
 			</div>
 		</div>
 		<div v-else>
@@ -160,6 +185,15 @@ export default {
 		getSchemas(bundle) {
 			return Bundle[bundle]
 		},
+		getSchemaForId(schemaId) {
+			for (const bundle in Bundle) {
+				const schema = Object.values(Bundle[bundle]).find(schema=>schema.id==schemaId)
+				if (schema) {
+					return schema
+				}
+			}
+			return null
+		},
 		confirmPublish() {
 			const isExisting = !!this.$store.state.metadata.id
 			if (!isExisting) {
@@ -178,10 +212,8 @@ export default {
 				if (isExisting) {
 					const response = await apiClient.post("/datasets/" + this.$store.state.metadata.id + "/publish", {})
 					this.$root.showAlert("Dataset successfully published", "primary")
-					this.createNewRecord() // clear editor dataset
-					this.$nextTick(()=>{
-						this.$router.replace({ path: '/datasets'}) // redirect to datasets page
-					})
+					this.clearRecord() // clear editor dataset
+					this.$router.replace({ name: "datasets"}) // redirect to datasets page
 				} else {
 					this.$root.showAlert("Please save your dataset first", "danger")
 				}
@@ -218,9 +250,8 @@ export default {
 					this.$root.showAlert("Dataset successfully saved", "primary")
 				} else {
 					const { data: { id }} = await apiClient.post("/datasets/", payload)
-
 					this.$store.commit('setMetadata', { id })
-					this.$router.replace({ name: 'tab', params: { id }})
+					this.$router.replace({ name: 'tab', params: { id: id, tab: this.$route.params.tab }})
 
 					this.$root.showAlert("Success! Created as " + id, "success")
 				}
@@ -236,8 +267,7 @@ export default {
 				this.clearRecord()
 				this.initDataset()
 				this.loading = false
-				this.selectedSchema = null
-				this.$store.commit('loadSchema', {})
+				this.$router.replace({ name: 'editor', params: { id: "new" }})
 			})
 		},
 		/* not used atm due to not working
@@ -258,25 +288,26 @@ export default {
 		},
 
 		clearRecord() {
-			this.$router.replace({ name: 'tab', params: { id: 'new', tab: 'description' }})
+			this.selectedSchema = null
+			this.$store.commit('loadSchema', {})
+			this.$store.commit('loadHints', {})
 			this.$store.commit('loadData', undefined)
 			this.$store.commit('resetMetadata')
 		},
-		cloneCurrentRecord() {
-			this.$router.replace({ name: 'tab', params: { id: 'new', tab: 'description' }})
-			this.$store.commit('resetMetadata')
-		},
+		/* cloneCurrentRecord() {
+			// Not implemented
+		}, */
 		async openRecord(id) {
 			try {
 				this.loading = true
 
 				const { data } = await apiClient.get(`/datasets/${id}`)
-				const schemas = this.getSchemas('fairdata')
-				this.selectedSchema = data.schema === 'metax-ida' ? schemas.ida : schemas.att
+				this.$store.commit('resetMetadata')
+				this.selectedSchema = this.getSchemaForId(data.schema)
 				this.$store.commit('loadSchema', this.selectedSchema.schema)
 				this.$store.commit('loadHints', this.selectedSchema.ui)
 				this.$store.commit('loadData', Object(data.dataset))
-				this.$store.commit('setMetadata', { id })
+				this.$store.commit('setMetadata', { id, schemaId: this.selectedSchema.id })
 			} finally {
 				this.loading = false
 			}
@@ -285,10 +316,26 @@ export default {
 			if (this.selectedSchema !== null) {
 				this.$store.commit('loadSchema', this.selectedSchema.schema)
 				this.$store.commit('loadHints', this.selectedSchema.ui)
-				console.log('selectSchema starts validator');
+				this.$store.commit('setMetadata', { schemaId: this.selectedSchema.id })
 				this.startValidator()
+				this.checkTab()
 			} else {
 				this.$store.commit('loadSchema', {})
+			}
+		},
+		checkTab() {
+			// if tab is unset or invalid (not in tabs list), try to read tab from store or use the first tab
+			const tabUris = this.tabs.map(tab=>tab.uri)
+			if (!this.$route.params.tab || !tabUris.includes(this.$route.params.tab)) {
+				let newTab = tabUris.includes(this.$store.state.metadata.tab) ? this.$store.state.metadata.tab : null
+				if (!newTab && this.tabs.length > 0) {
+					newTab = this.tabs[0].uri
+				}
+				if (newTab) {
+					this.$router.replace({ name: 'tab', params: { id: this.$route.params.id, tab: newTab  }})
+				} else {
+					this.$router.replace({ name: 'editor', params: { id: this.$route.params.id }})
+				}
 			}
 		},
 		startValidator() {
@@ -304,7 +351,7 @@ export default {
 					this.validator.validateData(this.$store.state.record)
 				}
 			})
-		}
+		},
 	},
 	computed: {
 		tabs() {
@@ -323,24 +370,36 @@ export default {
 		},
 	},
 	watch: {
+		'$route.params.tab': async function(newTab, oldTab) {
+			this.$store.commit('setMetadata', { tab: newTab })
+			this.checkTab()
+		},
 		'$route.params.id': async function(newId, oldId) {
-			if (this.id !== 'new') {
-				await this.openRecord(this.id)
-			} else {
+			if (this.id === 'new') {
 				this.clearRecord()
+			} else if (this.id !== 'edit' && this.$store.state.metadata.id !== this.id) {
+				await this.openRecord(this.id)
 			}
 		},
 	},
 	async mounted() {
-		if (this.id !== 'new') {
+		if (this.id === 'new') {
+			this.clearRecord()
+		} else if (this.id !== 'edit' && this.$store.state.metadata.id !== this.id) {
 			await this.openRecord(this.id)
 		}
+
+		// if schema is not set, try to read schema from store
+		if (!this.selectedSchema && this.$store.state.metadata.schemaId) {
+			this.selectedSchema = this.getSchemaForId(this.$store.state.metadata.schemaId)
+		}
+
 		if (this.selectedSchema) {
 			this.startValidator()
 		}
 
-		//this.initDataset() // should this be called
-	}
+		this.checkTab()
+	},
 }
 </script>
 
@@ -353,6 +412,18 @@ export default {
 	border-color: #dee2e6 #dee2e6 #fff;
 }
 
+.tab-field-link {
+	display: flex;
+	height: 38px;
+	align-items: center;
+	justify-content: space-between;
+	padding: 4px 2px 4px 10px;
+}
+
+.tab-field-link .delete-button {
+	margin: 0px 2px 0px 2px;
+}
+
 .no-padding {
 	padding-left: 0;
 	padding-right: 0;
@@ -361,11 +432,30 @@ export default {
 
 <style lang="scss" scoped>
 .tool-bar {
-	padding-top: 10px;
 	padding-bottom: 10px;
+	margin: -2px -4px;
+
+	> * {
+		margin: 2px 4px;
+		flex: 1 1 auto;
+	}
+
+	select {
+		padding-right: 1.5rem;
+	}
+
+	.save-pub-btns {
+		max-width: 20em;
+		margin-left: auto;
+		padding-left: 4px;
+	}
 }
 
 .limited-width {
 	max-width: 1100px;
+}
+
+.schema-help-text {
+	padding: 20px;
 }
 </style>

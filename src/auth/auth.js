@@ -1,4 +1,20 @@
+/*
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+*/
+import axios from 'axios'
 import {parseJwt, getRandomString} from './jwt.js'
+import Vue from 'vue'
 
 const TokenName = "jwt"
 
@@ -9,10 +25,6 @@ function User() {
 	this._jwt = null
 }
 User.prototype.constructor = User
-
-User.prototype.getId = function() {
-	this._id.length > 0 ? this._id : null
-}
 
 function UserFromToken(token) {
 	let jwt = parseJwt(token)
@@ -67,8 +79,11 @@ function filterGroups(prefix, groups) {
 	return groups.filter(grp => grp.startsWith(prefix)).map(grp => grp.substring(prefix.length)).filter(grp => !isNaN(grp))
 }
 
-function Auth(url) {
-	this.url = url
+function Auth(loginUrl, logoutUrl, sessionsUrl) {
+	// reactive indicator for when session is being loaded from the back-end
+	this.loading = Vue.observable({
+		state: !!this.getToken(), // true if there is a token in localStorage
+	})
 
 	// might be Vue's reactive setter
 	this.defineProperty(Auth.prototype, "_user", {
@@ -91,7 +106,25 @@ function Auth(url) {
 	})
 
 	Object.defineProperty(Auth.prototype, "loginUrl", {
-		get: function() { return this.url + '?' + getRandomString(8) },
+		get: function() {
+			if (process.env.NODE_ENV === "development" && process.env.VUE_APP_DEV_TOKEN) {
+				return loginUrl + '?token=' + process.env.VUE_APP_DEV_TOKEN
+			} else {
+				return loginUrl + '?' + getRandomString(8)
+			}
+		},
+	})
+
+	Object.defineProperty(Auth.prototype, "logoutUrl", {
+		get: function() {
+			return logoutUrl
+		},
+	})
+
+	Object.defineProperty(Auth.prototype, "sessionsUrl", {
+		get: function() {
+			return sessionsUrl
+		},
 	})
 }
 Auth.prototype.constructor = Auth
@@ -111,19 +144,85 @@ Auth.prototype.login = function(token) {
 	return false
 }
 
-Auth.prototype.logout = function() {
-	// TODO: maybe empty object?
+Auth.prototype.logout = async function() {
+	try {
+		// delete backend session
+		const response = await axios.post(
+			this.logoutUrl, {
+				timeout: 5000,
+				responseType: 'json',
+				headers: {
+					'Accept': 'application/json',
+				},
+			})
+		// redirect to fairdata logout
+		if (response.data && response.data.redirect) {
+			window.location.href = response.data.redirect
+		}
+	} catch (error) {
+		return false // logout failed
+	}
+
+	// clear user and stored token
 	this.setUser(null)
 	localStorage.removeItem(TokenName)
+	return true
 }
 
-Auth.prototype.localLogin = function() {
-	const token = localStorage.getItem(TokenName)
-	if (token && !isExpiredToken(token)) {
-		return this.login(token)
+Auth.prototype.getSession = async function() {
+	try {
+		const response = await axios.get(
+			this.sessionsUrl, {
+				timeout: 5000,
+				responseType: 'json',
+				headers: {
+					'Accept': 'application/json',
+				},
+			})
+		return response.data
+	} catch (error) {
+		return null
 	}
-	localStorage.removeItem(TokenName)
-	return false
+}
+
+Auth.prototype.getToken = function() {
+	return localStorage.getItem(TokenName)
+}
+
+Auth.prototype.resumeSession = async function() {
+	// If there is an ID token in localStorage, check if we have an
+	// existing session and can login with the token. If not, remove token.
+	let success = false
+	const token = this.getToken()
+	if (token) {
+		const session = await this.getSession()
+		if (session) {
+			success = this.login(token)
+		}
+	}
+	if (!success) {
+		localStorage.removeItem(TokenName)
+	}
+	this.loading.state = false
+	return success
+}
+
+// waitForResumeSession resolves when resumeSession finishes (loading.state === false)
+Auth.prototype.waitForResumeSession = async function() {
+	const loading = this.loading
+	if (loading.state === false) {
+		return
+	}
+
+	return new Promise((resolve) => {
+		// watch for changes with a dummy Vue instance https://github.com/vuejs/vue/issues/9509
+		const unwatch = new Vue().$watch(() => loading.state, (value) => {
+			if (value === false) {
+				unwatch() // remove watcher
+				resolve()
+			}
+		})
+	})
 }
 
 Auth.prototype.defineProperty = Object.defineProperty
@@ -136,25 +235,6 @@ function parseUnixTime(secs) {
 		return null
 	}
 	return date
-}
-
-// getExpirationDateFromToken returns a date based on the the 'exp' field from a JWT or undefined if that field wasn't set.
-function getExpirationDateFromToken(token) {
-	const jwt = parseJwt(token)
-
-	if (!jwt || !('exp' in jwt)) {
-		//return null
-		return undefined
-	}
-
-	return parseUnixTime(jwt.exp)
-}
-
-// isExpiredToken checks if a token is expired by comparing the 'exp' field with the current date;
-// invalid dates will return null, which will evaluate to 0 (true, expired), undefined dates will evaluate to NaN (false, not expired).
-function isExpiredToken(token) {
-	const date = getExpirationDateFromToken(token)
-	return date < new Date()
 }
 
 export default Auth

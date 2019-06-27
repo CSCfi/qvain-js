@@ -1,3 +1,20 @@
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Eemeli Kouhia <eemeli.kouhia@gofore.com>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
+	Kauhia <Kauhia@users.noreply.github.com>
+	Shreyas Deshpande <31839853+ShreyasDeshpande@users.noreply.github.com>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
 	<record-field :required="required" :wrapped="true" :error="!isValid">
 		<title-component slot="title" :title="uiLabel" />
@@ -8,10 +25,10 @@
 
 		<div slot="input">
 			<b-tabs class="tabs-nav" v-model="tabIndex" pills>
-				<b-tab v-for="key in languageKeys" :key="key" no-body>
+				<b-tab v-for="key in languageKeys" :key="key" no-body title-link-class="tab-field-link">
 					<template slot="title">
 						{{ languages[key] }}
-						<font-awesome-icon icon="times" @click="deleteLang(key)" />
+						<delete-button @click="deleteLang(key)" />
 					</template>
 
 					<b-form-textarea
@@ -64,16 +81,7 @@
     font-family: Arial, Helvetica, Sans-serif;
     padding: 8px;
 }
-.delete-icon {
-	float: right;
-	margin: 10px;
-	&:hover {
-		color: grey;
-	}
-}
-.tabs-nav .nav-item .nav-link {
-	height: 38px;
-}
+
 .intro-text {
 	text-align: center;
 }
@@ -87,7 +95,6 @@
 		width: 220px;
 	}
 }
-
 </style>
 
 
@@ -99,6 +106,7 @@ import ValidationStatus from '@/partials/ValidationStatus.vue'
 import RecordField from '@/composites/RecordField.vue'
 import TitleComponent from '@/partials/Title.vue'
 import InfoIcon from '@/partials/InfoIcon.vue'
+import DeleteButton from '@/partials/DeleteButton.vue'
 
 import autosize from 'autosize'
 
@@ -113,6 +121,7 @@ export default {
 		RecordField,
 		TitleComponent,
 		InfoIcon,
+		DeleteButton,
 	},
 	data() {
 		return {
@@ -163,33 +172,21 @@ export default {
 				val: this.state,
 			})
 		},
-		focusOnLastTab: function() {
+		async focusOnLastTab() {
 			const last = Object.keys(this.value || {}).length - 1
-
-			// wait for tab to appear in DOM before switching to it;
-			// works for Chrome, but not Firefox
-			this.$nextTick(function() {
-				this.tabIndex = last
-				this.focusOnTextarea()
-			})
-
-			// In Firefox, for some reason, $nextTick only ever fires before the tab gets added,
-			// no matter how many times it gets called. So check again after a short delay.
-			setTimeout(() => {
-				if (this.tabIndex !== last) {
-					console.warn("setTimeout(): retry tab switch from", this.tabIndex, "to", last)
-					this.tabIndex = last
-					this.focusOnTextarea()
-				}
-			}, 300)
+			// bootstrap-vue takes a couple ticks to add a new tab to the DOM
+			await this.$nextTick()
+			await this.$nextTick()
+			this.tabIndex = last
+			this.focusOnTextarea()
 		},
-		focusOnTabWithLanguage(lang) {
+		async focusOnTabWithLanguage(lang) {
 			const i = Object.keys(this.value || {}).indexOf(lang)
 			if (i >= 0) {
-				// use $nextTick so this (hopefully) also works when adding a new tab that might not be in the DOM immediately
-				this.$nextTick(function() {
-					this.tabIndex = i
-				})
+				// bootstrap-vue takes a couple ticks to add a new tab to the DOM
+				await this.$nextTick()
+				await this.$nextTick()
+				this.tabIndex = i
 				return true
 			}
 			return false
@@ -204,6 +201,13 @@ export default {
 				ref && ref.$el && ref.$el.focus()
 			})
 		},
+		populateLanguages(languages) {
+			for (const lang in languages) {
+				if (languages[lang]) {
+					this.addTab(lang)
+				}
+			}
+		},
 	},
 	watch: {
 		selectedLanguage(lang) {
@@ -212,9 +216,15 @@ export default {
 			}
 			this.addTab(lang)
 		},
+		"$store.state.languages": function(languages) {
+			this.populateLanguages(languages)
+		},
+
 	},
 	created() {
 		this.state = this.value || {}
+		this.populateLanguages(this.$store.state.languages)
+		this.focusOnTabWithLanguage(this.$store.state.defaultDescriptionLang)
 	},
 }
 </script>

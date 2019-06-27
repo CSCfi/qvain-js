@@ -1,20 +1,35 @@
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Eemeli Kouhia <eemeli.kouhia@gofore.com>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
 	<b-container fluid>
 		<h1 class="component-title">My datasets</h1>
 
 		<!-- controls -->
-		<b-button-toolbar class="mb-4">
-			<b-button-group size="sm">
+		<b-button-toolbar class="mb-4 tool-bar">
+			<b-button-group class="filter-buttons" size="sm">
 				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'all'" @click="() => showDatasetState = 'all'" variant="outline-success" v-b-tooltip.hover.bottom title="show draft datasets">All</b-btn>
 				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'draft'" @click="() => showDatasetState = 'draft'" variant="outline-success" v-b-tooltip.hover.bottom title="show draft datasets">Draft</b-btn>
 				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'published'" @click="() => showDatasetState = 'published'" variant="outline-success" v-b-tooltip.hover.bottom title="show published datasets">Published</b-btn>
 			</b-button-group>
 
-			<b-input-group size="sm" class="ml-2" :style="{'flex-grow': '1'}" v-b-tooltip.hover.bottom title="Search from titles" prepend="Search">
+			<b-input-group class="search" size="sm" v-b-tooltip.hover.bottom title="Search from titles" prepend="Search">
 				<b-form-input v-model="filterString" placeholder="title" />
 			</b-input-group>
 
-			<b-button-group class="ml-2 new-record" size="sm">
+			<b-button-group class="new-record" size="sm">
 				<b-btn class="new-record__button" variant="primary" @click="createNewRecord">Create new record</b-btn>
 			</b-button-group>
 		</b-button-toolbar>
@@ -42,7 +57,9 @@
 				{{ readableIso(row.item.created) }} <p style="margin-bottom: 0px;" class="text-muted"><small>{{ friendlyDate(row.item.created) }} ago</small></p>
 			</template>
 			<template slot="title" slot-scope="row">
-				<h5 class="mb-1">{{ preferredLanguage(row.item.title) }}</h5>
+				<h5 class="mb-1">{{ preferredLanguage(row.item.title) }}
+					<b-badge v-if="row.item.next !== null" variant="warning" class="old-version">Old version</b-badge>
+				</h5>
 				<p v-if="row.item.description" class="text-muted" style="display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 24rem; margin: 0px;">
 					<small>{{ preferredLanguage(row.item.description) }}</small>
 				</p>
@@ -80,6 +97,19 @@
 </template>
 
 <style lang="scss" scoped>
+	.tool-bar {
+		margin: -2px -4px;
+
+		> * {
+			margin: 2px 4px;
+			flex-grow: 1;
+		}
+
+		.search {
+			flex-grow: 10000;
+		}
+	}
+
 	.actions {
 		width: 265px !important;
 		button {
@@ -90,6 +120,14 @@
 
 
 <style>
+	.old-version {
+		color: white;
+		margin-left: 0em;
+		margin-top: 0.2em;
+		position: relative;
+		bottom: 0.12em;
+	}
+
 	/* controls */
 	.dataset-filter__button.btn-outline-success:focus {
 		box-shadow: none !important;
@@ -97,7 +135,7 @@
 
 	table#dataset-list thead > tr > th {
 		border-bottom: 0px;
-    	border-top: 0px;
+		border-top: 0px;
 	}
 
 
@@ -107,7 +145,7 @@
 	}
 
 	table#dataset-list.table-striped tbody tr:nth-of-type(odd) {
-    	background-color: rgba(0, 146, 199, 0.1);
+		background-color: rgba(0, 146, 199, 0.1);
 	}
 </style>
 
@@ -182,7 +220,7 @@ export default {
 			}
 		},
 		open(id) { // should maybe later be changed to link so that accessability is better
-			this.$router.push({ name: 'tab', params: { id: id, tab: 'description' }})
+			this.$router.push({ name: 'editor', params: { id: id }})
 		},
 		async del() {
 			this.error = null
@@ -249,7 +287,7 @@ export default {
 			this.$store.commit('loadSchema', {})
 			this.$store.commit('loadHints', {})
 
-			this.$router.replace({ name: 'tab', params: { id: 'new', tab: 'description' }})
+			this.$router.replace({ name: 'editor', params: { id: 'new' }})
 		},
 	},
 	computed: {

@@ -1,35 +1,77 @@
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Eemeli Kouhia <eemeli.kouhia@gofore.com>
+	Kauhia <Kauhia@users.noreply.github.com>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
-	<div>
-		<legend class="col-form-label pt-0">{{ property.charAt(0).toUpperCase() + property.slice(1) }}</legend>
-		<div class="wrapper">
-			<p>Select date:</p>
-			<datepicker class="widget ml-2"
-				placeholder="Click to select"
-				v-model="date">
-			</datepicker>
+	<record-field v-if="isVisible" :required="isRequired" :wrapped="wrapped">
+		<title-component slot="title" :title="uiLabel" />
+		<div slot="header-right">
+			<InfoIcon :description="uiDescription"/>
 		</div>
-	</div>
+
+		<div slot="input">
+			<div class="wrap">
+				<p>Select date:</p>
+				<datepicker class="widget ml-2"
+					placeholder="Click to select"
+					v-model="date">
+				</datepicker>
+				<delete-button v-if="date !== null" @click="clear()" />
+			</div>
+		</div>
+	</record-field>
 </template>
 
 <script>
-import datepicker from 'vuejs-datepicker'
+import Datepicker from 'vuejs-datepicker'
 import SchemaBase from '@/widgets/base.vue'
+import DeleteButton from '@/partials/DeleteButton.vue'
+import InfoIcon from '@/partials/InfoIcon.vue'
+import RecordField from '@/composites/RecordField.vue'
+import TitleComponent from '@/partials/Title.vue'
 
 export default {
 	name: 'date',
 	extends: SchemaBase,
 	components: {
-		datepicker,
+		Datepicker,
+		DeleteButton,
+		InfoIcon,
+		RecordField,
+		TitleComponent,
+	},
+	props: {
+		wrapped: { type: Boolean, default: false },
 	},
 	data() {
 		return {
 			date: null,
 		}
 	},
+	methods: {
+		clear() {
+			this.date = null
+		},
+	},
 	computed: {
 		dateString() {
 			if (!this.date) {
-				return null
+				return '';
+				// CSCQVAIN-129:
+				// Set update payload to '' so that store empties the value.
+				// This is a hack but proper implementation would require more sophisticated logic.
 			}
 
 			if (this.schema.format === 'date') {
@@ -53,11 +95,13 @@ export default {
 
 
 <style lang="scss" scoped>
-	.wrapper {
+	.wrap {
 		display: inline-flex;
+
 		> p {
-			line-height: 40px;
-			vertical-align: middle;
+			margin: 0;
+			display: flex;
+			align-items: center;
 		}
 	}
 </style>

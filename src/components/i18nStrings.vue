@@ -1,3 +1,20 @@
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Eemeli Kouhia <eemeli.kouhia@gofore.com>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Kauhia <Kauhia@users.noreply.github.com>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
+	Shreyas Deshpande <31839853+ShreyasDeshpande@users.noreply.github.com>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
 	<record-field :required="required" :wrapped="true" :error="!isValid">
 		<title-component slot="title" :title="uiLabel" />
@@ -36,8 +53,8 @@
 	display: inline-block;
 }
 .remove-button {
-	padding: 10px;
-    padding-left: 2px;
+	margin: 0 10px 0 2px;
+	display: flex;
 }
 .intro-text {
 	text-align: center;
@@ -102,6 +119,7 @@ export default {
 		addPair(lang) {
 			if (!lang || lang in this.state) return
 			this.$set(this.state, lang, '')
+			this.$store.commit('setLanguages', {[lang]:true})
 			// wait for rendering so that the ref is present in dom before focus
 			this.$nextTick(() => this.$refs[lang][0].$el.focus())
 		},
@@ -115,6 +133,13 @@ export default {
 				val: this.state,
 			})
 		},
+		populateLanguages(languages) {
+			for (const lang in languages) {
+				if (languages[lang]) {
+					this.addPair(lang)
+				}
+			}
+		},
 	},
 	computed: {
 		hasEmptyValues() {
@@ -127,16 +152,24 @@ export default {
 		},
 	},
 	watch: {
-		state(newState, oldState) {
-			const shouldClearValidation = Object.keys(newState).length < Object.keys(oldState).length
-			this.updateValue()
-			if (shouldClearValidation) {
-				this.$store.commit('cleanStateFor', this.path)
-			}
+		state: {
+			handler(newState, oldState) {
+				const shouldClearValidation = Object.keys(newState).length < Object.keys(oldState).length
+				this.updateValue()
+				if (shouldClearValidation) {
+					this.$store.commit('cleanStateFor', this.path)
+				}
+			},
+			deep: true,
+
+			"$store.state.languages": function(languages) {
+				this.populateLanguages(languages)
+			},
 		},
 	},
 	created() {
 		this.state = this.value
+		this.populateLanguages(this.$store.state.languages)
 	},
 }
 </script>

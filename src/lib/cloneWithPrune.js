@@ -1,4 +1,18 @@
 /*
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Shreyas Deshpande <31839853+ShreyasDeshpande@users.noreply.github.com>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+*/
+/*
 	Make a deep clone of an object, pruning empty branches and leaves. Only supports JSON primitive types.
 
 	Loosely based on deepCopy:
@@ -12,7 +26,7 @@ export default function cloneWithPrune(src) {
 
 	if (Array.isArray(src)) {
 	// use filter() here if you want to remove undefined array items
-		let ret = src.slice()
+		let ret = src.filter(value =>  value !== "")
 		let i = ret.length
 		while (i--) {
 			ret[i] = cloneWithPrune(ret[i])
@@ -22,8 +36,7 @@ export default function cloneWithPrune(src) {
 
 	let dest = {}
 	for (let key in src) {
-		if (src[key] === undefined) continue
-
+		if (src[key] === undefined || src[key] == "") continue
 		if (src[key] && typeof src[key] === 'object') {
 		//if (Array.isArray(src[key]) && src[key].length === 0) continue
 		//else if (Object.keys(src[key]).length === 0) continue

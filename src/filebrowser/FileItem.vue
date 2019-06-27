@@ -1,3 +1,18 @@
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Eemeli Kouhia <eemeli.kouhia@gofore.com>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
 	<b-card class="rounded-0" no-body>
 		<b-card-body class="d-flex py-1 align-items-center">
@@ -34,12 +49,12 @@
 			</b-btn-group>
 		</b-card-body>
 		<b-collapse :id="single.identifier" accordion="file-accordion" class="mt-2" :style="{'padding': '20px', 'padding-top': '0px'}">
-			<b-form-group class="item-field my-1" label="Title" key="title" horizontal lable-for="title">
-				<b-form-input class="qvain-input" id="title" placeholder="Title" v-model="single.title"></b-form-input>
+			<b-form-group class="item-field my-1" label="Title" key="title" label-cols="3" lable-for="title">
+				<b-form-input class="qvain-input" placeholder="Title" v-model="single.title"></b-form-input>
 			</b-form-group>
 
-			<b-form-group class="item-field my-1" label="Description" key="description" horizontal lable-for="description">
-				<b-form-input class="qvain-input" id="description" placeholder="Description" v-model="single.description"></b-form-input>
+			<b-form-group class="item-field my-1" label="Description" key="description" label-cols="3" lable-for="description">
+				<b-form-input class="qvain-input" placeholder="Description" v-model="single.description"></b-form-input>
 			</b-form-group>
 
 			<RefList

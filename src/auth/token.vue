@@ -1,3 +1,18 @@
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
+	Shreyas Deshpande <shreyas.deshpande@csc.fi>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
 	<div class="mt-3">
 		<div v-if="!error">
@@ -61,6 +76,12 @@ export default {
 	created: function() {
 		if (this.$route.query.missingcsc) {
 			this.$router.replace({name: 'home', params: {missingCsc: true}})
+			return
+		}
+		
+		// User should have home organization
+		if (this.$route.query.missingorg) {
+			this.$router.replace({name: 'home', params: {missingOrg: true}})
 			return
 		}
 

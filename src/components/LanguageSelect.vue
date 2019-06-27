@@ -1,9 +1,24 @@
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Eemeli Kouhia <eemeli.kouhia@gofore.com>
+	Kauhia <Kauhia@users.noreply.github.com>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
 	<b-input-group>
 		<b-input-group-text class="height" slot="prepend">
 			<font-awesome-icon icon="plus" fixed-width class="text-dark" />
 		</b-input-group-text>
-		<b-form-select class="select" :options="languages" v-bind="$attrs" v-on="$listeners">
+		<b-form-select class="select" v-model="state" :options="languages" v-bind="$attrs" v-on="$listeners" @change="reset">
 			<template slot="first">
 				<option :value="undefined" disabled class="text-muted">{{ placeholder }}</option>
 			</template>
@@ -40,7 +55,13 @@ export default {
 	data() {
 		return {
 			languages: langCodes2,
+			state: undefined,
 		}
 	},
+	methods: {
+		reset() {
+			this.state = undefined
+		}
+	}
 }
 </script>

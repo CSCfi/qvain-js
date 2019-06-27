@@ -1,3 +1,17 @@
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Kauhia <Kauhia@users.noreply.github.com>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
 	<b-card no-body class="my-3 p-0 m-0 border-0">
 		<b-list-group flush>
@@ -13,7 +27,8 @@
 					:activeTab="activeTab"
 					:depth="depth"
 					:key="propName"
-					v-if="shouldCreateProp(propName)">
+					v-if="shouldCreateProp(propName)"
+					v-show="propName !== '@type'">
 				</TabSelector>
 			</b-list-group-item>
 		</b-list-group>
@@ -39,12 +54,10 @@ export default {
 	methods: {
 		shouldCreateProp(prop) {
 			if (prop === 'is_part_of') {
-				console.log("should not render is_part_of")
 				return false
 			}
 			if (!this.isPostponedProp(prop)) return true
 			if (prop in this.value) return true
-			console.log("shouldCreateProp():", false)
 			return false
 		},
 		isPostponedProp(prop) {
@@ -78,24 +91,18 @@ export default {
 		},
 		sortedProps() {
 			if (!this.schema['properties']) {
-				//console.log("sortedProps(): no props")
 				return []
 			}
 
 			if (typeof this.ui['order'] === 'object') {
-				//console.log("sortedProps(): found order:", this.ui['order'])
 				return keysWithOrder(this.schema['properties'], this.ui['order'])
 			} else {
-				//console.log("sortedProps(): props not ordered", Object.keys(this.schema['properties']))
 				return Object.keys(this.schema['properties'])
 			}
 		},
 		postponedProps() {
 			return this.ui['postponed'] || []
 		},
-	},
-	created() {
-		console.log("FlatObject(): created() called", this.schema, this.value)
 	},
 }
 </script>

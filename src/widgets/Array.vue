@@ -1,3 +1,18 @@
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Eemeli Kouhia <eemeli.kouhia@gofore.com>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
 	<record-field class="min-height" :required="required" :wrapped="wrapped" :header="!inArray" :error="!isValid">
 		<title-component slot="title" :title="uiLabel" />
@@ -5,14 +20,6 @@
 			<p :key="error" v-for="error in errors" class="error-message">{{ error }}</p>
 			<ValidationStatus v-if="!isValid" :status="'invalid'" />
 			<InfoIcon :description="uiDescription"/>
-			<!-- validation debuging data
-			<div>
-				required: {{ required }} <br>
-				minItems: {{ schema.minItems }} <br>
-				isValid: {{ isValid }} <br>
-				errors: {{ errors }} <br>
-			</div>
-			-->
 		</div>
 		<div slot="input">
 			<!--
@@ -20,19 +27,14 @@
 				This could be code smell but at the moment the best solution is just to patch this. See https://github.com/xianshenglu/blog/issues/47 for reference.
 			-->
 			<b-tabs v-if="forceArrayUpdateHack && tabFormat" :value="tabIndex" class="tab-array-margin" pills>
-				<!--
-					There is a bug in bootstrap-vue preventing correct update of tab title template (template is not reactive)
-					By making the actual tab component depend on the tabTitle function we make it emit tab change every time tabTitle is update.
-					The class update_trigger_hack itself does nothing.
-					https://github.com/bootstrap-vue/bootstrap-vue/issues/1677
-				-->
 				<b-tab
 					v-for="(child, index) in value"
 					style="{margin-top: 5px}"
 					:key="index"
-					:title-link-class="{ 'update_trigger_hack': !!tabTitle(index) }">
+					title-link-class="tab-field-link">
 					<template slot="title">
-						{{ tabTitle(index) }} <font-awesome-icon icon="times" @click="deleteElement(index)" />
+						{{ tabTitle(index) }}
+						<delete-button @click="deleteElement(index)" />
 					</template>
 
 					<TabSelector
@@ -49,7 +51,6 @@
 				</b-tab>
 
 				<div slot="tabs" class="input__controls">
-					<b-btn class="input__control mr-2" type="button" variant="secondary"><font-awesome-icon icon="list" fixed-width/> <span>{{ minimum || "–" }} / {{ value.length }} / {{ maximum || "–" }}</span></b-btn>
 					<b-btn class="input__control" type="button" variant="primary" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
 				</div>
 
@@ -71,7 +72,6 @@
 						:key="'array-' + index" />
 				</b-list-group-item>
 				<div class="input__controls">
-					<b-btn class="input__control mr-2" type="button" variant="secondary"><font-awesome-icon icon="list" fixed-width/> <span>{{ minimum || "–" }} / {{ value.length }} / {{ maximum || "–" }}</span></b-btn>
 					<b-btn class="input__control" type="button" variant="primary" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
 				</div>
 			</b-list-group>
@@ -92,11 +92,10 @@
 	}
 }
 
-
 .list-item {
 	margin-top: 10px;
 	margin-bottom: 0px;
-    border-bottom: 0;
+	border-bottom: 0;
 	border-top: 0;
 	padding: 0;
 }
@@ -114,14 +113,11 @@
 
 <script>
 import vSchemaBase from './base.vue'
-//import ValidationPopover from '@/components/ValidationPopover.vue'
-//import Wrapper from '@/components/Wrapper.vue'
-//import TabSelector from '@/widgets/TabSelector.vue'
-//import ValidationStatus from '@/partials/ValidationStatus.vue'
 import RecordField from '@/composites/RecordField.vue'
 import TitleComponent from '@/partials/Title.vue'
 import InfoIcon from '@/partials/InfoIcon.vue'
 import ValidationStatus from '@/partials/ValidationStatus.vue'
+import DeleteButton from '@/partials/DeleteButton.vue'
 
 export default {
 	extends: vSchemaBase,
@@ -133,6 +129,7 @@ export default {
 		TitleComponent,
 		InfoIcon,
 		ValidationStatus,
+		DeleteButton,
 	},
 	props: {
 		tabFormat: { type: Boolean, default: true },
@@ -218,7 +215,6 @@ export default {
 		init: function() {
 			this.minimum = typeof this.schema['minItems'] === 'number' && this.schema['minItems'] > 0 ? this.schema.minItems : 0
 			this.maximum = typeof this.schema['maxItems'] === 'number' && this.schema['maxItems'] > 0 ? this.schema.maxItems : undefined
-			//console.log("schema-array: set min/max", this.minimum, this.maximum)
 			if (this.isTuple && !this.allowAdditional) this.maximum = this.schema['items'].length
 		},
 	},

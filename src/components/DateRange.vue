@@ -1,3 +1,18 @@
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Eemeli Kouhia <eemeli.kouhia@gofore.com>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
 	<div>
 		<legend class="col-form-label pt-0">{{ title }}</legend>
@@ -6,9 +21,7 @@
 			<datepicker placeholder="From" class="widget ml-2" :disabledDates="disableBefore" v-model="start"></datepicker>
 			<p class="ml-2">-</p>
 			<datepicker placeholder="To" class="widget ml-2" :disabledDates="disableAfter" v-model="end"></datepicker>
-			<div class="align">
-				<DeleteButton v-if="inArray" @click="$emit('delete', property)"/>
-			</div>
+			<delete-button v-if="inArray" @click="$emit('delete', property)"/>
 		</div>
 		<div>
 			<p v-if="start && end" class="ml-2">Time between the two dates: {{timeBetweenString}}</p>
@@ -86,15 +99,12 @@ export default {
 <style lang="scss" scoped>
 	.wrapper {
 		display: inline-flex;
-		height: 40px;
+
 		> p {
-			line-height: 40px;
-			vertical-align: middle;
+			margin: 0;
+			display: flex;
+			align-items: center;
 		}
-	}
-	.align {
-		padding: 12px;
-		padding-left: 5px;
 	}
 </style>
 
