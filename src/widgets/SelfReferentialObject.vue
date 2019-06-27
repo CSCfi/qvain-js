@@ -67,11 +67,9 @@ export default {
 	methods: {
 		add() {
 			let obj = this.value
-			console.log("add() called", obj)
 			while (this.refField in obj) {
 				obj = obj[this.refField]
 			}
-			console.log("add() called (after loop)", obj)
 			this.$store.commit('updateValue', {
 				p: obj,
 				prop: this.refField,
@@ -131,14 +129,6 @@ export default {
 			}
 
 			return arr
-		},
-	},
-	watch: {
-		value() {
-			console.log("SelfReferentialObject(): watcher trigger:", this.flattened)
-		},
-		"value.email"() {
-			console.log("SelfReferentialObject(): email watcher trigger:", this.flattened)
 		},
 	},
 }
