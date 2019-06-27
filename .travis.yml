@@ -11,17 +11,38 @@ jobs:
     - stage: check-security-license-etc
       name: "License, Audit and Security"
       script:
-        - make license
-        - make audit
-        - make security
+        - |
+          if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
+            make license
+            make audit
+            make security
+          fi
+        - |
+          if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
+            echo "This is skipped for pull requests."
+          fi
     - stage: deploy-to-test
       name: "Deploy to qvain-test.csc.fi"
       script:
-        - echo "TBD"
+        - |
+          if [ "$TRAVIS_EVENT_TYPE" != "cron" && "$TRAVIS_PULL_REQUEST" = "false" ]; then
+            ./travis/deploy-to-test.sh
+          fi
+        - |
+          if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
+            echo "This is skipped for pull requests."
+          fi
     - stage: deploy-to-stable
       name: "Deploy to qvain-stable.csc.fi"
       script:
-        - echo "TBD"
+        - |
+          if [ "$TRAVIS_EVENT_TYPE" != "cron" && "$TRAVIS_PULL_REQUEST" = "false" ]; then
+            ./travis/deploy-to-stable.sh
+          fi
+        - |
+          if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
+            echo "This is skipped for pull requests."
+          fi
 stages:
   - name: build
   - name: check-security-license-etc
