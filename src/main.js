@@ -1,41 +1,75 @@
+/*
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Aaron Hakala <aaron.hakala@metropolia.fi>
+	Eemeli Kouhia <eemeli.kouhia@gofore.com>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
+	Shreyas Deshpande <shreyas.deshpande@csc.fi>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+*/
 import Vue from 'vue'
 import App from './App.vue'
 //import Vuex from 'vuex'
 import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-import './assets/css/qvain.css'
+import './assets/css/qvain.scss'
+
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+//import { faUser, faInfo, faMinus, faPlus, faAngleRight, faTimes, faQuoteLeft, faExclamationTriangle, faSync, faQuestionCircle, faDatabase, faPen, faTrash, faHistory, faClock, faCloudUploadAlt, faCircleNotch, faList, faListAlt, faUndo, faExternalLinkAlt, faEllipsisV } from '@fortawesome/free-solid-svg-icons'
+import { fas } from '@fortawesome/free-solid-svg-icons'
 
 import router from './router.js'
 import store from './store.js'
-import AuthStore from './vuex/auth.js'
 import FilesStore from './vuex/files.js'
 import AuthPlugin from './auth/plugin.js'
 
-/*
-import vWelcome from './v-welcome.vue'
-import vEditor from './v-editor.vue'
-import vLister from './v-lister.vue'
-import vSchema from './v-schema.vue'
-import vSchemaForm from './v-schema-form.vue'
-import refdataWidgets from './widgets/plugin-ui-refdata.js'
-*/
-
 Vue.use(BootstrapVue)
-
-//Vue.use(refdataWidgets)
 
 Vue.use(AuthPlugin, {
 	router: router,
-	loginPage: "/token",
+	loginUrl: "/api/auth/login",
+	logoutUrl: "/api/sessions/logout",
+	sessionsUrl: "/api/sessions/",
+	cbUrl: "/token",
 })
 
-store.registerModule('auth', AuthStore)
+Vue.component('font-awesome-icon', FontAwesomeIcon)
+//library.add(faUser, faInfo, faMinus, faPlus, faTimes, faAngleRight, faQuoteLeft, faExclamationTriangle, faSync, faQuestionCircle, faDatabase, faPen, faTrash, faHistory, faClock, faCloudUploadAlt, faCircleNotch, faList, faListAlt, faUndo, faExternalLinkAlt, faEllipsisV)
+library.add(fas)
+
 store.registerModule('files', FilesStore)
 
-// eslint-disable-next-line no-unused-vars
-const testJwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwNTNiZmZiY2M0MWVkYWQ0ODUzYmVhOTFmYzQyZWExOCIsIm5hbWUiOiJXb3V0ZXIgVmFuIEhlbWVsIiwiYWRtaW4iOnRydWV9.SzRhDZOKW2l1Y5VTNin43vxfbZ86QXhPVULpidMVyE8"
-
+// get configuration from environment
+function getConfig() {
+	return {
+		// Metax Dataset API endpoint
+		MetaxApiUrl: process.env['VUE_APP_METAX_API_URL'],
+		// Elastic Search API endpoint
+		EsApiUrl: process.env['VUE_APP_ES_API_URL'],
+		// Etsin Dataset API endpoint
+		EtsinApiUrl: process.env['VUE_APP_ETSIN_API_URL'],
+		// Qvain (js) version
+		Version: process.env['VUE_APP_VERSION'],
+		// Qvain (js) commit hash
+		CommitHash: process.env['VUE_APP_COMMIT_HASH'],
+		// application execution environment (testing, stable, production)
+		Environment: process.env['VUE_APP_ENVIRONMENT'],
+		// node environment
+		NodeEnv: process.env['NODE_ENV'],
+		// development login token
+		DevToken: process.env['DEV_TOKEN'],
+	}
+}
 
 // create and mount the root instance
 // eslint-disable-next-line no-unused-vars
@@ -44,20 +78,62 @@ const app = new Vue({
 	store,
 	render: h => h(App),
 	data: {
-		"user": null,
-		//"DEBUG": APP_DEBUG,
+		user: null,
+		language: null,
+		dismissSecs: 5,
+		dismissCountDown: 0,
+		alertText: "hello there!",
+		alertVariant: "dark",
 	},
 	methods: {
+		countDownChanged (dismissCountDown) {
+			this.dismissCountDown = dismissCountDown
+		},
+		showAlert (text, variant) {
+			this.dismissCountDown = this.dismissSecs
+			this.alertText = text
+			this.alertVariant = variant || "dark"
+		},
+		dismissAlert () {
+			this.dismissCountDown = 0
+			this.alertText = null
+			this.alertVariant = "dark"
+		},
 	},
 	computed: {
-		authenticated: function() {
+		authenticated() {
 			return this.user !== null
 		},
 	},
-	created: function() {
-		console.log("MODE:", process.env.VUE_APP_MODE)
-		console.log("METAX_API_URL:", process.env.VUE_APP_METAX_API_URL)
-		console.log("APP_DEBUG:", typeof APP_DEBUG !== 'undefined' ? APP_DEBUG : undefined)
-		console.log("localStorage token login:", this.$auth.localLogin(), this.$auth.loggedIn)
+	watch: {
+		language(val) {
+			this.showAlert("language set to: " + val)
+		},
 	},
+	created() {
+		// set configuration on root component
+		this.$config = getConfig()
+	},
+
+	mounted() {
+		// load Matomo script, add a PageView
+		if (process.env['VUE_APP_MATOMO_SITE_ID']) {
+			window._paq = []
+			_paq.push(['trackPageView'])
+			_paq.push(['enableLinkTracking']);
+			(function() {
+				var u= "//matomo.rahtiapp.fi/"
+				_paq.push(['setTrackerUrl', u +'piwik.php'])
+				_paq.push(['setSiteId', process.env['VUE_APP_MATOMO_SITE_ID']])
+				var d=document,
+					g=d.createElement('script'),
+					s=d.getElementsByTagName('script')[0]
+				g.type='text/javascript'
+				g.async=true
+				g.defer=true
+				g.src= u+'piwik.js'
+				s.parentNode.insertBefore(g,s)
+			})()
+		}
+	}
 }).$mount('#app')

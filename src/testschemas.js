@@ -1,3 +1,16 @@
+/*
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+*/
 //import schemaIow from '../schema/schema.json'
 //import schemaIowDeref from '../schema/deref.json'
 import schemaFairDataDeref from '../schema/qvain-fairdata-deref.json'
@@ -11,62 +24,62 @@ import { default as deepcopy } from 'json-deep-copy'
 //var deepcopy = Object
 
 
-var _testSimpleSchema = {
+let _testSimpleSchema = {
 	'type': "string",
 	'minLength': 3,
 	'title': "this is the title",
 }
 
 
-var _testCoordinateSchema = {
+let _testCoordinateSchema = {
 	"$schema": "http://json-schema.org/draft-04/schema#",
 	"description": "A geographical coordinate",
 	"type": "object",
 	"properties": {
 		"latitude": { "type": "number" },
-		"longitude": { "type": "number" }
-	}
+		"longitude": { "type": "number" },
+	},
 }
 
 
-var _testAgeSchema = {
+let _testAgeSchema = {
 	"title": "person",
 	"type": "object",
 	"required": ["first_name", "last_name", "age"],
 	"properties": {
 		"first_name": { "type": "string", "title": "first name" },
 		"last_name": { "type": "string", "title": "last name" },
-		"age": { "type": "integer", "minimum": 12, "maximum": 120, "multipleOf": 10 }
-	}
+		"age": { "type": "integer", "minimum": 12, "maximum": 120, "multipleOf": 10 },
+	},
 }
 
 
-var _testMultiTypeSchema = {
+let _testMultiTypeSchema = {
 	"type": ["number", "string"],
 	"title": "alphanum",
 	"description": "this can be a number or a string",
 }
 
 
-var _testArrayList = {
+let _testArrayList = {
 	"type": "array",
 	"items": {
-		"type": "number"
-	}
+		"type": "number",
+	},
 }
 
 
-var _testArrayListMinMax = {
+let _testArrayListMinMax = {
 	"type": "array",
 	"minItems": 2,
 	"maxItems": 3,
 	"items": {
-		"type": "number"
-	}
+		"type": "number",
+	},
 }
 
 
-var _testArrayListFancy = {
+let _testArrayListFancy = {
 	"type": "array",
 	"minItems": 2,
 	"maxItems": 5,
@@ -75,96 +88,96 @@ var _testArrayListFancy = {
 	"items": {
 		"type": "number",
 		"title": "favourite",
-		"multipleOf": 5
-	}
+		"multipleOf": 5,
+	},
 }
 
 
-var _testArrayTuple = {
+let _testArrayTuple = {
 	"type": "array",
 	"items": [
 		{
-			"type": "number"
-		},
-		{
-			"type": "string"
+			"type": "number",
 		},
 		{
 			"type": "string",
-			"enum": ["Street", "Avenue", "Boulevard"]
 		},
 		{
 			"type": "string",
-			"enum": ["NW", "NE", "SW", "SE"]
-		}
-	]
-}
-
-
-var _testArrayTupleAdd = {
-	"type": "array",
-	"items": [
-		{
-			"type": "number"
-		},
-		{
-			"type": "string"
+			"enum": ["Street", "Avenue", "Boulevard"],
 		},
 		{
 			"type": "string",
-			"enum": ["Street", "Avenue", "Boulevard"]
+			"enum": ["NW", "NE", "SW", "SE"],
 		},
-		{
-			"type": "string",
-			"enum": ["NW", "NE", "SW", "SE"]
-		}
 	],
-	"additionalItems": false
 }
 
 
-var _testTypedEnumSchema = {
+let _testArrayTupleAdd = {
+	"type": "array",
+	"items": [
+		{
+			"type": "number",
+		},
+		{
+			"type": "string",
+		},
+		{
+			"type": "string",
+			"enum": ["Street", "Avenue", "Boulevard"],
+		},
+		{
+			"type": "string",
+			"enum": ["NW", "NE", "SW", "SE"],
+		},
+	],
+	"additionalItems": false,
+}
+
+
+let _testTypedEnumSchema = {
 	"type": "string",
-	"enum": ["red", "amber", "green"]
+	"enum": ["red", "amber", "green"],
 }
 
 
-var _testUntypedEnumSchema = {
-	"enum": ["red", "amber", "green", null, 42]
+let _testUntypedEnumSchema = {
+	"enum": ["red", "amber", "green", null, 42],
 }
 
 
-var _testTypeAndEnumSchema = {
+let _testTypeAndEnumSchema = {
 	"type": "string",
-	"enum": ["red", "amber", "green", null]
+	"enum": ["red", "amber", "green", null],
 }
 
 
-var _testAnyOfSchema = {
+let _testAnyOfSchema = {
 	"anyOf": [
 		{ "type": "string", "maxLength": 5 },
-		{ "type": "number", "minimum": 0 }
-	]
+		{ "type": "number", "minimum": 0 },
+	],
 }
 
 
-var _testAllOfSchema = {
+let _testAllOfSchema = {
 	"allOf": [
 		{ "type": "string" },
-		{ "maxLength": 5 }
-	]
+		{ "maxLength": 5 },
+	],
 }
 
 
-var _testOneOfSchema = {
+let _testOneOfSchema = {
 	"oneOf": [
 		{ "type": "number", "multipleOf": 5 },
-		{ "type": "number", "multipleOf": 3 }
-	]
+		{ "type": "number", "multipleOf": 3 },
+	],
 }
 
 
-var _testOneOfSchemaObjects = {
+let _testOneOfSchemaObjects = {
 	"oneOf": [
 		{
 			"type": "object",
@@ -182,26 +195,26 @@ var _testOneOfSchemaObjects = {
 				"workers": { "type": "number" },
 			},
 		},
-	]
+	],
 }
 
 
-var _testDefinitionsSchema = {
+let _testDefinitionsSchema = {
 	"definitions": {
 		"address": {
 			"type": "object",
 			"properties": {
 				"street_address": { "type": "string" },
 				"city":           { "type": "string" },
-				"state":          { "type": "string" }
+				"state":          { "type": "string" },
 			},
-			"required": ["street_address", "city", "state"]
-		}
-	}
+			"required": ["street_address", "city", "state"],
+		},
+	},
 }
 
 
-var _testRefSchema = {
+let _testRefSchema = {
 	"$schema": "http://json-schema.org/draft-04/schema#",
 	
 	"definitions": {
@@ -210,22 +223,22 @@ var _testRefSchema = {
 			"properties": {
 				"street_address": { "type": "string" },
 				"city":           { "type": "string" },
-				"state":          { "type": "string" }
+				"state":          { "type": "string" },
 			},
-			"required": ["street_address", "city", "state"]
-		}
+			"required": ["street_address", "city", "state"],
+		},
 	},
 	
 	"type": "object",
 	
 	"properties": {
 		"billing_address": { "$ref": "#/definitions/address" },
-		"shipping_address": { "$ref": "#/definitions/address" }
-	}
+		"shipping_address": { "$ref": "#/definitions/address" },
+	},
 }
 
 
-var _testIdSchema = {
+let _testIdSchema = {
 	"$id": "http://example.com/root.json",
 	"definitions": {
 		"A": { "$id": "#foo" },
@@ -233,28 +246,28 @@ var _testIdSchema = {
 			"$id": "other.json",
 			"definitions": {
 				"X": { "$id": "#bar" },
-				"Y": { "$id": "t/inner.json" }
-			}
+				"Y": { "$id": "t/inner.json" },
+			},
 		},
 		"C": {
-			"$id": "urn:uuid:ee564b8a-7a87-4125-8c96-e9f123d6766f"
-		}
-	}
+			"$id": "urn:uuid:ee564b8a-7a87-4125-8c96-e9f123d6766f",
+		},
+	},
 }
 
 
-var _testTabSchema = {
+let _testTabSchema = {
 	"title": "tab test",
 	"description": "a tab test with data for 2 tabs",
 	"type": "object",
 	"properties": {
 		"user": deepcopy(_testAgeSchema),
 		"location": deepcopy(_testCoordinateSchema),
-	}
+	},
 }
 
 
-var _testTabSchema2 = {
+let _testTabSchema2 = {
 	"title": "tab test",
 	"description": "a tab test with data for 2 tabs",
 	"type": "object",
@@ -278,11 +291,11 @@ var _testTabSchema2 = {
 			},
 		},
 		"extra": { "title": "some extra information", "type": "string" },
-	}
+	},
 }
 
 
-var _testESWidget = {
+let _testESWidget = {
 	"title": "ElasticSearch test",
 	"description": "ES widget refdata test",
 	"type": "object",
@@ -294,7 +307,7 @@ var _testESWidget = {
 			"type": "object",
 			//"additionalProperties": false,
 			"additionalProperties": {
-				"type":"string"
+				"type":"string",
 			},
 			"properties": {
 				"identifier": { "title": "Identifier", "type": "string" },
@@ -302,7 +315,7 @@ var _testESWidget = {
 					"title": "Preferred label",
 					"type": "object",
 					"additionalProperties": {
-						"type":"string"
+						"type":"string",
 					},
 					//additionalProperties: false,
 				},
@@ -315,7 +328,7 @@ var _testESWidget = {
 			"type": "object",
 			//"additionalProperties": false,
 			"additionalProperties": {
-				"type":"string"
+				"type":"string",
 			},
 			"properties": {
 				"identifier": { "title": "Identifier", "type": "string" },
@@ -323,38 +336,38 @@ var _testESWidget = {
 					"title": "Preferred label",
 					"type": "object",
 					"additionalProperties": {
-						"type":"string"
+						"type":"string",
 					},
 					//additionalProperties: false,
 				},
 				//"definition": { "title": "Definition", "type": "array" },
 			},
 		},
-	}
+	},
 }
 
 
-var _testTabbedArraySchema = {
+let _testTabbedArraySchema = {
 	"title": "tabbed array test",
 	"description": "a widget that presents arrays in a tabbed interface",
 	"type": "object",
 	"properties": {
 		"justastring": {
-			"type": "string"
+			"type": "string",
 		},
 		"persons": {
 			"type": "array",
-			"items": deepcopy(_testAgeSchema)
+			"items": deepcopy(_testAgeSchema),
 		},
 		"more_persons": {
 			"type": "array",
-			"items": deepcopy(_testAgeSchema)
+			"items": deepcopy(_testAgeSchema),
 		},
-	}
+	},
 }
 
 
-var testSchemas = {
+let testSchemas = {
 	'simple':           _testSimpleSchema,
 	'coordinate':       _testCoordinateSchema,
 	'age':              _testAgeSchema,

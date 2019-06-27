@@ -1,3 +1,16 @@
+/*
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+*/
 "use strict"
 
 /*
@@ -18,8 +31,8 @@ const _Combiners = {
 	'not': {},
 }
 
-var ObjectKWs = ['properties', 'definitions'] // 'additionalProperties'
-var ArrayKWs = ['items', 'additionalItems']
+let ObjectKWs = ['properties', 'definitions'] // 'additionalProperties'
+let ArrayKWs = ['items', 'additionalItems']
 
 
 function foreachSchema(schema, func) {
@@ -85,7 +98,7 @@ function _walkAndSet(schema, path, func, cur) {
 	if (typeof schema !== 'object') throw new Error("schema is not an object: " + path || "/")
 		
 	//var cur = func(path) || cur
-	var found = func(path)
+	let found = func(path)
 	cur = typeof found === 'number' ? found : cur
 	
 	console.log(path || "root", ":", typeof found === 'number' ? found : "("+cur+")")

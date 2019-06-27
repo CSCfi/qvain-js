@@ -14,3 +14,9 @@ yarn-error.log*
 
 # editor
 *.kate-swp
+
+dependency-check
+dependency-check*
+*.zip
+
+venv

@@ -1,3 +1,16 @@
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
 	<div class="container-fluid">
 		<b-form-select v-model="selectedSchema" :options="getTestSchemaNames()" class="mb-3"></b-form-select>
@@ -23,7 +36,7 @@
 			</form>
 		</b-modal>
 		
-		<hint-editor ref="refHintEditor" :schema="{}" path=""></hint-editor>
+		<HintEditor ref="refHintEditor" :schema="{}" path=""></HintEditor>
 		<b-btn @click="edit('blah')">open</b-btn>
 
 		<hr/>
@@ -37,8 +50,8 @@
 
 <script>
 import testSchemas from '../testschemas.js'
-import vHintEditor from './hint-editor.vue'
-import vSchemaTree from './v-schema-tree.vue'
+import HintEditor from './HintEditor.vue'
+import SchemaTree from './SchemaTree.vue'
 
 export default {
 	data: function() {
@@ -74,8 +87,8 @@ export default {
 			},
 			set (value) {
 				this.$store.commit('setHint', {path: this.curPointer, hint: value})
-			}
-		}
+			},
+		},
 	},
 	watch: {
 		selectedSchema: function() {
@@ -85,8 +98,8 @@ export default {
 		},
 	},
 	components: {
-		'hint-editor': vHintEditor,
-		'schema-tree': vSchemaTree,
+		'HintEditor': HintEditor,
+		'SchemaTree': SchemaTree,
 	},
 	created() {
 		console.log("schemaviewer:", this, this.$refs)

@@ -1,26 +1,31 @@
 {
   "root": true,
-  "extends": [
-    "eslint:recommended",
-    "plugin:vue/essential"
-  ],
+  "extends": ["plugin:vue/recommended", "eslint:all"],
   "env": {
-    'browser': true,
-    'node': true
+    "browser": true,
+    "node": true
   },
   "globals": {
     "APP_DEBUG": true
   },
-  rules: {
-    'indent': ["warn", 'tab'],
-    'no-tabs': 0,
-    'semi': ["warn", 'never'],
-    'semi-spacing': ["warn", { before: false, after: true }],
-    'no-unexpected-multiline': "warn",
-    'no-var': "warn",
-    'space-before-blocks': ["warn", 'always'],
-    'space-in-parens': ["warn", 'never'],
-    'no-unused-vars': "warn",
-    'no-console': 0
+  "rules": {
+    "indent": ["warn", "tab"],
+    "no-tabs": 0,
+    "semi": ["warn", "never"],
+    "semi-spacing": ["warn", { "before": false, "after": true }],
+    "no-unexpected-multiline": "warn",
+    "no-var": "warn",
+    "space-before-blocks": ["warn", "always"],
+    "space-in-parens": ["warn", "never"],
+    "no-unused-vars": "warn",
+    "no-console": 0,
+    "comma-dangle": ["error", "always-multiline"],
+    "vue/no-parsing-error": [2, {
+      "invalid-first-character-of-tag-name": false
+    }],
+    "vue/require-component-is": "warn"
+  },
+  "parserOptions": {
+    "parser": "babel-eslint"
   }
 }

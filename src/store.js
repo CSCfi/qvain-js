@@ -1,25 +1,52 @@
+/*
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Shreyas Deshpande <31839853+ShreyasDeshpande@users.noreply.github.com>
+	Kauhia <Kauhia@users.noreply.github.com>
+	Aaron Hakala <aaron.hakala@metropolia.fi>
+	Eemeli Kouhia <eemeli.kouhia@gofore.com>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+*/
 import Vue from 'vue'
 import Vuex from 'vuex'
+//import jsonPointer from 'json-pointer'
+//import {api as vuePointer} from '../vendor/json-pointer/index.js'
+import vuePointer from '../vendor/json-pointer/index.js'
+import cloneWithPrune from './lib/cloneWithPrune.js'
+//const vuePointer = require('../vendor/json-pointer/index.js').default
+//import * as vuePointer from '../vendor/json-pointer/index.js'
+import getDotted from 'lodash.get'
+import hasDotted from 'lodash.has'
 
 Vue.use(Vuex)
 
-
-//import { SchemaValidator } from '../tmp/json-schema-live/src/validate.js'
-
+// temporary counter to check how often a getter is called
+//let counter = 0
 
 export default new Vuex.Store({
 	state: {
-		//record: "not loaded",
 		record: undefined,
-		schema: "not loaded",
+		dataset: {},
+		schema: {},
 		hints: {},
+		metadata: {},
+		languages: { 'fi':true, 'en':true, 'sv':true },
+		defaultDescriptionLang: 'fi',
 		UI_VALID_KEYWORDS: [
 			'widget',
 			'option',
 			'label',
 			'help',
 			'placeholder',
-			'tab'
+			'tab',
 		],
 		tabui: {},
 		validation: {},
@@ -32,9 +59,15 @@ export default new Vuex.Store({
 		},
 	},
 	mutations: {
+		setMetadata(state, payload) {
+			state.metadata = Object.assign({}, state.metadata, payload)
+		},
+		resetMetadata(state) {
+			state.metadata = {}
+		},
 		loadData(state, record) {
-			state.record = record
-			//Vue.set(state, 'record', record)
+			//state.record = record
+			Vue.set(state, 'record', record)
 		},
 		mergeData(state, payload) {
 			for (let key in payload) {
@@ -42,8 +75,15 @@ export default new Vuex.Store({
 			}
 		},
 		loadSchema(state, schema) {
-			state.schema = schema
-			//state.schema = Vue.set(state, 'schema', schema)
+			Vue.set(state, 'schema', schema)
+		},
+		changeSchema(state) {
+			//state.schema.properties.creator.description = "I changed it!"
+			//delete state.schema.properties.creator
+			//Vue.delete(state.schema, 'properties')
+			Vue.delete(state.schema.properties, 'creator')
+			//Vue.set(state.schema.properties, 'creature', "frankenstein")
+			//Vue.set(state, 'schema', {})
 		},
 		loadHints(state, hints) {
 			//state.hints = hints
@@ -65,28 +105,59 @@ export default new Vuex.Store({
 			Vue.set(state.tabui, payload.tab, payload.schema)
 		},
 		initValue(state, payload) {
-			console.log("store init for", payload.p, "payload:", payload, "state:", state)
+			//console.log("store init for", payload.p, "payload:", payload, "state:", state)
 			//payload.p[payload.prop] = payload.val
 			Vue.set(payload.p, payload.prop, payload.val)
 		},
 		updateValue(state, payload) {
-			console.log("store update for", payload.p, "payload:", payload)
-			//payload.p[payload.prop] = payload.val
 			Vue.set(payload.p, payload.prop, payload.val)
+			Vue.nextTick(() => {
+				if (payload.val === '') { // Note: for objects we may not want to remove the key?
+					Vue.delete(payload.p, payload.prop)
+				}
+			})
+		},
+		updateArrayValue(state, payload) {
+			const index = payload.p[payload.prop].findIndex(x => x[payload.search.field] === payload.search.value)
+			Vue.set(payload.p[payload.prop], index, payload.val)
 		},
 		pushValue(state, payload) {
-			console.log("store push for", payload.p, "payload:", payload)
-			//payload.p.push()
-			//payload.val.push('x')
-			//payload.p[payload.prop].push()
-			payload.val.push(undefined)
-			//let newArr = payload.val
-			//newArr.push(undefined)
-			//Vue.set(payload.p, payload.prop, newArr)
+			//console.log("store push for", payload.p, "payload:", payload)
+			payload.p[payload.prop].push(payload.val)
+		},
+		pushMultiple(state, payload) {
+			//console.log('store push for', payload.p, 'payload:', payload)
+			payload.p[payload.prop].push(...payload.val)
 		},
 		popValue(state, payload) {
-			payload.val.pop()
+			payload.p[payload.prop].pop()
 		},
+		removeValue(state, payload) {
+			const index = payload.p[payload.prop].findIndex(single => single.identifier === payload.val)
+			payload.p[payload.prop].splice(index, 1)
+		},
+		deleteArrayValue(state, { parent, property, index }) {
+			Vue.delete(parent[property], index)
+		},
+		deleteValue(state, payload) {
+			Vue.delete(payload.p, payload.prop)
+		},
+		addProp(state, payload) {
+			Vue.set(payload.val, payload.prop, undefined)
+		},
+		setPath(state, payload) {
+			/*
+			if (state.dataset === undefined) {
+				state.dataset = {}
+			}
+			*/
+			//jsonPointer.set(state.dataset, payload.path, payload.value)
+			//var obj = jsonPointer.get(state.dataset, payload.path)
+			//Vue.set(obj,
+			//Vue.set(state.dataset['rights_holder'], 'identifier', payload.value)
+			vuePointer.set(state.dataset, payload.path, payload.value)
+		},
+
 		/*
 		setValue(state, payload) {
 			console.log("store update for", payload.old, "to:", payload.new)
@@ -94,12 +165,6 @@ export default new Vuex.Store({
 		},
 		*/
 		setState(state, payload) {
-			if (!(payload.path in state.vState)) {
-				Vue.set(state.vState, payload.path, {
-					v: false,
-					e: [],
-				})
-			}
 			Vue.set(state.vState, payload.path, {
 				v: payload.v,
 				e: payload.e,
@@ -111,20 +176,89 @@ export default new Vuex.Store({
 		updateStats(state, payload) {
 			state.stats = payload
 		},
+		initStateFor(state, path) {
+			if (!state.vState[path]) {
+				Vue.set(state.vState, path, {e: [], v: null})
+			}
+		},
+		cleanStateFor(state, path) {
+			Vue.delete(state.vState, path)
+		},
+		setLanguages(state, payload) {
+			state.languages = Object.assign({}, state.languages, payload)
+		},
 	},
 	getters: {
+		// prunedDataset returns a deep-clone of the dataset discarding empty leaves
+		prunedDataset: (state) => {
+			return cloneWithPrune(state.record)
+		},
+		// getState returns the validation state for a given path
 		getState: (state) => (path) => {
 			return state.vState[path]
 		},
+		// uiForPath returns the UI overrides for the given path (if any)
 		uiForPath: (state) => (path) => {
-			return state.hints[path.replace(/(\/|^)[0-9]+(\/|$)/g, "$1*$2")] || {}
+			const searchPathOneOfSensitive = path
+				.split('/')
+				.filter(key => key !== '')
+				.map((key, index, array) => {
+					if (isNaN(key)) {
+						return key
+					} else if (array[index - 1] === 'oneOf') {
+						return key
+					} else {
+						return '*'
+					}
+				}).join('/')
+
+			const searchPathNoNumber = path
+				.split('/')
+				.filter(key => key !== '')
+				.map((key, index, array) => {
+					if (isNaN(key)) {
+						return key
+					} else {
+						return '*'
+					}
+				}).join('/')
+
+			return state.hints['/' + searchPathOneOfSensitive] || state.hints['/' + searchPathNoNumber] || {}
 		},
+		// uiValidKeywordsList returns a static array of valid keywords
 		uiValidKeywordsList: (state) => {
 			//Object.keys(state.UI_VALID_KEYWORDS)
 			return state.UI_VALID_KEYWORDS
 		},
+		// uiValidKeywordsSet returns a static set of valid keywords
 		uiValidKeywordsSet: (state) => {
 			return new Set(state.UI_VALID_KEYWORDS)
+		},
+		// hasPath checks if the given json-pointer path exists
+		hasPath: (state) => (path) => {
+			return vuePointer.has(state.record, path)
+		},
+		// getPath gets the value for the given json-pointer path
+		getPath: (state) => (path) => {
+			return vuePointer.get(state.record, path)
+		},
+		// hasDataPath checks if the given dotted path exists (see: lodash.has)
+		hasDataPath: (state) => (path) => {
+			// _.has(object, path)
+			return hasDotted(state.record, path)
+		},
+		// getDataPath gets the value for the given dotted path (see: lodash.get)
+		getDataPath: (state) => (path) => {
+			// _.get(object, path, [defaultValue])
+			return getDotted(state.record, path)
+		},
+		// getTitle returns the English title or the first one defined
+		getTitle: (state) => {
+			return state.record && state.record.title && (state.record.title['en'] || state.record.title[Object.keys(state.record.title)[0]] || null)
+		},
+		// getTitleWithLanguage returns the title for the given language or the first defined
+		getTitleWithLanguage: (state) => (lang) => {
+			return state.record && state.record.title && (state.record.title[lang] || state.record.title[Object.keys(state.record.title)[0]] || null)
 		},
 	},
 })

@@ -1,14 +1,27 @@
+/*
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+*/
 // https://github.com/auth0/jwt-decode
 
 // http://stackoverflow.com/a/38552302
 function parseJwt(token) {
-	var base64Url = token.split('.')[1]
-	var base64 = base64Url.replace('-', '+').replace('_', '/')
+	let base64Url = token.split('.')[1]
+	let base64 = base64Url.replace('-', '+').replace('_', '/')
 	return JSON.parse(window.atob(base64))
 }
 
 
-var UserType = {
+let UserType = {
 	uid: "",
 	name: "",
 	isAdmin: false,
@@ -35,11 +48,12 @@ var UserType = {
 // UserFromToken parses a JWT and returns a user object or null in case of error.
 function UserFromToken(token) {
 	// empty user object
-	var user = UserType
+	let user = UserType
+	let jwt
 	
 	// try to parse token
 	try {
-		var jwt = parseJwt(token)
+		jwt = parseJwt(token)
 	} catch(e) {
 		console.log("error parsing jwt:", e)
 		// ...can't parse token, return empty user

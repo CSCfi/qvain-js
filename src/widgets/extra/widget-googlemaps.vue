@@ -1,3 +1,16 @@
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
 	<div class="container-fluid">
 		<!-- Map widget -->
@@ -46,7 +59,7 @@
 </template>
 
 <script>
-import vSchemaBase from '../v-schema-base.vue'
+import vSchemaBase from '../base.vue'
 import axios from 'axios'
 
 function parseApiResults(json) {
@@ -107,7 +120,7 @@ export default {
 					this.addressError = error
 					console.log(error)
 				})
-		}
+		},
 	},
 	computed: {
 		coordinates: {
@@ -118,11 +131,11 @@ export default {
 			set (value) {
 				//this.$store.commit('updateMessage', value)
 				this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: value })
-			}
+			},
 		},
 		mapUrl: function() {
 			//return "https://maps.google.com/maps?q=" + this.coordinates.latitude + "," + this.coordinates.longitude + "&hl=es;z=14&output=embed"
-			var coords = typeof this.coordinates.latitude === 'number' && typeof this.coordinates.longitude === 'number' ? this.coordinates : this.defaultCoordinates
+			let coords = typeof this.coordinates.latitude === 'number' && typeof this.coordinates.longitude === 'number' ? this.coordinates : this.defaultCoordinates
 			return "https://maps.google.com/maps?q=" + coords.latitude + "," + coords.longitude + "&hl=es;z=14&output=embed"
 		},
 		mapUrl2: function() {

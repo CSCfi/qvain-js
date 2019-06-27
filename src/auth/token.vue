@@ -1,16 +1,40 @@
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
+	Shreyas Deshpande <shreyas.deshpande@csc.fi>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
-	<div>
-		<i class="fas fa-circle-notch fa-spin fa-w-16"></i>
-		<p>message: {{ message }}</p>
-		<p>user:</p>
-			<dl v-if="$auth.loggedIn">
-				<dt>loggedIn</dt><dd>{{ $auth.loggedIn }}</dd>
-				<dt>id</dt><dd>{{ $auth.user.id }}</dd>
-				<dt>name</dt><dd>{{ $auth.user.name }}</dd>
-				<dt>email</dt><dd>{{ $auth.user.email }}</dd>
-			</dl>
-			<div v-else>
-				<p>not logged in (loggedIn: {{ $auth.loggedIn }})</p>
+	<div class="mt-3">
+		<div v-if="!error">
+			<b-alert variant="success" show><font-awesome-icon icon="circle-notch" spin fixed-width/> logging in...</b-alert>
+			<div class="m-3"> <!-- col-6 offset-3 -->
+				<h5 class="mb-3" v-if="false">user info</h5>
+
+				<dl v-if="$auth.loggedIn" class="row">
+					<dt class="col-sm-2">id</dt>
+						<dd class="col-sm-10">{{ $auth.user.id }}</dd>
+					<dt class="col-sm-2">name</dt>
+						<dd class="col-sm-10">{{ $auth.user.name }}</dd>
+					<dt class="col-sm-2">email</dt>
+						<dd class="col-sm-10">{{ $auth.user.email }}</dd>
+				</dl>
+			</div>
+		</div>
+		<div v-else>
+			<b-alert variant="danger" show><b>error:</b> {{ error }}</b-alert>
+			<div class="m-3">
+				<p class="font-italic">not logged in</p>
+
 				<b-input-group prepend="token">
 					<b-form-input v-model="tokenInput"></b-form-input>
 					<b-input-group-append>
@@ -18,7 +42,7 @@
 					</b-input-group-append>
 				</b-input-group>
 			</div>
-			
+		</div>
 	</div>
 </template>
 
@@ -28,19 +52,17 @@ export default {
 	data: () => {
 		return {
 			//token: null,
-			tokenInput: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwNTNiZmZiY2M0MWVkYWQ0ODUzYmVhOTFmYzQyZWExOCIsIm5hbWUiOiJXb3V0ZXIgVmFuIEhlbWVsIiwiYWRtaW4iOnRydWV9.SzRhDZOKW2l1Y5VTNin43vxfbZ86QXhPVULpidMVyE8",
+			tokenInput: process.env.VUE_APP_DEV_TOKEN || null,
+			error: null,
 		}
 	},
 	methods: {
 		login() {
 			this.$auth.login(this.tokenInput)
-			this.$router.push(this.$route.query.redirect || "/")
+			this.$router.push(this.$route.query.redirect || { name: 'home' })
 		},
 	},
 	computed: {
-		message() {
-			return this.$route.hash ? `logging in... hash: |${this.$route.hash}| token: ${this.token}` : "no token"
-		},
 		token() {
 			// strip fragment hash
 			return this.$route.hash.charAt(0) == '#' ? this.$route.hash.substr(1) : this.$route.hash
@@ -48,21 +70,39 @@ export default {
 		redirTo() {
 			// TODO: read query for redirect-to location
 			//return this.$route
-			return "/"
+			return { name: 'home' }
 		},
 	},
 	created: function() {
-		// logged in already, redir
+		if (this.$route.query.missingcsc) {
+			this.$router.replace({name: 'home', params: {missingCsc: true}})
+			return
+		}
+		
+		// User should have home organization
+		if (this.$route.query.missingorg) {
+			this.$router.replace({name: 'home', params: {missingOrg: true}})
+			return
+		}
+
+		// logged in already; but don't redirect: token might be invalid, so read new token
+		/*
 		if (this.$auth.loggedIn) {
 			this.$router.push(this.$route.query.redirect || "/")
 		}
+		*/
 		// got token, login and redir if successful
+		//console.log("token:", this.token)
 		if (this.token && this.$auth.login(this.token)) {
-			var vm = this
-			setTimeout(function() {
-				vm.$router.push('/')
-			}, 3000)
+			//console.log("token was valid!")
+			this.error = null
+			let vm = this
+			vm.$router.push({ name: 'home' })
+		} else {
+			this.error = this.token ? "invalid login token" : "no token received"
+			this.$router.replace({name: 'home', params: {missingToken: true}})
+			return
 		}
 	},
-}	
+}
 </script>

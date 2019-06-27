@@ -1,12 +1,27 @@
+/*
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+*/
 const path = require('path')
+const child_process = require('child_process')
 
 module.exports = {
+	publicPath: process.env.VUE_APP_PUBLIC_PATH,
 	lintOnSave: false,
 	assetsDir: "static",
 	chainWebpack: config => {
 		// make sure BABEL_ENV is set to whatever NODE_ENV is set to in .env files
 		if (process.env.BABEL_ENV !== process.env.NODE_ENV) {
-			//console.log("BABEL_ENV is not equal to NODE_ENV", process.env.BABEL_ENV)
 			process.env.BABEL_ENV = process.env.NODE_ENV
 		}
 
@@ -18,7 +33,15 @@ module.exports = {
 					APP_DEBUG: JSON.stringify('zork'),
 				})
 				Object.assign(args[0]['process.env'], {
-					VUE_APP_MODE: JSON.stringify(process.env.VUE_CLI_MODE)
+					VUE_APP_MODE: JSON.stringify(process.env.VUE_CLI_MODE || process.env.NODE_ENV),
+					VUE_APP_VERSION: JSON.stringify(require('./package.json').version),
+					VUE_APP_COMMIT_HASH: JSON.stringify((()=>{
+						try {
+							return child_process.execSync('git rev-parse HEAD').toString().trim()
+						} catch (e) {
+							return "undefined"
+						}
+					})()),
 				})
 				return args
 			})
@@ -41,9 +64,36 @@ module.exports = {
 						collapseWhitespace: false,
 						conservativeCollapse: false,
 						preserveLineBreaks: true,
-						removeAttributeQuotes: false
+						removeAttributeQuotes: false,
 					},
 				})])
 		}
-	}
+
+		// configure public address for dev server so hot reloading can work with a proxy
+		if (process.env.APP_HOSTNAME) {
+			config.devServer.public(process.env.APP_HOSTNAME)
+		}
+
+		// watch needs to be in poll mode for it to work properly in Vagrant
+		// set watch options for dev server mode (e.g. npm run serve)
+		config.devServer.watchOptions({
+			poll: 1500,
+			ignored: [/node_modules/],
+		})
+
+		// set watch options for build mode with watch enabled (e.g. npm run watch)
+		config.watchOptions({
+			poll: 1500,
+			ignored: [/node_modules/],
+		})
+	},
+	css: {
+		loaderOptions: {
+			sass: {
+				data: `
+					@import "@/assets/css/_variables.scss";
+				`,
+			},
+		},
+	},
 }

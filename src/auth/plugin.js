@@ -1,33 +1,53 @@
+/*
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+*/
 import Auth from './auth.js'
 
-// addGlobalGuard adds a guard to Vue router that checks for a boolean requiresAuth on each route and, if necessary, sends the user to a login page if they are not logged in.
+// addGlobalGuard adds a hook to Vue router that checks for a boolean `auth` on each route and, if necessary, sends the user to a login page if they are not logged in.
 function addGlobalGuard(router, auth, loginPage) {
 	if (!loginPage) {
 		loginPage = "/login"
 	}
 
-	router.beforeEach((to, from, next) => {
+	router.beforeEach(async (to, from, next) => {
+		// wait until session is loaded
+		await auth.waitForResumeSession()
+
+		// if the route needs authentication...
 		if (to.matched.some(record => record.meta.auth)) {
-			// this route requires auth, check if logged in
-			// if not, redirect to login page.
+			// this route requires auth, check if logged in, else send to login page
 			if (!auth.loggedIn) {
 				next({
 					path: loginPage,
-					query: { redirect: to.fullPath }
+					query: { redirect: to.fullPath },
 				})
 			} else {
-				next()
+				next() // success, next
 			}
 		} else {
-			next() // make sure to always call next()!
+			next() // no auth needed, next
 		}
 	})
 }
 
 // plugin for Vue
 // options:
-//   router: <vue router object>
-//   loginPage: <login page url>
+//   router: vue router object
+//   loginUrl: url to login api
+//   logoutUrl: url to logout api
+//   sessionUrl: url to sessions api
+//   cbUrl: url to component that handles token callback
 function plugin(Vue, options) {
 	if (plugin.installed) {
 		return
@@ -38,15 +58,21 @@ function plugin(Vue, options) {
 		options = {}
 	}
 
-	const auth = new Auth("plugin.com")
+	if (Vue.util && Vue.util.defineReactive) {
+		Auth.prototype.defineProperty = Vue.util.defineReactive
+	} else {
+		console.warn("auth plugin: Vue.util.defineReactive not found on Vue instance")
+	}
+
+	const auth = new Auth(options.loginUrl, options.logoutUrl, options.sessionsUrl)
+	auth.resumeSession()
 
 	if (options['router']) {
-		addGlobalGuard(options.router, auth, options['loginPage'])
+		addGlobalGuard(options.router, auth, options['cbUrl'])
 	}
 
 	Object.defineProperty(Vue.prototype, '$auth', {
-		//get () { return new Auth("url.com") }
-		get () { return auth }
+		get () { return auth },
 	})
 }
 

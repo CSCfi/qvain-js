@@ -1,3 +1,16 @@
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
 	<div>
 		<h2>orcid search</h2>
@@ -67,7 +80,7 @@
 import client from './api.js'
 
 // pre-compile
-const reOrcid = new RegExp('^\\d{4}-\\d{4}-\\d{4}-\\d{4}$');
+const reOrcid = new RegExp('^\\d{4}-\\d{4}-\\d{4}-\\d{4}$')
 
 export default {
 	name: 'orchid-search',
@@ -87,23 +100,23 @@ export default {
 
 			this.error = null
 			this.busy = true
-			var vm = this
+			let vm = this
 			client(this.orcid, resource)
-			.then(response => {
-				console.log("success!", response.data)
-				vm.result = response.data
-			})
-			.catch(error => {
+				.then(response => {
+					console.log("success!", response.data)
+					vm.result = response.data
+				})
+				.catch(error => {
 				// Error: Request failed with status code 404
-				console.log(error)
-				if (error.response) {
-					if (error.response.status == 404) {
-						this.error = "not found"
-						return
+					console.log(error)
+					if (error.response) {
+						if (error.response.status == 404) {
+							this.error = "not found"
+							return
+						}
 					}
-				}
-				this.error = error.message
-			})
+					this.error = error.message
+				})
 			this.busy = false
 		},
 		resetError: function(e) {
@@ -115,7 +128,7 @@ export default {
 			this.lastName = ""
 		},
 		filterKeys (e) {
-			e = (e) ? e : window.event;
+			e = (e) ? e : window.event
 			if ((e.keyCode < 48 || e.keyCode > 57) && e.keyCode != 45) {
 				console.log("bad key:", e.keyCode)
 				e.preventDefault()
