@@ -94,7 +94,6 @@ export default new Vuex.Store({
 
 			// set default value for license if ida schema
 			if (typeof state.metadata.id === 'undefined' && state.metadata.schemaId === 'metax-ida' && payload.prop === 'license') {
-				console.log('set default for license')
 				Vue.set(payload.p, payload.prop, [{
 					"identifier":"http://uri.suomi.fi/codelist/fairdata/license/code/CC-BY-4.0",
 					"title": {
