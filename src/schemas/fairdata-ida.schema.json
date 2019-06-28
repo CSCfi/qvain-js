@@ -6298,8 +6298,8 @@
 								"additionalProperties": false
 							}
 						}, {
-							"type": "object",
-							"properties": {
+							"type": "array",
+							"items": {
 								"license": {
 									"@id": "http://schema.org/license",
 									"title": "Licence URL",

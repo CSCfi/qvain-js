@@ -4,24 +4,22 @@
 			:required="true"
 			:schema="schema.oneOf[0]"
 			:path="newPath('oneOf/' + 0)"
-			:value="value[property]"
-			:parent="value"
-			:property="propName"
+			:value="parent[property]"
+			:parent="parent"
+			:property="property"
 			:tab="myTab"
 			:activeTab="activeTab"
 			:depth="depth" />
-		<!--
 		<TabSelector
 			:required="true"
 			:schema="schema.oneOf[1]"
 			:path="newPath('oneOf/' + 1)"
-			:value="value[property]"
-			:parent="value"
-			:property="propName"
+			:value="parent[property]"
+			:parent="parent"
+			:property="property"
 			:tab="myTab"
 			:activeTab="activeTab"
 			:depth="depth" />
-		-->
 	</wrapper>
 </template>
 
@@ -46,5 +44,9 @@ export default {
 			required: false
 		}
 	},
+	created() {
+		console.log('created value', this.value)
+		console.log('created parent', this.parent)
+	}
 }
 </script>
