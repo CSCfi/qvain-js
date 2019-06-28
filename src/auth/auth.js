@@ -125,11 +125,11 @@ Auth.prototype.login = function(token) {
 	this.setUser(UserFromToken(token))
 
 	if (this.loggedIn) {
-		sessionStorage.setItem(TokenName, token)
-		sessionStorage.removeItem(LoginErrorName)
+		this.setToken(token)
+		this.clearLoginError()
 		return true
 	}
-	sessionStorage.removeItem(TokenName)
+	this.clearToken(TokenName)
 	return false
 }
 
@@ -154,8 +154,8 @@ Auth.prototype.logout = async function() {
 
 	// clear user and stored token
 	this.setUser(null)
-	sessionStorage.removeItem(TokenName)
-	sessionStorage.removeItem(LoginErrorName)
+	this.clearToken()
+	this.clearLoginError()
 	return true
 }
 
@@ -179,12 +179,24 @@ Auth.prototype.getToken = function() {
 	return sessionStorage.getItem(TokenName)
 }
 
+Auth.prototype.setToken = function(token) {
+	return sessionStorage.setItem(TokenName, token)
+}
+
+Auth.prototype.clearToken = function() {
+	return sessionStorage.removeItem(TokenName)
+}
+
 Auth.prototype.getLoginError = function() {
 	return sessionStorage.getItem(LoginErrorName)
 }
 
-Auth.prototype.setLoginError = function(error) {	
+Auth.prototype.setLoginError = function(error) {
 	return sessionStorage.setItem(LoginErrorName, error)
+}
+
+Auth.prototype.clearLoginError = function() {
+	return sessionStorage.removeItem(LoginErrorName)
 }
 
 Auth.prototype.resumeSession = async function() {
@@ -199,7 +211,7 @@ Auth.prototype.resumeSession = async function() {
 		}
 	}
 	if (!success) {
-		sessionStorage.removeItem(TokenName)
+		this.clearToken(TokenName)
 	}
 	this.loading.state = false
 	return success
