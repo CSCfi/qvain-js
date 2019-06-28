@@ -69,7 +69,7 @@ function filterGroups(prefix, groups) {
 function Auth(loginUrl, logoutUrl, sessionsUrl) {
 	// reactive indicator for when session is being loaded from the back-end
 	this.loading = Vue.observable({
-		state: !!this.getToken(), // true if there is a token in localStorage
+		state: !!this.getToken(), // true if there is a token in sessionStorage
 	})
 
 	// might be Vue's reactive setter
@@ -124,10 +124,10 @@ Auth.prototype.login = function(token) {
 	this.setUser(UserFromToken(token))
 
 	if (this.loggedIn) {
-		localStorage.setItem(TokenName, token)
+		sessionStorage.setItem(TokenName, token)
 		return true
 	}
-	localStorage.removeItem(TokenName)
+	sessionStorage.removeItem(TokenName)
 	return false
 }
 
@@ -152,7 +152,7 @@ Auth.prototype.logout = async function() {
 
 	// clear user and stored token
 	this.setUser(null)
-	localStorage.removeItem(TokenName)
+	sessionStorage.removeItem(TokenName)
 	return true
 }
 
@@ -173,11 +173,11 @@ Auth.prototype.getSession = async function() {
 }
 
 Auth.prototype.getToken = function() {
-	return localStorage.getItem(TokenName)
+	return sessionStorage.getItem(TokenName)
 }
 
 Auth.prototype.resumeSession = async function() {
-	// If there is an ID token in localStorage, check if we have an
+	// If there is an ID token in sessionStorage, check if we have an
 	// existing session and can login with the token. If not, remove token.
 	let success = false
 	const token = this.getToken()
@@ -188,7 +188,7 @@ Auth.prototype.resumeSession = async function() {
 		}
 	}
 	if (!success) {
-		localStorage.removeItem(TokenName)
+		sessionStorage.removeItem(TokenName)
 	}
 	this.loading.state = false
 	return success
