@@ -3,7 +3,6 @@
 # This file contains the helper wrapper for My Datasets view.
 ################################################################
 
-import time
 import uuid
 
 

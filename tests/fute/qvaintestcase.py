@@ -4,7 +4,6 @@
 # functions for tests.
 ################################################################
 import os
-import time
 from tauhka.testcase import TauhkaTestCase
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.action_chains import ActionChains
@@ -145,7 +144,6 @@ class QvainTestCase(TauhkaTestCase):
             # so lets ensure that we did get more than zero options
             if len(multiselect_options) == 0:
                 errors.append("We did not find any options from the multiselect")
-                time.sleep(1.0)
                 continue
 
             # lets find the option from the list of found options
@@ -158,7 +156,6 @@ class QvainTestCase(TauhkaTestCase):
                     return
 
             errors.append("Unable to find " + optionValue)
-            time.sleep(1.0)
 
         # we did not find the option from the list
         raise NoSuchElementException("{option} was not found from {elem} ".format(option=optionValue, elem=elemId))

@@ -4,8 +4,6 @@
 #  - dataset creation
 ################################################################
 
-import time
-
 from qvaintestcase import QvainTestCase
 from views.editor import Editor
 from views.datasets import Datasets
