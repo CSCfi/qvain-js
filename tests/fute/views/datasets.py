@@ -70,7 +70,6 @@ class Datasets(object):
             if self.retries > 5:
                 self.retries = 0
                 return False
-            time.sleep(1)
             self.retries += 1
             return self.search(title)
 
@@ -112,7 +111,6 @@ class Datasets(object):
         while retries < 5:
             if (self.testcase.elem_is_not_found("deleteModal")):
                 break
-            time.sleep(0.5)
             retries += 1
 
         # hide alert with "successfully deleted dataset"
@@ -140,8 +138,6 @@ class Datasets(object):
 
     def show(self):
         self.testcase.open_frontpage()
-
-        time.sleep(2)
 
         # lets tap the navigation bar where we should see the link
         self.testcase.find_element_by_text("My Datasets").click()
