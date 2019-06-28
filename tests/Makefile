@@ -1,3 +1,4 @@
+# ADD_LICENSE_HEADER
 all:
 
 check:

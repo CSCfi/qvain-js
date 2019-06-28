@@ -1,3 +1,4 @@
+# ADD_LICENSE_HEADER
 SHELL:=/bin/bash
 PYTHON_CMD:=source venv/bin/activate && source .secrets && python3
 UNAME_S := $(shell uname -s)

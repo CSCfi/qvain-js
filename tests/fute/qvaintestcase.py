@@ -1,15 +1,7 @@
-#!/usr/bin/env python3
+# ADD_LICENSE_HEADER
 ################################################################
 # This contains the base class QvainTestCase with some helper
 # functions for tests.
-#
-# This file is part of Qvain project.
-#
-# Author(s):
-#     Juhapekka Piiroinen <juhapekka.piiroinen@csc.fi>
-#
-# Copyright (c) 2019 CSC - IT Center for Science Ltd.
-# All Rights Reserved.
 ################################################################
 import os
 import time

@@ -1,15 +1,7 @@
-#!/usr/bin/env python3
+# ADD_LICENSE_HEADER
 ################################################################
 # This file contains functional tests for:
 #  - dataset creation
-#
-# This file is part of Qvain project.
-#
-# Author(s):
-#     Juhapekka Piiroinen <juhapekka.piiroinen@csc.fi>
-#
-# Copyright 2019 CSC - IT Center for Science Ltd.
-# All Rights Reserved.
 ################################################################
 
 import time
@@ -84,7 +76,6 @@ class TestCreateDataset(QvainTestCase):
         while retries < 5:
             if (self.elem_is_not_found("test_create_new_dataset_invalid_unpublished")):
                 break
-            time.sleep(0.5)
             retries += 1
         assert retries < 5, "The datasets could not be loaded"
 
