@@ -4,6 +4,7 @@ import {parseJwt, getRandomString} from './jwt.js'
 import Vue from 'vue'
 
 const TokenName = "jwt"
+const LoginErrorName = "login_error"
 
 function User() {
 	this.id = ""
@@ -125,6 +126,7 @@ Auth.prototype.login = function(token) {
 
 	if (this.loggedIn) {
 		sessionStorage.setItem(TokenName, token)
+		sessionStorage.removeItem(LoginErrorName)
 		return true
 	}
 	sessionStorage.removeItem(TokenName)
@@ -153,6 +155,7 @@ Auth.prototype.logout = async function() {
 	// clear user and stored token
 	this.setUser(null)
 	sessionStorage.removeItem(TokenName)
+	sessionStorage.removeItem(LoginErrorName)
 	return true
 }
 
@@ -174,6 +177,14 @@ Auth.prototype.getSession = async function() {
 
 Auth.prototype.getToken = function() {
 	return sessionStorage.getItem(TokenName)
+}
+
+Auth.prototype.getLoginError = function() {
+	return sessionStorage.getItem(LoginErrorName)
+}
+
+Auth.prototype.setLoginError = function(error) {	
+	return sessionStorage.setItem(LoginErrorName, error)
 }
 
 Auth.prototype.resumeSession = async function() {

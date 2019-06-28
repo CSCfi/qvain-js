@@ -61,13 +61,17 @@ export default {
 	},
 	created: function() {
 		if (this.$route.query.missingcsc) {
-			this.$router.replace({name: 'home', params: {missingCsc: true}})
+			this.$auth.setLoginError("missingcsc")
+			this.$auth.setUser(null)
+			this.$router.replace({name: 'home'})
 			return
 		}
-		
+
 		// User should have home organization
 		if (this.$route.query.missingorg) {
-			this.$router.replace({name: 'home', params: {missingOrg: true}})
+			this.$auth.setLoginError("missingorg")
+			this.$auth.setUser(null)
+			this.$router.replace({name: 'home'})
 			return
 		}
 
@@ -86,7 +90,7 @@ export default {
 			vm.$router.push({ name: 'home' })
 		} else {
 			this.error = this.token ? "invalid login token" : "no token received"
-			this.$router.replace({name: 'home', params: {missingToken: true}})
+			this.$router.replace({name: 'home', params: {missingLogin: true}})
 			return
 		}
 	},

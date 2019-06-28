@@ -45,6 +45,10 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 							<font-awesome-icon icon="circle-notch" spin />
 						</b-nav-text>
 
+						<b-nav-item v-else-if="$auth.getLoginError()" key="invalid-user-logout" @click="logout()">
+							Sign out
+						</b-nav-item>
+
 						<b-nav-item-dropdown class="user-nav" key="user-dropdown" v-else-if="$auth.loggedIn" right>
 							<template slot="text">
 								<span style="font-weight: bold;">User</span>
