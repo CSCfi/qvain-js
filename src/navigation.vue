@@ -65,7 +65,7 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 			</b-collapse>
 		</b-navbar>
 
-		<b-navbar :toggleable="false" type="dark" id="app-subbar">
+		<b-navbar :toggleable="false" type="dark" id="app-subbar" v-if="$auth.loggedIn">
 			<b-nav-toggle target="app-subbar-collapse"></b-nav-toggle>
 			<b-collapse is-nav id="app-subbar-collapse">
 				<transition name="fade" tag="b-navbar-nav">
