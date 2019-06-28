@@ -5,6 +5,13 @@
 		<b-container fluid id="app-body">
 			<router-view></router-view>
 		</b-container>
+		<footer class="footer">
+			<div class="container">
+				<span class="text-muted">
+					Fairdata services are offered by the Ministry of Education and Culture and produced by CSC - IT Center for Science
+				</span>
+			</div>
+		</footer>
 	</div>
 </template>
 
