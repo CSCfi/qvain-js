@@ -37,7 +37,7 @@
 
 		<b-button-group v-else>
 			<router-link class="btn btn-success btn-lg" to="/dataset/new" role="button">Create a new dataset now!</router-link>
-			<router-link class="btn btn-info btn-lg" to="/datasets" role="button">Show my datasets</router-link>
+			<router-link class="btn btn-info btn-lg" to="/datasets" role="button">Show datasets</router-link>
 		</b-button-group>
 	</b-jumbotron>
 </template>
