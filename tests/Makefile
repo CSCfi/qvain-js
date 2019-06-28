@@ -1,4 +1,4 @@
 all:
 
 check:
-	cd fute && make check
+	@cd fute && make check

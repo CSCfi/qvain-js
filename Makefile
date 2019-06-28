@@ -61,6 +61,7 @@ headers: venv
 
 clean:
 	@rm -rf venv
+	@cd tests/fute && make clean
 
 license: node_modules
 	@echo
@@ -70,7 +71,7 @@ license: node_modules
 	@echo
 
 check:
-	cd tests && make check
+	@cd tests && make check
 
 changes:
 	@echo "== Changes since $(LATEST_TAG) =="

@@ -20,10 +20,6 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 class QvainTestCase(TauhkaTestCase):
-    def __init__(self, methodName='runTest'):
-        super().__init__(methodName)
-        self.report_always = True
-
     def is_frontend_running(self):
         # This is the xpath for default error page header in nginx
         # We do not have such xpath in our frontend
