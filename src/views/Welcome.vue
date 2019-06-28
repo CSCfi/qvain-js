@@ -1,6 +1,6 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<b-jumbotron style="color: rgb(70,70,70); background-color: rgb(231,233,237);" fluid>
+	<b-jumbotron fluid>
 		<template slot="header">
 			Qvain
 		</template>
@@ -35,12 +35,20 @@
 			<p><a :href="$auth.loginUrl" class="btn btn-info btn-lg" role="button">Login now!</a></p>
 		</div>
 
-		<p v-else>
-			<router-link class="btn btn-info btn-lg" to="/dataset/new" role="button">Create a new dataset now!</router-link>
+		<b-button-group v-else>
+			<router-link class="btn btn-success btn-lg" to="/dataset/new" role="button">Create a new dataset now!</router-link>
 			<router-link class="btn btn-info btn-lg" to="/datasets" role="button">Show my datasets</router-link>
-		</p>
+		</b-button-group>
 	</b-jumbotron>
 </template>
+
+<style lang="scss" scoped>
+.jumbotron-fluid {
+	color: rgb(70,70,70);
+	background-color: rgb(231,233,237);
+	margin-top: 1em;
+}
+</style>
 
 <script>
 export default {
