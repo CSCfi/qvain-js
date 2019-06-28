@@ -11,7 +11,7 @@
 
 			<b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
-			<b-navbar-brand to="#">
+			<b-navbar-brand to="/">
 				<img src="/static/imgs/Qvain_neg_300px.png" class="d-inline-block align-top" alt="Fairdata: Qvain">
 			</b-navbar-brand>
 
@@ -45,9 +45,9 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 							<font-awesome-icon icon="circle-notch" spin />
 						</b-nav-text>
 
-						<b-nav-item-dropdown class="user-nav" key="user-dropdown" v-else-if="$auth.loggedIn" right>
+						<b-nav-item-dropdown class="user-nav user-dropdown" key="user-dropdown" v-else-if="$auth.loggedIn">
 							<template slot="text">
-								<span style="font-weight: bold;">User</span>
+								<span style="font-weight: bold;"><font-awesome-icon icon="user" class="text-primary mr-2" fixed-width /> {{ $auth.user.name }}</span>
 							</template>
 
 							<b-dropdown-header>
@@ -70,9 +70,9 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 			<b-collapse is-nav id="app-subbar-collapse">
 				<transition name="fade" tag="b-navbar-nav">
 					<b-nav-text v-if="$auth.loading.state" key="loading" class="load-placeholder"></b-nav-text>
-					<b-navbar-nav v-else key="links">
-						<b-nav-item v-if="$route.path !== '/datasets'" key="datasets" to="/datasets">My Datasets</b-nav-item>
-						<b-nav-item v-else key="editor" :to="editorUrl">Editor</b-nav-item>
+					<b-navbar-nav v-else-if="$auth.loggedIn" key="links">
+						<b-nav-item key="datasets" to="/datasets">Datasets</b-nav-item>
+						<b-nav-item key="editor" to="/dataset/new">New Dataset</b-nav-item>
 					</b-navbar-nav>
 				</transition>
 			</b-collapse>
@@ -96,7 +96,7 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 }
 
 .user-nav {
-	width: 4em;
+	float: right;
 	text-align: center;
 	&.dropdown {
 		z-index: 900;

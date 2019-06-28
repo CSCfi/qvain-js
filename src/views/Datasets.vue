@@ -1,7 +1,7 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
 	<b-container fluid>
-		<h1 class="component-title">My datasets</h1>
+		<h1 class="component-title">Datasets</h1>
 
 		<!-- controls -->
 		<b-button-toolbar class="mb-4 tool-bar">
@@ -16,7 +16,7 @@
 			</b-input-group>
 
 			<b-button-group class="new-record" size="sm">
-				<b-btn class="new-record__button" variant="primary" @click="createNewRecord">Create new record</b-btn>
+				<b-btn class="new-record__button" variant="primary" @click="createNewRecord">New dataset</b-btn>
 			</b-button-group>
 		</b-button-toolbar>
 

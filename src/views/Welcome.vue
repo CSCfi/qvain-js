@@ -35,7 +35,10 @@
 			<p><a :href="$auth.loginUrl" class="btn btn-info btn-lg" role="button">Login now!</a></p>
 		</div>
 
-		<p v-else><router-link class="btn btn-info btn-lg" to="/dataset/new" role="button">Create a new dataset now!</router-link></p>
+		<p v-else>
+			<router-link class="btn btn-info btn-lg" to="/dataset/new" role="button">Create a new dataset now!</router-link>
+			<router-link class="btn btn-info btn-lg" to="/datasets" role="button">Show my datasets</router-link>
+		</p>
 	</b-jumbotron>
 </template>
 
