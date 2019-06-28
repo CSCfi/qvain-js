@@ -1,4 +1,6 @@
+SHELL:=/bin/bash
 PYTHON_CMD:=source venv/bin/activate && source .secrets && python3
+
 
 all: venv check
 
