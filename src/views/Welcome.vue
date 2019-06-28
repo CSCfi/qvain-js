@@ -42,7 +42,7 @@
 	</b-jumbotron>
 </template>
 
-<style>
+<style scoped>
 	.jumbotron {
 		color: rgb(70,70,70);
 		background-color: rgb(231,233,237);
