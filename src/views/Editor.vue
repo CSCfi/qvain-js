@@ -336,6 +336,9 @@ export default {
 				if (mutation.type !== 'initValue') {
 					this.validator.validateData(this.$store.state.record)
 				}
+				if (mutation.type === 'updateValue') {
+					this.save()
+				}
 			})
 		},
 	},
