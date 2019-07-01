@@ -72,11 +72,17 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 					<b-nav-text v-if="$auth.loading.state" key="loading" class="load-placeholder"></b-nav-text>
 					<b-navbar-nav v-else-if="$auth.loggedIn" key="links">
 						<b-nav-item key="datasets" to="/datasets">Datasets</b-nav-item>
-						<b-nav-item key="editor" to="/dataset/new">New Dataset</b-nav-item>
 					</b-navbar-nav>
 				</transition>
 			</b-collapse>
 		</b-navbar>
+		<b-navbar id="app-subbar-datasets" type="dark" v-if="$auth.loggedIn">
+			<b-navbar-nav>
+				<b-nav-item key="editor" to="/dataset/new">New</b-nav-item>
+				<b-nav-item key="editor_edit" v-if="isEditActive" :to="editUrl">Edit '{{ editTitle }}'</b-nav-item>
+			</b-navbar-nav>
+		</b-navbar>
+
 	</div>
 </template>
 
@@ -107,6 +113,39 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 	}
 }
 
+#app-subbar {
+	padding-top: 0em;
+	padding-bottom: 0em;
+}
+
+#app-subbar-datasets {
+	background-color: #0092c7;
+    border-top: 1px solid #00a4e0;
+    border-bottom: 1px solid #007fad;
+	padding-top: 0em;
+	padding-bottom: 0em;
+	padding-left: 1.0em;
+	padding-right: 1.0em;
+	margin: 0;
+
+	.nav-item:not(:first-child) {
+		border-left: 1px solid #007fad;
+	}
+	.nav-item:first-child {
+		margin-left: 0em;
+	}
+	.nav-item > a {
+		padding-left: 0.5em;
+		padding-right: 0.5em;
+		padding-top: 0em;
+		padding-bottom: 0em;
+	}
+	.nav-item {
+		margin: 0.2em;
+		margin-left: 0em;
+		margin-right: 0em;
+	}
+}
 
 .load-placeholder {
 	height: 40px;
@@ -129,8 +168,21 @@ export default {
 		}
 	},
 	computed: {
+		isEditActive() {
+			return this.$store.state.metadata.id !== undefined
+		},
+		editUrl() {
+			return "/dataset/" + this.$store.state.metadata.id
+		},
+		editTitle() {
+			if (this.$store.getters.getTitle) {
+				return this.$store.getters.getTitle
+			} else {
+				return null
+			}
+		},
 		editorUrl() {
-			if (this.$store.state.metadata.id) {
+			if (this.isEditActive) {
 				return "/dataset/" + this.$store.state.metadata.id
 			} else if (this.$store.state.record) {
 				return "/dataset/edit"
