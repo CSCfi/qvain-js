@@ -212,7 +212,6 @@ export default {
 			return this.$route.name !== routeName
 		},
 		isActiveRoute(routeName) {
-			console.log(this.$route.name)
 			if (routeName == "new") {
 				return this.$route.name == "editor"
 			} else if (routeName == "edit") {
