@@ -65,15 +65,15 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 			</b-collapse>
 		</b-navbar>
 
-		<b-navbar :toggleable="false" type="dark" id="app-subbar" v-if="$auth.loggedIn">
+		<b-navbar :toggleable="false" type="dark" id="app-subbar" v-if="$auth.loggedIn && isNotActiveRoute('home')">
 			<b-nav-toggle target="app-subbar-collapse"></b-nav-toggle>
 			<b-collapse is-nav id="app-subbar-collapse">
 				<transition name="fade" tag="b-navbar-nav">
 					<b-nav-text v-if="$auth.loading.state" key="loading" class="load-placeholder"></b-nav-text>
 					<b-navbar-nav v-else-if="$auth.loggedIn" key="links">
-						<b-nav-item :active="isActiveRoute('datasets')" key="datasets" to="/datasets">Datasets</b-nav-item>
-						<b-nav-item :active="isActiveRoute('new')" key="editor" to="/dataset/new">New</b-nav-item>
-						<b-nav-item :active="isActiveRoute('edit')" key="editor_edit" v-if="isEditActive" :to="editUrl">Edit '{{ editTitle }}'</b-nav-item>
+						<b-nav-item v-if="isActiveRoute('datasets')" key="datasets" to="/datasets">Datasets</b-nav-item>
+						<b-nav-item v-else key="datasets" to="/datasets"> &lt; Back to datasets</b-nav-item>
+						<b-nav-item v-if="isActiveRoute('datasets')" key="new" to="/dataset/new">New dataset</b-nav-item>
 					</b-navbar-nav>
 				</transition>
 			</b-collapse>
@@ -190,6 +190,9 @@ export default {
 			if (!await this.$auth.logout()) {
 				this.$root.showAlert("Failed to sign out. Please try again later.", "danger")
 			}
+		},
+		isNotActiveRoute(routeName) {
+			return this.$route.name !== routeName
 		},
 		isActiveRoute(routeName) {
 			console.log(this.$route.name)
