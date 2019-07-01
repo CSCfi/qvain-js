@@ -73,10 +73,14 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 					<b-navbar-nav v-else-if="$auth.loggedIn" key="links">
 						<b-nav-item v-if="isActiveRoute('datasets')" key="datasets" active to="/datasets">Datasets</b-nav-item>
 						<b-nav-item v-else key="datasets" to="/datasets"> &lt; Back to datasets</b-nav-item>
-						<b-nav-item v-if="isActiveRoute('datasets')" key="new" to="/dataset/new">New dataset</b-nav-item>
 					</b-navbar-nav>
 				</transition>
 			</b-collapse>
+			<b-button-group class="page-actions">
+				<b-button m v-if="isActiveRoute('datasets')" key="new" variant="success" size="sm" to="/dataset/new">
+					New dataset
+				</b-button>
+			</b-button-group>
 		</b-navbar>
 	</div>
 </template>
@@ -96,6 +100,10 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 	transition: transform 0.2s;
 }
 
+.page-actions {
+	margin-right: 1em
+}
+
 .user-nav {
 	float: right;
 	text-align: center;
@@ -109,14 +117,11 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 }
 
 #app-subbar {
-	padding-top: 0em;
-	padding-bottom: 0em;
-
 	background-color: #0092c7;
     border-top: 1px solid #00a4e0;
     border-bottom: 1px solid #007fad;
-	padding-top: 0em;
-	padding-bottom: 0em;
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
 	padding-left: 0.5em;
 	padding-right: 0.5em;
 	margin: 0;

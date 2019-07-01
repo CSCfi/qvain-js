@@ -14,10 +14,6 @@
 			<b-input-group class="search" size="sm" v-b-tooltip.hover.bottom title="Search from titles" prepend="Search">
 				<b-form-input v-model="filterString" placeholder="title" />
 			</b-input-group>
-
-			<b-button-group class="new-record" size="sm">
-				<b-btn class="new-record__button" variant="success" @click="createNewRecord">New dataset</b-btn>
-			</b-button-group>
 		</b-button-toolbar>
 
 		<!-- alerts -->
