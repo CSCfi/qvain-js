@@ -65,7 +65,7 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 			</b-collapse>
 		</b-navbar>
 
-		<b-navbar :toggleable="false" type="dark" id="app-subbar" v-if="$auth.loggedIn && isNotActiveRoute('home')">
+		<b-navbar :toggleable="false" type="dark" id="app-subbar" v-if="$auth.loggedIn && isNotActiveRoute('home') && isNotActiveRoute('userinfo')">
 			<b-nav-toggle target="app-subbar-collapse"></b-nav-toggle>
 			<b-collapse id="app-subbar-collapse" is-nav>
 				<b-navbar-nav>
@@ -209,6 +209,7 @@ export default {
 			}
 		},
 		isNotActiveRoute(routeName) {
+			if (!this.$route.name) { return false }
 			return this.$route.name !== routeName
 		},
 		isActiveRoute(routeName) {
