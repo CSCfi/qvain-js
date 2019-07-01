@@ -135,12 +135,9 @@
 		border-top: 0px;
 	}
 	table#dataset-list tbody > tr > td {
-		padding: 0.5em !important;
 		border-top: 0px;
 	}
-	table#dataset-list.table-striped tbody tr:nth-of-type(odd) {
-		background-color: rgba(0, 146, 199, 0.1);
-	}
+
 </style>
 
 <script>
