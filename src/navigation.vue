@@ -71,9 +71,9 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 				<transition name="fade" tag="b-navbar-nav">
 					<b-nav-text v-if="$auth.loading.state" key="loading" class="load-placeholder"></b-nav-text>
 					<b-navbar-nav v-else-if="$auth.loggedIn" key="links">
-						<b-nav-item key="datasets" to="/datasets">Datasets</b-nav-item>
-						<b-nav-item key="editor" to="/dataset/new">New</b-nav-item>
-						<b-nav-item key="editor_edit" v-if="isEditActive" :to="editUrl">Edit '{{ editTitle }}'</b-nav-item>
+						<b-nav-item :active="isActiveRoute('datasets')" key="datasets" to="/datasets">Datasets</b-nav-item>
+						<b-nav-item :active="isActiveRoute('new')" key="editor" to="/dataset/new">New</b-nav-item>
+						<b-nav-item :active="isActiveRoute('edit')" key="editor_edit" v-if="isEditActive" :to="editUrl">Edit '{{ editTitle }}'</b-nav-item>
 					</b-navbar-nav>
 				</transition>
 			</b-collapse>
@@ -150,6 +150,7 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 .right-nav-items {
 	position: relative;
 }
+
 </style>
 
 
@@ -189,6 +190,17 @@ export default {
 			if (!await this.$auth.logout()) {
 				this.$root.showAlert("Failed to sign out. Please try again later.", "danger")
 			}
+		},
+		isActiveRoute(routeName) {
+			console.log(this.$route.name)
+			if (routeName == "new") {
+				return this.$route.name == "editor"
+			} else if (routeName == "edit") {
+				return this.$route.name == "tab"
+			} else if (routeName == "datasets") {
+				return this.$route.name == "datasets"
+			}
+			return false;
 		},
 	},
 }
