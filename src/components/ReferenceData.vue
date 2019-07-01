@@ -70,6 +70,7 @@
 					</span>
 				</p>
 			</div>
+			<!--
 			<div v-if="!isMultiselect && !Array.isArray(selectedOptions)" class="tag__list">
 				<p class="tag" :style="{visibility: selectedOptions === null ? 'hidden' : 'visible'}">
 					{{customLabel(selectedOptions)}}
@@ -78,6 +79,7 @@
 					</span>
 				</p>
 			</div>
+			-->
 		</div>
 	</record-field>
 </template>
