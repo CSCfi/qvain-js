@@ -24,7 +24,21 @@
 		<b-alert variant="danger" :show="!!error" dismissible @dismissed="error = null">{{ error }}</b-alert>
 
 		<!-- table -->
-		<b-table id="dataset-list" ref="datasetTable" :items="datasetList" :fields="fields" select-mode="single" striped hover show-empty selectable :tbody-tr-class="rowClass" filter="truthy value" :filter-function="filter" no-provider-filtering no-provider-sorting :busy.sync="isBusy" primary-key="id" :tbody-transition-props="{'name': 'datasets-flip'}">
+		<b-table id="dataset-list"
+				ref="datasetTable"
+				:items="datasetList"
+				:fields="fields"
+				@row-clicked="clickedRow"
+				select-mode="single"
+				striped hover show-empty selectable responsive="xl"
+				:tbody-tr-class="rowClass"
+				filter="truthy value"
+				:filter-function="filter"
+				:busy.sync="isBusy"
+				thead-tr-class="striped"
+				primary-key="id"
+				:tbody-transition-props="{'name': 'datasets-flip'}">
+
 			<template slot="published" slot-scope="row">
 				<div :style="{ 'display': 'inline-flex' }">
 					<font-awesome-icon icon="circle" class="text-success text-small text-center fa-xs" style="margin: 3px;" fixed-width v-if="row.item.published" />
@@ -50,20 +64,24 @@
 					<small>{{ preferredLanguage(row.item.description) }}</small>
 				</p>
 			</template>
+			<template slot="row-details" slot-scope="row">
+				<b-card>
+					<b-button-group class="row-card-primary-actions">
+						<b-button size="sm" variant="primary" @click.stop="view(row.item.identifier)" :disabled="row.item.identifier == null"><font-awesome-icon icon="external-link-alt" fixed-width />View in Etsin</b-button>
+					</b-button-group>
+					<b-button-group class="row-card-alt-actions">
+						<b-button size="sm" v-b-modal="'dataset-versions-modal'" @click="activeInModal = row.item.id" :disabled="row.item.versions < 1">
+							<font-awesome-icon icon="history" fixed-width />Versions
+						</b-button>
+						<b-button size="sm" :disabled="row.item.published" variant="danger" @click="itemToBeDeleted = row.item.id" v-b-modal.deleteModal>
+							<font-awesome-icon icon="trash" fixed-width />Delete
+						</b-button>
+					</b-button-group>
+				</b-card>
+			</template>
 			<template slot="actions" slot-scope="row">
 				<div class="actions">
-					<b-button variant="primary" size="sm" @click.stop="open(row.item.id)"><font-awesome-icon icon="pen" fixed-width />Edit</b-button>
-					<b-button variant="primary" size="sm" @click.stop="view(row.item.identifier)" :disabled="row.item.identifier == null"><font-awesome-icon icon="external-link-alt" fixed-width />View in Etsin</b-button>
-
-					<b-dropdown variant="primary" right text="More" size="sm">
-						<b-dropdown-item-button size="sm" v-b-modal="'dataset-versions-modal'" @click="activeInModal = row.item.id" :disabled="row.item.versions < 1">
-							<font-awesome-icon icon="history" fixed-width />Versions
-						</b-dropdown-item-button>
-
-						<b-dropdown-item-button :disabled="row.item.published" size="sm" variant="danger" @click="itemToBeDeleted = row.item.id" v-b-modal.deleteModal>
-							<font-awesome-icon icon="trash" fixed-width />Delete
-						</b-dropdown-item-button>
-					</b-dropdown>
+					<b-button variant="primary" size="sm" @click.stop="editDataset(row.item)"><font-awesome-icon icon="pen" fixed-width />Edit</b-button>
 				</div>
 			</template>
 		</b-table>
@@ -95,15 +113,10 @@
 			flex-grow: 10000;
 		}
 	}
-
-	.actions {
-		width: 265px !important;
-		button {
-			margin-right: 10px;
-		}
+	.row-card-alt-actions {
+		float: right
 	}
 </style>
-
 
 <style>
 	.old-version {
@@ -113,23 +126,18 @@
 		position: relative;
 		bottom: 0.12em;
 	}
-
 	/* controls */
 	.dataset-filter__button.btn-outline-success:focus {
 		box-shadow: none !important;
 	}
-
 	table#dataset-list thead > tr > th {
 		border-bottom: 0px;
 		border-top: 0px;
 	}
-
-
 	table#dataset-list tbody > tr > td {
 		padding: 0.5em !important;
 		border-top: 0px;
 	}
-
 	table#dataset-list.table-striped tbody tr:nth-of-type(odd) {
 		background-color: rgba(0, 146, 199, 0.1);
 	}
@@ -205,8 +213,15 @@ export default {
 				this.datasetList = []
 			}
 		},
-		open(id) { // should maybe later be changed to link so that accessability is better
-			this.$router.push({ name: 'editor', params: { id: id }})
+		editDataset(item) {
+			this.$router.push({ name: 'editor', params: { id: item.id }})
+		},
+		clickedRow(item, fuu) {
+			item._showDetails = !item._showDetails
+		},
+		doNothing(e) {
+			e.preventDefault();
+			e.stopPropagation();
 		},
 		async del() {
 			this.error = null
