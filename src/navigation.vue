@@ -65,26 +65,29 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 			</b-collapse>
 		</b-navbar>
 
-		<b-navbar :toggleable="false" type="dark" id="app-subbar" v-if="$auth.loggedIn && isNotActiveRoute('home') && isNotActiveRoute('userinfo')">
+		<b-navbar :toggleable="false" type="dark" id="app-subbar" v-if="$auth.loggedIn && isNotActiveRoute('userinfo')">
 			<b-nav-toggle target="app-subbar-collapse"></b-nav-toggle>
 			<b-collapse id="app-subbar-collapse" is-nav>
 				<b-navbar-nav>
 					<b-button-group class="editor-actions">
-						<b-button m v-if="isActiveRoute('datasets') && isDraftActive && !isEditActive" key="continue_draft" variant="primary" size="sm" to="/dataset/edit">
+						<b-button v-if="isActiveRoute('datasets') && isDraftActive && !isEditActive" key="continue_draft" variant="primary" size="sm" to="/dataset/edit">
 							&lt; Unsaved dataset
 						</b-button>
-						<b-button m v-if="isActiveRoute('datasets') && isEditActive" key="continue_edit" variant="primary" size="sm" :to="continueEditUrl">
+						<b-button v-if="isActiveRoute('datasets') && isEditActive" key="continue_edit" variant="primary" size="sm" :to="continueEditUrl">
 							&lt; {{ editTitle }}
 						</b-button>
 					</b-button-group>
 				</b-navbar-nav>
 				<b-nav-text v-if="$auth.loading.state" key="loading" class="load-placeholder"></b-nav-text>
 				<b-navbar-nav v-else-if="$auth.loggedIn" key="links">
-					<b-button v-if="isNotActiveRoute('datasets')" size="sm" variant="primary" key="datasets" to="/datasets"> &lt; Datasets</b-button>
+					<b-button v-if="isNotActiveRoute('datasets')" size="sm" variant="primary" key="datasets" to="/datasets">
+						<span v-if="isActiveRoute('home')">Datasets</span>
+						<span v-else >&lt; Datasets</span>
+					</b-button>
 				</b-navbar-nav>
 				<b-navbar-nav class="ml-auto">
 					<b-button-group class="page-actions">
-						<b-button m v-if="isActiveRoute('datasets')" key="new" variant="success" size="sm" to="/dataset/new">
+						<b-button v-if="isActiveRoute('datasets') || isActiveRoute('home')" key="new" variant="success" size="sm" to="/dataset/new">
 							New dataset
 						</b-button>
 					</b-button-group>
@@ -210,17 +213,27 @@ export default {
 		},
 		isNotActiveRoute(routeName) {
 			if (!this.$route.name) { return false }
-			return this.$route.name !== routeName
+			if (routeName == "new") {
+				return this.$route.name !== "editor"
+			} else if (routeName == "edit") {
+				return this.$route.name !== "tab"
+			} else if (routeName == "datasets") {
+				return this.$route.name !== "datasets"
+			} else {
+				return this.$route.name !== routeName
+			}
 		},
 		isActiveRoute(routeName) {
+			if (!this.$route.name) { return false }
 			if (routeName == "new") {
 				return this.$route.name == "editor"
 			} else if (routeName == "edit") {
 				return this.$route.name == "tab"
 			} else if (routeName == "datasets") {
 				return this.$route.name == "datasets"
+			} else {
+				return this.$route.name == routeName;
 			}
-			return false;
 		},
 	},
 }
