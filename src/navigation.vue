@@ -71,7 +71,7 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 				<transition name="fade" tag="b-navbar-nav">
 					<b-nav-text v-if="$auth.loading.state" key="loading" class="load-placeholder"></b-nav-text>
 					<b-navbar-nav v-else-if="$auth.loggedIn" key="links">
-						<b-nav-item v-if="isActiveRoute('datasets')" key="datasets" to="/datasets">Datasets</b-nav-item>
+						<b-nav-item v-if="isActiveRoute('datasets')" key="datasets" active to="/datasets">Datasets</b-nav-item>
 						<b-nav-item v-else key="datasets" to="/datasets"> &lt; Back to datasets</b-nav-item>
 						<b-nav-item v-if="isActiveRoute('datasets')" key="new" to="/dataset/new">New dataset</b-nav-item>
 					</b-navbar-nav>
