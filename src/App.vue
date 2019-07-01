@@ -14,7 +14,22 @@
 		</footer>
 	</div>
 </template>
+<style scoped>
+	#app {
+		display: flex;
+		flex-direction: column;
+		min-height: 100vh;
+	}
 
+	#app-body {
+		flex-grow: 1;
+	}
+
+	.footer {
+		padding: 16px;
+		text-align: center;
+	}
+</style>
 <script>
 import Navigation from './navigation.vue'
 
