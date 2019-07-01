@@ -1,19 +1,12 @@
 /* ADD_LICENSE_HEADER */
 import Vue from 'vue'
 import Vuex from 'vuex'
-//import jsonPointer from 'json-pointer'
-//import {api as vuePointer} from '../vendor/json-pointer/index.js'
-import vuePointer from '../vendor/json-pointer/index.js'
 import cloneWithPrune from './lib/cloneWithPrune.js'
-//const vuePointer = require('../vendor/json-pointer/index.js').default
-//import * as vuePointer from '../vendor/json-pointer/index.js'
 import getDotted from 'lodash.get'
 import hasDotted from 'lodash.has'
+import vuePointer from '../vendor/json-pointer/index.js'
 
 Vue.use(Vuex)
-
-// temporary counter to check how often a getter is called
-//let counter = 0
 
 export default new Vuex.Store({
 	state: {
@@ -50,7 +43,6 @@ export default new Vuex.Store({
 			state.metadata = {}
 		},
 		loadData(state, record) {
-			//state.record = record
 			Vue.set(state, 'record', record)
 		},
 		mergeData(state, payload) {
@@ -62,24 +54,16 @@ export default new Vuex.Store({
 			Vue.set(state, 'schema', schema)
 		},
 		changeSchema(state) {
-			//state.schema.properties.creator.description = "I changed it!"
-			//delete state.schema.properties.creator
-			//Vue.delete(state.schema, 'properties')
 			Vue.delete(state.schema.properties, 'creator')
-			//Vue.set(state.schema.properties, 'creature', "frankenstein")
-			//Vue.set(state, 'schema', {})
 		},
 		loadHints(state, hints) {
-			//state.hints = hints
 			Vue.set(state, 'hints', hints)
 		},
 		setHints(state, payload) {
-			//state.hints[payload.path] = payload.hints
 			Object.keys(payload.hints).forEach((key) => (payload.hints[key] == null || payload.hints[key] == undefined) && delete payload.hints[key])
 			Vue.set(state.hints, payload.path, payload.hints)
 		},
 		setHint(state, payload) {
-			//state.hints[payload.path] = payload.hint
 			Vue.set(state.hints, payload.path, payload.hint)
 		},
 		delHints(state, payload) {
@@ -89,9 +73,6 @@ export default new Vuex.Store({
 			Vue.set(state.tabui, payload.tab, payload.schema)
 		},
 		initValue(state, payload) {
-			//console.log("store init for", payload.p, "payload:", payload, "state:", state)
-			//payload.p[payload.prop] = payload.val
-
 			// set default value for license if ida schema
 			if (typeof state.metadata.id === 'undefined' && state.metadata.schemaId === 'metax-ida' && payload.prop === 'license') {
 				Vue.set(payload.p, payload.prop, [{
@@ -119,11 +100,9 @@ export default new Vuex.Store({
 			Vue.set(payload.p[payload.prop], index, payload.val)
 		},
 		pushValue(state, payload) {
-			//console.log("store push for", payload.p, "payload:", payload)
 			payload.p[payload.prop].push(payload.val)
 		},
 		pushMultiple(state, payload) {
-			//console.log('store push for', payload.p, 'payload:', payload)
 			payload.p[payload.prop].push(...payload.val)
 		},
 		popValue(state, payload) {
@@ -143,24 +122,8 @@ export default new Vuex.Store({
 			Vue.set(payload.val, payload.prop, undefined)
 		},
 		setPath(state, payload) {
-			/*
-			if (state.dataset === undefined) {
-				state.dataset = {}
-			}
-			*/
-			//jsonPointer.set(state.dataset, payload.path, payload.value)
-			//var obj = jsonPointer.get(state.dataset, payload.path)
-			//Vue.set(obj,
-			//Vue.set(state.dataset['rights_holder'], 'identifier', payload.value)
 			vuePointer.set(state.dataset, payload.path, payload.value)
 		},
-
-		/*
-		setValue(state, payload) {
-			console.log("store update for", payload.old, "to:", payload.new)
-			payload.old = payload.new
-		},
-		*/
 		setState(state, payload) {
 			Vue.set(state.vState, payload.path, {
 				v: payload.v,
