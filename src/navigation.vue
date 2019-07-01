@@ -121,6 +121,10 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 	margin-right: 1em
 }
 
+.btn-outline-primary {
+	color: #eee;
+	border-color: transparent;
+}
 .user-nav {
 	float: right;
 	text-align: center;
