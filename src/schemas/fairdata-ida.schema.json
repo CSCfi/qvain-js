@@ -6235,14 +6235,13 @@
 					"title": "License",
 					"description": "A legal document giving official permission to do something with the resource.",
 					"@type": "@id",
-					"oneOf": [
-						{
-							"type": "array",
-							"minItems": 0,
-							"items": {
+					"type": "array",
+					"items": {
+						"oneOf": [
+							{
 								"type": "object",
 								"$deref": "#/definitions/ResearchDataLicenseDocument",
-								"title": "License Document",
+								"title": "License dropdown",
 								"minProperties": 1,
 								"@id": "http://purl.org/dc/terms/LicenseDocument",
 								"description": "A legal document giving official permission to do something with a Resource.",
@@ -6292,26 +6291,29 @@
 										"format": "uri"
 									}
 								},
-								"required": [
-									"identifier"
-								],
+								"required": [],
 								"additionalProperties": false
+							},
+							{
+								"type": "object",
+								"title": "Free form License URL",
+								"properties": {
+									"license": {
+										"@id": "http://schema.org/license",
+										"title": "Licence URL",
+										"description": "A referenced license document that applies to this content",
+										"@type": "http://www.w3.org/2001/XMLSchema#anyURI",
+										"minLength": 1,
+										"type": "string"
+									}
+								},
+								"required": [],
+								"additionalProperties": false
+
 							}
-						}, {
-							"type": "array",
-							"items": {
-								"license": {
-									"@id": "http://schema.org/license",
-									"title": "Licence URL",
-									"description": "A referenced license document that applies to this content",
-									"@type": "http://www.w3.org/2001/XMLSchema#anyURI",
-									"minLength": 1,
-									"type": "string",
-									"format": "uri"
-								}
-							}
-						}
-					]
+						]
+					},
+					"minItems": 0
 				},
 				"access_url": {
 					"@id": "http://xmlns.com/foaf/0.1/Document",
