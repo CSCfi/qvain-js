@@ -35,10 +35,10 @@
 			<p><a :href="$auth.loginUrl" class="btn btn-info btn-lg" role="button">Login now!</a></p>
 		</div>
 
-		<b-button-group v-else>
+		<div v-else>
 			<router-link class="btn btn-success btn-lg" to="/dataset/new" role="button">New dataset</router-link>
-			<router-link class="btn btn-info btn-lg" to="/datasets" role="button">List datasets</router-link>
-		</b-button-group>
+			<router-link class="btn btn-link btn-lg" to="/datasets" role="button">List datasets</router-link>
+		</div>
 	</b-jumbotron>
 </template>
 
@@ -47,6 +47,13 @@
 	color: rgb(70,70,70);
 	background-color: rgb(231,233,237);
 	margin-top: 1em;
+}
+
+.btn-link {
+	text-decoration: none;
+}
+.btn-link:hover {
+	text-decoration: underline;
 }
 </style>
 
