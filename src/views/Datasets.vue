@@ -66,6 +66,9 @@
 					</b-dropdown>
 				</div>
 			</template>
+            <div slot="table-busy" class="text-center text-primary my-2">
+                <b-spinner class="align-middle"></b-spinner>
+            </div>
 		</b-table>
 
 		<!-- modals -->
@@ -189,6 +192,7 @@ export default {
 	},
 	methods: {
 		async fetchDataset() {
+			this.isBusy = true
 			try {
 				this.error = null
 				const { data } = await apiClient.get("/datasets/")
@@ -203,12 +207,15 @@ export default {
 			} catch (e) {
 				this.error = getApiError(e)
 				this.datasetList = []
+			} finally {
+				this.isBusy = false
 			}
 		},
 		open(id) { // should maybe later be changed to link so that accessability is better
 			this.$router.push({ name: 'editor', params: { id: id }})
 		},
 		async del() {
+			this.isBusy = true
 			this.error = null
 			try {
 				await apiClient.delete("/datasets/" + this.itemToBeDeleted)
@@ -218,6 +225,8 @@ export default {
 				this.$refs.datasetTable.refresh()
 			} catch(e) {
 				this.error = getApiError(e)
+			} finally {
+				this.isBusy = false
 			}
 		},
 		view(extid) {
