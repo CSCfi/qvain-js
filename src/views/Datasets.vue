@@ -164,6 +164,11 @@ function getApiError(error) {
 	} else if (error.message) {
 		apiError += ": " + error.message.toLowerCase()
 	}
+	if (error.response.status == 401) {
+		// there was a permission error
+		// we should redirect the user to login
+		this.$router.push('home')
+	}
 	return apiError
 }
 
