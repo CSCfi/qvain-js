@@ -80,6 +80,12 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 				<b-button m v-if="isActiveRoute('datasets')" key="new" variant="success" size="sm" to="/dataset/new">
 					New dataset
 				</b-button>
+				<b-button m v-if="isActiveRoute('datasets') && isDraftActive && !isEditActive" key="continue_draft" variant="primary" size="sm" to="/dataset/edit">
+					Unsaved dataset &gt;
+				</b-button>
+				<b-button m v-if="isActiveRoute('datasets') && isEditActive" key="continue_edit" variant="primary" size="sm" :to="continueEditUrl">
+					{{ editTitle }} &gt;
+				</b-button>
 			</b-button-group>
 		</b-navbar>
 	</div>
@@ -167,12 +173,6 @@ export default {
 		}
 	},
 	computed: {
-		isEditActive() {
-			return this.$store.state.metadata.id !== undefined
-		},
-		editUrl() {
-			return "/dataset/" + this.$store.state.metadata.id
-		},
 		editTitle() {
 			if (this.$store.getters.getTitle) {
 				return this.$store.getters.getTitle
@@ -180,10 +180,19 @@ export default {
 				return null
 			}
 		},
+		isEditActive() {
+			return this.$store.state.metadata.id !== undefined
+		},
+		continueEditUrl() {
+			return "/dataset/" + this.$store.state.metadata.id
+		},
+		isDraftActive() {
+			return this.$store.state.record
+		},
 		editorUrl() {
 			if (this.isEditActive) {
-				return "/dataset/" + this.$store.state.metadata.id
-			} else if (this.$store.state.record) {
+				return continueEditUrl()
+			} else if (this.isDraftActive) {
 				return "/dataset/edit"
 			} else {
 				return "/dataset/new"
