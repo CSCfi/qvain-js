@@ -127,8 +127,8 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 
 #app-subbar {
 	background-color: #0092c7;
-    border-top: 1px solid #00a4e0;
-    border-bottom: 1px solid #007fad;
+	border-top: 1px solid #00a4e0;
+	border-bottom: 1px solid #007fad;
 	padding-top: 0.5em;
 	padding-bottom: 0.5em;
 	padding-left: 0.5em;
@@ -186,11 +186,11 @@ export default {
 		isEditActive() {
 			return this.$store.state.metadata.id !== undefined
 		},
-		continueEditUrl() {
-			return "/dataset/" + this.$store.state.metadata.id
-		},
 		isDraftActive() {
 			return this.$store.state.record
+		},
+		continueEditUrl() {
+			return "/dataset/" + this.$store.state.metadata.id
 		},
 		editorUrl() {
 			if (this.isEditActive) {
