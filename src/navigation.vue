@@ -18,49 +18,45 @@
 			<b-collapse is-nav id="nav_collapse">
 
 				<b-navbar-nav>
-					<b-nav-item title="CSC customer support
+					<b-button-group>
+					<b-button variant="outline-primary"  title="CSC customer support
 servicedesk (at) csc.fi
 +358 9 457 2821
-Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%2FQvain%3A%20support%20request">Contact Us</b-nav-item>
-					<b-nav-item target="_blank" rel="noopener noreferrer" href="https://www.fairdata.fi/en/qvain/qvain-user-guide/">Docs</b-nav-item>
+Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%2FQvain%3A%20support%20request">
+						<font-awesome-icon icon="at" />
+						Contact Us
+					</b-button>
+					<b-button variant="outline-primary" target="_blank" rel="noopener noreferrer" href="https://www.fairdata.fi/en/qvain/qvain-user-guide/">
+						<font-awesome-icon icon="info" />
+						Docs
+					</b-button>
+					</b-button-group>
 				</b-navbar-nav>
 
 
 				<!-- right-aligned items -->
-				<b-navbar-nav class="ml-auto right-nav-items">
+				<b-navbar-nav class="ml-auto right-nav-items" v-if="$auth.loading.state">
+					<b-nav-text class="user-nav load-placeholder" key="user-loading">
+						<font-awesome-icon icon="circle-notch" spin />
+					</b-nav-text>
+				</b-navbar-nav>
 
-					<!-- language dropdown -->
-					<!--
-					<b-nav-item-dropdown text="lang" right>
-						<b-dropdown-item to="#" @click="$root.language = 'en'">EN</b-dropdown-item>
-						<b-dropdown-item to="#" @click="$root.language = 'fi'" disabled>FI</b-dropdown-item>
-						<b-dropdown-item to="#" @click="$root.language = 'se'" disabled>SE</b-dropdown-item>
-					</b-nav-item-dropdown>
-					-->
-
-					<!-- login dropdown -->
-
-					<transition name="fade">
-						<b-nav-text class="user-nav load-placeholder" key="user-loading" v-if="$auth.loading.state">
-							<font-awesome-icon icon="circle-notch" spin />
-						</b-nav-text>
-
-						<b-nav-item-dropdown class="user-nav user-dropdown" key="user-dropdown" v-else-if="$auth.loggedIn">
-							<template slot="text">
-								<span style="font-weight: bold;"><font-awesome-icon icon="user" class="text-primary mr-2" fixed-width /> {{ $auth.user.name }}</span>
-							</template>
-
-							<b-dropdown-header>
-								<font-awesome-icon icon="user" class="text-primary mr-2" fixed-width /> <a>{{ $auth.user.name }}</a>
-							</b-dropdown-header>
-							<b-dropdown-divider></b-dropdown-divider>
-							<b-dropdown-item to="/userinfo">About me</b-dropdown-item>
-							<b-dropdown-item @click="logout()">Sign out</b-dropdown-item>
-						</b-nav-item-dropdown>
-
-						<b-nav-item class="user-nav" key="user-login" v-else :href="$auth.loginUrl">Login</b-nav-item>
-					</transition>
-
+				<b-navbar-nav class="ml-auto right-nav-items" v-else-if="$auth.loggedIn">
+					<b-button-group>
+						<b-button variant="primary" to="/userinfo">
+							<font-awesome-icon icon="user" class="text-light mr-2" fixed-width /> <a>{{ $auth.user.name }}</a>
+						</b-button>
+						<b-button variant="primary" @click="logout()">
+							<font-awesome-icon icon="sign-out-alt" />
+							Sign out
+						</b-button>
+					</b-button-group>
+				</b-navbar-nav>
+				<b-navbar-nav class="ml-auto right-nav-items" v-else>
+					<b-button class="user-nav" key="user-login" variant="primary" :href="$auth.loginUrl">
+						<font-awesome-icon icon="sign-in-alt" />
+						Login
+					</b-button>
 				</b-navbar-nav>
 			</b-collapse>
 		</b-navbar>
@@ -71,23 +67,32 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 				<b-navbar-nav>
 					<b-button-group class="editor-actions">
 						<b-button v-if="isActiveRoute('datasets') && isDraftActive && !isEditActive" key="continue_draft" variant="primary" size="sm" to="/dataset/edit">
-							&lt; Unsaved dataset
+							<font-awesome-icon icon="backward" />
+							Unsaved dataset
 						</b-button>
 						<b-button v-if="isActiveRoute('datasets') && isEditActive" key="continue_edit" variant="primary" size="sm" :to="continueEditUrl">
-							&lt; {{ editTitle }}
+							<font-awesome-icon icon="backward" />
+							{{ editTitle }}
 						</b-button>
 					</b-button-group>
 				</b-navbar-nav>
 				<b-nav-text v-if="$auth.loading.state" key="loading" class="load-placeholder"></b-nav-text>
 				<b-navbar-nav v-else-if="$auth.loggedIn" key="links">
 					<b-button v-if="isNotActiveRoute('datasets')" size="sm" variant="primary" key="datasets" to="/datasets">
-						<span v-if="isActiveRoute('home')">Datasets</span>
-						<span v-else >&lt; Datasets</span>
+						<span v-if="isActiveRoute('home')">
+							<font-awesome-icon icon="table" />
+							Datasets
+						</span>
+						<span v-else >
+							<font-awesome-icon icon="backward" />
+							Datasets
+						</span>
 					</b-button>
 				</b-navbar-nav>
 				<b-navbar-nav class="ml-auto">
 					<b-button-group class="page-actions">
-						<b-button v-if="isActiveRoute('datasets') || isActiveRoute('home')" key="new" variant="success" size="sm" to="/dataset/new">
+						<b-button v-if="isActiveRoute('datasets') || isActiveRoute('home') || isActiveRoute('new') || isActiveRoute('edit') " key="new" variant="success" size="sm" to="/dataset/new">
+							<font-awesome-icon icon="plus" />
 							New dataset
 						</b-button>
 					</b-button-group>

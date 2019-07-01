@@ -5,13 +5,6 @@
 
 		<div>
 			<b-button-toolbar class="tool-bar" aria-label="Dataset toolbar">
-				<b-button-group size="sm">
-					<b-btn v-b-tooltip.hover title="Create new empty dataset" @click="createNewRecord()">New dataset</b-btn>
-					<!-- hidden due to need of redesign in editor to support this
-					<b-btn v-b-tooltip.hover title="Clone this dataset as new dataset" @click="createCloneRecord()">Clone current dataset</b-btn>
-					-->
-				</b-button-group>
-
 				<b-input-group size="sm" prepend="Where are my files">
 					<b-form-select value="fairdata" v-model="selectedSchema" :disabled="!!selectedSchema" @change="selectSchema">
 						<optgroup :label="bundle" v-for="(bundle, index) in bundles" :key="index">
