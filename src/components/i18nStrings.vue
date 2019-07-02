@@ -9,24 +9,36 @@
 		</div>
 
 		<div slot="input">
-			<b-input-group v-for="(val, lang) in state" :key="lang">
-				<div class="input-group__prepend" slot="prepend">
-					<p class="input-group__language text-dark font-italic">{{ languages[lang] }}</p>
-				</div>
-				<b-form-input :id="property + '_' + lang + '_input'" type="text" :ref="lang" class="text-field" :placeholder="uiPlaceholder" v-model="state[lang]" @change="updateValue" />
-				<b-input-group slot="append">
-					<span :id="property + '_remove-button'" class="remove-button">
-						<DeleteButton @click="deleteLanguage(lang)"/>
-					</span>
-				</b-input-group>
-			</b-input-group>
+			<b-form class="record-field">
+				<b-form-group
+						:key="lang"
+						v-for="(val, lang) in state"
+						:label="languages[lang]"
+						label-cols=3
+						:label-for="property + '_' + lang + '_input'">
+					<b-input-group>
+						<b-form-input
+							:id="property + '_' + lang + '_input'" 
+							type="text"
+							:ref="lang"
+							required
+							:placeholder="uiPlaceholder"
+							v-model="state[lang]"
+							@change="updateValue">
+						</b-form-input>
+						<span :id="property + '_' + lang + '_remove-button'" class="remove-button" slot="append">
+							<DeleteButton @click="deleteLanguage(lang)"/>
+						</span>
+					</b-input-group>
+				</b-form-group>
 
-			<p class="intro-text" v-if="Object.keys(state).length === 0">
-				Start by selecting the language. You may add as many languages as you wish by clicking them from the dropdown below.
-			</p>
-			<div class="language-row">
-				<language-select :id="property + '_language-select'" class="input-width" @change="addPair" />
-			</div>
+				<p class="intro-text" v-if="Object.keys(state).length === 0">
+					Start by selecting the language. You may add as many languages as you wish by clicking them from the dropdown below.
+				</p>
+				<div class="row">
+					<language-select :id="property + '_language-select'" class="col-md-4 col-sm-8 offset-3" @change="addPair" />
+				</div>
+			</b-form>
 		</div>
 	</record-field>
 </template>
@@ -44,28 +56,16 @@
 	text-align: center;
 	margin: 0;
 }
-.language-row {
-	display: inline-flex;
-	justify-content: space-around;
-	width: 100%;
-	border: 0;
-	margin-top: 10px;
 
-	.input-width {
-		width: 220px;
+.record-field > * {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+	input {
+		border-top: 0;
+		border-left: 0;
+		border-right: 0;
+		border-radius: 0;
 	}
-}
-.input-group__prepend {
-	width: 150px;
-	.input-group__language {
-		line-height: 38px;
-		margin: 0;
-	}
-}
-.text-field {
-	border-top: 0;
-	border-left: 0;
-	border-right: 0;
 }
 </style>
 
