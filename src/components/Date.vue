@@ -7,14 +7,13 @@
 		</div>
 
 		<div slot="input">
-			<div class="wrap">
-				<p>Select date:</p>
-				<datepicker class="widget ml-2"
-					placeholder="Click to select"
-					v-model="date">
-				</datepicker>
-				<delete-button v-if="date !== null" @click="clear()" />
-			</div>
+			<datepicker
+				clear-button="true"
+				placeholder="Select Date"
+				bootstrap-styling="true"
+				:id="property + '_date'"
+				v-model="date">
+			</datepicker>
 		</div>
 	</record-field>
 </template>
@@ -77,19 +76,6 @@ export default {
 	},
 }
 </script>
-
-
-<style lang="scss" scoped>
-	.wrap {
-		display: inline-flex;
-
-		> p {
-			margin: 0;
-			display: flex;
-			align-items: center;
-		}
-	}
-</style>
 
 <style lang="scss">
 	.widget.vdp-datepicker div input {
