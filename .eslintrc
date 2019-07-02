@@ -10,6 +10,7 @@
   },
   "rules": {
     "indent": ["warn", "tab"],
+    "vue/html-indent": ["warn", "tab"],
     "semi": ["warn", "never"],
     "semi-spacing": ["warn", { "before": false, "after": true }],
     "no-unexpected-multiline": "warn",
