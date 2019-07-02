@@ -22,12 +22,14 @@
 		<!-- table -->
 		<b-table id="dataset-list" ref="datasetTable" :items="datasetList" :fields="fields" select-mode="single" striped hover show-empty selectable :tbody-tr-class="rowClass" filter="truthy value" :filter-function="filter" no-provider-filtering no-provider-sorting :busy.sync="isBusy" primary-key="id" :tbody-transition-props="{'name': 'datasets-flip'}">
 			<template slot="published" slot-scope="row">
-				<div :style="{ 'display': 'inline-flex' }">
-					<font-awesome-icon icon="circle" class="text-success text-small text-center fa-xs" style="margin: 3px;" fixed-width v-if="row.item.published" />
-					<font-awesome-icon icon="circle" class="text-light text-small text-center fa-xs" style="color: #abcdef !important; margin: 3px;" fixed-width v-else />
-					<p v-if="row.item.published">Published</p>
-					<p v-else>Draft</p>
-				</div>
+				<font-awesome-icon icon="circle" class="text-success" style="display: block; margin: 3px;" fixed-width v-if="row.item.published" />
+				<font-awesome-icon icon="circle" class="text-light" style="display: block; " fixed-width v-else />
+				<p class="text-muted">
+					<small>
+						<span v-if="row.item.published">Published</span>
+						<span v-else>Draft</span>
+					</small>
+				</p>
 			</template>
 			<template slot="owner" slot-scope="data">
 				<span v-b-tooltip.hover.auto :title="data.item.uid">{{ data.item.owner }}</span>
@@ -36,7 +38,8 @@
 				<preservation-state :state="data.item.preservation_state"/>
 			</template>
 			<template slot="created" slot-scope="row">
-				{{ readableIso(row.item.created) }} <p style="margin-bottom: 0px;" class="text-muted"><small>{{ friendlyDate(row.item.created) }} ago</small></p>
+				{{ friendlyDate(row.item.created) }} ago
+				<p style="margin-bottom: 0px;" class="text-muted"><small>{{ readableIso(row.item.created) }}</small></p>
 			</template>
 			<template slot="title" slot-scope="row">
 				<h5 class="mb-1">{{ preferredLanguage(row.item.title) }}

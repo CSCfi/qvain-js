@@ -477,3 +477,28 @@ body {
 	padding: $input-padding-y $input-padding-x;
 }
 
+.footer {
+	font-weight: lighter;
+	font-size: 0.5em;
+}
+
+* {
+	font-weight: lighter !important;
+}
+
+.btn {
+	font-weight: lighter !important;
+}
+
+p.title {
+	font-size: 1.5em !important;
+	margin-bottom: 0.5em !important;
+}
+
+.header__right div svg {
+	margin-left: 0.5em;
+}
+
+.nav-tabs {
+	margin-top: 1em;
+}
