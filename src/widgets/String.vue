@@ -6,56 +6,34 @@
 			<InfoIcon :description="uiDescription"/>
 		</div>
 
-		<div slot="input" class="input">
-			<p v-if="inArray" class="input__number">#{{property}}</p>
-			<b-form-input
-				:type="inputType"
-				:placeholder="uiPlaceholder"
-				:value="value"
-				:state="isValid ? null : false"
-				@input.native="updateValue">
-			</b-form-input>
-			<span class="input__delete">
-				<delete-button v-if="inArray" @click="deleteMe" />
-			</span>
+		<div slot="input">
+			<b-form-group
+				:label="property + 1"
+				label-cols=1
+				:label-for="property"		
+			>
+				<b-input-group>
+					<b-form-input
+						:id="property"
+						:type="inputType"
+						:placeholder="uiPlaceholder"
+						:value="value"
+						:state="isValid ? null : false"
+						@input="updateValue">
+					</b-form-input>
+					<span class="remove-button" slot="append">
+						<delete-button v-if="inArray" @click="deleteMe" />
+					</span>
+				</b-input-group>
+			</b-form-group>
 		</div>
 	</record-field>
 </template>
 
 <style lang="scss" scoped>
-.input {
-	width: 100%;
-	display: inline-flex;
-	align-items: center;
-
-	.input__number {
-		margin: 0 10px;
-	}
-
-	.input__delete {
-		align-self: stretch;
-		margin: 0 10px 0 2px;
-		display: flex;
-	}
-}
-
-input[type=text].form-control,
-input[type=url].form-control {
-	border: 0;
-	border-radius: 0;
-	border-bottom: solid 1px lightgray;
-
-	&:focus {
-		border-bottom-color: #2ec7ff;
-	}
-
-	&.is-valid:focus {
-		box-shadow: none;
-	}
-
-	&.is-invalid:focus {
-		box-shadow: none;
-	}
+.remove-button {
+	margin: 0 10px 0 2px;
+	display: flex;
 }
 </style>
 

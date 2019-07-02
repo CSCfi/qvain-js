@@ -37,15 +37,9 @@
 						@delete="deleteElement"
 						:key="'array-' + index" />
 				</b-tab>
-
-				<div slot="tabs" class="input__controls">
-					<b-btn :id="property + '_array_button_add'" class="input__control" type="button" variant="primary" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
-				</div>
-
 			</b-tabs>
 
 			<b-list-group class="item-list" v-else-if="forceArrayUpdateHack && !tabFormat" flush>
-
 				<b-list-group-item class="list-item" v-for="(child, index) in value" :key="index">
 					<TabSelector
 						:schema="schemaForChild(index)"
@@ -60,9 +54,9 @@
 						@delete="deleteElement"
 						:key="'array-' + index" />
 				</b-list-group-item>
-				<div class="input__controls">
-					<b-btn :id="property + '_array_button_add'" class="input__control" type="button" variant="primary" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
-				</div>
+				<b-list-group-item>
+					<b-btn :id="property + '_array_button_add'" class="col" variant="light" type="button" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
+				</b-list-group-item>
 			</b-list-group>
 		</div>
 	</record-field>
@@ -72,22 +66,6 @@
 	display: inline-block;
 }
 
-.input__controls {
-	margin-left: auto;
-	margin-top: 10px;
-
-	.input__control {
-		height: 40px;
-	}
-}
-
-.list-item {
-	margin-top: 10px;
-	margin-bottom: 0px;
-	border-bottom: 0;
-	border-top: 0;
-	padding: 0;
-}
 .min-height {
 	min-height: 108px;
 }
