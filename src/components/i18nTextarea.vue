@@ -8,7 +8,7 @@
 		</div>
 
 		<div slot="input">
-			<b-tabs class="tabs-nav i18ntextarea" v-model="tabIndex" vertical pills justified>
+			<b-tabs class="tabs-nav i18ntextarea" v-model="tabIndex" vertical pills justified nav-wrapper-class="col-3">
 				<b-tab v-for="key in languageKeys" :key="key">
 					<template slot="title">
 						{{ languages[key] }}
@@ -32,6 +32,7 @@
 					</p>
 				</div>
 			</b-tabs>
+<<<<<<< HEAD
 			<language-select
 				ref="langSelect"
 				:id="property + '_language-select'"
@@ -39,6 +40,16 @@
 				v-model="selectedLanguage"
 				@keyup.enter.native="lang => selectedLanguage = lang">
 			</language-select>
+=======
+			<div class="row">
+				<language-select class="lang-select-tab col-md-4 col-sm-8 offset-3" ref="langSelect"
+					
+					v-model="selectedLanguage"
+					@keyup.enter.native="lang => selectedLanguage = lang">
+				</language-select>
+			</div>
+			
+>>>>>>> Unified i18ntextarea with i18nstring
 		</div>
 	</record-field>
 </template>
