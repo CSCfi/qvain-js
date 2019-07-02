@@ -73,6 +73,12 @@ export default {
 					vm.versions = response.data.reverse()
 				})
 				.catch(error => {
+					if (error.response.status == 401) {
+						// there was a permission error
+						// we should redirect the user to login
+						await this.$auth.logoutDueSessionTimeout()
+						this.$router.push({name: "home", params: {missingToken: true}})
+					}
 					console.log("in catch block", error)
 					vm.error = error.response && error.response.data && error.response.data.msg ? error.response.data.msg : (error.message || error || "").toLowerCase()
 				})

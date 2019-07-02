@@ -166,6 +166,7 @@ export default {
 			if (e.response.status == 401) {
 				// there was a permission error
 				// we should redirect the user to login
+				await this.$auth.logoutDueSessionTimeout()
 				this.$router.push({name: "home", params: {missingToken: true}})
 			}
 		}
