@@ -209,7 +209,7 @@ export default {
 				if (e.response.status == 401) {
 					// there was a permission error
 					// we should redirect the user to login
-					this.$router.push('home')
+					this.$router.push({name: "home", params: {missingToken: true}})
 				}
 				if (e.response && e.response.data) {
 					this.publishError = e.response.data
@@ -246,12 +246,12 @@ export default {
 
 					this.$root.showAlert("Success! Created as " + id, "success")
 				}
-			} catch(error) {
+			} catch (error) {
 				this.$root.showAlert("Save failed!", "danger")
 				if (error.response.status == 401) {
 					// there was a permission error
 					// we should redirect the user to login
-					this.$router.push('home')
+					this.$router.push({name: "home", params: {missingToken: true}})
 				}
 			} finally {
 				this.saving = false
