@@ -8,8 +8,8 @@
 		</div>
 
 		<div slot="input">
-			<b-tabs class="tabs-nav" v-model="tabIndex" pills>
-				<b-tab v-for="key in languageKeys" :key="key" no-body title-link-class="tab-field-link">
+			<b-tabs class="tabs-nav i18ntextarea" v-model="tabIndex" pills end card justified>
+				<b-tab v-for="key in languageKeys" :key="key">
 					<template slot="title">
 						{{ languages[key] }}
 						<delete-button @click="deleteLang(key)" />
@@ -17,7 +17,8 @@
 
 					<b-form-textarea
 						class="textarea"
-						placeholder="Start typing!"
+						rows=4
+						:placeholder="'Start typing in ' + languages[key]"
 						:value="state[key]"
 						:id="property + '_textarea-' + key"
 						:ref="'textarea-tab-' + key"
@@ -25,61 +26,40 @@
 					</b-form-textarea>
 				</b-tab>
 
-				<template slot="tabs" v-if="languageKeys.length > 0">
-					<div> <!-- this div makes the tab stay on first line -->
-						<language-select ref="langSelect"
-							class="lang-select-tab"
-							:id="property + '_language-select'"
-							v-model="selectedLanguage"
-							@keyup.enter.native="lang => selectedLanguage = lang">
-						</language-select>
-					</div>
-				</template>
-
 				<div slot="empty">
 					<p class="intro-text">
 						Start by selecting the language. You may add as many languages as you wish by clicking them from the dropdown below.
 					</p>
-					<div class="language-row">
-						<language-select :id="property + '_language-select'" class="input-width" @change="addTab" />
-					</div>
 				</div>
 			</b-tabs>
+			<language-select
+				ref="langSelect"
+				:id="property + '_language-select'"
+				class="lang-select-tab"
+				v-model="selectedLanguage"
+				@keyup.enter.native="lang => selectedLanguage = lang">
+			</language-select>
 		</div>
 	</record-field>
 </template>
 
 <style lang="scss" scoped>
 .lang-select-tab {
-	height: 40px;
-	margin-left: 10px;
-}
-.textarea {
-	min-height: 100px;
-	overflow: hidden;
-	resize: none;
-    background-image: linear-gradient(white, white 30px, #ccc 30px, #ccc 31px, white 31px);
-    background-size: 100% 31px;
-    border: 0px solid #ccc;
-    border-radius: 8px;
-    line-height: 31px;
-    font-family: Arial, Helvetica, Sans-serif;
-    padding: 8px;
+	margin-top: 1em;
+	margin-bottom: 0;
 }
 
 .intro-text {
 	text-align: center;
 }
-.language-row {
-	display: inline-flex;
-	justify-content: space-around;
-	width: 100%;
-	border: 0;
 
-	.input-width {
-		width: 220px;
+.card-body {
+	padding: 0 !important;
+	textarea {
+		border-bottom: 0 !important;
 	}
 }
+
 </style>
 
 
