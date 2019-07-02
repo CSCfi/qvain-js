@@ -30,7 +30,7 @@ class Editor(object):
         datasets.show()
 
         # lets tap on the create new record button
-        self.testcase.find_element('datasets_button_create-new-record').click()
+        self.testcase.find_element('button-new-dataset').click()
 
         # we should end up into new dataset page
         self.testcase.ensure_view_title(
@@ -96,18 +96,18 @@ class Editor(object):
         self.testcase.click_elem("creator_array_button_add")
 
         # add then an organization
-        self.testcase.open_dropdown("creator_array_0_object")
-        self.testcase.select_dropdown_option("creator_array_0_object", "Organization")
+        self.testcase.open_dropdown("tab_0_object")
+        self.testcase.select_dropdown_option("tab_0_object", "Organization")
         self.testcase.select_option("name_language-select", self.language)
         elemId = "name_{language_short}_input".format(language_short=self.language_short)
         self.testcase.clear_text(elemId)
         self.testcase.enter_text(elemId, organizationName)
 
     def set_access_type(self, access_type):
-        self.testcase.select_option_from_multiselect("access_type_object", access_type)
+        self.testcase.select_option_from_multiselect("tab_access_type_object", access_type)
 
     def set_license(self, dataset_license):
-        self.testcase.select_option_from_multiselect("license_array", dataset_license)
+        self.testcase.select_option_from_multiselect("tab_license_array", dataset_license)
 
     def verify_owner(self, owner):
         assert self.testcase.is_option_selected(

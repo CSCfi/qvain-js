@@ -131,10 +131,10 @@ class Datasets(object):
         self.testcase.open_frontpage()
 
         # lets tap the navigation bar where we should see the link
-        self.testcase.find_element_by_text("My Datasets").click()
+        self.testcase.find_element_by_text("Datasets").click()
 
         # lets wait until the page has been loaded
         self.testcase.ensure_view_title(
-            title='My datasets',
-            error_msg="We are not in My datasets view, it seems that we are in {header}"
+            title='Datasets',
+            error_msg="We are not in Datasets view, it seems that we are in {header}"
         )

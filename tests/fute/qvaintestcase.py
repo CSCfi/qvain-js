@@ -8,6 +8,8 @@ from tauhka.testcase import TauhkaTestCase
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
 
 
 class QvainTestCase(TauhkaTestCase):
@@ -43,9 +45,15 @@ class QvainTestCase(TauhkaTestCase):
         self.open_url(address)
         self.is_frontend_running()
         self.wait_until_window_title("Qvain")
+        self.driver.execute_script(
+            "document.body.setAttribute('style','\
+            -webkit-transition:none !important; \
+            -moz-transition:none !important; \
+            -o-transition:none !important; \
+            transition:none !important')")
 
-        # lets tap the Login now button on our landing page
-        login_button = self.driver.find_element_by_link_text("Login now!")
+        # lets tap the user menu login
+        login_button = self.driver.find_element_by_id("usermenu_login")
         login_button.click()
 
         # we will get a page redirection to another service
@@ -120,13 +128,28 @@ class QvainTestCase(TauhkaTestCase):
         assert title in header.text, error_msg.format(header=header.text)
 
     def open_dropdown(self, elemId):
+        self.wait_until_clickable_by_id(elemId)
         self.find_element(elemId).find_element_by_class_name("dropdown-toggle").click()
 
+    def wait_until_clickable_by_id(self, elemId):
+        return self.wait.until(EC.element_to_be_clickable((By.ID, elemId)))
+
+    def wait_until_clickable(self, elem):
+        return self.wait.until(EC.element_to_be_clickable(elem))
+
     def select_dropdown_option(self, elemId, option):
-        self.find_element(elemId).find_element_by_class_name("dropdown-menu").find_element_by_partial_link_text(option).click()
+        menu = self.find_element(elemId)
+        self.wait_until_clickable_by_class(menu, "dropdown-item")
+        options = menu.find_element_by_class_name("dropdown-menu").find_elements_by_class_name("dropdown-item")
+        for opt in options:
+            if opt.text == option:
+                opt.click()
+                return
+        raise NoSuchElementException(option)
 
     def select_option_from_multiselect(self, elemId, optionValue):
         # lets open the multiselect
+        self.wait_until_located_by_id(elemId)
         elem = self.find_element(elemId)
         multiselect = elem.find_element_by_class_name("multiselect")
         multiselect.click()

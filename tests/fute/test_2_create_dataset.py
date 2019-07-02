@@ -22,8 +22,9 @@ class TestCreateDataset(QvainTestCase):
         ]
         for test_dataset in test_datasets:
             dataset_ids = datasets.search(test_dataset)
-            for dataset_id in dataset_ids:
-                datasets.remove(dataset_id)
+            if dataset_ids:
+                for dataset_id in dataset_ids:
+                    datasets.remove(dataset_id)
         datasets.close()
 
         #####
