@@ -37,6 +37,10 @@
 						@delete="deleteElement"
 						:key="'array-' + index" />
 				</b-tab>
+				<li class="nav-item" role="presentation" slot="tabs">
+					<b-btn class="add-button" variant="light" type="button" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
+				</li>
+
 			</b-tabs>
 
 			<b-list-group class="item-list" v-else-if="forceArrayUpdateHack && !tabFormat" flush>
@@ -65,15 +69,23 @@
 .error-message {
 	display: inline-block;
 }
-
+.add-button {
+	height: 2.5em;
+}
 .min-height {
 	min-height: 108px;
 }
+
 </style>
 
 <style>
 .tab-array-margin.tabs .tab-content {
 	margin-top: 15px;
+}
+
+
+.nav-pills li {
+	margin-left: 1em !important;
 }
 </style>
 

@@ -22,7 +22,7 @@
 							type="text"
 							:ref="lang"
 							required
-							:placeholder="uiPlaceholder"
+							:placeholder="'Start typing in ' + languages[lang]"
 							v-model="state[lang]"
 							@change="updateValue">
 						</b-form-input>

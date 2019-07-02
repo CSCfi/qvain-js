@@ -8,7 +8,7 @@
 		</div>
 
 		<div slot="input">
-			<b-tabs class="tabs-nav i18ntextarea" v-model="tabIndex" pills end card justified>
+			<b-tabs class="tabs-nav i18ntextarea" v-model="tabIndex" vertical pills justified>
 				<b-tab v-for="key in languageKeys" :key="key">
 					<template slot="title">
 						{{ languages[key] }}
@@ -17,7 +17,7 @@
 
 					<b-form-textarea
 						class="textarea"
-						rows=4
+						rows=6
 						:placeholder="'Start typing in ' + languages[key]"
 						:value="state[key]"
 						:id="property + '_textarea-' + key"
@@ -55,8 +55,9 @@
 
 .card-body {
 	padding: 0 !important;
+	height: auto;
 	textarea {
-		border-bottom: 0 !important;
+		height: auto;
 	}
 }
 

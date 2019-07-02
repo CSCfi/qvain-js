@@ -8,18 +8,18 @@
 
 		<div slot="input">
 			<b-form-group
-				:label="property + 1"
-				label-cols=1
-				:label-for="property"		
+				:label="inArray ? (property + 1).toString() : property"
+				:label-cols="inArray ? 1 : 3"
+				:label-for="inArray ? 'input-' + property.toString() : property"
 			>
 				<b-input-group>
 					<b-form-input
-						:id="property"
+						:id="inArray ? 'input-' + property.toString() : property"
 						:type="inputType"
 						:placeholder="uiPlaceholder"
 						:value="value"
 						:state="isValid ? null : false"
-						@input="updateValue">
+						@input.native="updateValue">
 					</b-form-input>
 					<span class="remove-button" slot="append">
 						<delete-button v-if="inArray" @click="deleteMe" />

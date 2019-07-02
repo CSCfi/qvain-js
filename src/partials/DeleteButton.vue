@@ -9,6 +9,8 @@
 .delete-button {
 	padding: 4px 4px;
 	border-radius: 4px;
+	margin-left: 1em;
+	float: right;
 
 	align-self: stretch;
 	display: inline-flex;

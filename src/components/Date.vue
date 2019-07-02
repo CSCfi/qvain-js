@@ -8,9 +8,9 @@
 
 		<div slot="input">
 			<datepicker
-				clear-button="true"
+				clear-button
 				placeholder="Select Date"
-				bootstrap-styling="true"
+				bootstrap-styling
 				:id="property + '_date'"
 				v-model="date">
 			</datepicker>
