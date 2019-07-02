@@ -35,8 +35,11 @@
 				<p class="intro-text" v-if="Object.keys(state).length === 0">
 					Start by selecting the language. You may add as many languages as you wish by clicking them from the dropdown below.
 				</p>
-				<div class="row">
-					<language-select :id="property + '_language-select'" class="col-md-4 col-sm-8 offset-3" @change="addPair" />
+				<div class="row language-row">
+					<language-select
+						:id="property + '_language-select'"
+						class="col-md-4 col-sm-8 offset-3"
+						@change="addPair" />
 				</div>
 			</b-form>
 		</div>
@@ -66,6 +69,10 @@
 		border-right: 0;
 		border-radius: 0;
 	}
+}
+
+.language-row {
+	margin-top: 1em;
 }
 </style>
 

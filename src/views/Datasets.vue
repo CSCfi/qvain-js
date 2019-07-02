@@ -22,14 +22,16 @@
 		<!-- table -->
 		<b-table id="dataset-list" ref="datasetTable" :items="datasetList" :fields="fields" select-mode="single" striped hover show-empty selectable :tbody-tr-class="rowClass" filter="truthy value" :filter-function="filter" no-provider-filtering no-provider-sorting :busy.sync="isBusy" primary-key="id" :tbody-transition-props="{'name': 'datasets-flip'}">
 			<template slot="published" slot-scope="row">
-				<font-awesome-icon icon="circle" class="text-success" style="display: block; margin: 3px;" fixed-width v-if="row.item.published" />
-				<font-awesome-icon icon="circle" class="text-light" style="display: block; " fixed-width v-else />
-				<p class="text-muted">
-					<small>
-						<span v-if="row.item.published">Published</span>
-						<span v-else>Draft</span>
-					</small>
-				</p>
+				<div>
+					<font-awesome-icon icon="circle" size="md" class="text-success" v-if="row.item.published" />
+					<font-awesome-icon icon="circle" size="md" class="text-warning" v-else />
+					<p class="text-muted">
+						<small>
+							<span v-if="row.item.published">Published</span>
+							<span v-else>Draft</span>
+						</small>
+					</p>
+				</div>
 			</template>
 			<template slot="owner" slot-scope="data">
 				<span v-b-tooltip.hover.auto :title="data.item.uid">{{ data.item.owner }}</span>
@@ -45,7 +47,7 @@
 				<h5 class="mb-1">{{ preferredLanguage(row.item.title) }}
 					<b-badge v-if="row.item.next !== null" variant="warning" class="old-version">Old version</b-badge>
 				</h5>
-				<p v-if="row.item.description" class="text-muted" style="display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 24rem; margin: 0px;">
+				<p v-if="row.item.description" class="text-muted">
 					<small>{{ preferredLanguage(row.item.description) }}</small>
 				</p>
 			</template>
@@ -104,6 +106,32 @@
 			margin-right: 10px;
 		}
 	}
+
+	.table td:nth-child(2), .table td:nth-child(2) p, .table td:nth-child(2) h5 {
+		text-align: left !important ;
+		vertical-align: middle !important;
+
+		.text-muted {
+			margin-bottom: 0;
+		}
+	}
+
+	.table td:nth-child(2) p {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		max-width: 24rem;
+	}
+
+	.table td:nth-child(1) {
+		div {
+			text-align: center !important ;
+			vertical-align: middle !important;
+			p {
+				margin-bottom: 0;
+			}
+		}
+	}
 </style>
 
 
@@ -126,14 +154,11 @@
 		border-top: 0px;
 	}
 
-
-	table#dataset-list tbody > tr > td {
-		padding: 0.5em !important;
-		border-top: 0px;
+	table#dataset-list.table-striped tbody tr:focus {
+		box-shadow: none !important;
 	}
-
-	table#dataset-list.table-striped tbody tr:nth-of-type(odd) {
-		background-color: rgba(0, 146, 199, 0.1);
+	.b-table-row-selected td, .b-table-row-selected {
+		background-color: rgba(0, 0, 0, 0.05)!important;
 	}
 </style>
 
