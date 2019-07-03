@@ -15,6 +15,8 @@
 			</div>
 		</div>
 
+		<b-container class="error-container"><slot name="errors"/></b-container>
+
 		<b-container><slot name="input"/></b-container>
 	</wrapper>
 </template>
@@ -40,7 +42,9 @@
 		color: red;
 	}
 }
-
+.error-container {
+	margin-bottom: 1em;
+}
 
 </style>
 

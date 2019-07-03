@@ -6,10 +6,11 @@
 			{{ uiDescription }}
 		</small>
 		<div slot="header-right">
-			<p :key="error" v-for="error in errors" class="error-message">{{ error }}</p>
 			<ValidationStatus :status="validationStatus" />
 		</div>
-
+		<div slot="errors">
+			<b-badge variant="danger" :key="error" v-for="error in errors">{{ error }}</b-badge>
+		</div>
 		<div slot="input">
 			<b-form class="record-field">
 

@@ -7,13 +7,16 @@
 		</small>
 
 		<div slot="input">
-			<datepicker
-				clear-button
-				placeholder="Select Date"
-				bootstrap-styling
-				:id="property + '_date'"
-				v-model="date">
-			</datepicker>
+			<div class="row">
+				<datepicker
+					:inline="true"
+					placeholder="Select Date"
+					bootstrap-styling
+					:id="property + '_date'"
+					v-model="date">
+				</datepicker>
+				<delete-button @click="clear()"/>
+			</div>
 		</div>
 	</record-field>
 </template>

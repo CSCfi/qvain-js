@@ -5,9 +5,11 @@
 		<small slot="help" class="text-muted">
 			{{ uiDescription }}
 		</small>
-		<div slot="header-right" class="header__right">
-			<p :key="error" v-for="error in errors" class="error-message">{{ error }}</p>
+		<div slot="header-right">
 			<ValidationStatus v-if="!isValid" :status="'invalid'" />
+		</div>
+		<div slot="errors">
+			<b-badge variant="danger" :key="error" v-for="error in errors">{{ error }}</b-badge>
 		</div>
 		<div slot="input">
 			<!--
@@ -79,9 +81,7 @@
 	</record-field>
 </template>
 <style lang="scss" scoped>
-.error-message {
-	display: inline-block;
-}
+
 .add-button {
 	height: 2.5em;
 	margin-bottom: 1em;
