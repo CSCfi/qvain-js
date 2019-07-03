@@ -1,17 +1,34 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<div>
-		<legend class="col-form-label pt-0">{{ title }}</legend>
-		<div class="wrapper">
-			<p>Select time range:</p>
-			<datepicker placeholder="From" class="widget ml-2" :disabledDates="disableBefore" v-model="start"></datepicker>
-			<p class="ml-2">-</p>
-			<datepicker placeholder="To" class="widget ml-2" :disabledDates="disableAfter" v-model="end"></datepicker>
-			<delete-button v-if="inArray" @click="$emit('delete', property)"/>
+	<div class="container datepicker-container">
+		<div class="row">
+			<datepicker
+				:inline="true"
+				class="col-md-3"
+				bootstrapStyling
+				placeholder="From"
+				:disabledDates="disableBefore"
+				v-model="start">
+			</datepicker>
+			<div class="col-sm-1">
+				-
+			</div>
+			<datepicker
+				:inline="true"
+				class="col-md-3"
+				bootstrapStyling
+				placeholder="To"
+				:disabledDates="disableAfter"
+				v-model="end">
+			</datepicker>
 		</div>
-		<div>
-			<p v-if="start && end" class="ml-2">Time between the two dates: {{timeBetweenString}}</p>
+		<div class="row">
+			<div class="col">
+				<span v-if="start && end" class="ml-2">From {{ start.toLocaleDateString() }} to {{ end.toLocaleDateString() }} is {{ timeBetweenString }}.</span>
+				<delete-button v-if="inArray" @click="$emit('delete', property)"/>
+			</div>
 		</div>
+
 	</div>
 
 </template>
@@ -81,23 +98,8 @@ export default {
 }
 </script>
 
-
 <style lang="scss" scoped>
-	.wrapper {
-		display: inline-flex;
-
-		> p {
-			margin: 0;
-			display: flex;
-			align-items: center;
-		}
-	}
-</style>
-
-<style lang="scss">
-	.widget.vdp-datepicker div input {
-		border-radius: 5px;
-		border: 1px solid #ced4da;
-		padding: 0.375rem 0.75rem;
+	.datepicker-container .row:last-child {
+		margin-top: 1em;
 	}
 </style>
