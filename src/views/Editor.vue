@@ -396,8 +396,14 @@ export default {
 	},
 	watch: {
 		'$route.params.tab': async function(newTab, oldTab) {
-			this.$store.commit('setMetadata', { tab: newTab })
-			this.checkTab()
+			if (!newTab) {
+				// this happens when the user navigates to "New dataset" via navigation
+				// when user is in Editor view
+				this.clearRecord()
+			} else {
+				this.$store.commit('setMetadata', { tab: newTab })
+				this.checkTab()
+			}
 		},
 		'$route.params.id': async function(newId, oldId) {
 			if (this.id === 'new') {

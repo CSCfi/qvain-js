@@ -23,8 +23,8 @@
 		<b-table id="dataset-list" ref="datasetTable" :items="datasetList" :fields="fields" select-mode="single" striped hover show-empty selectable :tbody-tr-class="rowClass" filter="truthy value" :filter-function="filter" no-provider-filtering no-provider-sorting :busy.sync="isBusy" primary-key="id" :tbody-transition-props="{'name': 'datasets-flip'}">
 			<template slot="published" slot-scope="row">
 				<div class="dataset-row-publish-status">
-					<font-awesome-icon icon="circle" size="md" class="text-success" v-if="row.item.published" />
-					<font-awesome-icon icon="circle" size="md" class="text-warning" v-else />
+					<font-awesome-icon icon="circle" class="text-success" v-if="row.item.published" />
+					<font-awesome-icon icon="circle" class="text-warning" v-else />
 				</div>
 			</template>
 			<template slot="owner" slot-scope="data">
