@@ -24,9 +24,7 @@
 		<b-alert :show="missingToken" variant="danger">You are currently not logged in. Please login to access Qvain.</b-alert>
 
 		<div v-if="loginError" class="invalid-logout">
-			<p><button class="btn btn-info btn-lg" role="button" @click="logout()">
-				<font-awesome-icon icon="sign-out-alt" /> Sign out
-			</button></p>
+			<p><button :href="$auth.loginUrl" class="btn btn-info btn-lg" role="button" @click="logout()">Sign out</button></p>
 		</div>
 
 		<div v-else-if="!$auth.loggedIn">
