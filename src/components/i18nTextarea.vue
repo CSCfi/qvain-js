@@ -2,13 +2,16 @@
 <template>
 	<record-field :required="required" :wrapped="true" :error="!isValid">
 		<title-component slot="title" :title="uiLabel" />
+		<small slot="help" class="text-muted">
+			{{ uiDescription }}
+		</small>
+		
 		<div slot="header-right" class="header__right">
 			<ValidationStatus :status="validationStatus" />
-			<InfoIcon :description="uiDescription"/>
 		</div>
 
 		<div slot="input">
-			<b-tabs class="tabs-nav i18ntextarea" v-model="tabIndex" vertical pills justified nav-wrapper-class="col-3">
+			<b-tabs class="tabs-nav" v-model="tabIndex" vertical pills justified nav-wrapper-class="col-3">
 				<b-tab v-for="key in languageKeys" :key="key">
 					<template slot="title">
 						{{ languages[key] }}

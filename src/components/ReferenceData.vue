@@ -2,10 +2,9 @@
 <template>
 	<record-field :id="property + '_referenceData'" v-if="isVisible" :required="isRequired" :wrapped="wrapped">
 		<title-component slot="title" :title="uiLabel" />
-		<div slot="header-right" class="header__right">
-			<!--<ValidationStatus :status="validationStatus" />-->
-			<InfoIcon :description="uiDescription"/>
-		</div>
+		<small slot="help" class="text-muted">
+			{{ uiDescription }}
+		</small>
 
 		<div slot="input">
 			<div class="input-row__inline">

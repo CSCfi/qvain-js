@@ -25,7 +25,7 @@
 .header {
 	width: 100%;
 	display: inline-flex;
-	margin-bottom: 5px;
+	margin-bottom: 1em;
 
 	&__label {
 		display: inline-flex;

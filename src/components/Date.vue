@@ -2,9 +2,9 @@
 <template>
 	<record-field v-if="isVisible" :required="isRequired" :wrapped="wrapped">
 		<title-component slot="title" :title="uiLabel" />
-		<div slot="header-right">
-			<InfoIcon :description="uiDescription"/>
-		</div>
+		<small slot="help" class="text-muted">
+			{{ uiDescription }}
+		</small>
 
 		<div slot="input">
 			<datepicker

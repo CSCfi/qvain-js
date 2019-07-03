@@ -2,46 +2,59 @@
 <template>
 	<record-field :id="property + '_array'" class="min-height" :required="required" :wrapped="wrapped" :header="!inArray" :error="!isValid">
 		<title-component slot="title" :title="uiLabel" />
+		<small slot="help" class="text-muted">
+			{{ uiDescription }}
+		</small>
 		<div slot="header-right" class="header__right">
 			<p :key="error" v-for="error in errors" class="error-message">{{ error }}</p>
 			<ValidationStatus v-if="!isValid" :status="'invalid'" />
-			<InfoIcon :description="uiDescription"/>
 		</div>
 		<div slot="input">
 			<!--
 				There is not easy way to force v-for to not use inplace update strategy. In this case it is mandatory to make deleting item show correctly.
 				This could be code smell but at the moment the best solution is just to patch this. See https://github.com/xianshenglu/blog/issues/47 for reference.
 			-->
-			<b-tabs v-if="forceArrayUpdateHack && tabFormat" :value="tabIndex" class="tab-array-margin" pills>
-				<b-tab
-					v-for="(child, index) in value"
-					style="{margin-top: 5px}"
-					:id="property + '_array_tab_' + index"
-					:key="index"
-					title-link-class="tab-field-link">
-					<template slot="title">
-						{{ tabTitle(index) }}
-						<delete-button @click="deleteElement(index)" />
-					</template>
+			<b-container v-if="forceArrayUpdateHack && tabFormat">
+				<b-btn
+					class="add-button col"
+					variant="light"
+					type="button"
+					:disabled="value.length >= this.maximum"
+					@click="doPlus()">
+					<font-awesome-icon icon="plus" fixed-width />
+				</b-btn>
 
-					<TabSelector
-						:schema="schemaForChild(index)"
-						:path="newPath(index)"
-						:value="value[index]"
-						:parent="parent[property]"
-						:property="index"
-						:id="property + '_array_' + index + '_tab-selector'"
-						:tab="myTab"
-						:activeTab="activeTab"
-						:depth="depth"
-						@delete="deleteElement"
-						:key="'array-' + index" />
-				</b-tab>
-				<li class="nav-item" role="presentation" slot="tabs">
-					<b-btn class="add-button" variant="light" type="button" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
-				</li>
+				<b-tabs
+					:value="tabIndex"
+					class="tab-array-margin"
+					align="center"
+					pills>
+					<b-tab
+						v-for="(child, index) in value"
+						style="{margin-top: 5px}"
+						:key="index"
+						title-link-class="tab-field-link">
+						<template slot="title">
+							{{ tabTitle(index) }}
+							<delete-button @click="deleteElement(index)" />
+						</template>
 
-			</b-tabs>
+						<TabSelector
+							:schema="schemaForChild(index)"
+							:path="newPath(index)"
+							:value="value[index]"
+							:parent="parent[property]"
+							:property="index"
+							:id="property + '_array_' + index + '_tab-selector'"
+							:tab="myTab"
+							:activeTab="activeTab"
+							:depth="depth"
+							@delete="deleteElement"
+							:key="'array-' + index" />
+					</b-tab>
+
+				</b-tabs>
+			</b-container>
 
 			<b-list-group class="item-list" v-else-if="forceArrayUpdateHack && !tabFormat" flush>
 				<b-list-group-item class="list-item" v-for="(child, index) in value" :key="index">
@@ -71,6 +84,7 @@
 }
 .add-button {
 	height: 2.5em;
+	margin-bottom: 1em;
 }
 .min-height {
 	min-height: 108px;

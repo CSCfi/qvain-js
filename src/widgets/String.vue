@@ -2,16 +2,19 @@
 <template>
 	<record-field :required="required" :wrapped="false" :header="!inArray">
 		<title-component slot="title" :title="uiLabel" />
-		<div slot="header-right" class="header__right">
-			<InfoIcon :description="uiDescription"/>
-		</div>
+		<small slot="help" class="text-muted">
+			{{ uiDescription }}
+		</small>
 
 		<div slot="input">
 			<b-form-group
-				:label="inArray ? (property + 1).toString() : property"
 				:label-cols="inArray ? 1 : 3"
-				:label-for="inArray ? 'input-' + property.toString() : property"
-			>
+				:label-for="inArray ? 'input-' + property.toString() : property">
+				<span slot="label">
+					{{ inArray ? (property + 1).toString() : property }}
+					<delete-button v-if="inArray" slot="label" @click="deleteMe"/>
+				</span>
+
 				<b-input-group>
 					<b-form-input
 						:id="inArray ? 'input-' + property.toString() : property"
@@ -21,9 +24,9 @@
 						:state="isValid ? null : false"
 						@input.native="updateValue">
 					</b-form-input>
-					<span class="remove-button" slot="append">
-						<delete-button v-if="inArray" @click="deleteMe" />
-					</span>
+					<b-input-group-append>
+						<b-button @click="value = ''" variant="outline-secondary"><font-awesome-icon icon="times" fixed-width class="icon" /></b-button>
+					</b-input-group-append>
 				</b-input-group>
 			</b-form-group>
 		</div>
