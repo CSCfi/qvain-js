@@ -1,7 +1,7 @@
 <!-- ADD_LICENSE_HEADER -->
 <template functional>
 	<span class="pointer delete-button" variant="link" v-on:click="listeners.click">
-		<font-awesome-icon icon="times" fixed-width class="icon" />
+		<font-awesome-icon icon="trash" fixed-width class="icon" />
 	</span>
 </template>
 

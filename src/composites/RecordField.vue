@@ -2,15 +2,20 @@
 <template>
 	<wrapper :wrapped="wrapped" :error="error">
 		<div v-if="header" class="header">
-			<div class="header__label">
-				<slot name="title"/><span v-if="required" class="header__required">*</span>
-			</div>
+			<b-container fluid>
+				<b-row class="row">
+					<b-col><slot name="title"/><span v-if="required" class="header__required">*</span></b-col>
+				</b-row>
+				<b-row>
+					<b-col><slot name="help"/></b-col>
+				</b-row>
+			</b-container>
 			<div class="header__right">
 				<slot name="header-right"/>
 			</div>
 		</div>
 
-		<slot name="input"/>
+		<b-container><slot name="input"/></b-container>
 	</wrapper>
 </template>
 

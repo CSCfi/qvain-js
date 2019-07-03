@@ -326,8 +326,8 @@ export default {
 }
 
 .tag {
-	color: white;
-	background: #007fad;
+	color: $fd-primary-white;
+	background: $fd-primary;
 	border-radius: 5px;
 
 	padding: 4px 4px 4px 10px;
@@ -393,12 +393,6 @@ export default {
 	background: $danger;
 }
 
-.multiselect__tags {
-	border: 0;
-	border-radius: 0;
-	border-bottom: solid 1px lightgray;
-	height: 40px;
-}
 
 .multiselect__single,
 .multiselect__placeholder,

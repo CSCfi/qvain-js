@@ -1,4 +1,6 @@
 /* ADD_LICENSE_HEADER */
+@import '../../../node_modules/bootstrap/scss/bootstrap';
+
 /*
 body { font-family: "Open Sans", Roboto, sans-sans; }
 h1, h2, h3, h4, h5, h6, h7 { font-family: "Lato", serif; }
@@ -129,9 +131,22 @@ body {
 //$form-feedback-valid-color: $dark !default;
 $form-feedback-valid-color: #ced4da !default;
 
+$fd-primary: #6c757d;
+$fd-primary-dark: #212529;
+$fd-primary-black: #002533;
+$fd-primary-white: #e5f2f7;
+
+
 
 /* real css from here on */
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+	background-color: $fd-primary;
+	color: $fd-primary-white;
+}
 
+a {
+	color: $fd-primary;
+}
 
 // Component headers
 h1.component-title {
@@ -382,7 +397,6 @@ table.b-table > tfoot > tr > th.sorting::after {
   cursor: initial;
 }
 
-@import '../../../node_modules/bootstrap/scss/bootstrap';
 
 .popover {
 	color: #ffeeee;
@@ -490,9 +504,13 @@ body {
 	font-weight: lighter !important;
 }
 
-p.title {
+.title {
 	font-size: 1.5em !important;
 	margin-bottom: 0.5em !important;
+}
+
+.header__required {
+	font-size: 1.5em !important;
 }
 
 .header__right div svg {

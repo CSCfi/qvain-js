@@ -6,8 +6,8 @@
 		<!-- controls -->
 		<b-button-toolbar class="mb-4 tool-bar">
 			<b-button-group class="filter-buttons" size="sm">
-				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'all'" @click="() => showDatasetState = 'all'" variant="outline-success" v-b-tooltip.hover.bottom title="show draft datasets">All</b-btn>
-				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'draft'" @click="() => showDatasetState = 'draft'" variant="outline-success" v-b-tooltip.hover.bottom title="show draft datasets">Draft</b-btn>
+				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'all'" @click="() => showDatasetState = 'all'" variant="outline-secondary" v-b-tooltip.hover.bottom title="show draft datasets">All</b-btn>
+				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'draft'" @click="() => showDatasetState = 'draft'" variant="outline-warning" v-b-tooltip.hover.bottom title="show draft datasets">Draft</b-btn>
 				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'published'" @click="() => showDatasetState = 'published'" variant="outline-success" v-b-tooltip.hover.bottom title="show published datasets">Published</b-btn>
 			</b-button-group>
 
@@ -107,13 +107,17 @@
 		}
 	}
 
-	.table td:nth-child(2), .table td:nth-child(2) p, .table td:nth-child(2) h5 {
+	.table td:nth-child(2), .table td:nth-child(2) p {
 		text-align: left !important ;
 		vertical-align: middle !important;
 
 		.text-muted {
 			margin-bottom: 0;
 		}
+	}
+
+	.table td:nth-child(2) h5 {
+		font-weight: 300 !important;
 	}
 
 	.table td:nth-child(2) p {

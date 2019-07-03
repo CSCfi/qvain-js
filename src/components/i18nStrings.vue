@@ -2,20 +2,28 @@
 <template>
 	<record-field :required="required" :wrapped="true" :error="!isValid">
 		<title-component slot="title" :title="uiLabel" />
+		<small slot="help" class="text-muted">
+			{{ uiDescription }}
+		</small>
 		<div slot="header-right">
 			<p :key="error" v-for="error in errors" class="error-message">{{ error }}</p>
 			<ValidationStatus :status="validationStatus" />
-			<InfoIcon :description="uiDescription"/>
 		</div>
 
 		<div slot="input">
 			<b-form class="record-field">
+
 				<b-form-group
 						:key="lang"
 						v-for="(val, lang) in state"
-						:label="languages[lang]"
 						label-cols=3
 						:label-for="property + '_' + lang + '_input'">
+					
+					<span slot="label">
+						{{ languages[lang] }}
+						<DeleteButton slot="label" @click="deleteLanguage(lang)"/>
+					</span>
+
 					<b-input-group>
 						<b-form-input
 							:id="property + '_' + lang + '_input'" 
@@ -26,9 +34,14 @@
 							v-model="state[lang]"
 							@change="updateValue">
 						</b-form-input>
-						<span :id="property + '_' + lang + '_remove-button'" class="remove-button" slot="append">
-							<DeleteButton @click="deleteLanguage(lang)"/>
-						</span>
+						<b-input-group-append>
+							<b-button
+								:id="property + '_' + lang + '_remove-button'"
+								@click="state[lang] = ''"
+								variant="outline-secondary">
+								<font-awesome-icon icon="times" fixed-width class="icon" />
+							</b-button>
+						</b-input-group-append>
 					</b-input-group>
 				</b-form-group>
 
@@ -51,10 +64,7 @@
 .error-message {
 	display: inline-block;
 }
-.remove-button {
-	margin: 0 10px 0 2px;
-	display: flex;
-}
+
 .intro-text {
 	text-align: center;
 	margin: 0;
@@ -63,12 +73,6 @@
 .record-field > * {
 	margin-top: 0.5em;
 	margin-bottom: 0.5em;
-	input {
-		border-top: 0;
-		border-left: 0;
-		border-right: 0;
-		border-radius: 0;
-	}
 }
 
 .language-row {
