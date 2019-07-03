@@ -5,7 +5,7 @@
 ################################################################
 import os
 from tauhka.testcase import TauhkaTestCase
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementClickInterceptedException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -29,11 +29,8 @@ class QvainTestCase(TauhkaTestCase):
 
     def open_frontpage(self):
         # The top does not actually get you to the frontpage
-        # appTopBarImage = self.driver.find_element_by_xpath('//*[@id="app-topbar"]/a/img')
-        # appTopBarImage.click()
-        self.open_url(os.environ["TEST_ADDRESS"])
-        self.is_frontend_running()
-        self.wait_until_window_title("Qvain")
+        appTopBarImage = self.driver.find_element_by_xpath('//*[@id="app-topbar"]/a/img')
+        appTopBarImage.click()
 
     def login(self,
               username=os.environ["TEST_USERNAME"],
@@ -115,9 +112,23 @@ class QvainTestCase(TauhkaTestCase):
         assert "disabled" not in btn.get_attribute("class"), "It looks like that the button was DISABLED"
 
     def close_alert(self):
-        close_alert_btn = self.wait_until_located_by_id('root_alert').find_element_by_class_name("close")
-        close_alert_btn.click()
-        self.wait_until_hidden_by_id("root_alert")
+        retries = 5
+        error = None
+        while (retries > 0):
+            try:
+                alert_box = self.wait_until_located_by_id('root_alert')
+                self.wait_until_visible(alert_box)
+                close_alert_btn = alert_box.find_element_by_class_name("close")
+                self.wait_until_visible(close_alert_btn)
+                close_alert_btn.click()
+                self.wait_until_hidden_by_id("root_alert")
+                error = None
+                retries = 0
+            except ElementClickInterceptedException as err:
+                error = err
+                retries -= 1
+        if error:
+            raise error
 
     def get_alert_text(self):
         alertTextElem = self.wait_until_located_by_id('root_alert').find_element_by_css_selector("p")

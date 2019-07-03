@@ -20,11 +20,18 @@ class TestCreateDataset(QvainTestCase):
             "test_create_new_dataset_valid_unpublished",
             "test_create_new_dataset_invalid_unpublished"
         ]
-        for test_dataset in test_datasets:
-            dataset_ids = datasets.search(test_dataset)
-            if dataset_ids:
-                for dataset_id in dataset_ids:
-                    datasets.remove(dataset_id)
+
+        while 1:
+            was_removed = False
+            for test_dataset in test_datasets:
+                dataset_ids = datasets.search(test_dataset)
+                if dataset_ids:
+                    for dataset_id in dataset_ids:
+                        datasets.remove(dataset_id)
+                        was_removed = True
+            if not was_removed:
+                break
+
         datasets.close()
 
         #####
