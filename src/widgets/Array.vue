@@ -1,6 +1,6 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<record-field class="min-height" :required="required" :wrapped="wrapped" :header="!inArray" :error="!isValid">
+	<record-field :id="property + '_array'" class="min-height" :required="required" :wrapped="wrapped" :header="!inArray" :error="!isValid">
 		<title-component slot="title" :title="uiLabel" />
 		<div slot="header-right" class="header__right">
 			<p :key="error" v-for="error in errors" class="error-message">{{ error }}</p>
@@ -16,6 +16,7 @@
 				<b-tab
 					v-for="(child, index) in value"
 					style="{margin-top: 5px}"
+					:id="property + '_array_tab_' + index"
 					:key="index"
 					title-link-class="tab-field-link">
 					<template slot="title">
@@ -29,6 +30,7 @@
 						:value="value[index]"
 						:parent="parent[property]"
 						:property="index"
+						:id="property + '_array_' + index + '_tab-selector'"
 						:tab="myTab"
 						:activeTab="activeTab"
 						:depth="depth"
@@ -37,7 +39,7 @@
 				</b-tab>
 
 				<div slot="tabs" class="input__controls">
-					<b-btn class="input__control" type="button" variant="primary" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
+					<b-btn :id="property + '_array_button_add'" class="input__control" type="button" variant="primary" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
 				</div>
 
 			</b-tabs>
@@ -51,6 +53,7 @@
 						:value="value[index]"
 						:parent="parent[property]"
 						:property="index"
+						:id="property + '_array_' + index + '_tab-selector'"
 						:tab="myTab"
 						:activeTab="activeTab"
 						:depth="depth"
@@ -58,7 +61,7 @@
 						:key="'array-' + index" />
 				</b-list-group-item>
 				<div class="input__controls">
-					<b-btn class="input__control" type="button" variant="primary" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
+					<b-btn :id="property + '_array_button_add'" class="input__control" type="button" variant="primary" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
 				</div>
 			</b-list-group>
 		</div>

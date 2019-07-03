@@ -1,6 +1,6 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<div class="q-tab-selector">
+	<div :id="property + '_tab-selector'" class="q-tab-selector">
 		<!--
 		Tab schema {{ schema.required }}
 		Widget {{ widget }}
@@ -29,7 +29,7 @@
 		<!-- actual component -->
 		<!-- keep-alive -->
 		<keep-alive>
-			<component v-if="activeTab === myTab" :is="widget" v-bind="widgetProps" :required="required" :schema="schema" :path="path" :value="parent[property]" :valtype="dataType" :parent="parent" :property="property" :hasTypeError="hasTypeError" :tab="myTab" :activeTab="activeTab" :depth="newdepth" v-on="$listeners">
+			<component v-if="activeTab === myTab" :id="'tab_' + property + '_' + dataType" :is="widget" v-bind="widgetProps" :required="required" :schema="schema" :path="path" :value="parent[property]" :valtype="dataType" :parent="parent" :property="property" :hasTypeError="hasTypeError" :tab="myTab" :activeTab="activeTab" :depth="newdepth" v-on="$listeners">
 				<p>{{ dataType }}</p>
 			</component>
 			<skip v-else :required="(schema.required || []).includes(property)" :schema="schema" :path="path" :value="parent[property]" :valtype="dataType" :parent="parent" :property="property" :hasTypeError="hasTypeError" :tab="myTab" :activeTab="activeTab" :depth="depth" v-on="$listeners"></skip>
