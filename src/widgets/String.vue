@@ -8,10 +8,10 @@
 
 		<div slot="input">
 			<b-form-group
-				:label-cols="inArray ? 1 : 3"
+				:label-cols="inArray ? 1 : ((makeLabel !== uiLabel) ? 3 : 0)"
 				:label-for="inArray ? 'input-' + property.toString() : property">
-				<span slot="label">
-					{{ inArray ? (property + 1).toString() : property }}
+				<span slot="label" v-if="makeLabel !== uiLabel">
+					{{ makeLabel }}
 					<delete-button v-if="inArray" slot="label" @click="deleteMe"/>
 				</span>
 
