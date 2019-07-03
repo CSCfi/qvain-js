@@ -78,7 +78,7 @@
 		<p class="info-text" v-else> Note! By saving the data you are changing the file metadata FOR ALL THE FILES IN THE FOLDER regardless whether you select the files / folder into your dataset or not. Dataset is not saved / published!</p>
 		<b-alert :show="saveResult === 'failed'" variant="danger" dismissible>Something went wrong. Your changes are not saved. Please try again.</b-alert>
 		<b-alert :show="saveResult === 'success'" variant="success" dismissible>The file metadata was successfully saved.</b-alert>
-		<b-button @click="save" variant="primary" class="w-100 h-100">Save PAS Metadata</b-button>
+		<b-button @click="save" variant="primary" class="w-100">Save PAS Metadata</b-button>
 	</b-card>
 </template>
 
