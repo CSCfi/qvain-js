@@ -528,3 +528,12 @@ body {
 *::placeholder {
 	color: #ddd !important;
 }
+
+.tag .delete-button *, .nav-pills .nav-link.active .delete-button {
+	color: $fd-primary-white !important;
+}
+
+.input-group-append .btn-outline-secondary {
+		border-color: #ced4da !important;
+		border-left: 0;
+}
