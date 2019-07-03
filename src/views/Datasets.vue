@@ -6,13 +6,13 @@
 		<!-- controls -->
 		<b-button-toolbar class="mb-4 tool-bar">
 			<b-button-group class="filter-buttons" size="sm">
-				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'all'" @click="() => showDatasetState = 'all'" variant="outline-secondary" v-b-tooltip.hover.bottom title="show draft datasets">All</b-btn>
-				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'draft'" @click="() => showDatasetState = 'draft'" variant="outline-warning" v-b-tooltip.hover.bottom title="show draft datasets">Draft</b-btn>
-				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'published'" @click="() => showDatasetState = 'published'" variant="outline-success" v-b-tooltip.hover.bottom title="show published datasets">Published</b-btn>
+				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'all'" @click="() => showDatasetState = 'all'" variant="outline-secondary">All</b-btn>
+				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'draft'" @click="() => showDatasetState = 'draft'" variant="outline-warning">Draft</b-btn>
+				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'published'" @click="() => showDatasetState = 'published'" variant="outline-success">Published</b-btn>
 			</b-button-group>
 
-			<b-input-group class="search" size="sm" v-b-tooltip.hover.bottom title="Search from titles" prepend="Search">
-				<b-form-input v-model="filterString" placeholder="title" />
+			<b-input-group class="search" size="sm" prepend="Search">
+				<b-form-input v-model="filterString" placeholder="type here to search" />
 			</b-input-group>
 		</b-button-toolbar>
 
@@ -22,15 +22,9 @@
 		<!-- table -->
 		<b-table id="dataset-list" ref="datasetTable" :items="datasetList" :fields="fields" select-mode="single" striped hover show-empty selectable :tbody-tr-class="rowClass" filter="truthy value" :filter-function="filter" no-provider-filtering no-provider-sorting :busy.sync="isBusy" primary-key="id" :tbody-transition-props="{'name': 'datasets-flip'}">
 			<template slot="published" slot-scope="row">
-				<div>
+				<div class="dataset-row-publish-status">
 					<font-awesome-icon icon="circle" size="md" class="text-success" v-if="row.item.published" />
 					<font-awesome-icon icon="circle" size="md" class="text-warning" v-else />
-					<p class="text-muted">
-						<small>
-							<span v-if="row.item.published">Published</span>
-							<span v-else>Draft</span>
-						</small>
-					</p>
 				</div>
 			</template>
 			<template slot="owner" slot-scope="data">

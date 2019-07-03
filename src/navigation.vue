@@ -88,7 +88,13 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 				</b-navbar-nav>
 				<b-navbar-nav class="ml-auto">
 					<b-button-group class="page-actions">
-						<b-button id="button-new-dataset" v-if="isActiveRoute('datasets') || isActiveRoute('home') || isActiveRoute('new') || isActiveRoute('edit') " key="new" variant="success" size="sm" to="/dataset/new">
+						<b-button
+							id="button-new-dataset"
+							v-if="isActiveRoute('datasets') || isActiveRoute('home') || isActiveRoute('new') || isActiveRoute('edit')"
+							key="new"
+							:variant="isActiveRoute('new') || isActiveRoute('edit') ? 'primary' : 'success'"
+							size="sm"
+							to="/dataset/new">
 							<font-awesome-icon icon="plus" />
 							New dataset
 						</b-button>
