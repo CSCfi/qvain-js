@@ -91,7 +91,7 @@ export default {
 			vm.$router.push({ name: 'home' })
 		} else {
 			this.error = this.token ? "invalid login token" : "no token received"
-			this.$router.replace({name: 'home', params: {missingLogin: true}})
+			this.$router.replace({name: 'home', params: {missingToken: true}})
 			return
 		}
 	},
