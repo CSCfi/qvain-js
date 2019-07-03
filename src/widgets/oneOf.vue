@@ -68,7 +68,8 @@ export default {
 			this.$store.commit('updateValue', {
 				p: this.parent,
 				prop: this.property,
-				val: undefined,
+				// val: undefined,
+				val: { '@type': this.possibleTypes[i] }
 			})
 			this.chosen = i
 		},

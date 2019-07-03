@@ -699,6 +699,7 @@ export default {
 			'count': 100,
 			'grouped': false,
 			'labelNameInSchema': 'title',
+			'@type': 'License dropdown'
 		},
 		'placeholder': "– choose license –",
 		'title': "license",

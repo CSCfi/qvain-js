@@ -40,11 +40,10 @@
 				</div>
 
 			</b-tabs>
-
 			<b-list-group class="item-list" v-else-if="forceArrayUpdateHack && !tabFormat" flush>
-
-				<b-list-group-item class="list-item" v-for="(child, index) in value" :key="index">
+				<b-list-group-item class="list-item" style="display: inline-flex" v-for="(child, index) in value" :key="index">
 					<TabSelector
+						style="flex-grow: 1"
 						:schema="schemaForChild(index)"
 						:path="newPath(index)"
 						:value="value[index]"
@@ -55,6 +54,7 @@
 						:depth="depth"
 						@delete="deleteElement"
 						:key="'array-' + index" />
+					<delete-button @click="deleteElement(index)" />
 				</b-list-group-item>
 				<div class="input__controls">
 					<b-btn class="input__control" type="button" variant="primary" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
