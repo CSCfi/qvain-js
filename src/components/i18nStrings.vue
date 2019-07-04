@@ -13,9 +13,9 @@
 				<div class="input-group__prepend" slot="prepend">
 					<p class="input-group__language text-dark font-italic">{{ languages[lang] }}</p>
 				</div>
-				<b-form-input type="text" :ref="lang" class="text-field" :placeholder="uiPlaceholder" v-model="state[lang]" @change="updateValue" />
+				<b-form-input :id="property + '_' + lang + '_input'" type="text" :ref="lang" class="text-field" :placeholder="uiPlaceholder" v-model="state[lang]" @change="updateValue" />
 				<b-input-group slot="append">
-					<span class="remove-button">
+					<span :id="property + '_remove-button'" class="remove-button">
 						<DeleteButton @click="deleteLanguage(lang)"/>
 					</span>
 				</b-input-group>
@@ -25,7 +25,7 @@
 				Start by selecting the language. You may add as many languages as you wish by clicking them from the dropdown below.
 			</p>
 			<div class="language-row">
-				<language-select class="input-width" @change="addPair" />
+				<language-select :id="property + '_language-select'" class="input-width" @change="addPair" />
 			</div>
 		</div>
 	</record-field>
