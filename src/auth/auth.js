@@ -4,6 +4,7 @@ import {parseJwt, getRandomString} from './jwt.js'
 import Vue from 'vue'
 
 const TokenName = "jwt"
+const LoginErrorName = "login_error"
 
 function User() {
 	this.id = ""
@@ -69,7 +70,7 @@ function filterGroups(prefix, groups) {
 function Auth(loginUrl, logoutUrl, sessionsUrl) {
 	// reactive indicator for when session is being loaded from the back-end
 	this.loading = Vue.observable({
-		state: !!this.getToken(), // true if there is a token in localStorage
+		state: !!this.getToken(), // true if there is a token in sessionStorage
 	})
 
 	// might be Vue's reactive setter
@@ -124,10 +125,11 @@ Auth.prototype.login = function(token) {
 	this.setUser(UserFromToken(token))
 
 	if (this.loggedIn) {
-		localStorage.setItem(TokenName, token)
+		this.setToken(token)
+		this.clearLoginError()
 		return true
 	}
-	localStorage.removeItem(TokenName)
+	this.clearToken(TokenName)
 	return false
 }
 
@@ -152,7 +154,8 @@ Auth.prototype.logout = async function() {
 
 	// clear user and stored token
 	this.setUser(null)
-	localStorage.removeItem(TokenName)
+	this.clearToken()
+	this.clearLoginError()
 	return true
 }
 
@@ -173,11 +176,31 @@ Auth.prototype.getSession = async function() {
 }
 
 Auth.prototype.getToken = function() {
-	return localStorage.getItem(TokenName)
+	return sessionStorage.getItem(TokenName)
+}
+
+Auth.prototype.setToken = function(token) {
+	return sessionStorage.setItem(TokenName, token)
+}
+
+Auth.prototype.clearToken = function() {
+	return sessionStorage.removeItem(TokenName)
+}
+
+Auth.prototype.getLoginError = function() {
+	return sessionStorage.getItem(LoginErrorName)
+}
+
+Auth.prototype.setLoginError = function(error) {
+	return sessionStorage.setItem(LoginErrorName, error)
+}
+
+Auth.prototype.clearLoginError = function() {
+	return sessionStorage.removeItem(LoginErrorName)
 }
 
 Auth.prototype.resumeSession = async function() {
-	// If there is an ID token in localStorage, check if we have an
+	// If there is an ID token in sessionStorage, check if we have an
 	// existing session and can login with the token. If not, remove token.
 	let success = false
 	const token = this.getToken()
@@ -188,7 +211,7 @@ Auth.prototype.resumeSession = async function() {
 		}
 	}
 	if (!success) {
-		localStorage.removeItem(TokenName)
+		this.clearToken(TokenName)
 	}
 	this.loading.state = false
 	return success

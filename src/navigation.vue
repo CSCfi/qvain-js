@@ -35,28 +35,25 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 
 
 				<!-- right-aligned items -->
-				<b-navbar-nav id="usermenu" class="ml-auto right-nav-items" v-if="$auth.loading.state">
-					<b-nav-text class="user-nav load-placeholder" key="user-loading">
+				<b-navbar-nav id="usermenu" class="ml-auto right-nav-items" >
+					<b-nav-text v-if="$auth.loading.state" class="user-nav load-placeholder" key="user-loading">
 						<font-awesome-icon icon="circle-notch" spin />
 					</b-nav-text>
-				</b-navbar-nav>
 
-				<b-navbar-nav id="usermenu" class="ml-auto right-nav-items" v-else-if="$auth.loggedIn">
-					<b-button-group>
-						<b-button id="usermenu_userinfo" variant="primary" to="/userinfo">
+					<b-button-group v-else>
+						<b-button v-if="$auth.loggedIn" id="usermenu_userinfo" variant="primary" to="/userinfo" >
 							<font-awesome-icon icon="user" class="text-light mr-2" fixed-width /> <a id="usermenu_fullname">{{ $auth.user.name }}</a>
 						</b-button>
-						<b-button id="usermenu_signout" variant="primary" @click="logout()">
+
+						<b-button v-if="$auth.loggedIn || $auth.getLoginError()" id="usermenu_signout" variant="primary" @click="logout()">
 							<font-awesome-icon icon="sign-out-alt" />
 							Sign out
 						</b-button>
+						<b-button v-else id="usermenu_login" class="user-nav" key="user-login" variant="primary" :href="$auth.loginUrl">
+							<font-awesome-icon icon="sign-in-alt" />
+							Login
+						</b-button>
 					</b-button-group>
-				</b-navbar-nav>
-				<b-navbar-nav id="usermenu" class="ml-auto right-nav-items" v-else>
-					<b-button id="usermenu_login" class="user-nav" key="user-login" variant="primary" :href="$auth.loginUrl">
-						<font-awesome-icon icon="sign-in-alt" />
-						Login
-					</b-button>
 				</b-navbar-nav>
 			</b-collapse>
 		</b-navbar>
