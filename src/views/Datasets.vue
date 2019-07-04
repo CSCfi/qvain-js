@@ -7,8 +7,9 @@
 		<b-button-toolbar class="mb-4 tool-bar">
 			<b-button-group class="filter-buttons" size="sm">
 				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'all'" @click="() => showDatasetState = 'all'" variant="outline-secondary">All</b-btn>
-				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'draft'" @click="() => showDatasetState = 'draft'" variant="outline-warning">Draft</b-btn>
-				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'published'" @click="() => showDatasetState = 'published'" variant="outline-success">Published</b-btn>
+				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'draft'" @click="() => showDatasetState = 'draft'" variant="outline-success">Draft</b-btn>
+				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'published'" @click="() => showDatasetState = 'published'" variant="outline-primary">Published</b-btn>
+				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'updateavailable'" @click="() => showDatasetState = 'updateavailable'" variant="outline-warning">Update Available</b-btn>
 			</b-button-group>
 
 			<b-input-group class="search" size="sm" prepend="Search">
@@ -23,8 +24,9 @@
 		<b-table id="dataset-list" ref="datasetTable" :items="datasetList" :fields="fields" select-mode="single" striped hover show-empty selectable :tbody-tr-class="rowClass" filter="truthy value" :filter-function="filter" no-provider-filtering no-provider-sorting :busy.sync="isBusy" primary-key="id" :tbody-transition-props="{'name': 'datasets-flip'}">
 			<template slot="published" slot-scope="row">
 				<div class="dataset-row-publish-status">
-					<font-awesome-icon icon="circle" class="text-success" v-if="row.item.published" />
-					<font-awesome-icon icon="circle" class="text-warning" v-else />
+					<font-awesome-icon icon="circle" class="text-primary" v-if="row.item.published && !isItemPublishedAndHasUpdates(row.item)" />
+					<font-awesome-icon icon="circle" class="text-warning" v-else-if="row.item.published && isItemPublishedAndHasUpdates(row.item)" />
+					<font-awesome-icon icon="circle" class="text-success" v-else />
 				</div>
 			</template>
 			<template slot="owner" slot-scope="data">
@@ -284,8 +286,9 @@ export default {
 		},
 		filterState(item) {
 			return this.showDatasetState === 'all' ||
-				(this.showDatasetState === 'published' && item.published) ||
-				(this.showDatasetState === 'draft' && !item.published)
+				(this.showDatasetState === 'published' && item.published && !this.isItemPublishedAndHasUpdates(item)) ||
+				(this.showDatasetState === 'draft' && !item.published) ||
+				(this.showDatasetState === 'updateavailable' && this.isItemPublishedAndHasUpdates(item) )
 		},
 		filterTitles(item) {
 			if (!this.filterString) return true // don't filter null.toString()
@@ -299,6 +302,9 @@ export default {
 			const test = regex.test(this.preferredLanguage(item.title))
 			regex.lastIndex = 0
 			return test
+		},
+		isItemPublishedAndHasUpdates: function(item) {
+			return item && item.published && (item.modified > item.synced)
 		},
 		refresh() {
 			this.$refs.datasetTable.refresh()
@@ -323,6 +329,7 @@ export default {
 		filterRegExp() {
 			return new RegExp('.*' + this.filterString + '.*', 'ig')
 		},
+
 	},
 	async created() {
 		await this.fetchDataset()

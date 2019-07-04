@@ -1,7 +1,37 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
 	<div class="container-fluid limited-width">
-		<h1 class="component-title">Dataset <small class="secondary-text text-muted" v-if="title">{{ title }}</small></h1>
+		<h1 class="component-title">
+			Dataset
+			<small class="secondary-text text-muted" v-if="qvainData">
+				<span v-if="qvainData && qvainData.published && !isPublishedAndUpdateAvailable">
+					<font-awesome-icon icon="circle" class="fa-sm text-primary" />
+					<small> Published</small>
+				</span>
+				<span v-else-if="isPublishedAndUpdateAvailable">
+					<font-awesome-layers class="fa-sm">
+						<font-awesome-icon icon="circle" class="text-warning" />
+					</font-awesome-layers>
+					<small> Update Available</small>
+				</span>
+				<span v-else>
+					<font-awesome-icon icon="circle" class="fa-sm text-success" />
+					<small> Draft</small>
+				</span>
+			</small>
+			<small class="secondary-text text-muted" v-else>
+				<span v-if="loading">
+					<font-awesome-icon icon="spinner" spin />
+				</span>
+				<span v-else>
+					<font-awesome-icon icon="circle" class="fa-sm text-danger" />
+					<small> Unsaved draft</small>
+				</span>
+			</small>
+			<small class="secondary-text text-muted" v-if="title">
+				{{ title }}
+			</small>
+		</h1>
 
 		<div>
 			<b-button-toolbar class="tool-bar" aria-label="Dataset toolbar">
@@ -127,7 +157,7 @@
 			</div>
 		</div>
 		<div v-else>
-			<font-awesome-icon icon="circle-notch" spin />
+			<font-awesome-icon icon="spinner" spin />
 		</div>
 
 		<b-card id="publish-verification-card-bottom" variant="dark" bg-variant="dark" text-variant="white" v-if="showPublishConfirmation">
@@ -273,6 +303,9 @@ export default {
 					this.$root.showAlert("Dataset successfully saved", "primary")
 				} else {
 					const { data: { id }} = await apiClient.post("/datasets/", payload)
+					const { data } = await apiClient.get(`/datasets/${id}`)
+					this.qvainData = data
+
 					this.$store.commit('setMetadata', { id })
 					this.$router.replace({ name: 'tab', params: { id: id, tab: this.$route.params.tab }})
 
@@ -329,9 +362,8 @@ export default {
 		}, */
 		async openRecord(id) {
 			if (this.loading) { return }
+			this.loading = true
 			try {
-				this.loading = true
-
 				const { data } = await apiClient.get(`/datasets/${id}`)
 				this.$store.commit('resetMetadata')
 				this.selectedSchema = this.getSchemaForId(data.schema)
@@ -393,10 +425,13 @@ export default {
 	},
 	computed: {
 		isPublishDisabled() {
-			return this.rateLimited || this.$store.state.metadata.id == null || (this.qvainData != null && this.qvainData.published && this.qvainData.synced >= this.qvainData.modified) || this.isDataChanged || this.saving || this.publishing
+			return this.loading || this.rateLimited || this.$store.state.metadata.id == null || (this.qvainData && this.qvainData.published && this.qvainData.synced >= this.qvainData.modified) || this.isDataChanged || this.saving || this.publishing
+		},
+		isPublishedAndUpdateAvailable() {
+			return this.qvainData && this.qvainData.published && (this.qvainData.modified > this.qvainData.synced)
 		},
 		isSaveDisabled() {
-			return this.rateLimited || this.isDataChanged == false || this.saving || this.publishing
+			return this.loading || this.rateLimited || this.isDataChanged == false || this.saving || this.publishing
 		},
 		tabs() {
 			return (this.$store.state.hints.tabs || []).filter(tab => tab.uri)
@@ -427,7 +462,7 @@ export default {
 		'$route.params.id': async function(newId, oldId) {
 			if (this.id === 'new') {
 				this.clearRecord()
-			} else if (this.id !== 'edit' && this.$store.state.metadata.id !== this.id) {
+			} else if (this.id !== 'edit') {
 				await this.openRecord(this.id)
 			}
 		},
@@ -435,7 +470,7 @@ export default {
 	async mounted() {
 		if (this.id === 'new') {
 			this.clearRecord()
-		} else if (this.id !== 'edit' && this.$store.state.metadata.id !== this.id) {
+		} else if (this.id !== 'edit') {
 			await this.openRecord(this.id)
 		}
 
