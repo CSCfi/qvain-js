@@ -17,14 +17,15 @@
 					format="dd.MM.yyyy"
 					:id="property + '_date'"
 					v-model="date">
+					<b-button
+						slot="afterDateInput"
+						:id="property + '_date_clear-button'"
+						@click="clear()"
+						variant="outline-secondary"
+						class="vdp-datepicker_clear-button">
+						<font-awesome-icon icon="times" fixed-width class="icon" />
+					</b-button>
 				</datepicker>
-				<b-button
-					:id="property + '_date_clear-button'"
-					@click="clear()"
-					variant="outline-secondary"
-					class="vdp-datepicker_clear-button">
-					<font-awesome-icon icon="times" fixed-width class="icon" />
-				</b-button>
 			</div>
 		</div>
 	</record-field>
@@ -90,11 +91,7 @@ export default {
 </script>
 
 <style lang="scss">
-	.widget.vdp-datepicker div input {
-		border-radius: 5px;
-		border: 1px solid #ced4da;
-		padding: 0.375rem 0.75rem;
-	}
+
 
 	.vdp-datepicker_clear-button {
 		border-color: #ccc;

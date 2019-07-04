@@ -1,7 +1,12 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<div class="container datepicker-container">
+	<div
+		class="container datepicker-container"
+		:id="property">
 		<div class="row">
+			<div class="col-sm-1">
+				#{{ property + 1 }}
+			</div>
 			<div class="col">
 				<datepicker
 					:highlighted="highlightedSelected"
@@ -13,6 +18,14 @@
 					format="dd.MM.yyyy"
 					:disabledDates="disableBefore"
 					v-model="start">
+					<b-button
+						slot="afterDateInput"
+						:id="property + '_date_start_clear-button'"
+						@click="start = null"
+						variant="outline-secondary"
+						class="vdp-datepicker_clear-button">
+						<font-awesome-icon icon="times" fixed-width class="icon" />
+					</b-button>
 				</datepicker>
 			</div>
 			<div class="col">
@@ -26,6 +39,14 @@
 					placeholder="To"
 					:disabledDates="disableAfter"
 					v-model="end">
+					<b-button
+						slot="afterDateInput"
+						:id="property + '_date_clear-button'"
+						@click="end = null"
+						variant="outline-secondary"
+						class="vdp-datepicker_clear-button">
+						<font-awesome-icon icon="times" fixed-width class="icon" />
+					</b-button>
 				</datepicker>
 			</div>
 			<div class="col">
@@ -92,10 +113,6 @@ export default {
 				start_date: this.startDateISO, end_date: this.endDateISO,
 			}})
 		},
-		format: function(value, event) {
-			console.log(value)
-			return value.dateString() //yyyy-MM-dd
-		}
 	},
 	created() {
 		this.start = this.value.start_date ? new Date(this.value.start_date) : null

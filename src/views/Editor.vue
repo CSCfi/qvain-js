@@ -25,7 +25,7 @@
 						@click="save"
 						:disabled="isSaveDisabled"
 						ref="dataset-save-button">
-						<font-awesome-icon icon="save" />
+						<font-awesome-icon :icon="saving ? 'spinner' : 'save'" :spin="saving" />
 						Save
 					</b-button>
 					<b-button
@@ -34,7 +34,7 @@
 						@click="confirmPublish"
 						:disabled="isPublishDisabled"
 						ref="dataset-publish-button">
-						<font-awesome-icon icon="upload" />
+						<font-awesome-icon :icon="publishing ? 'spinner' : 'upload'" :spin="publishing" />
 						Publish
 					</b-button>
 				</b-button-group>
@@ -101,7 +101,7 @@
 							@click="save"
 							:disabled="isSaveDisabled"
 							ref="dataset-save-button">
-							<font-awesome-icon icon="save" />
+							<font-awesome-icon :icon="saving ? 'spinner' : 'save'" :spin="saving" />
 							Save
 						</b-button>
 						<b-button
@@ -109,7 +109,7 @@
 							@click="confirmPublish"
 							:disabled="isPublishDisabled"
 							ref="dataset-publish-button">
-							<font-awesome-icon icon="upload" />
+							<font-awesome-icon :icon="publishing ? 'spinner' : 'upload'" :spin="publishing" />
 							Publish
 						</b-button>
 					</b-button-group>
@@ -267,8 +267,9 @@ export default {
 				const isExisting = (currentId && currentId !== 'new')
 				if (isExisting) {
 					payload.id = currentId
-					const response = await apiClient.put("/datasets/" + currentId, payload)
-
+					const _ = await apiClient.put("/datasets/" + currentId, payload)
+					const { data } = await apiClient.get(`/datasets/${currentId}`)
+					this.qvainData = data
 					this.$root.showAlert("Dataset successfully saved", "primary")
 				} else {
 					const { data: { id }} = await apiClient.post("/datasets/", payload)
