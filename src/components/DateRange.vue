@@ -3,28 +3,26 @@
 	<div class="container datepicker-container">
 		<div class="row">
 			<div class="col">
-				From
-				{{ start ? start.toLocaleDateString() : "" }}
-			</div>
-			<div class="col">
 				<datepicker
 					:highlighted="highlightedSelected"
-					:inline="true"
+					:inline="false"
 					bootstrapStyling
+					monday-first
+					typeable
 					placeholder="From"
+					format="dd.MM.yyyy"
 					:disabledDates="disableBefore"
 					v-model="start">
 				</datepicker>
 			</div>
 			<div class="col">
-				To
-				{{ end ? end.toLocaleDateString() : "" }}
-			</div>
-			<div class="col">
 				<datepicker
 					:highlighted="highlightedSelected"
-					:inline="true"
+					:inline="false"
+					monday-first
 					bootstrapStyling
+					typeable
+					format="dd.MM.yyyy"
 					placeholder="To"
 					:disabledDates="disableAfter"
 					v-model="end">
@@ -94,6 +92,10 @@ export default {
 				start_date: this.startDateISO, end_date: this.endDateISO,
 			}})
 		},
+		format: function(value, event) {
+			console.log(value)
+			return value.dateString() //yyyy-MM-dd
+		}
 	},
 	created() {
 		this.start = this.value.start_date ? new Date(this.value.start_date) : null

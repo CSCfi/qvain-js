@@ -9,9 +9,12 @@
 		<div slot="input" class="container">
 			<div class="row">
 				<datepicker
-					:inline="true"
+					:inline="false"
 					placeholder="Select Date"
-					bootstrap-styling
+					monday-first
+					bootstrapStyling
+					typeable
+					format="dd.MM.yyyy"
 					:id="property + '_date'"
 					v-model="date">
 				</datepicker>
