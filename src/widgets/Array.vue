@@ -151,7 +151,7 @@ export default {
 				return `#${index +1} (Person)`
 			}
 
-			if (tabObjectType === 'Organization' && (tabObject.name['fi'] || tabObject.name['en'])) {
+			if (tabObjectType === 'Organization' && (tabObject && tabObject.name && (tabObject.name['fi'] || tabObject.name['en']))) {
 				return tabObject.name['fi'] || tabObject.name['en']
 			}
 
