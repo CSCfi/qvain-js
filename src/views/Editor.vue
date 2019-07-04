@@ -35,6 +35,14 @@
 
 		<div>
 			<b-button-toolbar class="tool-bar" aria-label="Dataset toolbar">
+				<b-button-group size="sm" v-if="qvainData">
+					<b-button
+						id="editor_refresh_dataset"
+						@click="reloadDataset">
+						<font-awesome-icon :icon="loading ? 'spinner' : 'sync'" :spin="loading" />
+						<span v-if="!loading"> Refresh</span>
+					</b-button>
+				</b-button-group>
 				<b-input-group size="sm" prepend="Where are my files">
 					<b-form-select id="editor_select_schema" value="fairdata" v-model="selectedSchema" :disabled="!!selectedSchema" @change="selectSchema">
 						<optgroup :label="bundle" v-for="(bundle, index) in bundles" :key="index">
@@ -48,7 +56,7 @@
 					<b-form-select id="editor_select_owner" :value="$auth.user ? $auth.user.name : 'you'" :options="[ $auth.user ? $auth.user.name : 'you' ]"></b-form-select>
 				</b-input-group>
 
-				<b-button-group size="sm" class="save-pub-btns">
+				<b-button-group size="sm" v-if="!loading && selectedSchema" class="save-pub-btns">
 					<b-button
 						id="editor_button_save_top" 
 						:variant="isSaveDisabled ? 'outline-success' : 'success'"
@@ -67,12 +75,6 @@
 						<font-awesome-icon :icon="publishing ? 'spinner' : 'upload'" :spin="publishing" />
 						Publish
 					</b-button>
-				</b-button-group>
-
-				<b-button-group size="sm" v-if="!inDev">
-					<b-btn variant="outline-light" v-b-tooltip.hover title="View dataset JSON" v-b-modal="'dataset-json-modal'">json</b-btn>
-					<b-btn variant="outline-light" v-b-tooltip.hover title="Overview" v-b-modal="'dataset-overview-modal'">overview</b-btn>
-					<b-btn variant="outline-light" v-b-tooltip.hover title="Publish" v-b-modal="'publish-modal'">publish</b-btn>
 				</b-button-group>
 
 			</b-button-toolbar>
@@ -107,10 +109,6 @@
 		<publish-modal id="publish-modal" :error="publishError" @hidden="publishError = null"></publish-modal>
 
 		<div v-if="!loading">
-			<!--
-				This could be replaced with title from title part?
-				<h2>Fairdata dataset</h2>
-			-->
 			<ul class="nav nav-tabs">
 				<!-- TODO: errors could be shown in tabs also -->
 				<li v-for="tab in tabs" :key="tab.uri" class="nav-item">
@@ -122,7 +120,7 @@
 				<router-view></router-view>
 			</div>
 
-			<b-container v-if="selectedSchema">
+			<b-container v-if="selectedSchema && !loading">
 				<b-row>
 					<b-button-group class="col">
 						<b-button
@@ -351,15 +349,18 @@ export default {
 		},
 
 		clearRecord() {
+			this.isDataChanged = false
+			this.qvainData = null
 			this.selectedSchema = null
 			this.$store.commit('loadSchema', {})
 			this.$store.commit('loadHints', {})
 			this.$store.commit('loadData', undefined)
 			this.$store.commit('resetMetadata')
 		},
-		/* cloneCurrentRecord() {
-			// Not implemented
-		}, */
+		reloadDataset: function() {
+			this.clearRecord()
+			this.openRecord(this.id)
+		},
 		async openRecord(id) {
 			if (this.loading) { return }
 			this.loading = true
