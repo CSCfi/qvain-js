@@ -2,33 +2,39 @@
 <template>
 	<div class="container datepicker-container">
 		<div class="row">
-			<datepicker
-				:inline="true"
-				class="col-md-3"
-				bootstrapStyling
-				placeholder="From"
-				:disabledDates="disableBefore"
-				v-model="start">
-			</datepicker>
-			<div class="col-sm-1">
-				-
-			</div>
-			<datepicker
-				:inline="true"
-				class="col-md-3"
-				bootstrapStyling
-				placeholder="To"
-				:disabledDates="disableAfter"
-				v-model="end">
-			</datepicker>
-		</div>
-		<div class="row">
 			<div class="col">
-				<span v-if="start && end" class="ml-2">From {{ start.toLocaleDateString() }} to {{ end.toLocaleDateString() }} is {{ timeBetweenString }}.</span>
+				From
+				{{ start ? start.toLocaleDateString() : "" }}
+			</div>
+			<div class="col">
+				<datepicker
+					:highlighted="highlightedSelected"
+					:inline="true"
+					bootstrapStyling
+					placeholder="From"
+					:disabledDates="disableBefore"
+					v-model="start">
+				</datepicker>
+			</div>
+			<div class="col">
+				To
+				{{ end ? end.toLocaleDateString() : "" }}
+			</div>
+			<div class="col">
+				<datepicker
+					:highlighted="highlightedSelected"
+					:inline="true"
+					bootstrapStyling
+					placeholder="To"
+					:disabledDates="disableAfter"
+					v-model="end">
+				</datepicker>
+			</div>
+			<div class="col">
 				<delete-button v-if="inArray" @click="$emit('delete', property)"/>
 			</div>
-		</div>
 
+		</div>
 	</div>
 
 </template>
@@ -74,6 +80,12 @@ export default {
 		},
 		endDateISO() {
 			return this.end ? this.end.toISOString() : null
+		},
+		highlightedSelected() {
+			return {
+				from: this.start,
+				to: this.end
+			}
 		},
 	},
 	methods: {

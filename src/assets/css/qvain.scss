@@ -134,8 +134,23 @@ $form-feedback-valid-color: #ced4da !default;
 $fd-primary: #6c757d;
 $fd-primary-dark: #212529;
 $fd-primary-black: #002533;
-$fd-primary-white: #e5f2f7;
+$fd-primary-white: #ffffff;
 
+.vdp-datepicker__calendar {
+	.cell.highlighted {
+		background-color: lighten($fd-primary, 50%) !important;
+		color: $fd-primary-dark !important;
+	}
+
+	.cell.highlight-end.selected, .cell.highlight-start.selected {
+		background-color: $fd-primary !important;
+		color: $fd-primary-white !important;	
+	}
+
+	.cell.weekend:not(.highlighted) {
+		background-color: darken($fd-primary-white, 1%) !important;
+	}
+}
 
 
 /* real css from here on */
