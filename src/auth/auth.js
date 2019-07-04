@@ -133,7 +133,11 @@ Auth.prototype.login = function(token) {
 	return false
 }
 
-Auth.prototype.logout = async function() {
+Auth.prototype.logoutDueSessionTimeout = async function() {
+	await this.logout(true)
+}
+
+Auth.prototype.logout = async function(doNotRedirect) {
 	try {
 		// delete backend session
 		const response = await axios.post(
@@ -145,7 +149,7 @@ Auth.prototype.logout = async function() {
 				},
 			})
 		// redirect to fairdata logout
-		if (response.data && response.data.redirect) {
+		if (response.data && response.data.redirect && !doNotRedirect) {
 			window.location.href = response.data.redirect
 		}
 	} catch (error) {
