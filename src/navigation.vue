@@ -40,25 +40,20 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 						<font-awesome-icon icon="circle-notch" spin />
 					</b-nav-text>
 
-					<b-button-group v-else-if="$auth.loggedIn">
-						<b-button id="usermenu_userinfo" variant="primary" to="/userinfo">
+					<b-button-group v-else>
+						<b-button v-if="$auth.loggedIn" id="usermenu_userinfo" variant="primary" to="/userinfo" >
 							<font-awesome-icon icon="user" class="text-light mr-2" fixed-width /> <a id="usermenu_fullname">{{ $auth.user.name }}</a>
 						</b-button>
-						<b-button id="usermenu_signout" variant="primary" @click="logout()">
+
+						<b-button v-if="$auth.loggedIn || $auth.getLoginError()" id="usermenu_signout" variant="primary" @click="logout()">
 							<font-awesome-icon icon="sign-out-alt" />
 							Sign out
 						</b-button>
+						<b-button v-else id="usermenu_login" class="user-nav" key="user-login" variant="primary" :href="$auth.loginUrl">
+							<font-awesome-icon icon="sign-in-alt" />
+							Login
+						</b-button>
 					</b-button-group>
-
-					<b-button v-else-if="$auth.getLoginError()" id="usermenu_signout" variant="primary" @click="logout()">
-						<font-awesome-icon icon="sign-out-alt" />
-						Sign out
-					</b-button>
-
-					<b-button v-else id="usermenu_login" class="user-nav" key="user-login" variant="primary" :href="$auth.loginUrl">
-						<font-awesome-icon icon="sign-in-alt" />
-						Login
-					</b-button>
 				</b-navbar-nav>
 			</b-collapse>
 		</b-navbar>
