@@ -1,6 +1,6 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<wrapper :wrapped="!inArray">
+	<wrapper :id="property + '_oneOf'" :wrapped="!inArray">
 		<template v-if="!both">
 			<div v-if="chosen === null" class="conditional-wrapper">
 				<b-dropdown class="m-2" text="Choose type" variant="primary">
