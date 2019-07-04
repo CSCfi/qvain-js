@@ -35,14 +35,6 @@
 							v-model="state[lang]"
 							@change="updateValue">
 						</b-form-input>
-						<b-input-group-append>
-							<b-button
-								:id="property + '_' + lang + '_remove-button'"
-								@click="state[lang] = ''"
-								variant="outline-secondary">
-								<font-awesome-icon icon="times" fixed-width class="icon" />
-							</b-button>
-						</b-input-group-append>
 					</b-input-group>
 				</b-form-group>
 
