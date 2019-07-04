@@ -15,7 +15,13 @@
 					:id="property + '_date'"
 					v-model="date">
 				</datepicker>
-				<delete-button @click="clear()"/>
+				<b-button
+					:id="property + '_date_clear-button'"
+					@click="clear()"
+					variant="outline-secondary"
+					class="vdp-datepicker_clear-button">
+					<font-awesome-icon icon="times" fixed-width class="icon" />
+				</b-button>
 			</div>
 		</div>
 	</record-field>
@@ -85,5 +91,12 @@ export default {
 		border-radius: 5px;
 		border: 1px solid #ced4da;
 		padding: 0.375rem 0.75rem;
+	}
+
+	.vdp-datepicker_clear-button {
+		border-color: #ccc;
+		border-left: 0;
+		border-top-left-radius: 0;
+		border-bottom-left-radius: 0;
 	}
 </style>

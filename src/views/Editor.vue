@@ -21,18 +21,18 @@
 				<b-button-group size="sm" class="save-pub-btns">
 					<b-button
 						id="editor_button_save_top" 
-						variant="success"
+						:variant="isSaveDisabled ? 'outline-success' : 'success'"
 						@click="save"
-						:disabled="rateLimited || isDataChanged == false || saving || publishing"
+						:disabled="isSaveDisabled"
 						ref="dataset-save-button">
 						<font-awesome-icon icon="save" />
 						Save
 					</b-button>
 					<b-button
 						id="editor_button_publish_top"
-						variant="primary"
+						:variant="isPublishDisabled ? 'outline-primary' : 'primary'"
 						@click="confirmPublish"
-						:disabled="rateLimited || $store.state.metadata.id == null || (qvainData != null && qvainData.published && qvainData.synced >= qvainData.modified) || isDataChanged || saving || publishing"
+						:disabled="isPublishDisabled"
 						ref="dataset-publish-button">
 						<font-awesome-icon icon="upload" />
 						Publish
@@ -97,17 +97,17 @@
 					<b-button-group class="col">
 						<b-button
 							id="editor_button_save_bottom"
-							variant="success"
+							:variant="isSaveDisabled ? 'outline-success' : 'success'"
 							@click="save"
-							:disabled="rateLimited || isDataChanged == false || saving || publishing"
+							:disabled="isSaveDisabled"
 							ref="dataset-save-button">
 							<font-awesome-icon icon="save" />
 							Save
 						</b-button>
 						<b-button
-							variant="primary"
+							:variant="isPublishDisabled ? 'outline-primary' : 'primary'"
 							@click="confirmPublish"
-							:disabled="rateLimited || $store.state.metadata.id == null || (qvainData != null && qvainData.published && qvainData.synced >= qvainData.modified) || isDataChanged || saving || publishing"
+							:disabled="isPublishDisabled"
 							ref="dataset-publish-button">
 							<font-awesome-icon icon="upload" />
 							Publish
@@ -379,6 +379,12 @@ export default {
 		},
 	},
 	computed: {
+		isPublishDisabled() {
+			return this.rateLimited || this.$store.state.metadata.id == null || (this.qvainData != null && this.qvainData.published && this.qvainData.synced >= this.qvainData.modified) || this.isDataChanged || this.saving || this.publishing
+		},
+		isSaveDisabled() {
+			return this.rateLimited || this.isDataChanged == false || this.saving || this.publishing
+		},
 		tabs() {
 			return (this.$store.state.hints.tabs || []).filter(tab => tab.uri)
 		},
