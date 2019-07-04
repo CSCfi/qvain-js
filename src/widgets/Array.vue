@@ -29,7 +29,6 @@
 				<b-tabs
 					:value="tabIndex"
 					class="tab-array-margin"
-					align="center"
 					pills>
 					<b-tab
 						v-for="(child, index) in value"
