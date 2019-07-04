@@ -19,7 +19,7 @@
 						class="textarea"
 						placeholder="Start typing!"
 						:value="state[key]"
-						:id="'textarea-' + key"
+						:id="property + '_textarea-' + key"
 						:ref="'textarea-tab-' + key"
 						@input="v => changeText(key, v)">
 					</b-form-textarea>
@@ -29,6 +29,7 @@
 					<div> <!-- this div makes the tab stay on first line -->
 						<language-select ref="langSelect"
 							class="lang-select-tab"
+							:id="property + '_language-select'"
 							v-model="selectedLanguage"
 							@keyup.enter.native="lang => selectedLanguage = lang">
 						</language-select>
@@ -40,7 +41,7 @@
 						Start by selecting the language. You may add as many languages as you wish by clicking them from the dropdown below.
 					</p>
 					<div class="language-row">
-						<language-select class="input-width" @change="addTab" />
+						<language-select :id="property + '_language-select'" class="input-width" @change="addTab" />
 					</div>
 				</div>
 			</b-tabs>
