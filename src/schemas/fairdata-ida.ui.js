@@ -683,9 +683,21 @@ export default {
 		'help': "Can be left empty if the Access Type is Open.",
 	},
 	'/properties/access_rights/properties/license': {
-		//'widget': 'multiple'
 		props: {
 			tabFormat: false
+		}
+	},
+	'/properties/access_rights/properties/license/*': {
+		props: {
+			oneOfFunc: value => {
+				if (value && value.identifier) {
+					return 0
+				}
+				if (value && value.license) {
+					return 1
+				}
+				return null
+			}
 		}
 	},
 	'/properties/access_rights/properties/license/*/oneOf/0': {
@@ -699,7 +711,7 @@ export default {
 			'count': 100,
 			'grouped': false,
 			'labelNameInSchema': 'title',
-			'@type': 'License dropdown'
+			//'@type': 'License dropdown'
 		},
 		'placeholder': "– choose license –",
 		'title': "license",

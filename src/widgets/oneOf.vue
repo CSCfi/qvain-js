@@ -52,6 +52,10 @@ export default {
 		wrapped: {
 			type: Boolean,
 			required: false
+		},
+		oneOfFunc: {
+			type: Function,
+			required: false
 		}
 	},
 	data() {
@@ -68,8 +72,7 @@ export default {
 			this.$store.commit('updateValue', {
 				p: this.parent,
 				prop: this.property,
-				// val: undefined,
-				val: { '@type': this.possibleTypes[i] }
+				val: undefined,
 			})
 			this.chosen = i
 		},
@@ -82,15 +85,23 @@ export default {
 			return this.schema['oneOf'].map(sub => sub['title'])
 		},
 		currentType() {
-			return this.value && this.value[IDENTIFYING_FIELD] || null
+			const valueType = this.value && this.value[IDENTIFYING_FIELD]
+			const uiSchemaType = (this.oneOfFunc && this.value && this.oneOfFunc(this.value))
+			if (!(valueType === null || typeof valueType === 'undefined')) {
+				return valueType
+			} else if (!(uiSchemaType === null || typeof uiSchemaType === 'undefined')) {
+				return uiSchemaType
+			}
+
+			return null
 		},
 	},
 	watch: {
 		currentType: {
 			immediate: true,
-			handler(val) {
-				if (!val) return;
-				let index = this.possibleTypes.indexOf(this.currentType);
+			handler() {
+				if (typeof this.currentType === 'undefined' || this.currentType === null) return;
+				let index = isNaN(this.currentType) ? this.possibleTypes.indexOf(this.currentType) : this.currentType
 				this.chosen = index >= 0 ? index : null;
 			},
 		},

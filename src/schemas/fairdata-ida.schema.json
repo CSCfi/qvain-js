@@ -6289,12 +6289,6 @@
 										"minLength": 1,
 										"type": "string",
 										"format": "uri"
-									},
-									"@type": {
-										"type": "string",
-										"enum": [
-											"License dropdown"
-										]
 									}
 								},
 								"required": [],
@@ -6311,12 +6305,6 @@
 										"@type": "http://www.w3.org/2001/XMLSchema#anyURI",
 										"minLength": 1,
 										"type": "string"
-									},
-									"@type": {
-										"type": "string",
-										"enum": [
-											"Free form License URL"
-										]
 									}
 								},
 								"required": [],

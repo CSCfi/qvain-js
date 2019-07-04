@@ -114,7 +114,7 @@ export default {
 		wrapped: { type: Boolean, default: false },
 		labelNameInSchema: { type: String, default: 'pref_label' },
 		grouped: { type: Boolean, required: false },
-		'@type': { type: String, required: false }
+		//'@type': { type: String, required: false }
 	},
 	data() {
 		return {
@@ -256,7 +256,7 @@ export default {
 	},
 	async created() {
 		if (this.isMultiselect && this.isArray) {
-			this.selectedOptions = this.value.map(v => ({ identifier: v.identifier, label: v[this.labelNameInSchema], '@type': v['@type'] }))
+			this.selectedOptions = this.value.map(v => ({ identifier: v.identifier, label: v[this.labelNameInSchema] }))
 		}
 
 		if (!this.isMultiselect && !this.isEmptyObject) {
@@ -283,11 +283,7 @@ export default {
 				}
 
 				const { identifier, label: { sv, en, fi, und } } = option
-				const mapped = { identifier, [this.labelNameInSchema]: { sv, en, fi, und } }
-				if (this['@type']) {
-					mapped['@type'] = this['@type']
-				}
-				return mapped
+				return { identifier, [this.labelNameInSchema]: { sv, en, fi, und } }
 			}
 
 			let storableOptions = '' // this default allows item to be removed at updateValue
@@ -297,10 +293,6 @@ export default {
 
 			if (!this.isMultiselect && selectedValueIsSet) {
 				storableOptions = mapToStore(this.selectedOptions)
-			}
-
-			if (!selectedValueIsSet) {
-				storableOptions = { '@type': this['@type'] }
 			}
 
 			this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: storableOptions })
