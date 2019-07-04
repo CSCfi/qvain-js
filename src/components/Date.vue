@@ -3,10 +3,10 @@
 	<record-field v-if="isVisible" :required="isRequired" :wrapped="wrapped">
 		<title-component slot="title" :title="uiLabel" />
 		<small slot="help" class="text-muted">
-			{{ uiDescription }}
+			{{ uiDescription }}
 		</small>
 
-		<div slot="input">
+		<div slot="input" class="container">
 			<div class="row">
 				<datepicker
 					:inline="true"
