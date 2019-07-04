@@ -227,6 +227,12 @@ export default {
 				})
 				this.datasetList = data
 			} catch (e) {
+				if (e.response.status == 401) {
+					// there was a permission error
+					// we should redirect the user to login
+					await this.$auth.logoutDueSessionTimeout()
+					this.$router.push({name: "home", params: {missingToken: true}})
+				}
 				this.error = getApiError(e)
 				this.datasetList = []
 			} finally {
@@ -245,7 +251,13 @@ export default {
 
 				await this.fetchDataset()
 				this.$refs.datasetTable.refresh()
-			} catch(e) {
+			} catch (e) {
+				if (e.response.status == 401) {
+					// there was a permission error
+					// we should redirect the user to login
+					await this.$auth.logoutDueSessionTimeout()
+					this.$router.push({name: "home", params: {missingToken: true}})
+				}
 				this.error = getApiError(e)
 			} finally {
 				this.isBusy = false
