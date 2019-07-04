@@ -142,7 +142,7 @@ $fd-primary-white: #ffffff;
 		color: $fd-primary-dark !important;
 	}
 
-	.cell.highlight-end.selected, .cell.highlight-start.selected {
+	.cell.highlight-end.selected, .cell.highlight-start.selected, .selected {
 		background-color: $fd-primary !important;
 		color: $fd-primary-white !important;	
 	}
