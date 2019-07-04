@@ -19,8 +19,8 @@
 				</b-input-group>
 
 				<b-button-group size="sm" class="save-pub-btns">
-					<b-btn id="editor_button_save_top" v-b-tooltip.hover title="Save as a draft. Saving does not make your dataset public nor visible to anyone. You can save as many times as you want before publishing." @click="save" :disabled="rateLimited" ref="dataset-save-button">Save</b-btn>
-					<b-btn id="editor_button_publish_top" v-b-tooltip.hover title="Publish makes the saved dataset public. Remember to always save the datset before publishing (only the latest saved version gets published)." @click="confirmPublish" :disabled="rateLimited" ref="dataset-publish-button">Publish</b-btn>
+					<b-btn id="editor_button_save_top" v-b-tooltip.hover title="Save as a draft. Saving does not make your dataset public nor visible to anyone. You can save as many times as you want before publishing." @click="save" :disabled="rateLimited || isDataChanged == false || saving || publishing" ref="dataset-save-button">Save</b-btn>
+					<b-btn id="editor_button_publish_top" v-b-tooltip.hover title="Publish makes the saved dataset public. Remember to always save the datset before publishing (only the latest saved version gets published)." @click="confirmPublish" :disabled="rateLimited || $store.state.metadata.id == null || (qvainData != null && qvainData.published && qvainData.synced >= qvainData.modified) || isDataChanged || saving || publishing" ref="dataset-publish-button">Publish</b-btn>
 				</b-button-group>
 
 				<b-button-group size="sm" v-if="!inDev">
@@ -77,8 +77,8 @@
 			</div>
 			<div v-if="selectedSchema" :style="{'display': 'flex', 'flex-flow': 'row-reverse', 'margin-bottom': '10px'}">
 				<b-button-group size="sm" class="mx-1">
-					<b-btn id="editor_button_save_bottom" v-b-tooltip.hover title="Save as a draft. Saving does not make your dataset public nor visible to anyone. You can save as many times as you want before publishing." @click="save" :disabled="rateLimited" ref="dataset-save-button">Save</b-btn>
-					<b-btn id="editor_button_publish_bottom" v-b-tooltip.hover title="Publish makes the saved dataset public. Remember to always save the datset before publishing (only the latest saved version gets published)." @click="confirmPublish" :disabled="rateLimited" ref="dataset-publish-button">Publish</b-btn>
+					<b-btn id="editor_button_save_bottom" v-b-tooltip.hover title="Save as a draft. Saving does not make your dataset public nor visible to anyone. You can save as many times as you want before publishing." @click="save" :disabled="rateLimited || isDataChanged == false || saving || publishing" ref="dataset-save-button">Save</b-btn>
+					<b-btn id="editor_button_publish_bottom" v-b-tooltip.hover title="Publish makes the saved dataset public. Remember to always save the datset before publishing (only the latest saved version gets published)." @click="confirmPublish" :disabled="rateLimited || $store.state.metadata.id == null || (qvainData != null && qvainData.published && qvainData.synced >= qvainData.modified) || isDataChanged || saving || publishing" ref="dataset-publish-button">Publish</b-btn>
 				</b-button-group>
 			</div>
 
@@ -124,9 +124,6 @@ import DatasetJsonModal from '@/components/DatasetJsonModal.vue'
 import DatasetOverviewModal from '@/components/DatasetOverviewModal.vue'
 import PublishModal from '@/components/PublishModal.vue'
 import Validator from '../../vendor/validator/src/validate.js'
-import debounce from 'lodash.debounce'
-
-const RATE_LIMIT_MSECS = 3000
 
 export default {
 	name: "editor",
@@ -158,6 +155,9 @@ export default {
 			showPublishConfirmation: false,
 			inDev: true,
 			saving: false,
+			publishing: false,
+			isDataChanged: false,
+			qvainData: null
 		}
 	},
 	methods: {
@@ -181,10 +181,11 @@ export default {
 			}
 			this.showPublishConfirmation = true
 		},
-		publish: debounce(async function() {
-			if (this.saving) {
+		publish: async function publishCallback() {
+			if (this.saving || this.publishing) {
 				return
 			}
+			this.publishing = true
 			try {
 				this.showPublishConfirmation = false
 				const isExisting = !!this.$store.state.metadata.id
@@ -209,9 +210,11 @@ export default {
 				//const errorMessage = `Publish failed, please check you have inserted all mandatory fields. Mandatory fields are: creator, description, access_rights and title. The error was: ${e}`
 				//this.$root.showAlert(errorMessage, "danger")
 				this.$root.showAlert("Publish failed!", "danger")
+			} finally {
+				this.publishing = false
 			}
-		}, RATE_LIMIT_MSECS, { leading: true, trailing: false }),
-		save: debounce(async function() {
+		},
+		save: async function saveCallback() {
 			if (this.saving) {
 				return
 			}
@@ -234,12 +237,13 @@ export default {
 
 					this.$root.showAlert("Success! Created as " + id, "success")
 				}
+				this.isDataChanged = false
 			} catch(error) {
 				this.$root.showAlert("Save failed!", "danger")
 			} finally {
 				this.saving = false
 			}
-		}, RATE_LIMIT_MSECS, { leading: true, trailing: false }),
+		},
 		createNewRecord() {
 			this.loading = true
 			this.$nextTick(() => {
@@ -277,6 +281,7 @@ export default {
 			// Not implemented
 		}, */
 		async openRecord(id) {
+			if (this.loading) { return }
 			try {
 				this.loading = true
 
@@ -287,6 +292,9 @@ export default {
 				this.$store.commit('loadHints', this.selectedSchema.ui)
 				this.$store.commit('loadData', Object(data.dataset))
 				this.$store.commit('setMetadata', { id, schemaId: this.selectedSchema.id })
+				this.qvainData = data
+			} catch (error) {
+				console.log(error)
 			} finally {
 				this.loading = false
 			}
@@ -328,6 +336,10 @@ export default {
 			this.unsubscribeFunc = this.$store.subscribe((mutation) => {
 				if (mutation.type !== 'initValue') {
 					this.validator.validateData(this.$store.state.record)
+				}
+				// the data has been changed after the initial load by the user
+				if (mutation.type == 'updateValue') {
+					this.isDataChanged = true
 				}
 			})
 		},
