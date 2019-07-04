@@ -5,15 +5,8 @@
 
 		<div>
 			<b-button-toolbar class="tool-bar" aria-label="Dataset toolbar">
-				<b-button-group size="sm">
-					<b-btn v-b-tooltip.hover title="Create new empty dataset" @click="createNewRecord()">New dataset</b-btn>
-					<!-- hidden due to need of redesign in editor to support this
-					<b-btn v-b-tooltip.hover title="Clone this dataset as new dataset" @click="createCloneRecord()">Clone current dataset</b-btn>
-					-->
-				</b-button-group>
-
 				<b-input-group size="sm" prepend="Where are my files">
-					<b-form-select value="fairdata" v-model="selectedSchema" :disabled="!!selectedSchema" @change="selectSchema">
+					<b-form-select id="editor_select_schema" value="fairdata" v-model="selectedSchema" :disabled="!!selectedSchema" @change="selectSchema">
 						<optgroup :label="bundle" v-for="(bundle, index) in bundles" :key="index">
 							<option :value="val" v-for="(val, id) in getSchemas(bundle)" :key="id">{{ val.name }}</option>
 						</optgroup>
@@ -22,12 +15,12 @@
 				</b-input-group>
 
 				<b-input-group size="sm" prepend="Owner">
-					<b-form-select :value="$auth.user ? $auth.user.name : 'you'" :options="[ $auth.user ? $auth.user.name : 'you' ]"></b-form-select>
+					<b-form-select id="editor_select_owner" :value="$auth.user ? $auth.user.name : 'you'" :options="[ $auth.user ? $auth.user.name : 'you' ]"></b-form-select>
 				</b-input-group>
 
 				<b-button-group size="sm" class="save-pub-btns">
-					<b-btn v-b-tooltip.hover title="Save as a draft. Saving does not make your dataset public nor visible to anyone. You can save as many times as you want before publishing." @click="save" :disabled="rateLimited" ref="dataset-save-button">Save</b-btn>
-					<b-btn v-b-tooltip.hover title="Publish makes the saved dataset public. Remember to always save the dataset before publishing (only the latest saved version gets published)." @click="confirmPublish" :disabled="rateLimited" ref="dataset-publish-button">Publish</b-btn>
+					<b-btn id="editor_button_save_top" v-b-tooltip.hover title="Save as a draft. Saving does not make your dataset public nor visible to anyone. You can save as many times as you want before publishing." @click="save" :disabled="rateLimited || isDataChanged == false || saving || publishing" ref="dataset-save-button">Save</b-btn>
+					<b-btn id="editor_button_publish_top" v-b-tooltip.hover title="Publish makes the saved dataset public. Remember to always save the dataset before publishing (only the latest saved version gets published)." @click="confirmPublish" :disabled="rateLimited || $store.state.metadata.id == null || (qvainData != null && qvainData.published && qvainData.synced >= qvainData.modified) || isDataChanged || saving || publishing" ref="dataset-publish-button">Publish</b-btn>
 				</b-button-group>
 
 				<b-button-group size="sm" v-if="!inDev">
@@ -43,7 +36,7 @@
 		<b-alert variant="danger" :show="!!error" dismissible @dismissed="error=null"><i class="fas fa-ban"></i> API error: {{ error }}</b-alert>
 		<b-alert variant="warning"><font-awesome-icon icon="info"></font-awesome-icon> Publishing: I understand that publishing this dataset:</b-alert>
 
-		<b-card variant="dark" bg-variant="dark" text-variant="white" v-if="showPublishConfirmation">
+		<b-card id="publish-verification-card" variant="dark" bg-variant="dark" text-variant="white" v-if="showPublishConfirmation">
 			<h3 slot="title">
 				<font-awesome-icon icon="info" fixed-width />
 				Publishing
@@ -55,9 +48,9 @@
 				</ul>
 			<p></p>
 			<div class="float-right">
-				<b-button variant="outline-light" class="ml-3" @click="showPublishConfirmation = false"><font-awesome-icon icon="times" fixed-width /> cancel</b-button>
-				<b-button variant="danger" class="ml-3" @click="showPublishConfirmation = false" v-if="false"><font-awesome-icon icon="info" fixed-width /> help</b-button>
-				<b-button variant="success" :disabled="saving" class="ml-3" @click="publish()"><font-awesome-icon icon="cloud-upload-alt" fixed-width /> publish</b-button>
+				<b-button id="publish-verification-card-button-cancel" variant="outline-light" class="ml-3" @click="showPublishConfirmation = false"><font-awesome-icon icon="times" fixed-width /> cancel</b-button>
+				<b-button id="publish-verification-card-button-help" variant="danger" class="ml-3" @click="showPublishConfirmation = false" v-if="false"><font-awesome-icon icon="info" fixed-width /> help</b-button>
+				<b-button id="publish-verification-card-button-publish" variant="success" :disabled="saving" class="ml-3" @click="publish()"><font-awesome-icon icon="cloud-upload-alt" fixed-width /> publish</b-button>
 			</div>
 		</b-card>
 
@@ -75,7 +68,7 @@
 			<ul class="nav nav-tabs">
 				<!-- TODO: errors could be shown in tabs also -->
 				<li v-for="tab in tabs" :key="tab.uri" class="nav-item">
-					<router-link class="nav-link" :to="`/dataset/${id}/${tab.uri}`">{{tab.label}}</router-link>
+					<router-link :id="'nav-link_' + tab.uri" class="nav-link" :to="`/dataset/${id}/${tab.uri}`">{{tab.label}}</router-link>
 				</li>
 			</ul>
 
@@ -84,8 +77,8 @@
 			</div>
 			<div v-if="selectedSchema" :style="{'display': 'flex', 'flex-flow': 'row-reverse', 'margin-bottom': '10px'}">
 				<b-button-group size="sm" class="mx-1">
-					<b-btn v-b-tooltip.hover title="Save as a draft. Saving does not make your dataset public nor visible to anyone. You can save as many times as you want before publishing." @click="save" :disabled="rateLimited" ref="dataset-save-button">Save</b-btn>
-					<b-btn v-b-tooltip.hover title="Publish makes the saved dataset public. Remember to always save the dataset before publishing (only the latest saved version gets published)." @click="confirmPublish" :disabled="rateLimited" ref="dataset-publish-button">Publish</b-btn>
+					<b-btn id="editor_button_save_bottom" v-b-tooltip.hover title="Save as a draft. Saving does not make your dataset public nor visible to anyone. You can save as many times as you want before publishing." @click="save" :disabled="rateLimited || isDataChanged == false || saving || publishing" ref="dataset-save-button">Save</b-btn>
+					<b-btn id="editor_button_publish_bottom" v-b-tooltip.hover title="Publish makes the saved dataset public. Remember to always save the dataset before publishing (only the latest saved version gets published)." @click="confirmPublish" :disabled="rateLimited || $store.state.metadata.id == null || (qvainData != null && qvainData.published && qvainData.synced >= qvainData.modified) || isDataChanged || saving || publishing" ref="dataset-publish-button">Publish</b-btn>
 				</b-button-group>
 			</div>
 
@@ -103,7 +96,7 @@
 			<font-awesome-icon icon="circle-notch" spin />
 		</div>
 
-		<b-card variant="dark" bg-variant="dark" text-variant="white" v-if="showPublishConfirmation">
+		<b-card id="publish-verification-card-bottom" variant="dark" bg-variant="dark" text-variant="white" v-if="showPublishConfirmation">
 			<h3 slot="title">
 				<font-awesome-icon icon="info" fixed-width />
 				Publishing
@@ -115,9 +108,9 @@
 				</ul>
 			<p></p>
 			<div class="float-right">
-				<b-button variant="outline-light" class="ml-3" @click="showPublishConfirmation = false"><font-awesome-icon icon="times" fixed-width /> cancel</b-button>
-				<b-button variant="danger" class="ml-3" @click="showPublishConfirmation = false" v-if="false"><font-awesome-icon icon="info" fixed-width /> help</b-button>
-				<b-button variant="success" :disabled="saving" class="ml-3" @click="publish()"><font-awesome-icon icon="cloud-upload-alt" fixed-width /> publish</b-button>
+				<b-button id="publish-verification-card-bottom_button-cancel" variant="outline-light" class="ml-3" @click="showPublishConfirmation = false"><font-awesome-icon icon="times" fixed-width /> cancel</b-button>
+				<b-button id="publish-verification-card-bottom_button-help" variant="danger" class="ml-3" @click="showPublishConfirmation = false" v-if="false"><font-awesome-icon icon="info" fixed-width /> help</b-button>
+				<b-button id="publish-verification-card-bottom_button-publish" variant="success" :disabled="saving" class="ml-3" @click="publish()"><font-awesome-icon icon="cloud-upload-alt" fixed-width /> publish</b-button>
 			</div>
 		</b-card>
 
@@ -131,9 +124,6 @@ import DatasetJsonModal from '@/components/DatasetJsonModal.vue'
 import DatasetOverviewModal from '@/components/DatasetOverviewModal.vue'
 import PublishModal from '@/components/PublishModal.vue'
 import Validator from '../../vendor/validator/src/validate.js'
-import debounce from 'lodash.debounce'
-
-const RATE_LIMIT_MSECS = 3000
 
 export default {
 	name: "editor",
@@ -165,6 +155,9 @@ export default {
 			showPublishConfirmation: false,
 			inDev: true,
 			saving: false,
+			publishing: false,
+			isDataChanged: false,
+			qvainData: null
 		}
 	},
 	methods: {
@@ -188,10 +181,11 @@ export default {
 			}
 			this.showPublishConfirmation = true
 		},
-		publish: debounce(async function() {
-			if (this.saving) {
+		publish: async function publishCallback() {
+			if (this.saving || this.publishing) {
 				return
 			}
+			this.publishing = true
 			try {
 				this.showPublishConfirmation = false
 				const isExisting = !!this.$store.state.metadata.id
@@ -203,9 +197,15 @@ export default {
 				} else {
 					this.$root.showAlert("Please save your dataset first", "danger")
 				}
-			} catch(e) {
+			} catch (e) {
 				// check if we got an api error for the modal, else show a generic error message
 				console.log("publish error:", e, Object.keys(e))
+				if (e.response.status == 401) {
+					// there was a permission error
+					// we should redirect the user to login
+					await this.$auth.logoutDueSessionTimeout()
+					this.$router.push({name: "home", params: {missingToken: true}})
+				}
 				if (e.response && e.response.data) {
 					this.publishError = e.response.data
 					this.$root.$emit('bv::show::modal', 'publish-modal', this.$refs['dataset-publish-button'])
@@ -216,9 +216,11 @@ export default {
 				//const errorMessage = `Publish failed, please check you have inserted all mandatory fields. Mandatory fields are: creator, description, access_rights and title. The error was: ${e}`
 				//this.$root.showAlert(errorMessage, "danger")
 				this.$root.showAlert("Publish failed!", "danger")
+			} finally {
+				this.publishing = false
 			}
-		}, RATE_LIMIT_MSECS, { leading: true, trailing: false }),
-		save: debounce(async function() {
+		},
+		save: async function saveCallback() {
 			if (this.saving) {
 				return
 			}
@@ -241,12 +243,19 @@ export default {
 
 					this.$root.showAlert("Success! Created as " + id, "success")
 				}
+				this.isDataChanged = false
 			} catch(error) {
 				this.$root.showAlert("Save failed!", "danger")
+				if (error.response.status == 401) {
+					// there was a permission error
+					// we should redirect the user to login
+					await this.$auth.logoutDueSessionTimeout()
+					this.$router.push({name: "home", params: {missingToken: true}})
+				}
 			} finally {
 				this.saving = false
 			}
-		}, RATE_LIMIT_MSECS, { leading: true, trailing: false }),
+		},
 		createNewRecord() {
 			this.loading = true
 			this.$nextTick(() => {
@@ -284,6 +293,7 @@ export default {
 			// Not implemented
 		}, */
 		async openRecord(id) {
+			if (this.loading) { return }
 			try {
 				this.loading = true
 
@@ -294,6 +304,9 @@ export default {
 				this.$store.commit('loadHints', this.selectedSchema.ui)
 				this.$store.commit('loadData', Object(data.dataset))
 				this.$store.commit('setMetadata', { id, schemaId: this.selectedSchema.id })
+				this.qvainData = data
+			} catch (error) {
+				console.log(error)
 			} finally {
 				this.loading = false
 			}
@@ -335,6 +348,10 @@ export default {
 			this.unsubscribeFunc = this.$store.subscribe((mutation) => {
 				if (mutation.type !== 'initValue') {
 					this.validator.validateData(this.$store.state.record)
+				}
+				// the data has been changed after the initial load by the user
+				if (mutation.type == 'updateValue') {
+					this.isDataChanged = true
 				}
 			})
 		},

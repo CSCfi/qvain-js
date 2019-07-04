@@ -1,7 +1,7 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
 	<b-container fluid>
-		<h1 class="component-title">My datasets</h1>
+		<h1 class="component-title">Datasets</h1>
 
 		<!-- controls -->
 		<b-button-toolbar class="mb-4 tool-bar">
@@ -14,10 +14,6 @@
 			<b-input-group class="search" size="sm" v-b-tooltip.hover.bottom title="Search from titles" prepend="Search">
 				<b-form-input v-model="filterString" placeholder="title" />
 			</b-input-group>
-
-			<b-button-group class="new-record" size="sm">
-				<b-btn class="new-record__button" variant="primary" @click="createNewRecord">Create new record</b-btn>
-			</b-button-group>
 		</b-button-toolbar>
 
 		<!-- alerts -->
@@ -66,6 +62,9 @@
 					</b-dropdown>
 				</div>
 			</template>
+            <div slot="table-busy" class="text-center text-primary my-2">
+                <b-spinner class="align-middle"></b-spinner>
+            </div>
 		</b-table>
 
 		<!-- modals -->
@@ -189,6 +188,7 @@ export default {
 	},
 	methods: {
 		async fetchDataset() {
+			this.isBusy = true
 			try {
 				this.error = null
 				const { data } = await apiClient.get("/datasets/")
@@ -201,14 +201,23 @@ export default {
 				})
 				this.datasetList = data
 			} catch (e) {
+				if (e.response.status == 401) {
+					// there was a permission error
+					// we should redirect the user to login
+					await this.$auth.logoutDueSessionTimeout()
+					this.$router.push({name: "home", params: {missingToken: true}})
+				}
 				this.error = getApiError(e)
 				this.datasetList = []
+			} finally {
+				this.isBusy = false
 			}
 		},
 		open(id) { // should maybe later be changed to link so that accessability is better
 			this.$router.push({ name: 'editor', params: { id: id }})
 		},
 		async del() {
+			this.isBusy = true
 			this.error = null
 			try {
 				await apiClient.delete("/datasets/" + this.itemToBeDeleted)
@@ -216,8 +225,16 @@ export default {
 
 				await this.fetchDataset()
 				this.$refs.datasetTable.refresh()
-			} catch(e) {
+			} catch (e) {
+				if (e.response.status == 401) {
+					// there was a permission error
+					// we should redirect the user to login
+					await this.$auth.logoutDueSessionTimeout()
+					this.$router.push({name: "home", params: {missingToken: true}})
+				}
 				this.error = getApiError(e)
+			} finally {
+				this.isBusy = false
 			}
 		},
 		view(extid) {

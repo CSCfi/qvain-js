@@ -47,6 +47,11 @@ export default {
 			this.$auth.login(this.tokenInput)
 			this.$router.push(this.$route.query.redirect || { name: 'home' })
 		},
+		handleLoginError(error) {
+			this.$auth.setLoginError(error)
+			this.$auth.setUser(null)
+			this.$router.replace({name: 'home'})
+		},
 	},
 	computed: {
 		token() {
@@ -61,13 +66,13 @@ export default {
 	},
 	created: function() {
 		if (this.$route.query.missingcsc) {
-			this.$router.replace({name: 'home', params: {missingCsc: true}})
+			this.handleLoginError("missingcsc")
 			return
 		}
-		
+
 		// User should have home organization
 		if (this.$route.query.missingorg) {
-			this.$router.replace({name: 'home', params: {missingOrg: true}})
+			this.handleLoginError("missingorg")
 			return
 		}
 
