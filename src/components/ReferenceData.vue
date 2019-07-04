@@ -128,6 +128,7 @@ export default {
 			],
 			selectedLang: null,
 			isLoading: false,
+			isInitializing: true,
 		}
 	},
 	computed: {
@@ -218,12 +219,16 @@ export default {
 			}
 		},
 		async getAllReferenceData() {
+			this.isLoading = true
 			const res = await esApiSearchClient(this.esIndex, this.esDoctype, undefined, this.count)
 			this.responseData = res.data
+			this.isLoading = false
 		},
 		async searchReferenceData(searchQuery) {
+			this.isLoading = true
 			const res = await esApiSearchClient(this.esIndex, this.esDoctype, searchQuery, this.count)
 			this.responseData = res.data
+			this.isLoading = false
 		},
 		// TODO: if the es server is under too much stress debounce could be implemented
 		async search(searchQuery) {
@@ -255,7 +260,7 @@ export default {
 			}
 		},
 	},
-	async created() {
+	created: function() {
 		if (this.isMultiselect && this.isArray) {
 			this.selectedOptions = this.value.map(v => ({
 				identifier: v.identifier, label: v[this.labelNameInSchema]
@@ -280,6 +285,12 @@ export default {
 			this.getAllReferenceData()
 		}
 	},
+	beforeUpdate: function() {
+		this.isInitializing = true
+	},
+	updated: function() {
+		this.isInitializing = false
+	},
 	watch: {
 		selectedOptions() {
 			const selectedValueIsSet = this.selectedOptions !== null && typeof this.selectedOptions !== 'undefined'
@@ -301,7 +312,9 @@ export default {
 				storableOptions = mapToStore(this.selectedOptions)
 			}
 
-			this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: storableOptions })
+			if (!this.isInitializing) {
+				this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: storableOptions })
+			}
 		},
 	},
 }

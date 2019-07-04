@@ -118,7 +118,6 @@ export default {
 			this.$delete(this.state, lang)
 		},
 		updateValue() {
-			console.log("updateValue called i18nstring")
 			this.$store.commit('updateValue', {
 				p: this.parent,
 				prop: this.property,
