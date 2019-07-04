@@ -2,7 +2,7 @@
 <template>
 	<div>
 		<transition name="slideinout" appear>
-		<b-alert :show="$root.dismissCountDown" style="z-index: 1000; position: fixed; top: 1rem; left: 0; right: 0; width: 90%; margin: 0 auto; opacity: 0.90;" dismissible :variant="$root.alertVariant" @dismissed="$root.dismissAlert" @dismiss-count-down="$root.countDownChanged">
+		<b-alert id="root_alert" :show="$root.dismissCountDown" style="z-index: 1000; position: fixed; top: 1rem; left: 0; right: 0; width: 90%; margin: 0 auto; opacity: 0.90;" dismissible :variant="$root.alertVariant" @dismissed="$root.dismissAlert" @dismiss-count-down="$root.countDownChanged">
 			<p>{{ $root.alertText }}</p>
 		</b-alert>
 		</transition>
@@ -35,25 +35,25 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 
 
 				<!-- right-aligned items -->
-				<b-navbar-nav class="ml-auto right-nav-items" v-if="$auth.loading.state">
+				<b-navbar-nav id="usermenu" class="ml-auto right-nav-items" v-if="$auth.loading.state">
 					<b-nav-text class="user-nav load-placeholder" key="user-loading">
 						<font-awesome-icon icon="circle-notch" spin />
 					</b-nav-text>
 				</b-navbar-nav>
 
-				<b-navbar-nav class="ml-auto right-nav-items" v-else-if="$auth.loggedIn">
+				<b-navbar-nav id="usermenu" class="ml-auto right-nav-items" v-else-if="$auth.loggedIn">
 					<b-button-group>
-						<b-button variant="primary" to="/userinfo">
-							<font-awesome-icon icon="user" class="text-light mr-2" fixed-width /> <a>{{ $auth.user.name }}</a>
+						<b-button id="usermenu_userinfo" variant="primary" to="/userinfo">
+							<font-awesome-icon icon="user" class="text-light mr-2" fixed-width /> <a id="usermenu_fullname">{{ $auth.user.name }}</a>
 						</b-button>
-						<b-button variant="primary" @click="logout()">
+						<b-button id="usermenu_signout" variant="primary" @click="logout()">
 							<font-awesome-icon icon="sign-out-alt" />
 							Sign out
 						</b-button>
 					</b-button-group>
 				</b-navbar-nav>
-				<b-navbar-nav class="ml-auto right-nav-items" v-else>
-					<b-button class="user-nav" key="user-login" variant="primary" :href="$auth.loginUrl">
+				<b-navbar-nav id="usermenu" class="ml-auto right-nav-items" v-else>
+					<b-button id="usermenu_login" class="user-nav" key="user-login" variant="primary" :href="$auth.loginUrl">
 						<font-awesome-icon icon="sign-in-alt" />
 						Login
 					</b-button>
@@ -91,7 +91,7 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 				</b-navbar-nav>
 				<b-navbar-nav class="ml-auto">
 					<b-button-group class="page-actions">
-						<b-button v-if="isActiveRoute('datasets') || isActiveRoute('home') || isActiveRoute('new') || isActiveRoute('edit') " key="new" variant="success" size="sm" to="/dataset/new">
+						<b-button id="button-new-dataset" v-if="isActiveRoute('datasets') || isActiveRoute('home') || isActiveRoute('new') || isActiveRoute('edit') " key="new" variant="success" size="sm" to="/dataset/new">
 							<font-awesome-icon icon="plus" />
 							New dataset
 						</b-button>
