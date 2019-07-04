@@ -40,8 +40,7 @@
 					class="lang-select-tab col-md-4 col-sm-8 offset-3"
 					ref="langSelect"
 					:id="property + '_language-select'"
-					v-model="selectedLanguage"
-					@keyup.enter.native="lang => selectedLanguage = lang">
+					@change="userRequestedNewLanguage">	
 				</language-select>
 			</div>
 			
@@ -99,7 +98,6 @@ export default {
 		return {
 			languages: langCodes2,
 			tabIndex: 0,
-			selectedLanguage: null,
 			state: {},
 		}
 	},
@@ -117,6 +115,10 @@ export default {
 		},
 	},
 	methods: {
+		userRequestedNewLanguage: function(lang) {
+			this.addLanguage(lang)
+			this.focusOnLastTab()
+		},
 		changeText(key, value) {
 			const el = this.$refs['textarea-tab-' + key][0].$el
 			autosize(el)
@@ -124,20 +126,17 @@ export default {
 			this.$set(this.state, key, value)
 			this.updateValue()
 		},
-		addTab(lang) {
+		addLanguage(lang) {
 			if (lang in this.state) {
-				this.focusOnTabWithLanguage(lang)
 				return
 			}
 			this.$set(this.state, lang, '')
-			this.updateValue()
-			this.focusOnLastTab()
 		},
 		deleteLang(lang) {
 			this.$delete(this.state, lang)
-			this.updateValue()
 		},
 		updateValue() {
+			console.log("update value called i18ntextarea")
 			this.$store.commit('updateValue', {
 				p: this.parent,
 				prop: this.property,
@@ -176,27 +175,19 @@ export default {
 		populateLanguages(languages) {
 			for (const lang in languages) {
 				if (languages[lang]) {
-					this.addTab(lang)
+					this.addLanguage(lang)
 				}
 			}
 		},
 	},
 	watch: {
-		selectedLanguage(lang) {
-			if (!lang) {
-				return
-			}
-			this.addTab(lang)
-		},
 		"$store.state.languages": function(languages) {
 			this.populateLanguages(languages)
 		},
-
 	},
 	created() {
 		this.state = this.value || {}
 		this.populateLanguages(this.$store.state.languages)
-		this.focusOnTabWithLanguage(this.$store.state.defaultDescriptionLang)
 	},
 }
 </script>

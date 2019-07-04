@@ -45,7 +45,7 @@
 					<language-select
 						:id="property + '_language-select'"
 						class="col-md-4 col-sm-8 offset-3"
-						@change="addPair" />
+						@change="userRequestedNewLanguage" />
 				</div>
 			</b-form>
 		</div>
@@ -104,17 +104,21 @@ export default {
 		}
 	},
 	methods: {
-		addPair(lang) {
+		userRequestedNewLanguage(lang) {
+			this.addLanguage(lang)
+			// wait for rendering so that the ref is present in dom before focus
+			this.$nextTick(() => this.$refs[lang][0].$el.focus())
+		},
+		addLanguage(lang) {
 			if (!lang || lang in this.state) return
 			this.$set(this.state, lang, '')
 			this.$store.commit('setLanguages', {[lang]:true})
-			// wait for rendering so that the ref is present in dom before focus
-			this.$nextTick(() => this.$refs[lang][0].$el.focus())
 		},
 		deleteLanguage(lang) {
 			this.$delete(this.state, lang)
 		},
 		updateValue() {
+			console.log("updateValue called i18nstring")
 			this.$store.commit('updateValue', {
 				p: this.parent,
 				prop: this.property,
@@ -124,7 +128,7 @@ export default {
 		populateLanguages(languages) {
 			for (const lang in languages) {
 				if (languages[lang]) {
-					this.addPair(lang)
+					this.addLanguage(lang)
 				}
 			}
 		},
@@ -143,7 +147,6 @@ export default {
 		state: {
 			handler(newState, oldState) {
 				const shouldClearValidation = Object.keys(newState).length < Object.keys(oldState).length
-				this.updateValue()
 				if (shouldClearValidation) {
 					this.$store.commit('cleanStateFor', this.path)
 				}
