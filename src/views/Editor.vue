@@ -28,8 +28,7 @@
 				</span>
 				<span v-else>
 					<font-awesome-icon icon="circle" class="fa-sm text-danger" />
-					&nbsp;
-					<small>Unsaved draft</small>
+					&nbsp;<small>Unsaved draft</small>
 				</span>
 			</small>
 			<small class="secondary-text text-muted" v-if="title">
@@ -42,11 +41,13 @@
 				<b-button-group size="sm" v-if="qvainData">
 					<b-button
 						id="editor_refresh_dataset"
-						variant="danger"
+						:variant="reloadDatasetCounter > 0 ? 'danger' : 'secondary'"
 						@click="reloadDataset">
-						<font-awesome-icon :icon="loading ? 'spinner' : 'sync'" :spin="loading" />
+						<font-awesome-icon :icon="loading ? 'spinner' : 'undo'" :spin="loading" />
 						&nbsp;
-						<span v-if="!loading">Reset</span>
+						<span v-if="!loading">
+							{{ reloadDatasetTitle }}
+						</span>
 					</b-button>
 				</b-button-group>
 				<b-input-group size="sm" prepend="Where are my files">
@@ -233,7 +234,9 @@ export default {
 			saving: false,
 			publishing: false,
 			isDataChanged: false,
-			qvainData: null
+			qvainData: null,
+			reloadDatasetCounter: 0,
+			reloadDatasetTimer: null,
 		}
 	},
 	methods: {
@@ -371,9 +374,19 @@ export default {
 			this.$store.commit('loadData', undefined)
 			this.$store.commit('resetMetadata')
 		},
+		cancelReloadDataset: function() {
+			this.reloadDatasetTimer = null
+			this.reloadDatasetCounter = 0
+		},
 		reloadDataset: function() {
-			this.clearRecord()
-			this.openRecord(this.id)
+			if (this.reloadDatasetCounter == 0) {
+				this.reloadDatasetCounter += 1
+				this.reloadDatasetTimer = setTimeout(this.cancelReloadDataset, 2000)
+			} else {
+				this.clearRecord()
+				this.openRecord(this.id)
+				this.reloadDatasetCounter = 0
+			}
 		},
 		async openRecord(id) {
 			if (this.loading) { return }
@@ -439,6 +452,9 @@ export default {
 		},
 	},
 	computed: {
+		reloadDatasetTitle() {
+			return this.reloadDatasetCounter == 0 ? "Undo All Changes" : "Are you sure?"
+		},
 		isPublishDisabled() {
 			return this.loading || this.rateLimited || this.$store.state.metadata.id == null || (this.qvainData && this.qvainData.published && this.qvainData.synced >= this.qvainData.modified) || this.isDataChanged || this.saving || this.publishing
 		},
@@ -481,6 +497,12 @@ export default {
 				await this.openRecord(this.id)
 			}
 		},
+	},
+	destroyed: function() {
+		if (this.reloadDatasetTimer) {
+			clearTimeout(this.reloadDatasetTimer)
+		}
+		reloadDatasetTimer = null
 	},
 	async mounted() {
 		if (this.id === 'new') {
