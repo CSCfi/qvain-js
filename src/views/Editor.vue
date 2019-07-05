@@ -6,17 +6,20 @@
 			<small class="secondary-text text-muted" v-if="qvainData">
 				<span v-if="qvainData && qvainData.published && !isPublishedAndUpdateAvailable">
 					<font-awesome-icon icon="circle" class="fa-sm text-primary" />
-					<small> Published</small>
+					&nbsp;
+					<small>Published</small>
 				</span>
 				<span v-else-if="isPublishedAndUpdateAvailable">
 					<font-awesome-layers class="fa-sm">
 						<font-awesome-icon icon="circle" class="text-warning" />
 					</font-awesome-layers>
-					<small> Unpublished Changes</small>
+					&nbsp;
+					<small>Unpublished Changes</small>
 				</span>
 				<span v-else>
 					<font-awesome-icon icon="circle" class="fa-sm text-success" />
-					<small> Draft</small>
+					&nbsp;
+					<small>Draft</small>
 				</span>
 			</small>
 			<small class="secondary-text text-muted" v-else>
@@ -25,7 +28,8 @@
 				</span>
 				<span v-else>
 					<font-awesome-icon icon="circle" class="fa-sm text-danger" />
-					<small> Unsaved draft</small>
+					&nbsp;
+					<small>Unsaved draft</small>
 				</span>
 			</small>
 			<small class="secondary-text text-muted" v-if="title">
@@ -38,9 +42,11 @@
 				<b-button-group size="sm" v-if="qvainData">
 					<b-button
 						id="editor_refresh_dataset"
+						variant="danger"
 						@click="reloadDataset">
 						<font-awesome-icon :icon="loading ? 'spinner' : 'sync'" :spin="loading" />
-						<span v-if="!loading"></span>
+						&nbsp;
+						<span v-if="!loading">Reset</span>
 					</b-button>
 				</b-button-group>
 				<b-input-group size="sm" prepend="Where are my files">
@@ -59,22 +65,24 @@
 				<b-button-group size="sm" v-if="!loading && selectedSchema" class="save-pub-btns">
 					<b-button
 						id="editor_button_save_top" 
-						:variant="isSaveDisabled ? 'outline-success' : 'success'"
+						:variant="isSaveDisabled ? 'outline-secondary' : 'success'"
 						@click="save"
 						:disabled="isSaveDisabled"
 						ref="dataset-save-button">
 						<font-awesome-icon :icon="saving ? 'spinner' : 'save'" :spin="saving" />
+						&nbsp;
 						Save
 					</b-button>
 				</b-button-group>
 				<b-button-group size="sm" v-if="!loading && selectedSchema" class="publish-pub-btns">
 					<b-button
 						id="editor_button_publish_top"
-						:variant="isPublishDisabled ? 'outline-primary' : 'primary'"
+						:variant="isPublishDisabled ? 'outline-secondary' : 'primary'"
 						@click="confirmPublish"
 						:disabled="isPublishDisabled"
 						ref="dataset-publish-button">
 						<font-awesome-icon :icon="publishing ? 'spinner' : 'upload'" :spin="publishing" />
+						&nbsp;
 						Publish
 					</b-button>
 				</b-button-group>
@@ -127,21 +135,23 @@
 					<b-button-group class="col">
 						<b-button
 							id="editor_button_save_bottom"
-							:variant="isSaveDisabled ? 'outline-success' : 'success'"
+							:variant="isSaveDisabled ? 'outline-secondary' : 'success'"
 							@click="save"
 							:disabled="isSaveDisabled"
 							ref="dataset-save-button">
 							<font-awesome-icon :icon="saving ? 'spinner' : 'save'" :spin="saving" />
+							&nbsp;
 							Save
 						</b-button>
 					</b-button-group>
 					<b-button-group class="col">
 						<b-button
-							:variant="isPublishDisabled ? 'outline-primary' : 'primary'"
+							:variant="isPublishDisabled ? 'outline-secondary' : 'primary'"
 							@click="confirmPublish"
 							:disabled="isPublishDisabled"
 							ref="dataset-publish-button">
 							<font-awesome-icon :icon="publishing ? 'spinner' : 'upload'" :spin="publishing" />
+							&nbsp;
 							Publish
 						</b-button>
 					</b-button-group>

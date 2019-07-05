@@ -47,10 +47,12 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 
 						<b-button v-if="$auth.loggedIn || $auth.getLoginError()" id="usermenu_signout" variant="primary" @click="logout()">
 							<font-awesome-icon icon="sign-out-alt" />
+							&nbsp;
 							Sign out
 						</b-button>
 						<b-button v-else id="usermenu_login" class="user-nav" key="user-login" variant="primary" :href="$auth.loginUrl">
 							<font-awesome-icon icon="sign-in-alt" />
+							&nbsp;
 							Login
 						</b-button>
 					</b-button-group>
@@ -65,10 +67,12 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 					<b-button-group class="editor-actions">
 						<b-button v-if="isActiveRoute('datasets') && isDraftActive && !isEditActive" key="continue_draft" variant="primary" size="sm" to="/dataset/edit">
 							<font-awesome-icon icon="backward" />
+							&nbsp;
 							Unsaved dataset
 						</b-button>
 						<b-button v-if="isActiveRoute('datasets') && isEditActive" key="continue_edit" variant="primary" size="sm" :to="continueEditUrl">
 							<font-awesome-icon icon="backward" />
+							&nbsp;
 							{{ editTitle }}
 						</b-button>
 					</b-button-group>
@@ -78,10 +82,12 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 					<b-button v-if="isNotActiveRoute('datasets')" size="sm" variant="primary" key="datasets" to="/datasets">
 						<span v-if="isActiveRoute('home')">
 							<font-awesome-icon icon="table" />
+							&nbsp;
 							Datasets
 						</span>
 						<span v-else >
 							<font-awesome-icon icon="backward" />
+							&nbsp;
 							Datasets
 						</span>
 					</b-button>
@@ -96,6 +102,7 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 							size="sm"
 							to="/dataset/new">
 							<font-awesome-icon icon="plus" />
+							&nbsp;
 							New dataset
 						</b-button>
 					</b-button-group>
