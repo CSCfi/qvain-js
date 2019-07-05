@@ -33,7 +33,7 @@
 							required
 							:placeholder="'Start typing in ' + languages[lang]"
 							v-model="state[lang]"
-							@change="updateValue">
+							@input="updateValue">
 						</b-form-input>
 					</b-input-group>
 				</b-form-group>

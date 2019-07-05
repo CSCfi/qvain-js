@@ -40,7 +40,7 @@
 						id="editor_refresh_dataset"
 						@click="reloadDataset">
 						<font-awesome-icon :icon="loading ? 'spinner' : 'sync'" :spin="loading" />
-						<span v-if="!loading"> Reset</span>
+						<span v-if="!loading"></span>
 					</b-button>
 				</b-button-group>
 				<b-input-group size="sm" prepend="Where are my files">
