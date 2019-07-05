@@ -59,10 +59,6 @@
 					</b-form-select>
 				</b-input-group>
 
-				<b-input-group size="sm" prepend="Owner">
-					<b-form-select id="editor_select_owner" :value="$auth.user ? $auth.user.name : 'you'" :options="[ $auth.user ? $auth.user.name : 'you' ]"></b-form-select>
-				</b-input-group>
-
 				<b-button-group size="sm" v-if="!loading && selectedSchema" class="save-pub-btns">
 					<b-button
 						id="editor_button_save_top" 

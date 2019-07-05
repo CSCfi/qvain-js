@@ -21,8 +21,8 @@
 						:label-for="property + '_' + lang + '_input'">
 					
 					<span slot="label">
-						{{ languages[lang] }}
 						<DeleteButton slot="label" @click="deleteLanguage(lang)"/>
+						{{ languages[lang] }}
 					</span>
 
 					<b-input-group>

@@ -89,16 +89,18 @@
 	min-height: 108px;
 }
 
+.nav-pills li:not(:first-child) {
+	margin-left: 1em !important;
+}
+
 </style>
 
 <style>
+
 .tab-array-margin.tabs .tab-content {
 	margin-top: 15px;
 }
 
-.nav-pills li:not(:first-child) {
-	margin-left: 1em !important;
-}
 </style>
 
 

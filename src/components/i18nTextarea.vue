@@ -14,8 +14,8 @@
 			<b-tabs class="tabs-nav" v-model="tabIndex" vertical pills justified nav-wrapper-class="col-3">
 				<b-tab v-for="key in languageKeys" :key="key">
 					<template slot="title">
-						{{ languages[key] }}
 						<delete-button @click="deleteLang(key)" />
+						{{ languages[key] }}
 					</template>
 
 					<b-form-textarea
@@ -65,6 +65,7 @@
 		height: auto;
 	}
 }
+
 
 </style>
 
