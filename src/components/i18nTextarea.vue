@@ -37,7 +37,7 @@
 			</b-tabs>
 			<div class="row">
 				<language-select
-					class="lang-select-tab col-md-4 col-sm-8 offset-3"
+					class="col lang-select-tab"
 					ref="langSelect"
 					:id="property + '_language-select'"
 					@change="userRequestedNewLanguage">	

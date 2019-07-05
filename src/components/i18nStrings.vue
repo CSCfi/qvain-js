@@ -44,7 +44,7 @@
 				<div class="row language-row">
 					<language-select
 						:id="property + '_language-select'"
-						class="col-md-4 col-sm-8 offset-3"
+						class="col"
 						@change="userRequestedNewLanguage" />
 				</div>
 			</b-form>

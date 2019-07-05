@@ -12,7 +12,7 @@
 					<font-awesome-layers class="fa-sm">
 						<font-awesome-icon icon="circle" class="text-warning" />
 					</font-awesome-layers>
-					<small> Update Available</small>
+					<small> Unpublished Changes</small>
 				</span>
 				<span v-else>
 					<font-awesome-icon icon="circle" class="fa-sm text-success" />

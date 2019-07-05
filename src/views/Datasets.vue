@@ -9,7 +9,7 @@
 				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'all'" @click="() => showDatasetState = 'all'" variant="outline-secondary">All</b-btn>
 				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'draft'" @click="() => showDatasetState = 'draft'" variant="outline-success">Draft</b-btn>
 				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'published'" @click="() => showDatasetState = 'published'" variant="outline-primary">Published</b-btn>
-				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'updateavailable'" @click="() => showDatasetState = 'updateavailable'" variant="outline-warning">Update Available</b-btn>
+				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'unpublishedchanges'" @click="() => showDatasetState = 'unpublishedchanges'" variant="outline-warning">Unpublished Changes</b-btn>
 			</b-button-group>
 
 			<b-input-group class="search" size="sm" prepend="Search">
@@ -288,7 +288,7 @@ export default {
 			return this.showDatasetState === 'all' ||
 				(this.showDatasetState === 'published' && item.published && !this.isItemPublishedAndHasUpdates(item)) ||
 				(this.showDatasetState === 'draft' && !item.published) ||
-				(this.showDatasetState === 'updateavailable' && this.isItemPublishedAndHasUpdates(item) )
+				(this.showDatasetState === 'unpublishedchanges' && this.isItemPublishedAndHasUpdates(item) )
 		},
 		filterTitles(item) {
 			if (!this.filterString) return true // don't filter null.toString()
