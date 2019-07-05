@@ -6,6 +6,7 @@
 				<b-button-group>
 					<b-button
 						v-for="(sub, i) in schema['oneOf']"
+						variant="primary"
 						:key="'oneOfSel' + i"
 						@click="setChosen(i)">
 							{{ sub['title'] || '#'+i }}
@@ -47,8 +48,9 @@
 .conditional-wrapper {
 	width: 100%;
 	display: inline-flex;
-	justify-content: center;
+	justify-content: left;
 }
+
 </style>
 
 
