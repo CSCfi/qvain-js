@@ -40,7 +40,7 @@
 						id="editor_refresh_dataset"
 						@click="reloadDataset">
 						<font-awesome-icon :icon="loading ? 'spinner' : 'sync'" :spin="loading" />
-						<span v-if="!loading"> Refresh</span>
+						<span v-if="!loading"> Reset</span>
 					</b-button>
 				</b-button-group>
 				<b-input-group size="sm" prepend="Where are my files">
@@ -66,6 +66,8 @@
 						<font-awesome-icon :icon="saving ? 'spinner' : 'save'" :spin="saving" />
 						Save
 					</b-button>
+				</b-button-group>
+				<b-button-group size="sm" v-if="!loading && selectedSchema" class="publish-pub-btns">
 					<b-button
 						id="editor_button_publish_top"
 						:variant="isPublishDisabled ? 'outline-primary' : 'primary'"
@@ -132,6 +134,8 @@
 							<font-awesome-icon :icon="saving ? 'spinner' : 'save'" :spin="saving" />
 							Save
 						</b-button>
+					</b-button-group>
+					<b-button-group class="col">
 						<b-button
 							:variant="isPublishDisabled ? 'outline-primary' : 'primary'"
 							@click="confirmPublish"
