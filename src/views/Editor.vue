@@ -498,7 +498,7 @@ export default {
 		if (this.reloadDatasetTimer) {
 			clearTimeout(this.reloadDatasetTimer)
 		}
-		reloadDatasetTimer = null
+		this.reloadDatasetTimer = null
 	},
 	async mounted() {
 		if (this.id === 'new') {
