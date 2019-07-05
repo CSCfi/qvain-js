@@ -70,16 +70,6 @@
 					</span>
 				</p>
 			</div>
-			<!--
-			<div v-if="!isMultiselect && !Array.isArray(selectedOptions)" class="tag__list">
-				<p class="tag" :style="{visibility: selectedOptions === null ? 'hidden' : 'visible'}">
-					{{customLabel(selectedOptions)}}
-					<span class="remove-button">
-						<DeleteButton @click="removeValue(-1)" />
-					</span>
-				</p>
-			</div>
-			-->
 		</div>
 	</record-field>
 </template>
@@ -114,7 +104,6 @@ export default {
 		wrapped: { type: Boolean, default: false },
 		labelNameInSchema: { type: String, default: 'pref_label' },
 		grouped: { type: Boolean, required: false },
-		//'@type': { type: String, required: false }
 	},
 	data() {
 		return {

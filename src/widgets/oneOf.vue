@@ -9,7 +9,6 @@
 				</b-dropdown-item>
 			</b-dropdown>
 		</div>
-		<b-textarea v-if="false" :rows="15" :value="JSON.stringify(schemaForChosen, null, 2)"></b-textarea>
 		<TabSelector
 			v-if="chosen !== null"
 			:schema="schemaForChosen"
