@@ -18,14 +18,6 @@
 					format="dd.MM.yyyy"
 					:disabledDates="disableBefore"
 					v-model="start">
-					<b-button
-						slot="afterDateInput"
-						:id="property + '_date_start_clear-button'"
-						@click="start = null"
-						variant="outline-secondary"
-						class="vdp-datepicker_clear-button">
-						<font-awesome-icon icon="times" fixed-width class="icon" />
-					</b-button>
 				</datepicker>
 			</div>
 			<div class="col">
@@ -39,14 +31,6 @@
 					placeholder="To"
 					:disabledDates="disableAfter"
 					v-model="end">
-					<b-button
-						slot="afterDateInput"
-						:id="property + '_date_clear-button'"
-						@click="end = null"
-						variant="outline-secondary"
-						class="vdp-datepicker_clear-button">
-						<font-awesome-icon icon="times" fixed-width class="icon" />
-					</b-button>
 				</datepicker>
 			</div>
 			<div class="col">

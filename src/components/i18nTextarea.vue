@@ -136,7 +136,6 @@ export default {
 			this.$delete(this.state, lang)
 		},
 		updateValue() {
-			console.log("update value called i18ntextarea")
 			this.$store.commit('updateValue', {
 				p: this.parent,
 				prop: this.property,

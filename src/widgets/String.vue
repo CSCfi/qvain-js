@@ -24,9 +24,6 @@
 						:state="isValid ? null : false"
 						@input.native="updateValue">
 					</b-form-input>
-					<b-input-group-append>
-						<b-button @click="value = ''" variant="outline-secondary"><font-awesome-icon icon="times" fixed-width class="icon" /></b-button>
-					</b-input-group-append>
 				</b-input-group>
 			</b-form-group>
 		</div>

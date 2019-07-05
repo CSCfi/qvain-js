@@ -312,7 +312,7 @@ export default {
 				const isExisting = (currentId && currentId !== 'new')
 				if (isExisting) {
 					payload.id = currentId
-					const _ = await apiClient.put("/datasets/" + currentId, payload)
+					await apiClient.put("/datasets/" + currentId, payload)
 					const { data } = await apiClient.get(`/datasets/${currentId}`)
 					this.qvainData = data
 					this.$root.showAlert("Dataset successfully saved", "primary")

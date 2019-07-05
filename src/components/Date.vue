@@ -16,15 +16,8 @@
 					typeable
 					format="dd.MM.yyyy"
 					:id="property + '_date'"
+					class="col"
 					v-model="date">
-					<b-button
-						slot="afterDateInput"
-						:id="property + '_date_clear-button'"
-						@click="clear()"
-						variant="outline-secondary"
-						class="vdp-datepicker_clear-button">
-						<font-awesome-icon icon="times" fixed-width class="icon" />
-					</b-button>
 				</datepicker>
 			</div>
 		</div>
