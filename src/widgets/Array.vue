@@ -96,8 +96,7 @@
 	margin-top: 15px;
 }
 
-
-.nav-pills li {
+.nav-pills li:not(:first-child) {
 	margin-left: 1em !important;
 }
 </style>
