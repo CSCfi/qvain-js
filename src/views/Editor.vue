@@ -1,10 +1,55 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
 	<div class="container-fluid limited-width">
-		<h1 class="component-title">Dataset <small class="secondary-text text-muted" v-if="title">{{ title }}</small></h1>
+		<h1 class="component-title">
+			Dataset
+			<small class="secondary-text text-muted" v-if="qvainData">
+				<span v-if="qvainData && qvainData.published && !isPublishedAndUpdateAvailable">
+					<font-awesome-icon icon="circle" class="fa-sm text-primary" />
+					&nbsp;
+					<small>Published</small>
+				</span>
+				<span v-else-if="isPublishedAndUpdateAvailable">
+					<font-awesome-layers class="fa-sm">
+						<font-awesome-icon icon="circle" class="text-warning" />
+					</font-awesome-layers>
+					&nbsp;
+					<small>Unpublished Changes</small>
+				</span>
+				<span v-else>
+					<font-awesome-icon icon="circle" class="fa-sm text-success" />
+					&nbsp;
+					<small>Draft</small>
+				</span>
+			</small>
+			<small class="secondary-text text-muted" v-else>
+				<span v-if="loading">
+					<font-awesome-icon icon="spinner" spin />
+				</span>
+				<span v-else>
+					<font-awesome-icon icon="circle" class="fa-sm text-danger" />
+					&nbsp;<small>Unsaved draft</small>
+				</span>
+			</small>
+			<small class="secondary-text text-muted" v-if="title">
+				{{ title }}
+			</small>
+		</h1>
 
 		<div>
 			<b-button-toolbar class="tool-bar" aria-label="Dataset toolbar">
+				<b-button-group size="sm" v-if="qvainData">
+					<b-button
+						id="editor_refresh_dataset"
+						:variant="reloadDatasetCounter > 0 ? 'danger' : 'secondary'"
+						@click="reloadDataset">
+						<font-awesome-icon :icon="loading ? 'spinner' : 'undo'" :spin="loading" />
+						&nbsp;
+						<span v-if="!loading">
+							{{ reloadDatasetTitle }}
+						</span>
+					</b-button>
+				</b-button-group>
 				<b-input-group size="sm" prepend="Where are my files">
 					<b-form-select id="editor_select_schema" value="fairdata" v-model="selectedSchema" :disabled="!!selectedSchema" @change="selectSchema">
 						<optgroup :label="bundle" v-for="(bundle, index) in bundles" :key="index">
@@ -14,19 +59,29 @@
 					</b-form-select>
 				</b-input-group>
 
-				<b-input-group size="sm" prepend="Owner">
-					<b-form-select id="editor_select_owner" :value="$auth.user ? $auth.user.name : 'you'" :options="[ $auth.user ? $auth.user.name : 'you' ]"></b-form-select>
-				</b-input-group>
-
-				<b-button-group size="sm" class="save-pub-btns">
-					<b-btn id="editor_button_save_top" v-b-tooltip.hover title="Save as a draft. Saving does not make your dataset public nor visible to anyone. You can save as many times as you want before publishing." @click="save" :disabled="rateLimited || isDataChanged == false || saving || publishing" ref="dataset-save-button">Save</b-btn>
-					<b-btn id="editor_button_publish_top" v-b-tooltip.hover title="Publish makes the saved dataset public. Remember to always save the dataset before publishing (only the latest saved version gets published)." @click="confirmPublish" :disabled="rateLimited || $store.state.metadata.id == null || (qvainData != null && qvainData.published && qvainData.synced >= qvainData.modified) || isDataChanged || saving || publishing" ref="dataset-publish-button">Publish</b-btn>
+				<b-button-group size="sm" v-if="!loading && selectedSchema" class="save-pub-btns">
+					<b-button
+						id="editor_button_save_top" 
+						:variant="isSaveDisabled ? 'outline-secondary' : 'success'"
+						@click="save"
+						:disabled="isSaveDisabled"
+						ref="dataset-save-button">
+						<font-awesome-icon :icon="saving ? 'spinner' : 'save'" :spin="saving" />
+						&nbsp;
+						Save
+					</b-button>
 				</b-button-group>
-
-				<b-button-group size="sm" v-if="!inDev">
-					<b-btn variant="outline-light" v-b-tooltip.hover title="View dataset JSON" v-b-modal="'dataset-json-modal'">json</b-btn>
-					<b-btn variant="outline-light" v-b-tooltip.hover title="Overview" v-b-modal="'dataset-overview-modal'">overview</b-btn>
-					<b-btn variant="outline-light" v-b-tooltip.hover title="Publish" v-b-modal="'publish-modal'">publish</b-btn>
+				<b-button-group size="sm" v-if="!loading && selectedSchema" class="publish-pub-btns">
+					<b-button
+						id="editor_button_publish_top"
+						:variant="isPublishDisabled ? 'outline-secondary' : 'primary'"
+						@click="confirmPublish"
+						:disabled="isPublishDisabled"
+						ref="dataset-publish-button">
+						<font-awesome-icon :icon="publishing ? 'spinner' : 'upload'" :spin="publishing" />
+						&nbsp;
+						Publish
+					</b-button>
 				</b-button-group>
 
 			</b-button-toolbar>
@@ -61,10 +116,6 @@
 		<publish-modal id="publish-modal" :error="publishError" @hidden="publishError = null"></publish-modal>
 
 		<div v-if="!loading">
-			<!--
-				This could be replaced with title from title part?
-				<h2>Fairdata dataset</h2>
-			-->
 			<ul class="nav nav-tabs">
 				<!-- TODO: errors could be shown in tabs also -->
 				<li v-for="tab in tabs" :key="tab.uri" class="nav-item">
@@ -75,12 +126,34 @@
 			<div class="container-fluid no-padding my-3">
 				<router-view></router-view>
 			</div>
-			<div v-if="selectedSchema" :style="{'display': 'flex', 'flex-flow': 'row-reverse', 'margin-bottom': '10px'}">
-				<b-button-group size="sm" class="mx-1">
-					<b-btn id="editor_button_save_bottom" v-b-tooltip.hover title="Save as a draft. Saving does not make your dataset public nor visible to anyone. You can save as many times as you want before publishing." @click="save" :disabled="rateLimited || isDataChanged == false || saving || publishing" ref="dataset-save-button">Save</b-btn>
-					<b-btn id="editor_button_publish_bottom" v-b-tooltip.hover title="Publish makes the saved dataset public. Remember to always save the dataset before publishing (only the latest saved version gets published)." @click="confirmPublish" :disabled="rateLimited || $store.state.metadata.id == null || (qvainData != null && qvainData.published && qvainData.synced >= qvainData.modified) || isDataChanged || saving || publishing" ref="dataset-publish-button">Publish</b-btn>
-				</b-button-group>
-			</div>
+
+			<b-container v-if="selectedSchema && !loading">
+				<b-row>
+					<b-button-group class="col">
+						<b-button
+							id="editor_button_save_bottom"
+							:variant="isSaveDisabled ? 'outline-secondary' : 'success'"
+							@click="save"
+							:disabled="isSaveDisabled"
+							ref="dataset-save-button">
+							<font-awesome-icon :icon="saving ? 'spinner' : 'save'" :spin="saving" />
+							&nbsp;
+							Save
+						</b-button>
+					</b-button-group>
+					<b-button-group class="col">
+						<b-button
+							:variant="isPublishDisabled ? 'outline-secondary' : 'primary'"
+							@click="confirmPublish"
+							:disabled="isPublishDisabled"
+							ref="dataset-publish-button">
+							<font-awesome-icon :icon="publishing ? 'spinner' : 'upload'" :spin="publishing" />
+							&nbsp;
+							Publish
+						</b-button>
+					</b-button-group>
+				</b-row>
+			</b-container>
 
 			<div v-else class="schema-help-text">
 				<p>Please select one option from "Where are my files" menu. Note that the selected option cannot be changed without creating a new dataset.</p>
@@ -93,7 +166,7 @@
 			</div>
 		</div>
 		<div v-else>
-			<font-awesome-icon icon="circle-notch" spin />
+			<font-awesome-icon icon="spinner" spin />
 		</div>
 
 		<b-card id="publish-verification-card-bottom" variant="dark" bg-variant="dark" text-variant="white" v-if="showPublishConfirmation">
@@ -157,7 +230,9 @@ export default {
 			saving: false,
 			publishing: false,
 			isDataChanged: false,
-			qvainData: null
+			qvainData: null,
+			reloadDatasetCounter: 0,
+			reloadDatasetTimer: null,
 		}
 	},
 	methods: {
@@ -233,11 +308,15 @@ export default {
 				const isExisting = (currentId && currentId !== 'new')
 				if (isExisting) {
 					payload.id = currentId
-					const response = await apiClient.put("/datasets/" + currentId, payload)
-
+					await apiClient.put("/datasets/" + currentId, payload)
+					const { data } = await apiClient.get(`/datasets/${currentId}`)
+					this.qvainData = data
 					this.$root.showAlert("Dataset successfully saved", "primary")
 				} else {
 					const { data: { id }} = await apiClient.post("/datasets/", payload)
+					const { data } = await apiClient.get(`/datasets/${id}`)
+					this.qvainData = data
+
 					this.$store.commit('setMetadata', { id })
 					this.$router.replace({ name: 'tab', params: { id: id, tab: this.$route.params.tab }})
 
@@ -283,20 +362,32 @@ export default {
 		},
 
 		clearRecord() {
+			this.isDataChanged = false
+			this.qvainData = null
 			this.selectedSchema = null
 			this.$store.commit('loadSchema', {})
 			this.$store.commit('loadHints', {})
 			this.$store.commit('loadData', undefined)
 			this.$store.commit('resetMetadata')
 		},
-		/* cloneCurrentRecord() {
-			// Not implemented
-		}, */
+		cancelReloadDataset: function() {
+			this.reloadDatasetTimer = null
+			this.reloadDatasetCounter = 0
+		},
+		reloadDataset: function() {
+			if (this.reloadDatasetCounter == 0) {
+				this.reloadDatasetCounter += 1
+				this.reloadDatasetTimer = setTimeout(this.cancelReloadDataset, 2000)
+			} else {
+				this.clearRecord()
+				this.openRecord(this.id)
+				this.reloadDatasetCounter = 0
+			}
+		},
 		async openRecord(id) {
 			if (this.loading) { return }
+			this.loading = true
 			try {
-				this.loading = true
-
 				const { data } = await apiClient.get(`/datasets/${id}`)
 				this.$store.commit('resetMetadata')
 				this.selectedSchema = this.getSchemaForId(data.schema)
@@ -357,6 +448,18 @@ export default {
 		},
 	},
 	computed: {
+		reloadDatasetTitle() {
+			return this.reloadDatasetCounter == 0 ? "Undo All Changes" : "Are you sure?"
+		},
+		isPublishDisabled() {
+			return this.loading || this.rateLimited || this.$store.state.metadata.id == null || (this.qvainData && this.qvainData.published && this.qvainData.synced >= this.qvainData.modified) || this.isDataChanged || this.saving || this.publishing
+		},
+		isPublishedAndUpdateAvailable() {
+			return this.qvainData && this.qvainData.published && (this.qvainData.modified > this.qvainData.synced)
+		},
+		isSaveDisabled() {
+			return this.loading || this.rateLimited || this.isDataChanged == false || this.saving || this.publishing
+		},
 		tabs() {
 			return (this.$store.state.hints.tabs || []).filter(tab => tab.uri)
 		},
@@ -374,21 +477,33 @@ export default {
 	},
 	watch: {
 		'$route.params.tab': async function(newTab, oldTab) {
-			this.$store.commit('setMetadata', { tab: newTab })
-			this.checkTab()
+			if (!newTab) {
+				// this happens when the user navigates to "New dataset" via navigation
+				// when user is in Editor view
+				this.clearRecord()
+			} else {
+				this.$store.commit('setMetadata', { tab: newTab })
+				this.checkTab()
+			}
 		},
 		'$route.params.id': async function(newId, oldId) {
 			if (this.id === 'new') {
 				this.clearRecord()
-			} else if (this.id !== 'edit' && this.$store.state.metadata.id !== this.id) {
+			} else if (this.id !== 'edit') {
 				await this.openRecord(this.id)
 			}
 		},
 	},
+	destroyed: function() {
+		if (this.reloadDatasetTimer) {
+			clearTimeout(this.reloadDatasetTimer)
+		}
+		this.reloadDatasetTimer = null
+	},
 	async mounted() {
 		if (this.id === 'new') {
 			this.clearRecord()
-		} else if (this.id !== 'edit' && this.$store.state.metadata.id !== this.id) {
+		} else if (this.id !== 'edit') {
 			await this.openRecord(this.id)
 		}
 
@@ -417,7 +532,7 @@ export default {
 
 .tab-field-link {
 	display: flex;
-	height: 38px;
+	height: 2.5em;
 	align-items: center;
 	justify-content: space-between;
 	padding: 4px 2px 4px 10px;

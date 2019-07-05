@@ -2,31 +2,52 @@
 <template>
 	<record-field :required="required" :wrapped="true" :error="!isValid">
 		<title-component slot="title" :title="uiLabel" />
+		<small slot="help" class="text-muted">
+			{{ uiDescription }}
+		</small>
 		<div slot="header-right">
-			<p :key="error" v-for="error in errors" class="error-message">{{ error }}</p>
 			<ValidationStatus :status="validationStatus" />
-			<InfoIcon :description="uiDescription"/>
 		</div>
-
+		<div slot="errors">
+			<b-badge variant="danger" :key="error" v-for="error in errors">{{ error }}</b-badge>
+		</div>
 		<div slot="input">
-			<b-input-group v-for="(val, lang) in state" :key="lang">
-				<div class="input-group__prepend" slot="prepend">
-					<p class="input-group__language text-dark font-italic">{{ languages[lang] }}</p>
-				</div>
-				<b-form-input :id="property + '_' + lang + '_input'" type="text" :ref="lang" class="text-field" :placeholder="uiPlaceholder" v-model="state[lang]" @change="updateValue" />
-				<b-input-group slot="append">
-					<span :id="property + '_remove-button'" class="remove-button">
-						<DeleteButton @click="deleteLanguage(lang)"/>
-					</span>
-				</b-input-group>
-			</b-input-group>
+			<b-form class="record-field">
 
-			<p class="intro-text" v-if="Object.keys(state).length === 0">
-				Start by selecting the language. You may add as many languages as you wish by clicking them from the dropdown below.
-			</p>
-			<div class="language-row">
-				<language-select :id="property + '_language-select'" class="input-width" @change="addPair" />
-			</div>
+				<b-form-group
+						:key="lang"
+						v-for="(val, lang) in state"
+						label-cols=3
+						:label-for="property + '_' + lang + '_input'">
+					
+					<span slot="label">
+						<DeleteButton slot="label" @click="deleteLanguage(lang)"/>
+						{{ languages[lang] }}
+					</span>
+
+					<b-input-group>
+						<b-form-input
+							:id="property + '_' + lang + '_input'" 
+							type="text"
+							:ref="lang"
+							required
+							:placeholder="'Start typing in ' + languages[lang]"
+							v-model="state[lang]"
+							@input="updateValue">
+						</b-form-input>
+					</b-input-group>
+				</b-form-group>
+
+				<p class="intro-text" v-if="Object.keys(state).length === 0">
+					Start by selecting the language. You may add as many languages as you wish by clicking them from the dropdown below.
+				</p>
+				<div class="row language-row">
+					<language-select
+						:id="property + '_language-select'"
+						class="col"
+						@change="userRequestedNewLanguage" />
+				</div>
+			</b-form>
 		</div>
 	</record-field>
 </template>
@@ -36,36 +57,19 @@
 .error-message {
 	display: inline-block;
 }
-.remove-button {
-	margin: 0 10px 0 2px;
-	display: flex;
-}
+
 .intro-text {
 	text-align: center;
 	margin: 0;
 }
-.language-row {
-	display: inline-flex;
-	justify-content: space-around;
-	width: 100%;
-	border: 0;
-	margin-top: 10px;
 
-	.input-width {
-		width: 220px;
-	}
+.record-field > * {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
 }
-.input-group__prepend {
-	width: 150px;
-	.input-group__language {
-		line-height: 38px;
-		margin: 0;
-	}
-}
-.text-field {
-	border-top: 0;
-	border-left: 0;
-	border-right: 0;
+
+.language-row {
+	margin-top: 1em;
 }
 </style>
 
@@ -100,12 +104,15 @@ export default {
 		}
 	},
 	methods: {
-		addPair(lang) {
+		userRequestedNewLanguage(lang) {
+			this.addLanguage(lang)
+			// wait for rendering so that the ref is present in dom before focus
+			this.$nextTick(() => this.$refs[lang][0].$el.focus())
+		},
+		addLanguage(lang) {
 			if (!lang || lang in this.state) return
 			this.$set(this.state, lang, '')
 			this.$store.commit('setLanguages', {[lang]:true})
-			// wait for rendering so that the ref is present in dom before focus
-			this.$nextTick(() => this.$refs[lang][0].$el.focus())
 		},
 		deleteLanguage(lang) {
 			this.$delete(this.state, lang)
@@ -120,7 +127,7 @@ export default {
 		populateLanguages(languages) {
 			for (const lang in languages) {
 				if (languages[lang]) {
-					this.addPair(lang)
+					this.addLanguage(lang)
 				}
 			}
 		},
@@ -139,7 +146,6 @@ export default {
 		state: {
 			handler(newState, oldState) {
 				const shouldClearValidation = Object.keys(newState).length < Object.keys(oldState).length
-				this.updateValue()
 				if (shouldClearValidation) {
 					this.$store.commit('cleanStateFor', this.path)
 				}
