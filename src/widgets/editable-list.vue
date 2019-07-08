@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<b-form-group :label-cols="2" description="description" label="label" feedback="feedback" state="">
 		<b-list-group>

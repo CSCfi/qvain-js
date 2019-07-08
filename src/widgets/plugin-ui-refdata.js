@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 import refdataList from './refdata/list.vue'
 
 // vue plugin

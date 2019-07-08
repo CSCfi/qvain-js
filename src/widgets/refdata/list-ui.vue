@@ -1,14 +1,15 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
   <div row>
     <!-- ElasticSearch widget -->
-    <b-form-group :class="isRequired ? 'required' : ''" id="fundertype-form-group" horizontal :label-cols="uiLabel ? labelCols : 1" :description="uiDescription" :label="uiLabel">
-	  <b-input-group>
+    <b-form-group id="list-ui-form-group" class="list-ui-form-group" :class="isRequired ? 'required' : ''" :label-cols="uiLabel ? labelCols : 1" :description="uiDescription" :label="uiLabel">
+      <b-input-group>
         <div v-if="type === 'multiselect'" class="flex-grow-1">
           <Multiselect v-model="model" @input="setValue" :options="items" v-if="items" :customLabel="customLabel"
             :optionsLimit="40" :allowEmpty="!isRequired" :showLabels="false" />
         </div>
         <b-input-group-append>
-          <b-btn variant="danger" ref="refErrorButton" id="refdata-error-btn" v-b-tooltip.hover="error" v-if="error">
+          <b-btn id="list-ui-error-btn" variant="danger" ref="refErrorButton" v-b-tooltip.hover="error" v-if="error">
             <font-awesome-icon icon="exclamation-triangle" />
           </b-btn>
           <b-btn variant="dark" v-b-tooltip.hover="error" title="retry" v-if="error" @click="getList(esIndex, esDoctype)">
@@ -16,20 +17,6 @@
             <font-awesome-icon icon="sync" spin v-if="busy" />
           </b-btn>
         </b-input-group-append>
-        <b-popover target="refdata-error-btn" triggers="hover click" class="error-popover">
-          <template slot="title">
-            <b-btn variant="dark">
-              <font-awesome-icon icon="sync" />
-            </b-btn>
-            <b-btn class="close" aria-label="Close">
-              <span class="d-inline-block" aria-hidden="true">&times;</span>
-            </b-btn>
-            Error
-          </template>
-          <b-alert variant="danger" show>
-            {{ error }}
-          </b-alert>
-        </b-popover>
       </b-input-group>
     </b-form-group>
   </div>
@@ -43,7 +30,7 @@
   background-color: red;
 }
 
-fieldset#fundertype-form-group.required div.form-row legend:after {
+fieldset.list-ui-form-group.required div.form-row legend:after {
 	content: '*';
 	color: red;
 }
@@ -158,7 +145,6 @@ export default {
 			let vm = this
 			esApiClient(index, doctype)
 				.then(response => {
-					console.log('response', response)
 					if (response.data && response.data.hits && response.data.hits.hits) {
 						if (this.optgroups) {
 							vm.items = groupByParent(response.data.hits.hits)
@@ -181,7 +167,6 @@ export default {
 									'label': es.label[lang],
 								}
 							})
-							console.log("xxx:", vm.items)
 						}
 						vm.error = null
 					} else {
@@ -225,9 +210,6 @@ export default {
 		},
 	},
 	created() {
-		//console.log("refdata widget", this.value)
-		//this.getList("reference_data", "funder_type")
-		console.log('list item created')
 		this.model = this.value
 		this.getList(this.esIndex, this.esDoctype)
 	},

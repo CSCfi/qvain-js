@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<b-card :id="testing_id + '_card'" class="cursor-reset bg-light">
 		<h4>File metadata for PAS</h4>
@@ -181,7 +182,14 @@ export default {
 				}
 			} catch (error) {
 				this.saveResult = 'failed';
-				throw error;
+				if (e.response.status == 401) {
+					// there was a permission error
+					// we should redirect the user to login
+					await this.$auth.logoutDueSessionTimeout()
+					this.$router.push({name: "home", params: {missingToken: true}})
+				} else {
+					throw error;
+				}
 			}
 
 		}

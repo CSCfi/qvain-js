@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<b-popover class="validation-popover" target="popovertarget">
 		<template slot="title">

@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 //"use strict;"
 import { valueAtSchema } from './foreach_schema.mjs'
 

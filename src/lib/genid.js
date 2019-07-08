@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 import murmurhash from '../../vendor/murmurhash/murmurhash3.js'
 
 const prefix = 'q'

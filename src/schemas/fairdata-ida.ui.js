@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 export default {
 	tabs: [
 		{ label: 'Content Description', uri: 'description' },
@@ -196,6 +197,22 @@ export default {
 		'label': "funder type",
 		'description': "Funding type.",
 		'help': "Select the funding type.",
+	},
+	'/properties/is_output_of/*/properties/source_organization/*/properties/contributor_type': {
+		'widget': 'reference-data',
+		'props': {
+			'esIndex': "reference_data",
+			'esDoctype': "contributor_type",
+			'typeahead': true,
+			'tags': false,
+			'async': false,
+			'count': 100,
+			'grouped': false,
+		},
+		'placeholder': "– choose contributor type –",
+		'label': "contributor type",
+		'description': "Type of contribution the given creator had on the dataset.",
+		'help': "Select the type of contribution the creator had on the dataset.",
 	},
 	'/properties/creator': {
 		'tab': 'actors',
@@ -693,6 +710,15 @@ export default {
 			'count': 100,
 			'grouped': false,
 			'labelNameInSchema': 'title',
+			'defaultValue': [{
+				"identifier":"http://uri.suomi.fi/codelist/fairdata/license/code/CC-BY-4.0",
+				"label": {
+					"sv": '',
+					"en":"Creative Commons Attribution 4.0 International (CC BY 4.0)",
+					"fi":"Creative Commons Nimeä 4.0 Kansainvälinen (CC BY 4.0)",
+					"und":"Creative Commons Nimeä 4.0 Kansainvälinen (CC BY 4.0)"
+				}
+			}]
 		},
 		'placeholder': "– choose license –",
 		'title': "license",

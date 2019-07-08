@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<b-badge :variant="variant" class="state-widget animate-pop-down" :class="type" v-b-tooltip.hover.auto :title="long"><font-awesome-icon :icon="icon" /> {{ short }}</b-badge>
 </template>

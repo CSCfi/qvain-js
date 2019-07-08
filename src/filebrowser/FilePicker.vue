@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<div>
 		<b-dropdown text="Change project" class="my-3">
@@ -54,7 +55,7 @@ import { faFile, faFolder } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
 
 const metaxAPI = axios.create({
-	baseURL: process.env.VUE_APP_METAX_API_URL || '/api/proxy',
+	baseURL: process.env.VUE_APP_METAX_FILEAPI_URL || '/api/proxy',
 	timeout: 3000,
 	responseType: 'json',
 })
@@ -162,6 +163,12 @@ export default {
 			}
 		} catch(e) {
 			console.log('error retriving project', e)
+			if (e.response.status == 401) {
+				// there was a permission error
+				// we should redirect the user to login
+				await this.$auth.logoutDueSessionTimeout()
+				this.$router.push({name: "home", params: {missingToken: true}})
+			}
 		}
 	},
 	watch: {

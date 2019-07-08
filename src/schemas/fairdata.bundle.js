@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 import FairdataIdaSchema from './fairdata-ida.schema.json'
 import FairdataIdaOldSchema from './fairdata-ida-old.schema.json'
 import FairdataAttSchema from './fairdata-att.schema.json'

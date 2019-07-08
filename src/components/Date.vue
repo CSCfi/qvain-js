@@ -1,20 +1,25 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<record-field v-if="isVisible" :required="isRequired" :wrapped="wrapped">
 		<title-component slot="title" :title="uiLabel" />
-		<div slot="header-right">
-			<InfoIcon :description="uiDescription"/>
-		</div>
+		<small slot="help" class="text-muted">
+			{{ uiDescription }}
+		</small>
 
-		<div slot="input">
-			<div class="wrap">
-				<p>Select date:</p>
-				<datepicker class="widget ml-2"
-					placeholder="Click to select"
+		<div slot="input" class="container">
+			<div class="row">
+				<datepicker
+					:inline="false"
+					placeholder="Select Date"
+					monday-first
+					bootstrapStyling
+					typeable
+					format="dd.MM.yyyy"
+					:id="property + '_date'"
+					class="col"
 					v-model="date">
 				</datepicker>
 			</div>
-
-			<delete-button v-if="date !== null" @click="clear()" />
 		</div>
 	</record-field>
 </template>
@@ -78,22 +83,13 @@ export default {
 }
 </script>
 
-
-<style lang="scss" scoped>
-	.wrap {
-		display: inline-flex;
-		> p {
-			line-height: 40px;
-			vertical-align: middle;
-		}
-		margin-right: 6px;
-	}
-</style>
-
 <style lang="scss">
-	.widget.vdp-datepicker div input {
-		border-radius: 5px;
-		border: 1px solid #ced4da;
-		padding: 0.375rem 0.75rem;
+
+
+	.vdp-datepicker_clear-button {
+		border-color: #ccc;
+		border-left: 0;
+		border-top-left-radius: 0;
+		border-bottom-left-radius: 0;
 	}
 </style>

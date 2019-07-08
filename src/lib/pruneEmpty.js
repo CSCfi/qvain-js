@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 // pruneEmpty removes empty branches and leaves
 export const pruneEmpty = (obj) => {
 	Object.keys(obj).forEach(key => {

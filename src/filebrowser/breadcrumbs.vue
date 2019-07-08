@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
   <ol class="breadcrumb m-0 bg-white">
     <b-btn class="m-0 py-0 px-2" variant="link" @click.stop="click(homePath)" v-if="homePath">

@@ -1,5 +1,6 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
-	<div :style="listItemStyle(depth)">
+	<div :id="property + '_object'" :style="listItemStyle(depth)">
 		<header>
 			<h3 class="title" :aria-controls="domId + '-props'">
 				{{ uiTitle }}

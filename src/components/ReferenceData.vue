@@ -1,22 +1,24 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
-	<record-field v-if="isVisible" :required="isRequired" :wrapped="wrapped">
+	<record-field :id="property + '_referenceData'" v-if="isVisible" :required="isRequired" :wrapped="wrapped">
 		<title-component slot="title" :title="uiLabel" />
-		<div slot="header-right" class="header__right">
-			<!--<ValidationStatus :status="validationStatus" />-->
-			<InfoIcon :description="uiDescription"/>
-		</div>
+		<small slot="help" class="text-muted">
+			{{ uiDescription }}
+		</small>
 
 		<div slot="input">
 			<div class="input-row__inline">
 				<Multiselect v-if="showLang"
 					v-model="selectedLang"
 					:options="languages"
+					:id="property + '_language-select'"
 					placeholder="Select language"
 					label="language"
 					class="lang-select"/>
 
 				<Multiselect v-if="optionsShouldBeGrouped"
 					class="value-select"
+					:id="property + '_value-select'"
 					v-model="selectedOptions"
 					track-by="identifier"
 					:internalSearch="!async"
@@ -41,6 +43,7 @@
 
 				<Multiselect v-else
 					class="value-select"
+					:id="property + '_value-select'"
 					v-model="selectedOptions"
 					track-by="identifier"
 					:internalSearch="!async"
@@ -62,7 +65,7 @@
 					</div>
 				</Multiselect>
 			</div>
-			<div v-if="isMultiselect" class="tag__list">
+			<div :id="property + '_taglist'" v-if="isMultiselect" class="tag__list">
 				<p v-for="(option, index) in Array.from(selectedOptions)" :key="option.identifier" class="tag">
 					{{customLabel(option)}}
 					<span class="remove-button">
@@ -70,7 +73,7 @@
 					</span>
 				</p>
 			</div>
-			<div v-if="!isMultiselect && !Array.isArray(selectedOptions)" class="tag__list">
+			<div :id="property + '_taglist'" v-if="!isMultiselect && !Array.isArray(selectedOptions)" class="tag__list">
 				<p class="tag" :style="{visibility: selectedOptions === null ? 'hidden' : 'visible'}">
 					{{customLabel(selectedOptions)}}
 					<span class="remove-button">
@@ -112,6 +115,7 @@ export default {
 		wrapped: { type: Boolean, default: false },
 		labelNameInSchema: { type: String, default: 'pref_label' },
 		grouped: { type: Boolean, required: false },
+		defaultValue: { type: Object | Array, required: false }
 	},
 	data() {
 		return {
@@ -124,6 +128,7 @@ export default {
 			],
 			selectedLang: null,
 			isLoading: false,
+			isInitializing: true,
 		}
 	},
 	computed: {
@@ -214,12 +219,16 @@ export default {
 			}
 		},
 		async getAllReferenceData() {
+			this.isLoading = true
 			const res = await esApiSearchClient(this.esIndex, this.esDoctype, undefined, this.count)
 			this.responseData = res.data
+			this.isLoading = false
 		},
 		async searchReferenceData(searchQuery) {
+			this.isLoading = true
 			const res = await esApiSearchClient(this.esIndex, this.esDoctype, searchQuery, this.count)
 			this.responseData = res.data
+			this.isLoading = false
 		},
 		// TODO: if the es server is under too much stress debounce could be implemented
 		async search(searchQuery) {
@@ -251,9 +260,11 @@ export default {
 			}
 		},
 	},
-	async created() {
+	created: function() {
 		if (this.isMultiselect && this.isArray) {
-			this.selectedOptions = this.value.map(v => ({ identifier: v.identifier, label: v[this.labelNameInSchema] }))
+			this.selectedOptions = this.value.map(v => ({
+				identifier: v.identifier, label: v[this.labelNameInSchema]
+			}))
 		}
 
 		if (!this.isMultiselect && !this.isEmptyObject) {
@@ -266,14 +277,23 @@ export default {
 			}
 		}
 
+		if (this.defaultValue && this.isEmptyObject) {
+			this.selectedOptions = this.defaultValue
+		}
+
 		if (!this.async) {
 			this.getAllReferenceData()
 		}
 	},
+	beforeUpdate: function() {
+		this.isInitializing = true
+	},
+	updated: function() {
+		this.isInitializing = false
+	},
 	watch: {
 		selectedOptions() {
 			const selectedValueIsSet = this.selectedOptions !== null && typeof this.selectedOptions !== 'undefined'
-
 			const mapToStore = option => {
 				if (typeof option === 'undefined') {
 					return option
@@ -292,7 +312,9 @@ export default {
 				storableOptions = mapToStore(this.selectedOptions)
 			}
 
-			this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: storableOptions })
+			if (!this.isInitializing) {
+				this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: storableOptions })
+			}
 		},
 	},
 }
@@ -316,11 +338,11 @@ export default {
 }
 
 .tag {
-	color: white;
-	background: #007fad;
+	color: $fd-primary-white;
+	background: $fd-primary;
 	border-radius: 5px;
 
-	padding: 4px 8px 4px 10px;
+	padding: 4px 4px 4px 10px;
 	margin: 2px;
 	flex-grow: 1;
 
@@ -342,7 +364,7 @@ export default {
 }
 
 .remove-button {
-	margin-left: 8px;
+	margin-left: 4px;
 }
 
 .option__child {
@@ -383,12 +405,6 @@ export default {
 	background: $danger;
 }
 
-.multiselect__tags {
-	border: 0;
-	border-radius: 0;
-	border-bottom: solid 1px lightgray;
-	height: 40px;
-}
 
 .multiselect__single,
 .multiselect__placeholder,

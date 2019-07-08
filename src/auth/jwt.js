@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 // b64DecodeUnicode function taken from Mozilla website.
 function b64DecodeUnicode(str) {
 	// Going backwards: from bytestream, to percent-encoding, to original string.

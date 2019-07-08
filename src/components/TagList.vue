@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<transition-group name="tags" tag="div" class="my-2">
 		<b-badge :ref="`badge-${index}`" variant="secondary" class="p-1 mr-2 animated-tag" v-for="(value, index) in items" :key="value.toString()" @mouseenter="hover" @mouseleave="unhover" @click="$emit('remove', index)">

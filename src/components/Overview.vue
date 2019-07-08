@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<div style="max-width: 400px; font-size: small;">
 		<ul class="list-group list-group-flush">

@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 

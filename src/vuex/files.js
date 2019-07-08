@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 // vuex module for file selection
 import Vue from 'vue'
 //import { stat } from 'fs'

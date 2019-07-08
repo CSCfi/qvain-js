@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<b-btn :variant="variant" :size="size" :disabled="inactive" v-b-tooltip.hover.auto title="text" @click="doit">
 		<font-awesome-icon :icon="icon.faSave" v-if="!inactive" />
