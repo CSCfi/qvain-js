@@ -8,7 +8,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import './assets/css/qvain.scss'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fortawesome/vue-fontawesome'
 //import { faUser, faInfo, faMinus, faPlus, faAngleRight, faTimes, faQuoteLeft, faExclamationTriangle, faSync, faQuestionCircle, faDatabase, faPen, faTrash, faHistory, faClock, faCloudUploadAlt, faCircleNotch, faList, faListAlt, faUndo, faExternalLinkAlt, faEllipsisV } from '@fortawesome/free-solid-svg-icons'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 
@@ -28,6 +28,8 @@ Vue.use(AuthPlugin, {
 })
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
+Vue.component('font-awesome-layers', FontAwesomeLayers)
+Vue.component('font-awesome-layers-text', FontAwesomeLayersText)
 //library.add(faUser, faInfo, faMinus, faPlus, faTimes, faAngleRight, faQuoteLeft, faExclamationTriangle, faSync, faQuestionCircle, faDatabase, faPen, faTrash, faHistory, faClock, faCloudUploadAlt, faCircleNotch, faList, faListAlt, faUndo, faExternalLinkAlt, faEllipsisV)
 library.add(fas)
 
