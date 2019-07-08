@@ -97,13 +97,13 @@
 		<dataset-overview-modal id="dataset-overview-modal"></dataset-overview-modal>
 		<b-modal ref="publishModal" id="publishModal" title="Publish dataset?"
 			ok-title="Publish" cancel-variant="primary" ok-variant="success" @ok="publish">
-			<p :style="{'text-align': 'center'}">
-				<p>I understand that publishing this dataset...</p>
-				<ul class="list-unstyled">
-					<li class="font-italic">... will make it available publicly</li>
-					<li class="font-italic">... marks it as ready and enables editing restrictions</li>
+			<div class="d-block text-left">
+				<p>I understand that publishing this dataset:</p>
+				<ul>
+					<li>will make it available publicly</li>
+					<li>marks it as ready and enables editing restrictions</li>
 				</ul>
-			</p>
+			</div>
 		</b-modal>
 		<publish-modal ref="publishErrorModal" id="publishErrorModal" :error="publishError" @hidden="publishError = null"></publish-modal>
 
