@@ -51,7 +51,7 @@
 				<div class="actions">
 					<b-button-group>
 						<b-button variant="primary" size="sm" @click.stop="open(row.item.id)"><font-awesome-icon icon="pen" fixed-width />Edit</b-button>
-						<b-button v-if="!row.item.published || row.item.synced < row.item.modified" variant="success" size="sm" @click="itemToBePublished = row.item" v-b-tooltip.hover title="Publish makes the latest saved version public." v-b-modal.publishModal>Publish</b-button>
+						<b-button v-if="!row.item.published || isItemPublishedAndHasUpdates(row.item)" variant="success" size="sm" @click="itemToBePublished = row.item" v-b-modal.publishModal>Publish</b-button>
 						<b-button variant="primary" size="sm" @click.stop="view(row.item.identifier)" :disabled="row.item.identifier == null"><font-awesome-icon icon="external-link-alt" fixed-width />View in Etsin</b-button>
 
 						<b-dropdown variant="primary" right text="More" size="sm">
