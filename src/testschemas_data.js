@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 let _schemaFairDataUI = {
 	'title': {
 		"en": "Day lowest temperature, 1961-2014, 10 km, GeoTIFF",

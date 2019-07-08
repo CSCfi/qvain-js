@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 import Auth from './auth.js'
 
 // addGlobalGuard adds a hook to Vue router that checks for a boolean `auth` on each route and, if necessary, sends the user to a login page if they are not logged in.

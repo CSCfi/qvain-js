@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<wrapper :wrapped="wrapped">
 		<b-form-group class="qwidget" :label-cols="2" :description="uiDescription" :label="uiLabel" :state="isValid">
@@ -12,7 +13,7 @@
 			</b-alert>
 			<div class="d-flex align-items-stretch float-right"><!-- buttons -->
 				<b-btn type="button" variant="secondary" class="mr-2"><font-awesome-icon icon="list" fixed-width class="mr-2"/> <span>{{ minimum || "–" }} / {{ value.length }} / {{ maximum || "–" }}</span></b-btn>
-				<b-btn type="button" variant="primary" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
+				<b-btn type="button" variant="light" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
 			</div>
 		</b-form-group>
 	</wrapper>

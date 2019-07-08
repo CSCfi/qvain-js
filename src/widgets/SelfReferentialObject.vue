@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<wrapper :wrapped="false" :style="listItemStyle(depth)">
 		<h3 @click="opened = !opened" class="margin-left" :aria-controls="domId + '-props'" :aria-expanded="opened ? 'true' : 'false'">
@@ -9,13 +10,16 @@
 				{{ uiDescription }}
 			</p>
 			<div class="mb-3" v-for="(org, i) in flattened" :key="'level-' + i">
-				<b-btn href="#" v-b-toggle="domId + '-accordion-' + i" variant="link" style="text-align: left;">
-					<font-awesome-icon icon="angle-right" fixed-width />
-					Level {{ i + 1 }}{{ getDescriptionForLevel(i) }}
-				</b-btn>
-				<b-btn v-if="i > 0" class="btn-outline-secondary danger-on-hover border-0" @click="remove(i)">
-					<font-awesome-icon icon="trash" />
-				</b-btn>
+				<div class="header-row">
+					<b-btn href="#" v-b-toggle="domId + '-accordion-' + i" style="text-align: left;">
+						<font-awesome-icon class="when-opened" icon="angle-down" fixed-width />
+						<font-awesome-icon class="when-closed" icon="angle-right" fixed-width />
+						Level {{ i + 1 }}{{ getDescriptionForLevel(i) }}
+						<DeleteButton v-if="i > 0" @click="remove(i)"/>
+					</b-btn>
+
+				</div>
+
 				<b-collapse :id="domId + '-accordion-' + i" :visible="opened" :accordion="domId + '-accordion'" role="tabpanel">
 					<FlatObject :schema="schema"
 						:path="path"
@@ -29,7 +33,9 @@
 					</FlatObject>
 				</b-collapse>
 			</div>
-			<b-button class="m-3" @click="add()"><font-awesome-icon icon="plus" fixed-width /> Add another level</b-button>
+			<div class="header-row">
+				<b-button class="m-3" variant="outline-dark" @click="add()"><font-awesome-icon icon="plus" fixed-width /> Add another level</b-button>
+			</div>
 			</b-collapse>
 		</wrapper>
 </template>
@@ -38,11 +44,21 @@
 .margin-left {
 	margin-left: 20px;
 }
+.collapsed > .when-opened,
+:not(.collapsed) > .when-closed {
+  display: none;
+}
+
+.header-row {
+	margin-left: 1.5em;
+	margin-right: 1.5em;
+}
 </style>
 
 <script>
 import SchemaBase from './base.vue'
 import Wrapper from '@/components/Wrapper.vue'
+import DeleteButton from '@/partials/DeleteButton.vue'
 import BorderColorMixin from '../mixins/border-color-mixin.js'
 
 export default {
@@ -53,6 +69,7 @@ export default {
 	mixins: [BorderColorMixin],
 	components: {
 		Wrapper,
+		DeleteButton,
 	},
 	props: {
 		'refField': String,
@@ -66,11 +83,9 @@ export default {
 	methods: {
 		add() {
 			let obj = this.value
-			console.log("add() called", obj)
 			while (this.refField in obj) {
 				obj = obj[this.refField]
 			}
-			console.log("add() called (after loop)", obj)
 			this.$store.commit('updateValue', {
 				p: obj,
 				prop: this.refField,
@@ -130,14 +145,6 @@ export default {
 			}
 
 			return arr
-		},
-	},
-	watch: {
-		value() {
-			console.log("SelfReferentialObject(): watcher trigger:", this.flattened)
-		},
-		"value.email"() {
-			console.log("SelfReferentialObject(): email watcher trigger:", this.flattened)
 		},
 	},
 }

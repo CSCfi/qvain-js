@@ -1,7 +1,8 @@
+<!-- ADD_LICENSE_HEADER -->
 <template functional>
-	<p class="title">
+	<span class="title">
 		{{ props.title }}
-	</p>
+	</span>
 </template>
 
 <style lang="scss" scoped>

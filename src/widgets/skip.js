@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 import keysWithOrder from '@/lib/keysWithOrder.js'
 
 export default {

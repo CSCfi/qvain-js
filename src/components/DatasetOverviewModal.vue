@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<b-modal size="sm" lazy ok-only title="Dataset overview" v-bind="$attrs" v-on="$listeners">
 		<Overview></Overview>

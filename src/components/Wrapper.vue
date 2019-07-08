@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<div v-bind:class="{ wrapper: wrapped, error: error }">
 		<slot></slot>
@@ -16,10 +17,10 @@ export default {
 
 <style lang="scss" scoped>
 .wrapper {
-	padding: 20px;
-    box-shadow: 2px 2px 15px 0px lightgrey;
-	//box-shadow: 1px 2px 5px 0px #d3d3d3a6;
+	padding: 1em;
+	border: 1px solid #efefef;
 }
+
 .error {
 	border-right: solid 5px red;
 }

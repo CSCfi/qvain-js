@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<div class="container p-3" fluid>
 		<p><span style="background-color: #aaaa00; padding: 0.4rem; padding-right: 0; border-radius: 0.4rem;">tag <span style="color: #eeffff; background-color: #003333; border-radius: 0.4rem; padding: 0.4rem; margin-right: 0;">text</span></span></p>

@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 export default {
 	tabs: [
 		{ label: 'Content Description', uri: 'description' },
@@ -196,6 +197,22 @@ export default {
 		'label': "funder type",
 		'description': "Funding type.",
 		'help': "Select the funding type.",
+	},
+	'/properties/is_output_of/*/properties/source_organization/*/properties/contributor_type': {
+		'widget': 'reference-data',
+		'props': {
+			'esIndex': "reference_data",
+			'esDoctype': "contributor_type",
+			'typeahead': true,
+			'tags': false,
+			'async': false,
+			'count': 100,
+			'grouped': false,
+		},
+		'placeholder': "– choose contributor type –",
+		'label': "contributor type",
+		'description': "Type of contribution the given creator had on the dataset.",
+		'help': "Select the type of contribution the creator had on the dataset.",
 	},
 	'/properties/creator': {
 		'tab': 'actors',
@@ -684,7 +701,8 @@ export default {
 	},
 	'/properties/access_rights/properties/license': {
 		props: {
-			tabFormat: false
+			tabFormat: false,
+			showDelete: true
 		}
 	},
 	'/properties/access_rights/properties/license/*': {
@@ -710,7 +728,7 @@ export default {
 			'async': false,
 			'count': 100,
 			'grouped': false,
-			'labelNameInSchema': 'title',
+			'labelNameInSchema': 'title'
 		},
 		'placeholder': "– choose license –",
 		'title': "license",

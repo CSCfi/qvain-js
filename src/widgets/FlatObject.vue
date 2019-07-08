@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<b-card no-body class="my-3 p-0 m-0 border-0">
 		<b-list-group flush>

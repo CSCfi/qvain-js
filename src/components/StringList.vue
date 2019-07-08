@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<b-list-group>
 		<b-list-group-item v-for="(value, index) in items" :key="index" @click="edit(index, $event)">

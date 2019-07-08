@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<b-modal size="lg" ok-only title="Publish: error" v-bind="$attrs" v-on="$listeners">
 		<p class="mb-1" v-if="isValidationError">The upstream service isn't happy with the provided data. Most likely a required field is missing.</p>

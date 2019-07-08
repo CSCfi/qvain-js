@@ -18,3 +18,5 @@ yarn-error.log*
 dependency-check
 dependency-check*
 *.zip
+
+venv

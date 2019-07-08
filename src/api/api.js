@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 import apiClient from '@/api/client.js'
 
 export default {

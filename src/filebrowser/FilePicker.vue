@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<div>
 		<b-dropdown text="Change project" class="my-3">
@@ -162,6 +163,12 @@ export default {
 			}
 		} catch(e) {
 			console.log('error retriving project', e)
+			if (e.response.status == 401) {
+				// there was a permission error
+				// we should redirect the user to login
+				await this.$auth.logoutDueSessionTimeout()
+				this.$router.push({name: "home", params: {missingToken: true}})
+			}
 		}
 	},
 	watch: {

@@ -1,15 +1,23 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<wrapper :wrapped="wrapped" :error="error">
 		<div v-if="header" class="header">
-			<div class="header__label">
-				<slot name="title"/><span v-if="required" class="header__required">*</span>
-			</div>
+			<b-container fluid>
+				<b-row class="row">
+					<b-col><slot name="title"/><span v-if="required" class="header__required">*</span></b-col>
+				</b-row>
+				<b-row>
+					<b-col><slot name="help"/></b-col>
+				</b-row>
+			</b-container>
 			<div class="header__right">
 				<slot name="header-right"/>
 			</div>
 		</div>
 
-		<slot name="input"/>
+		<b-container class="error-container"><slot name="errors"/></b-container>
+
+		<b-container><slot name="input"/></b-container>
 	</wrapper>
 </template>
 
@@ -19,7 +27,7 @@
 .header {
 	width: 100%;
 	display: inline-flex;
-	margin-bottom: 5px;
+	margin-bottom: 1em;
 
 	&__label {
 		display: inline-flex;
@@ -34,7 +42,9 @@
 		color: red;
 	}
 }
-
+.error-container {
+	margin-bottom: 1em;
+}
 
 </style>
 

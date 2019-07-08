@@ -1,5 +1,6 @@
+<!-- ADD_LICENSE_HEADER -->
 <template>
-	<div>
+	<div :id="property + '_anyOf'">
 		<!-- (anyof component) -->
 		<h2 v-bind:class="{ 'metainfo': !schema.title, 'missing': !schema.title }">{{ schema.title || "missing title" }}</h2>
 

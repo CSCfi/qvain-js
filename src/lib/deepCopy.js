@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 /*
 	Make a deep clone of an object. Only supports JSON primitive types.
 

@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 import Vue from 'vue'
 import Vuex from 'vuex'
 //import jsonPointer from 'json-pointer'
@@ -182,7 +183,7 @@ export default new Vuex.Store({
 		},
 		// uiForPath returns the UI overrides for the given path (if any)
 		uiForPath: (state) => (path) => {
-			const searchPath = path
+			const searchPathOneOfSensitive = path
 				.split('/')
 				.filter(key => key !== '')
 				.map((key, index, array) => {
@@ -195,7 +196,18 @@ export default new Vuex.Store({
 					}
 				}).join('/')
 
-			return state.hints['/' + searchPath] || {}
+			const searchPathNoNumber = path
+				.split('/')
+				.filter(key => key !== '')
+				.map((key, index, array) => {
+					if (isNaN(key)) {
+						return key
+					} else {
+						return '*'
+					}
+				}).join('/')
+
+			return state.hints['/' + searchPathOneOfSensitive] || state.hints['/' + searchPathNoNumber] || {}
 		},
 		// uiValidKeywordsList returns a static array of valid keywords
 		uiValidKeywordsList: (state) => {
