@@ -35,7 +35,7 @@
 				primary-key="id"
 				:tbody-transition-props="{'name': 'datasets-flip'}">
 			<template slot="actions" slot-scope="row">
-				<b-button-toolbar key-nav>
+				<b-button-toolbar key-nav class="row-main-actions">
 					<b-button-group class="mr-1">
 						<b-button variant="secondary" @click.stop="row.toggleDetails()"><font-awesome-icon :icon="row.detailsShowing ? 'chevron-down' : 'chevron-right'" fixed-width /></b-button>
 					</b-button-group>
@@ -187,6 +187,12 @@
 			p {
 				margin-bottom: 0;
 			}
+		}
+	}
+
+	.row-main-actions {
+		.btn-group {
+			margin-top: 0.1em;
 		}
 	}
 </style>
