@@ -33,11 +33,21 @@
 				thead-tr-class="striped"
 				primary-key="id"
 				:tbody-transition-props="{'name': 'datasets-flip'}">
-			<template slot="actions" slot-scope="row">
+			<template slot="tree_actions" slot-scope="row">
 				<b-button-toolbar key-nav class="row-main-actions">
 					<b-button-group class="mr-1">
-						<b-button variant="secondary" @click.stop="row.toggleDetails()"><font-awesome-icon :icon="row.detailsShowing ? 'chevron-down' : 'chevron-right'" fixed-width /></b-button>
+						<b-button
+							variant="secondary"
+							@click.stop="row.toggleDetails()">
+							<font-awesome-icon
+								:icon="row.detailsShowing ? 'chevron-down' : 'chevron-right'"
+								fixed-width />
+						</b-button>
 					</b-button-group>
+				</b-button-toolbar>
+			</template>
+			<template slot="actions" slot-scope="row">
+				<b-button-toolbar key-nav class="row-main-actions">
 					<b-button-group class="mr-1">
 						<b-button
 							variant="primary"
@@ -208,11 +218,12 @@ import formatDate from 'date-fns/format'
 
 // id owner created modified published identifier title{} description{} preservation_state
 const fields = [
-	{ label: "",     key: "actions",            sortable: false },
-	{ label: "State",   key: "published",          sortable: true },
+	{ label: "Details",     key: "tree_actions",            sortable: false },
 	{ label: "Dataset",       key: "title",              sortable: true, formatter: 'preferredLanguage' },
 	{ label: "Created",     key: "created",            sortable: true },
-	{ label: "PAS",   key: "preservation_state", sortable: false },
+	{ label: "PAS",   key: "preservation_state", sortable: true },
+	{ label: "State",   key: "published",          sortable: true },
+	{ label: "",     key: "actions",            sortable: false },
 ]
 
 function getApiError(error) {
