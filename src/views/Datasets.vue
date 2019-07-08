@@ -30,7 +30,6 @@
 				filter="truthy value"
 				:filter-function="filter"
 				:busy.sync="isBusy"
-				thead-tr-class="striped"
 				primary-key="id"
 				:tbody-transition-props="{'name': 'datasets-flip'}">
 			<template slot="tree_actions" slot-scope="row">
@@ -46,26 +45,6 @@
 					</b-button-group>
 				</b-button-toolbar>
 			</template>
-			<template slot="actions" slot-scope="row">
-				<b-button-toolbar key-nav class="row-main-actions">
-					<b-button-group class="mr-1">
-						<b-button
-							variant="primary"
-							size="sm"
-							@click.stop="editDataset(row.item)">
-							<font-awesome-icon icon="pen" fixed-width />
-							Edit
-						</b-button>
-					</b-button-group>
-				</b-button-toolbar>
-			</template>
-			<template slot="published" slot-scope="row">
-				<div class="dataset-row-publish-status" @click.stop="editDataset(row.item)">
-					<font-awesome-icon icon="circle" class="text-primary" v-if="row.item.published && !isItemPublishedAndHasUpdates(row.item)" />
-					<font-awesome-icon icon="circle" class="text-warning" v-else-if="row.item.published && isItemPublishedAndHasUpdates(row.item)" />
-					<font-awesome-icon icon="circle" class="text-success" v-else />
-				</div>
-			</template>
 			<template slot="owner" slot-scope="data">
 				<span v-b-tooltip.hover.auto :title="data.item.uid">{{ data.item.owner }}</span>
 			</template>
@@ -79,7 +58,13 @@
 				</p>
 			</template>
 			<template slot="title" slot-scope="row">
+				
 				<h5 class="mb-1" @click.stop="editDataset(row.item)">
+					<span class="dataset-row-publish-status" @click.stop="editDataset(row.item)">
+						<font-awesome-icon icon="circle" class="text-primary" v-if="row.item.published && !isItemPublishedAndHasUpdates(row.item)" />
+						<font-awesome-icon icon="circle" class="text-warning" v-else-if="row.item.published && isItemPublishedAndHasUpdates(row.item)" />
+						<font-awesome-icon icon="circle" class="text-success" v-else />
+					</span>
 					{{ preferredLanguage(row.item.title) }}
 					<b-badge v-if="row.item.next !== null" variant="warning" class="old-version">Old version</b-badge>
 				</h5>
@@ -89,6 +74,15 @@
 			</template>
 			<template slot="row-details" slot-scope="row">
 				<b-button-toolbar key-nav>
+					<b-button-group size="sm" class="mr-1">
+						<b-button
+							variant="primary"
+							size="sm"
+							@click.stop="editDataset(row.item)">
+							<font-awesome-icon icon="pen" fixed-width />
+							Edit
+						</b-button>
+					</b-button-group>
 					<b-button-group size="sm" class="mr-1">
 						<b-button
 							:variant="row.item.identifier == null ? 'outline-secondary' : 'primary'"
@@ -172,6 +166,7 @@
 			margin-bottom: 0;
 		}
 	}
+
 	.table td:nth-child(2), .table td:nth-child(2) p {
 		text-align: left !important ;
 		vertical-align: middle !important;
@@ -204,6 +199,13 @@
 			margin-top: 0.1em;
 		}
 	}
+
+	.b-table-details {
+		.btn-toolbar {
+			margin-left: 5em;
+		}
+	}
+
 </style>
 
 <script>
@@ -218,12 +220,32 @@ import formatDate from 'date-fns/format'
 
 // id owner created modified published identifier title{} description{} preservation_state
 const fields = [
-	{ label: "Details",     key: "tree_actions",            sortable: false },
-	{ label: "Dataset",       key: "title",              sortable: true, formatter: 'preferredLanguage' },
-	{ label: "Created",     key: "created",            sortable: true },
-	{ label: "PAS",   key: "preservation_state", sortable: true },
-	{ label: "State",   key: "published",          sortable: true },
-	{ label: "",     key: "actions",            sortable: false },
+	{
+		label: "Details",
+		key: "tree_actions",
+		sortable: false,
+	},
+	{
+		label: "Dataset",
+		key: "title",
+		sortable: true,
+		formatter: 'preferredLanguage'
+	},
+	{
+		label: "Created",
+		key: "created",
+		sortable: true
+	},
+	{
+		label: "PAS",
+		key: "preservation_state",
+		sortable: true
+	},
+	{
+		label: "",
+		key: "actions",
+		sortable: false
+	},
 ]
 
 function getApiError(error) {
