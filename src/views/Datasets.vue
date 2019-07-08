@@ -51,7 +51,7 @@
 				</b-button-toolbar>
 			</template>
 			<template slot="published" slot-scope="row">
-				<div class="dataset-row-publish-status">
+				<div class="dataset-row-publish-status" @click.stop="editDataset(row.item)">
 					<font-awesome-icon icon="circle" class="text-primary" v-if="row.item.published && !isItemPublishedAndHasUpdates(row.item)" />
 					<font-awesome-icon icon="circle" class="text-warning" v-else-if="row.item.published && isItemPublishedAndHasUpdates(row.item)" />
 					<font-awesome-icon icon="circle" class="text-success" v-else />
@@ -61,17 +61,20 @@
 				<span v-b-tooltip.hover.auto :title="data.item.uid">{{ data.item.owner }}</span>
 			</template>
 			<template slot="preservation_state" slot-scope="data">
-				<preservation-state :state="data.item.preservation_state"/>
+				<preservation-state :state="data.item.preservation_state" />
 			</template>
 			<template slot="created" slot-scope="row">
-				{{ friendlyDate(row.item.created) }} ago
-				<p class="text-muted"><small>{{ readableIso(row.item.created) }}</small></p>
+				<p class="text-muted" @click.stop="editDataset(row.item)">
+					{{ friendlyDate(row.item.created) }} ago<br />
+					<small>{{ readableIso(row.item.created) }}</small>
+				</p>
 			</template>
 			<template slot="title" slot-scope="row">
-				<h5 class="mb-1">{{ preferredLanguage(row.item.title) }}
+				<h5 class="mb-1" @click.stop="editDataset(row.item)">
+					{{ preferredLanguage(row.item.title) }}
 					<b-badge v-if="row.item.next !== null" variant="warning" class="old-version">Old version</b-badge>
 				</h5>
-				<p v-if="row.item.description" class="text-muted">
+				<p v-if="row.item.description" class="text-muted" @click.stop="editDataset(row.item)">
 					<small>{{ preferredLanguage(row.item.description) }}</small>
 				</p>
 			</template>
