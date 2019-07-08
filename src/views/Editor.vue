@@ -253,10 +253,6 @@ export default {
 				} else {
 					this.$root.showAlert("Publish failed!", "danger")
 				}
-				// TODO: consider updating Publish modal error boiler plate with this error message
-				//const errorMessage = `Publish failed, please check you have inserted all mandatory fields. Mandatory fields are: creator, description, access_rights and title. The error was: ${e}`
-				//this.$root.showAlert(errorMessage, "danger")
-				//this.$root.showAlert("Publish failed!", "danger")
 			} finally {
 				this.publishing = false
 			}
@@ -310,23 +306,12 @@ export default {
 				this.$router.replace({ name: 'editor', params: { id: "new" }})
 			})
 		},
-		/* not used atm due to not working
-		createCloneRecord() {
-			this.loading = true
-			this.$nextTick(() => {
-				this.cloneCurrentRecord()
-				this.initDataset()
-				this.loading = false
-			})
-		},
-		*/
 		initDataset() {
 			if (this.selectedSchema !== null) {
 				this.$store.commit('loadSchema', this.selectedSchema.schema)
 				this.$store.commit('loadHints', this.selectedSchema.ui)
 			}
 		},
-
 		clearRecord() {
 			this.isDataChanged = false
 			this.qvainData = null
@@ -363,6 +348,12 @@ export default {
 				this.$store.commit('setMetadata', { id, schemaId: this.selectedSchema.id })
 				this.qvainData = data
 			} catch (error) {
+				if (error.response && error.response.status == 401) {
+					// there was a permission error
+					// we should redirect the user to login
+					await this.$auth.logoutDueSessionTimeout()
+					this.$router.push({name: "home", params: {missingToken: true}})
+				}
 				console.log(error)
 			} finally {
 				this.loading = false
