@@ -200,12 +200,6 @@
 		}
 	}
 
-	.b-table-details {
-		.btn-toolbar {
-			margin-left: 5em;
-		}
-	}
-
 </style>
 
 <script>
