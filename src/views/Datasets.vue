@@ -1,23 +1,20 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
 	<b-container fluid>
-		<h1 class="component-title">My datasets</h1>
+		<h1 class="component-title">Datasets</h1>
 
 		<!-- controls -->
 		<b-button-toolbar class="mb-4 tool-bar">
 			<b-button-group class="filter-buttons" size="sm">
-				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'all'" @click="() => showDatasetState = 'all'" variant="outline-success" v-b-tooltip.hover.bottom title="show draft datasets">All</b-btn>
-				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'draft'" @click="() => showDatasetState = 'draft'" variant="outline-success" v-b-tooltip.hover.bottom title="show draft datasets">Draft</b-btn>
-				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'published'" @click="() => showDatasetState = 'published'" variant="outline-success" v-b-tooltip.hover.bottom title="show published datasets">Published</b-btn>
+				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'all'" @click="() => showDatasetState = 'all'" variant="secondary">All</b-btn>
+				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'draft'" @click="() => showDatasetState = 'draft'" variant="success">Draft</b-btn>
+				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'published'" @click="() => showDatasetState = 'published'" variant="primary">Published</b-btn>
+				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'unpublishedchanges'" @click="() => showDatasetState = 'unpublishedchanges'" variant="warning">Unpublished Changes</b-btn>
 			</b-button-group>
 
-			<b-input-group class="search" size="sm" v-b-tooltip.hover.bottom title="Search from titles" prepend="Search">
-				<b-form-input v-model="filterString" placeholder="title" />
+			<b-input-group class="search" size="sm" prepend="Search">
+				<b-form-input v-model="filterString" placeholder="type here to search" />
 			</b-input-group>
-
-			<b-button-group class="new-record" size="sm">
-				<b-btn class="new-record__button" variant="primary" @click="createNewRecord">Create new record</b-btn>
-			</b-button-group>
 		</b-button-toolbar>
 
 		<!-- alerts -->
@@ -40,11 +37,10 @@
 				:tbody-transition-props="{'name': 'datasets-flip'}">
 
 			<template slot="published" slot-scope="row">
-				<div :style="{ 'display': 'inline-flex' }">
-					<font-awesome-icon icon="circle" class="text-success text-small text-center fa-xs" style="margin: 3px;" fixed-width v-if="row.item.published" />
-					<font-awesome-icon icon="circle" class="text-light text-small text-center fa-xs" style="color: #abcdef !important; margin: 3px;" fixed-width v-else />
-					<p v-if="row.item.published">Published</p>
-					<p v-else>Draft</p>
+				<div class="dataset-row-publish-status">
+					<font-awesome-icon icon="circle" class="text-primary" v-if="row.item.published && !isItemPublishedAndHasUpdates(row.item)" />
+					<font-awesome-icon icon="circle" class="text-warning" v-else-if="row.item.published && isItemPublishedAndHasUpdates(row.item)" />
+					<font-awesome-icon icon="circle" class="text-success" v-else />
 				</div>
 			</template>
 			<template slot="owner" slot-scope="data">
@@ -54,13 +50,14 @@
 				<preservation-state :state="data.item.preservation_state"/>
 			</template>
 			<template slot="created" slot-scope="row">
-				{{ readableIso(row.item.created) }} <p style="margin-bottom: 0px;" class="text-muted"><small>{{ friendlyDate(row.item.created) }} ago</small></p>
+				{{ friendlyDate(row.item.created) }} ago
+				<p style="margin-bottom: 0px;" class="text-muted"><small>{{ readableIso(row.item.created) }}</small></p>
 			</template>
 			<template slot="title" slot-scope="row">
 				<h5 class="mb-1">{{ preferredLanguage(row.item.title) }}
 					<b-badge v-if="row.item.next !== null" variant="warning" class="old-version">Old version</b-badge>
 				</h5>
-				<p v-if="row.item.description" class="text-muted" style="display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 24rem; margin: 0px;">
+				<p v-if="row.item.description" class="text-muted">
 					<small>{{ preferredLanguage(row.item.description) }}</small>
 				</p>
 			</template>
@@ -84,6 +81,9 @@
 					<b-button variant="primary" size="sm" @click.stop="editDataset(row.item)"><font-awesome-icon icon="pen" fixed-width />Edit</b-button>
 				</div>
 			</template>
+            <div slot="table-busy" class="text-center text-primary my-2">
+                <b-spinner class="align-middle"></b-spinner>
+            </div>
 		</b-table>
 
 		<!-- modals -->
@@ -116,6 +116,36 @@
 	.row-card-alt-actions {
 		float: right
 	}
+
+	.table td:nth-child(2), .table td:nth-child(2) p {
+		text-align: left !important ;
+		vertical-align: middle !important;
+
+		.text-muted {
+			margin-bottom: 0;
+		}
+	}
+
+	.table td:nth-child(2) h5 {
+		font-weight: 300 !important;
+	}
+
+	.table td:nth-child(2) p {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		max-width: 24rem;
+	}
+
+	.table td:nth-child(1) {
+		div {
+			text-align: center !important ;
+			vertical-align: middle !important;
+			p {
+				margin-bottom: 0;
+			}
+		}
+	}
 </style>
 
 <style>
@@ -134,10 +164,17 @@
 		border-bottom: 0px;
 		border-top: 0px;
 	}
+
 	table#dataset-list tbody > tr > td {
 		border-top: 0px;
 	}
 
+	table#dataset-list.table-striped tbody tr:focus {
+		box-shadow: none !important;
+	}
+	.b-table-row-selected td, .b-table-row-selected {
+		background-color: rgba(0, 0, 0, 0.05)!important;
+	}
 </style>
 
 <script>
@@ -194,6 +231,7 @@ export default {
 	},
 	methods: {
 		async fetchDataset() {
+			this.isBusy = true
 			try {
 				this.error = null
 				const { data } = await apiClient.get("/datasets/")
@@ -206,8 +244,16 @@ export default {
 				})
 				this.datasetList = data
 			} catch (e) {
+				if (e.response.status == 401) {
+					// there was a permission error
+					// we should redirect the user to login
+					await this.$auth.logoutDueSessionTimeout()
+					this.$router.push({name: "home", params: {missingToken: true}})
+				}
 				this.error = getApiError(e)
 				this.datasetList = []
+			} finally {
+				this.isBusy = false
 			}
 		},
 		editDataset(item) {
@@ -221,6 +267,7 @@ export default {
 			e.stopPropagation();
 		},
 		async del() {
+			this.isBusy = true
 			this.error = null
 			try {
 				await apiClient.delete("/datasets/" + this.itemToBeDeleted)
@@ -228,8 +275,16 @@ export default {
 
 				await this.fetchDataset()
 				this.$refs.datasetTable.refresh()
-			} catch(e) {
+			} catch (e) {
+				if (e.response.status == 401) {
+					// there was a permission error
+					// we should redirect the user to login
+					await this.$auth.logoutDueSessionTimeout()
+					this.$router.push({name: "home", params: {missingToken: true}})
+				}
 				this.error = getApiError(e)
+			} finally {
+				this.isBusy = false
 			}
 		},
 		view(extid) {
@@ -253,8 +308,9 @@ export default {
 		},
 		filterState(item) {
 			return this.showDatasetState === 'all' ||
-				(this.showDatasetState === 'published' && item.published) ||
-				(this.showDatasetState === 'draft' && !item.published)
+				(this.showDatasetState === 'published' && item.published && !this.isItemPublishedAndHasUpdates(item)) ||
+				(this.showDatasetState === 'draft' && !item.published) ||
+				(this.showDatasetState === 'unpublishedchanges' && this.isItemPublishedAndHasUpdates(item) )
 		},
 		filterTitles(item) {
 			if (!this.filterString) return true // don't filter null.toString()
@@ -268,6 +324,9 @@ export default {
 			const test = regex.test(this.preferredLanguage(item.title))
 			regex.lastIndex = 0
 			return test
+		},
+		isItemPublishedAndHasUpdates: function(item) {
+			return item && item.published && (item.modified > item.synced)
 		},
 		refresh() {
 			this.$refs.datasetTable.refresh()
@@ -292,6 +351,7 @@ export default {
 		filterRegExp() {
 			return new RegExp('.*' + this.filterString + '.*', 'ig')
 		},
+
 	},
 	async created() {
 		await this.fetchDataset()

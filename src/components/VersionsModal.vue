@@ -53,29 +53,31 @@ export default {
 		},
 		save: function() {
 		},
-		fetch(dataset) {
+		fetch: async function(dataset) {
 			if (!dataset) {
 				return
 			}
 
-			let vm = this
-
 			this.versions = []
-			vm.error = null
+			this.error = null
 
-			console.log("calling API for dataset", dataset)
-			apiClient.get(`/datasets/${dataset}/versions`)
-				.then(response => {
-					console.log("reponse:", response.data)
-					if (!Array.isArray(response.data)) {
-						throw "invalid response from API: expected array"
-					}
-					vm.versions = response.data.reverse()
-				})
-				.catch(error => {
-					console.log("in catch block", error)
-					vm.error = error.response && error.response.data && error.response.data.msg ? error.response.data.msg : (error.message || error || "").toLowerCase()
-				})
+			try {
+				const response = await apiClient.get(`/datasets/${dataset}/versions`)
+				if (!Array.isArray(response.data)) {
+					throw "invalid response from API: expected array"
+				}
+				this.versions = response.data.reverse()
+			} catch (error) {
+				if (error.response.status == 401) {
+					// there was a permission error
+					// we should redirect the user to login
+					await this.$auth.logoutDueSessionTimeout()
+					this.$router.push({name: "home", params: {missingToken: true}})
+				}
+				this.error = error.response && error.response.data && error.response.data.msg ? error.response.data.msg : (error.message || error || "").toLowerCase()
+			} finally {
+				// left empty
+			}
 		},
 		friendlyDate: function(iso) {
 			// TODO: locale
