@@ -25,7 +25,6 @@
 				ref="datasetTable"
 				:items="datasetList"
 				:fields="fields"
-				
 				striped
 				:tbody-tr-class="rowClass"
 				filter="truthy value"
@@ -111,9 +110,9 @@
 					</b-button-group>
 				</b-button-toolbar>
 			</template>
-            <div slot="table-busy" class="text-center text-primary my-2">
-                <b-spinner class="align-middle"></b-spinner>
-            </div>
+			<div slot="table-busy" class="text-center text-primary my-2">
+				<b-spinner class="align-middle"></b-spinner>
+			</div>
 		</b-table>
 
 		<!-- modals -->
@@ -280,12 +279,7 @@ export default {
 			this.$router.push({ name: 'editor', params: { id: item.id }})
 		},
 		clickedRow(item) {
-			console.log(item)
 			item._showDetails = !item._showDetails
-		},
-		doNothing(e) {
-			e.preventDefault();
-			e.stopPropagation();
 		},
 		async del() {
 			this.isBusy = true
