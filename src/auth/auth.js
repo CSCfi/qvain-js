@@ -63,8 +63,8 @@ function filterGroups(prefix, groups) {
 	// strip until last dot
 	//return groups.filter(grp => grp.startsWith(prefix).map(grp => grp.substring(grp.indexOf(":")+1))
 
-	// remove prefix and accept numbers only
-	return groups.filter(grp => grp.startsWith(prefix)).map(grp => grp.substring(prefix.length)).filter(grp => !isNaN(grp))
+	// remove prefix
+	return groups.filter(grp => grp.startsWith(prefix)).map(grp => grp.substring(prefix.length))
 }
 
 function Auth(loginUrl, logoutUrl, sessionsUrl) {

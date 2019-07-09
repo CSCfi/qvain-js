@@ -275,7 +275,7 @@ export default {
 			} catch (e) {
 				// check if we got an api error for the modal, else show a generic error message
 				console.log("publish error:", e, Object.keys(e))
-				if (e.response.status == 401) {
+				if (e.response && e.response.status == 401) {
 					// there was a permission error
 					// we should redirect the user to login
 					await this.$auth.logoutDueSessionTimeout()
@@ -325,7 +325,7 @@ export default {
 				this.isDataChanged = false
 			} catch(error) {
 				this.$root.showAlert("Save failed!", "danger")
-				if (error.response.status == 401) {
+				if (error.response && error.response.status == 401) {
 					// there was a permission error
 					// we should redirect the user to login
 					await this.$auth.logoutDueSessionTimeout()
@@ -407,6 +407,7 @@ export default {
 				this.$store.commit('loadSchema', this.selectedSchema.schema)
 				this.$store.commit('loadHints', this.selectedSchema.ui)
 				this.$store.commit('setMetadata', { schemaId: this.selectedSchema.id })
+
 				this.startValidator()
 				this.checkTab()
 			} else {
