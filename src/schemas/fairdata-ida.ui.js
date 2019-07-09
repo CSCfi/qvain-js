@@ -702,8 +702,8 @@ export default {
 	'/properties/access_rights/properties/license': {
 		props: {
 			tabFormat: false,
-			showDelete: true
-		}
+			showDelete: true,
+		},
 	},
 	'/properties/access_rights/properties/license/*': {
 		props: {
@@ -728,7 +728,7 @@ export default {
 			'async': false,
 			'count': 100,
 			'grouped': false,
-			'labelNameInSchema': 'title'
+			'labelNameInSchema': 'title',
 		},
 		'placeholder': "– choose license –",
 		'title': "license",
