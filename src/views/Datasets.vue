@@ -57,7 +57,7 @@
 							<font-awesome-icon icon="history" fixed-width />Versions
 						</b-dropdown-item-button>
 
-						<b-dropdown-item-button :disabled="row.item.published" size="sm" variant="danger" @click="itemToBeDeleted = row.item.id" v-b-modal.deleteModal>
+						<b-dropdown-item-button size="sm" variant="danger" @click="itemToBeDeleted = row.item.id" v-b-modal.deleteModal>
 							<font-awesome-icon icon="trash" fixed-width />Delete
 						</b-dropdown-item-button>
 					</b-dropdown>
