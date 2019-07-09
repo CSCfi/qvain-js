@@ -2,83 +2,71 @@
 <template>
 	<record-field :required="required" :wrapped="true" :error="!isValid">
 		<title-component slot="title" :title="uiLabel" />
+		<small slot="help" class="text-muted">
+			{{ uiDescription }}
+		</small>
+		
 		<div slot="header-right" class="header__right">
 			<ValidationStatus :status="validationStatus" />
-			<InfoIcon :description="uiDescription"/>
 		</div>
 
 		<div slot="input">
-			<b-tabs class="tabs-nav" v-model="tabIndex" pills>
-				<b-tab v-for="key in languageKeys" :key="key" no-body title-link-class="tab-field-link">
+			<b-tabs class="tabs-nav" v-model="tabIndex" vertical pills justified nav-wrapper-class="col-3">
+				<b-tab v-for="key in languageKeys" :key="key">
 					<template slot="title">
-						{{ languages[key] }}
 						<delete-button @click="deleteLang(key)" />
+						{{ languages[key] }}
 					</template>
 
 					<b-form-textarea
 						class="textarea"
-						placeholder="Start typing!"
+						rows=6
+						:placeholder="'Start typing in ' + languages[key]"
 						:value="state[key]"
-						:id="'textarea-' + key"
+						:id="property + '_textarea-' + key"
 						:ref="'textarea-tab-' + key"
 						@input="v => changeText(key, v)">
 					</b-form-textarea>
 				</b-tab>
 
-				<template slot="tabs" v-if="languageKeys.length > 0">
-					<div> <!-- this div makes the tab stay on first line -->
-						<language-select ref="langSelect"
-							class="lang-select-tab"
-							v-model="selectedLanguage"
-							@keyup.enter.native="lang => selectedLanguage = lang">
-						</language-select>
-					</div>
-				</template>
-
 				<div slot="empty">
 					<p class="intro-text">
 						Start by selecting the language. You may add as many languages as you wish by clicking them from the dropdown below.
 					</p>
-					<div class="language-row">
-						<language-select class="input-width" @change="addTab" />
-					</div>
 				</div>
 			</b-tabs>
+			<div class="row">
+				<language-select
+					class="col lang-select-tab"
+					ref="langSelect"
+					:id="property + '_language-select'"
+					@change="userRequestedNewLanguage">	
+				</language-select>
+			</div>
+			
 		</div>
 	</record-field>
 </template>
 
 <style lang="scss" scoped>
 .lang-select-tab {
-	height: 40px;
-	margin-left: 10px;
-}
-.textarea {
-	min-height: 100px;
-	overflow: hidden;
-	resize: none;
-    background-image: linear-gradient(white, white 30px, #ccc 30px, #ccc 31px, white 31px);
-    background-size: 100% 31px;
-    border: 0px solid #ccc;
-    border-radius: 8px;
-    line-height: 31px;
-    font-family: Arial, Helvetica, Sans-serif;
-    padding: 8px;
+	margin-top: 1em;
+	margin-bottom: 0;
 }
 
 .intro-text {
 	text-align: center;
 }
-.language-row {
-	display: inline-flex;
-	justify-content: space-around;
-	width: 100%;
-	border: 0;
 
-	.input-width {
-		width: 220px;
+.card-body {
+	padding: 0 !important;
+	height: auto;
+	textarea {
+		height: auto;
 	}
 }
+
+
 </style>
 
 
@@ -111,7 +99,6 @@ export default {
 		return {
 			languages: langCodes2,
 			tabIndex: 0,
-			selectedLanguage: null,
 			state: {},
 		}
 	},
@@ -129,6 +116,10 @@ export default {
 		},
 	},
 	methods: {
+		userRequestedNewLanguage: function(lang) {
+			this.addLanguage(lang)
+			this.focusOnLastTab()
+		},
 		changeText(key, value) {
 			const el = this.$refs['textarea-tab-' + key][0].$el
 			autosize(el)
@@ -136,18 +127,14 @@ export default {
 			this.$set(this.state, key, value)
 			this.updateValue()
 		},
-		addTab(lang) {
+		addLanguage(lang) {
 			if (lang in this.state) {
-				this.focusOnTabWithLanguage(lang)
 				return
 			}
 			this.$set(this.state, lang, '')
-			this.updateValue()
-			this.focusOnLastTab()
 		},
 		deleteLang(lang) {
 			this.$delete(this.state, lang)
-			this.updateValue()
 		},
 		updateValue() {
 			this.$store.commit('updateValue', {
@@ -188,27 +175,19 @@ export default {
 		populateLanguages(languages) {
 			for (const lang in languages) {
 				if (languages[lang]) {
-					this.addTab(lang)
+					this.addLanguage(lang)
 				}
 			}
 		},
 	},
 	watch: {
-		selectedLanguage(lang) {
-			if (!lang) {
-				return
-			}
-			this.addTab(lang)
-		},
 		"$store.state.languages": function(languages) {
 			this.populateLanguages(languages)
 		},
-
 	},
 	created() {
 		this.state = this.value || {}
 		this.populateLanguages(this.$store.state.languages)
-		this.focusOnTabWithLanguage(this.$store.state.defaultDescriptionLang)
 	},
 }
 </script>

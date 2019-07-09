@@ -2,7 +2,7 @@
 <template>
 	<div>
 		<transition name="slideinout" appear>
-		<b-alert :show="$root.dismissCountDown" style="z-index: 1000; position: fixed; top: 1rem; left: 0; right: 0; width: 90%; margin: 0 auto; opacity: 0.90;" dismissible :variant="$root.alertVariant" @dismissed="$root.dismissAlert" @dismiss-count-down="$root.countDownChanged">
+		<b-alert id="root_alert" :show="$root.dismissCountDown" style="z-index: 1000; position: fixed; top: 1rem; left: 0; right: 0; width: 90%; margin: 0 auto; opacity: 0.90;" dismissible :variant="$root.alertVariant" @dismissed="$root.dismissAlert" @dismiss-count-down="$root.countDownChanged">
 			<p>{{ $root.alertText }}</p>
 		</b-alert>
 		</transition>
@@ -35,28 +35,27 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 
 
 				<!-- right-aligned items -->
-				<b-navbar-nav class="ml-auto right-nav-items" v-if="$auth.loading.state">
-					<b-nav-text class="user-nav load-placeholder" key="user-loading">
+				<b-navbar-nav id="usermenu" class="ml-auto right-nav-items" >
+					<b-nav-text v-if="$auth.loading.state" class="user-nav load-placeholder" key="user-loading">
 						<font-awesome-icon icon="circle-notch" spin />
 					</b-nav-text>
-				</b-navbar-nav>
 
-				<b-navbar-nav class="ml-auto right-nav-items" v-else-if="$auth.loggedIn">
-					<b-button-group>
-						<b-button variant="primary" to="/userinfo">
-							<font-awesome-icon icon="user" class="text-light mr-2" fixed-width /> <a>{{ $auth.user.name }}</a>
+					<b-button-group v-else>
+						<b-button v-if="$auth.loggedIn" id="usermenu_userinfo" variant="primary" to="/userinfo" >
+							<font-awesome-icon icon="user" class="text-light mr-2" fixed-width /> <a id="usermenu_fullname">{{ $auth.user.name }}</a>
 						</b-button>
-						<b-button variant="primary" @click="logout()">
+
+						<b-button v-if="$auth.loggedIn || $auth.getLoginError()" id="usermenu_signout" variant="primary" @click="logout()">
 							<font-awesome-icon icon="sign-out-alt" />
+							&nbsp;
 							Sign out
 						</b-button>
+						<b-button v-else id="usermenu_login" class="user-nav" key="user-login" variant="primary" :href="$auth.loginUrl">
+							<font-awesome-icon icon="sign-in-alt" />
+							&nbsp;
+							Login
+						</b-button>
 					</b-button-group>
-				</b-navbar-nav>
-				<b-navbar-nav class="ml-auto right-nav-items" v-else>
-					<b-button class="user-nav" key="user-login" variant="primary" :href="$auth.loginUrl">
-						<font-awesome-icon icon="sign-in-alt" />
-						Login
-					</b-button>
 				</b-navbar-nav>
 			</b-collapse>
 		</b-navbar>
@@ -68,10 +67,12 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 					<b-button-group class="editor-actions">
 						<b-button v-if="isActiveRoute('datasets') && isDraftActive && !isEditActive" key="continue_draft" variant="primary" size="sm" to="/dataset/edit">
 							<font-awesome-icon icon="backward" />
+							&nbsp;
 							Unsaved dataset
 						</b-button>
 						<b-button v-if="isActiveRoute('datasets') && isEditActive" key="continue_edit" variant="primary" size="sm" :to="continueEditUrl">
 							<font-awesome-icon icon="backward" />
+							&nbsp;
 							{{ editTitle }}
 						</b-button>
 					</b-button-group>
@@ -81,18 +82,27 @@ Weekdays from 8:30 AM to 4 PM" href="mailto:servicedesk@csc.fi?subject=Fairdata%
 					<b-button v-if="isNotActiveRoute('datasets')" size="sm" variant="primary" key="datasets" to="/datasets">
 						<span v-if="isActiveRoute('home')">
 							<font-awesome-icon icon="table" />
+							&nbsp;
 							Datasets
 						</span>
 						<span v-else >
 							<font-awesome-icon icon="backward" />
+							&nbsp;
 							Datasets
 						</span>
 					</b-button>
 				</b-navbar-nav>
 				<b-navbar-nav class="ml-auto">
 					<b-button-group class="page-actions">
-						<b-button v-if="isActiveRoute('datasets') || isActiveRoute('home') || isActiveRoute('new') || isActiveRoute('edit') " key="new" variant="success" size="sm" to="/dataset/new">
+						<b-button
+							id="button-new-dataset"
+							v-if="isActiveRoute('datasets') || isActiveRoute('home') || isActiveRoute('new') || isActiveRoute('edit')"
+							key="new"
+							:variant="isActiveRoute('new') || isActiveRoute('edit') ? 'primary' : 'success'"
+							size="sm"
+							to="/dataset/new">
 							<font-awesome-icon icon="plus" />
+							&nbsp;
 							New dataset
 						</b-button>
 					</b-button-group>
