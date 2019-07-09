@@ -45,6 +45,17 @@
 					</b-button-group>
 				</b-button-toolbar>
 			</template>
+			<template slot="actions" slot-scope="row">
+				<b-button-group size="sm" class="mr-1">
+					<b-button
+						:variant="row.item.identifier == null ? 'outline-secondary' : 'primary'"
+						@click.stop="view(row.item.identifier)"
+						:disabled="row.item.identifier == null">
+						<font-awesome-icon icon="external-link-alt" fixed-width />
+						Etsin
+					</b-button>
+				</b-button-group>
+			</template>
 			<template slot="owner" slot-scope="data">
 				<span v-b-tooltip.hover.auto :title="data.item.uid">{{ data.item.owner }}</span>
 			</template>
