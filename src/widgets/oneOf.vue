@@ -3,13 +3,15 @@
 	<wrapper :id="property + '_oneOf'" :wrapped="!inArray">
 		<template v-if="!both">
 			<div v-if="chosen === null" class="conditional-wrapper">
-				<b-dropdown class="m-2" text="Choose type" variant="primary">
-					<b-dropdown-item v-for="(sub, i) in schema['oneOf']"
+				<b-button-group>
+					<b-button
+						v-for="(sub, i) in schema['oneOf']"
+						variant="primary"
 						:key="'oneOfSel' + i"
 						@click="setChosen(i)">
-						{{ sub['title'] || '#'+i }}
-					</b-dropdown-item>
-				</b-dropdown>
+							{{ sub['title'] || '#'+i }}
+					</b-button>
+				</b-button-group>
 			</div>
 			<b-textarea v-if="false" :rows="15" :value="JSON.stringify(schemaForChosen, null, 2)"></b-textarea>
 			<TabSelector
@@ -46,8 +48,9 @@
 .conditional-wrapper {
 	width: 100%;
 	display: inline-flex;
-	justify-content: center;
+	justify-content: left;
 }
+
 </style>
 
 

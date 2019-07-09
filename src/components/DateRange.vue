@@ -1,16 +1,42 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<div>
-		<legend class="col-form-label pt-0">{{ title }}</legend>
-		<div class="wrapper">
-			<p>Select time range:</p>
-			<datepicker placeholder="From" class="widget ml-2" :disabledDates="disableBefore" v-model="start"></datepicker>
-			<p class="ml-2">-</p>
-			<datepicker placeholder="To" class="widget ml-2" :disabledDates="disableAfter" v-model="end"></datepicker>
-			<delete-button v-if="inArray" @click="$emit('delete', property)"/>
-		</div>
-		<div>
-			<p v-if="start && end" class="ml-2">Time between the two dates: {{timeBetweenString}}</p>
+	<div
+		class="container datepicker-container"
+		:id="property">
+		<div class="row">
+			<div class="col-sm-1">
+				#{{ property + 1 }}
+			</div>
+			<div class="col">
+				<datepicker
+					:highlighted="highlightedSelected"
+					:inline="false"
+					bootstrapStyling
+					monday-first
+					typeable
+					placeholder="From"
+					format="dd.MM.yyyy"
+					:disabledDates="disableBefore"
+					v-model="start">
+				</datepicker>
+			</div>
+			<div class="col">
+				<datepicker
+					:highlighted="highlightedSelected"
+					:inline="false"
+					monday-first
+					bootstrapStyling
+					typeable
+					format="dd.MM.yyyy"
+					placeholder="To"
+					:disabledDates="disableAfter"
+					v-model="end">
+				</datepicker>
+			</div>
+			<div class="col">
+				<delete-button v-if="inArray" @click="$emit('delete', property)"/>
+			</div>
+
 		</div>
 	</div>
 
@@ -58,6 +84,12 @@ export default {
 		endDateISO() {
 			return this.end ? this.end.toISOString() : null
 		},
+		highlightedSelected() {
+			return {
+				from: this.start,
+				to: this.end
+			}
+		},
 	},
 	methods: {
 		updateValue() {
@@ -81,23 +113,8 @@ export default {
 }
 </script>
 
-
 <style lang="scss" scoped>
-	.wrapper {
-		display: inline-flex;
-
-		> p {
-			margin: 0;
-			display: flex;
-			align-items: center;
-		}
-	}
-</style>
-
-<style lang="scss">
-	.widget.vdp-datepicker div input {
-		border-radius: 5px;
-		border: 1px solid #ced4da;
-		padding: 0.375rem 0.75rem;
+	.datepicker-container .row:last-child {
+		margin-top: 1em;
 	}
 </style>
