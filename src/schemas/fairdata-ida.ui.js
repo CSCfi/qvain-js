@@ -644,7 +644,7 @@ export default {
 	},
 	'/properties/access_rights': {
 		'tab': 'rights',
-		'title': "Access rights",
+		'title': true,
 		'description': "*** description for access rights goes here ***",
 		'ignored': [
 			"description",
@@ -652,6 +652,10 @@ export default {
 			"access_url",
 		],
 		'order': ["license", "access_type", "restriction_grounds", "available"],
+		'props': {
+			'title': false,
+			'wrapped': true,
+		},
 	},
 	'/properties/access_rights/properties/access_type': {
 		'widget': 'reference-data',
@@ -663,6 +667,7 @@ export default {
 			'async': false,
 			'count': 100,
 			'grouped': false,
+			'wrapped': true,
 		},
 		'placeholder': "– choose access type –",
 		'title': "access type",
@@ -676,6 +681,9 @@ export default {
 		'visible': record => record.access_rights.access_type &&
 			record.access_rights.access_type.identifier === 'http://uri.suomi.fi/codelist/fairdata/access_type/code/embargo',
 		'description': "Date when the resource (the data in this dataset) became or will become available (embargo related field).",
+		'props': {
+			'wrapped': true,
+		},
 	},
 	'/properties/access_rights/properties/restriction_grounds': {
 		'widget': 'reference-data',
@@ -687,6 +695,7 @@ export default {
 			'async': false,
 			'count': 100,
 			'grouped': false,
+			'wrapped': true,
 		},
 		'placeholder': "– choose restriction grounds –",
 		'title': "restriction grounds",
@@ -738,6 +747,7 @@ export default {
 			'count': 100,
 			'grouped': false,
 			'labelNameInSchema': 'title',
+			'wrapped': true,
 		},
 		'placeholder': "– choose license –",
 		'title': "license",

@@ -26,6 +26,7 @@
 				:items="datasetList"
 				:fields="fields"
 				striped
+				hover
 				:tbody-tr-class="rowClass"
 				filter="truthy value"
 				:filter-function="filter"
@@ -48,7 +49,7 @@
 			<template slot="actions" slot-scope="row">
 				<b-button-group size="sm" class="mr-1">
 					<b-button
-						:variant="row.item.identifier == null ? 'outline-secondary' : 'primary'"
+						:variant="row.item.identifier == null ? 'outline-secondary' : 'info'"
 						@click.stop="view(row.item.identifier)"
 						:disabled="row.item.identifier == null">
 						<font-awesome-icon icon="external-link-alt" fixed-width />
@@ -63,13 +64,13 @@
 				<preservation-state :state="data.item.preservation_state" />
 			</template>
 			<template slot="created" slot-scope="row">
-				<p class="text-muted" @click.stop="editDataset(row.item)">
+				<p class="text-muted pointer" @click.stop="editDataset(row.item)">
 					{{ friendlyDate(row.item.created) }} ago<br />
 					<small>{{ readableIso(row.item.created) }}</small>
 				</p>
 			</template>
 			<template slot="title" slot-scope="row">
-				<h5 class="mb-1" @click.stop="editDataset(row.item)">
+				<h5 class="mb-1 pointer" @click.stop="editDataset(row.item)">
 					<span class="dataset-row-publish-status" @click.stop="editDataset(row.item)">
 						<font-awesome-icon icon="circle" class="text-primary" v-if="row.item.published && !isItemPublishedAndHasUpdates(row.item)" />
 						<font-awesome-icon icon="circle" class="text-warning" v-else-if="row.item.published && isItemPublishedAndHasUpdates(row.item)" />
@@ -78,7 +79,7 @@
 					{{ preferredLanguage(row.item.title) }}
 					<b-badge v-if="row.item.next !== null" variant="warning" class="old-version">Old version</b-badge>
 				</h5>
-				<p v-if="row.item.description" class="text-muted" @click.stop="editDataset(row.item)">
+				<p v-if="row.item.description" class="text-muted pointer" @click.stop="editDataset(row.item)">
 					<small>{{ preferredLanguage(row.item.description) }}</small>
 				</p>
 			</template>
@@ -86,7 +87,7 @@
 				<b-button-toolbar key-nav>
 					<b-button-group size="sm" class="mr-1">
 						<b-button
-							variant="primary"
+							:variant="isItemPublishedAndHasUpdates(row.item) ? 'warning' : 'success'"
 							@click.stop="editDataset(row.item)">
 							<font-awesome-icon icon="pen" fixed-width />
 							Edit
@@ -94,16 +95,17 @@
 					</b-button-group>
 					<b-button-group size="sm" class="mr-1">
 						<b-button
-							v-if="!row.item.published || isItemPublishedAndHasUpdates(row.item)"
-							variant="success"
+							:disabled="row.item.published && !isItemPublishedAndHasUpdates(row.item)"
+							:variant="row.item.published && !isItemPublishedAndHasUpdates(row.item) ? 'outline-secondary' : 'primary'"
 							@click="itemToBePublished = row.item"
 							v-b-modal.publishModal>
+							<font-awesome-icon :icon="publishing ? 'spinner' : 'upload'" :spin="publishing" />
 							Publish
 						</b-button>
 					</b-button-group>
 					<b-button-group size="sm" class="mr-1">
 						<b-button
-							:variant="row.item.identifier == null ? 'outline-secondary' : 'primary'"
+							:variant="row.item.identifier == null ? 'outline-secondary' : 'info'"
 							@click.stop="view(row.item.identifier)"
 							:disabled="row.item.identifier == null">
 							<font-awesome-icon icon="external-link-alt" fixed-width />
@@ -237,6 +239,7 @@
 		}
 	}
 
+
 </style>
 
 <script>
@@ -315,6 +318,7 @@ export default {
 			itemToBeDeleted: null,
 			itemToBePublished: null,
 			publishing: false,
+			deleting: false,
 		}
 	},
 	methods: {
@@ -354,11 +358,11 @@ export default {
 		async publish() {
 			if (this.publishing) { return }
 			this.publishing = true
+			this.isBusy = true
 			this.error = null
 			this.publishError = null
 			try {
 				await apiClient.post("/datasets/" + this.itemToBePublished.id + "/publish", {})
-				this.$root.showAlert("successfully published " + this.preferredLanguage(this.itemToBePublished.title) + " dataset", "success")
 				await this.fetchDataset()
 				this.$refs.datasetTable.refresh()
 			} catch (e) {
@@ -371,15 +375,18 @@ export default {
 				}
 			} finally {
 				this.publishing = false
+				this.isBusy = false
 			}
 		},
 
 		async del() {
+			if (this.deleting) { return }
 			this.isBusy = true
+			this.deleting = true
 			this.error = null
 			try {
 				await apiClient.delete("/datasets/" + this.itemToBeDeleted.id)
-				this.$root.showAlert("Successfully deleted dataset", "success")
+				//this.$root.showAlert("Successfully deleted dataset", "success")
 
 				await this.fetchDataset()
 				this.$refs.datasetTable.refresh()
@@ -393,6 +400,7 @@ export default {
 				this.error = getApiError(e)
 			} finally {
 				this.isBusy = false
+				this.deleting = false
 			}
 		},
 		view(extid) {

@@ -1,92 +1,104 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<div class="container-fluid limited-width">
-		<h1 class="component-title">
-			Dataset
-			<small class="secondary-text text-muted" v-if="qvainData">
-				<span v-if="qvainData && qvainData.published && !isPublishedAndUpdateAvailable">
-					<font-awesome-icon icon="circle" class="fa-sm text-primary" />
-					&nbsp;
-					<small>Published</small>
-				</span>
-				<span v-else-if="isPublishedAndUpdateAvailable">
-					<font-awesome-layers class="fa-sm">
-						<font-awesome-icon icon="circle" class="text-warning" />
-					</font-awesome-layers>
-					&nbsp;
-					<small>Unpublished Changes</small>
-				</span>
-				<span v-else>
-					<font-awesome-icon icon="circle" class="fa-sm text-success" />
-					&nbsp;
-					<small>Draft</small>
-				</span>
-			</small>
-			<small class="secondary-text text-muted" v-else>
-				<span v-if="loading">
-					<font-awesome-icon icon="spinner" spin />
-				</span>
-				<span v-else>
-					<font-awesome-icon icon="circle" class="fa-sm text-danger" />
-					&nbsp;<small>Unsaved draft</small>
-				</span>
-			</small>
-			<small class="secondary-text text-muted" v-if="title">
-				{{ title }}
-			</small>
-		</h1>
-
-		<div>
-			<b-button-toolbar class="tool-bar" aria-label="Dataset toolbar">
-				<b-button-group size="sm" v-if="qvainData">
-					<b-button
-						id="editor_refresh_dataset"
-						:variant="reloadDatasetCounter > 0 ? 'danger' : 'secondary'"
-						@click="reloadDataset">
-						<font-awesome-icon :icon="loading ? 'spinner' : 'undo'" :spin="loading" />
-						&nbsp;
-						<span v-if="!loading">
-							{{ reloadDatasetTitle }}
+	<b-container id="editor-view">
+		<b-navbar sticky toggleable="sm" variant="light">
+			<b-container>
+				<b-row no-gutters>
+					<h4 class="component-title" v-if="!!selectedSchema">
+						<span v-if="title">
+							{{ title }}
 						</span>
-					</b-button>
-				</b-button-group>
-				<b-input-group size="sm" prepend="Where are my files">
-					<b-form-select id="editor_select_schema" value="fairdata" v-model="selectedSchema" :disabled="!!selectedSchema" @change="selectSchema">
-						<optgroup :label="bundle" v-for="(bundle, index) in bundles" :key="index">
-							<option :value="val" v-for="(val, id) in getSchemas(bundle)" :key="id">{{ val.name }}</option>
-						</optgroup>
-						<option v-if="selectedSchema === null" :value="null" hidden>Select one</option>
-					</b-form-select>
-				</b-input-group>
+						<span v-else>
+							(no title)
+						</span>
+						<span class="secondary-text text-muted">
+							<span >
+								{{ selectedSchema.title }}
+							</span>
+						</span>
+						<span class="secondary-text text-muted" v-if="qvainData">
+							<span v-if="qvainData && qvainData.published && !isPublishedAndUpdateAvailable">
+								<font-awesome-icon icon="circle" class="fa-sm text-primary" />
+								&nbsp;
+								<span>Published</span>
+							</span>
+							<span v-else-if="isPublishedAndUpdateAvailable">
+								<font-awesome-layers class="fa-sm">
+									<font-awesome-icon icon="circle" class="text-warning" />
+								</font-awesome-layers>
+								&nbsp;
+								<span>Unpublished Changes</span>
+							</span>
+							<span v-else>
+								<font-awesome-icon icon="circle" class="fa-sm text-success" />
+								&nbsp;
+								<span>Draft</span>
+							</span>
+						</span>
+						<span class="secondary-text text-muted" v-else>
+							<span v-if="loading">
+								<font-awesome-icon icon="spinner" spin />
+							</span>
+							<span v-else>
+								<font-awesome-icon icon="circle" class="fa-sm text-danger" />
+								&nbsp;<span>Unsaved draft</span>
+							</span>
+						</span>
 
-				<b-button-group size="sm" v-if="!loading && selectedSchema" class="save-pub-btns">
-					<b-button
-						id="editor_button_save_top"
-						:variant="isSaveDisabled ? 'outline-secondary' : 'success'"
-						@click="save"
-						:disabled="isSaveDisabled"
-						ref="dataset-save-button">
-						<font-awesome-icon :icon="saving ? 'spinner' : 'save'" :spin="saving" />
-						&nbsp;
-						Save
-					</b-button>
-				</b-button-group>
-				<b-button-group size="sm" v-if="!loading && selectedSchema" class="publish-pub-btns">
-					<b-button
-						id="editor_button_publish_top"
-						:variant="isPublishDisabled ? 'outline-secondary' : 'primary'"
-						v-b-modal.publishModal
-						:disabled="isPublishDisabled"
-						ref="dataset-publish-button">
-						<font-awesome-icon :icon="publishing ? 'spinner' : 'upload'" :spin="publishing" />
-						&nbsp;
-						Publish
-					</b-button>
-				</b-button-group>
+					</h4>
+				</b-row>
+				<b-navbar-toggle target="nav-collapse" class="navbar-toggler ml-auto"></b-navbar-toggle>
+			</b-container>
 
-			</b-button-toolbar>
-		</div>
-
+			<b-collapse id="nav-collapse" is-nav>
+				<b-container>
+					<b-row>
+						<b-col md="3">
+							<b-button
+								v-if="qvainData"
+								id="editor_refresh_dataset"
+								:variant="reloadDatasetCounter > 0 ? 'danger' : 'secondary'"
+								block
+								@click="reloadDataset">
+								<font-awesome-icon :icon="loading ? 'spinner' : 'undo'" :spin="loading" />
+								&nbsp;
+								<span v-if="!loading">
+									{{ reloadDatasetTitle }}
+								</span>
+							</b-button>
+						</b-col>
+						<b-col>
+							<b-button
+								v-if="!loading && selectedSchema" 
+								id="editor_button_save_top" 
+								:variant="isSaveDisabled ? 'outline-secondary' : 'success'"
+								@click="save"
+								:disabled="isSaveDisabled"
+								block
+								ref="dataset-save-button">
+								<font-awesome-icon :icon="saving ? 'spinner' : 'save'" :spin="saving" />
+								&nbsp;
+								Save
+							</b-button>
+						</b-col>
+						<b-col>
+							<b-button
+								v-if="!loading && selectedSchema"
+								id="editor_button_publish_top"
+								:variant="isPublishDisabled ? 'outline-secondary' : 'primary'"
+								v-b-modal.publishModal
+								block
+								:disabled="isPublishDisabled"
+								ref="dataset-publish-button">
+								<font-awesome-icon :icon="publishing ? 'spinner' : 'upload'" :spin="publishing" />
+								&nbsp;
+								Publish
+							</b-button>
+						</b-col>
+					</b-row>
+				</b-container>
+			</b-collapse>
+		</b-navbar>
 
 		<b-alert variant="danger" :show="!!error" dismissible @dismissed="error=null"><i class="fas fa-ban"></i> API error: {{ error }}</b-alert>
 		<b-alert variant="warning"><font-awesome-icon icon="info"></font-awesome-icon> Publishing: I understand that publishing this dataset:</b-alert>
@@ -107,65 +119,78 @@
 		</b-modal>
 		<publish-modal ref="publishErrorModal" id="publishErrorModal" :error="publishError" @hidden="publishError = null"></publish-modal>
 
-		<div v-if="!loading">
-			<ul class="nav nav-tabs">
-				<!-- TODO: errors could be shown in tabs also -->
-				<li v-for="tab in tabs" :key="tab.uri" class="nav-item">
-					<router-link :id="'nav-link_' + tab.uri" class="nav-link" :to="`/dataset/${id}/${tab.uri}`">{{tab.label}}</router-link>
-				</li>
-			</ul>
+		<b-container>
+			<b-row no-gutters>
+				<b-col md="3" v-if="!!selectedSchema">
+					<b-nav class="sticky-top editor-index-navigation" vertical>
+						<b-nav-item v-for="tab in tabs" :key="tab.uri" :to="`/dataset/${id}/${tab.uri}`">
+							{{ tab.label }}
+						</b-nav-item>
+					</b-nav>
+				</b-col>
 
-			<div class="container-fluid no-padding my-3">
-				<router-view></router-view>
-			</div>
+				<b-col v-if="selectedSchema">
+					<router-view></router-view>
+				</b-col>
 
-			<b-container v-if="selectedSchema && !loading">
-				<b-row>
-					<b-button-group class="col">
-						<b-button
-							id="editor_button_save_bottom"
-							:variant="isSaveDisabled ? 'outline-secondary' : 'success'"
-							@click="save"
-							:disabled="isSaveDisabled"
-							ref="dataset-save-button">
-							<font-awesome-icon :icon="saving ? 'spinner' : 'save'" :spin="saving" />
-							&nbsp;
-							Save
-						</b-button>
-					</b-button-group>
-					<b-button-group class="col">
-						<b-button
-							:variant="isPublishDisabled ? 'outline-secondary' : 'primary'"
-							v-b-modal.publishModal
-							:disabled="isPublishDisabled"
-							ref="dataset-publish-button">
-							<font-awesome-icon :icon="publishing ? 'spinner' : 'upload'" :spin="publishing" />
-							&nbsp;
-							Publish
-						</b-button>
-					</b-button-group>
-				</b-row>
-			</b-container>
+				<b-col v-else-if="!loading" class="schema-help-text">
+					<b-container>
+						<b-row>
+							<b-col>
+								<h2 class="component-title">Where are your files related to this dataset?</h2>
+							</b-col>
+						</b-row>
+						<b-row class="mb-3">
+							<b-col>
+								<b-badge variant="warning">
+									<b>NOTE!</b>
+									You can <u>not</u> change the selected option after this step.
+								</b-badge>
+							</b-col>
+						</b-row>
+						<b-row class="mb-3">
+							<b-col>
+								<b-card-group deck v-model="selectedSchema" :key="index"
+										:title="bundle"
+										v-for="(bundle, index) in bundles">
+										<b-card
+											:id="id"
+											:title="val.title"
+											v-for="(val, id) in getSchemas(bundle)"
+											:key="id">
+											<b-card-text>
+												{{ val.description }}
+											</b-card-text>
+											<b-button
+												slot="footer"
+												@click="selectedSchema = val; selectSchema()"
+												variant="primary">
+												{{ val.name }}
+											</b-button>
+										</b-card>
+								</b-card-group>
+							</b-col>
+						</b-row>
+						<b-row>
+							<b-col>
+								<b-card-group>
+									<b-card>
+										<b-card-text>
+											<b-badge variant="info">
+												<b>Hint</b>
+											</b-badge>
+											You can also make descriptions without any files. In that case, please select either one. The selection cannot be re-done, so if you are not sure whether you'll add files later, select the one you think you'll need in the future.
+										</b-card-text>
+									</b-card>
+								</b-card-group>
+							</b-col>
+						</b-row>
+					</b-container>
+				</b-col>
+			</b-row>
+		</b-container>
 
-			<div v-else class="schema-help-text">
-				<p>Please select one option from "Where are my files" menu. Note that the selected option cannot be changed without creating a new dataset.</p>
-
-				<p>Where are your files related to this dataset?
-				<ul>
-				<li>In Fairdata IDA (you want to select files from IDA): "Select IDA files"</li>
-				<li>Somewhere else (you want to link files from remote location): "Link Remote Resources"</li>
-				</ul></p>
-
-				<p>
-					You can also make descriptions without any files. In that case, please select either one. The selection cannot be re-done, so if you are not sure whether you'll add files later, select the one you think you'll need in the future.
-				</p>
-			</div>
-		</div>
-		<div v-else>
-			<font-awesome-icon icon="spinner" spin />
-		</div>
-
-	</div>
+	</b-container>
 </template>
 
 <script>
@@ -237,7 +262,6 @@ export default {
 				const isExisting = !!this.$store.state.metadata.id
 				if (isExisting) {
 					const response = await apiClient.post("/datasets/" + this.$store.state.metadata.id + "/publish", {})
-					this.$root.showAlert("Dataset successfully published", "primary")
 					this.clearRecord() // clear editor dataset
 					this.$router.replace({ name: "datasets"}) // redirect to datasets page
 				} else {
@@ -278,7 +302,6 @@ export default {
 					await apiClient.put("/datasets/" + currentId, payload)
 					const { data } = await apiClient.get(`/datasets/${currentId}`)
 					this.qvainData = data
-					this.$root.showAlert("Dataset successfully saved", "primary")
 				} else {
 					const { data: { id }} = await apiClient.post("/datasets/", payload)
 					const { data } = await apiClient.get(`/datasets/${id}`)
@@ -513,31 +536,61 @@ export default {
 </style>
 
 <style lang="scss" scoped>
-.tool-bar {
-	padding-bottom: 10px;
-	margin: -2px -4px;
 
-	> * {
-		margin: 2px 4px;
-		flex: 1 1 auto;
+#editor-view .navbar {
+	flex-flow: wrap;
+	padding: 0;
+
+	.navbar-item {
+		flex-direction: row;
+		flex-wrap: wrap;
 	}
 
-	select {
-		padding-right: 1.5rem;
-	}
-
-	.save-pub-btns {
-		max-width: 20em;
-		margin-left: auto;
-		padding-left: 4px;
+	.btn-toolbar {
+		width: 100%;
+		.btn-group {
+			margin: 0;
+		}
 	}
 }
 
-.limited-width {
-	max-width: 1100px;
+#editor-view .bg-light {
+	background-color: #fff !important;
 }
 
-.schema-help-text {
-	padding: 20px;
+#editor-view {
+	margin: 0;
+	padding: 0;
+
 }
+
+
+h2.component-title {
+	font-weight: 300;
+	margin-bottom: 1em;
+}
+
+h1.component-title {
+	margin-bottom: 0;
+	.secondary-text {
+		font-size: 0.5em;
+		
+		display:inline-block;
+		//word-wrap: normal;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+}
+.router-link-active {
+	font-weight: 400;
+}
+
+.editor-index-navigation {
+	margin-top: 2em;
+	top: 8em;
+	z-index: 1000;
+	font-weight: 300;
+}
+
+
 </style>

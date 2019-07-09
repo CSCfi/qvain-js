@@ -1,7 +1,7 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<div>
-		<h1 class="component-title">About me</h1>
+	<b-container>
+		<h1 class="component-title">User Information</h1>
 
 		<b-form v-if="$auth.user" id="form-userinfo">
 			<b-form-group
@@ -68,11 +68,15 @@
 			<b-alert variant="secondary" show><p class="font-italic">You are not logged in.</p></b-alert>
 		</div>
 
-	</div>
+	</b-container>
 </template>
 <style scoped>
 	#form-userinfo > .form-group {
 		margin-top: 1em
+	}
+
+	#form-userinfo {
+		margin: 1em;
 	}
 </style>
 <script>
