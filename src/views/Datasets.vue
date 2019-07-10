@@ -114,7 +114,7 @@
 					</b-button-group>
 					<b-button-group size="sm" class="mr-1">
 						<b-button
-							:variant="row.item.published ? 'outline-secondary' : 'danger'"
+							variant="danger"
 							@click="itemToBeDeleted = row.item"
 							v-b-modal.deleteModal>
 							<font-awesome-icon icon="trash" fixed-width />
