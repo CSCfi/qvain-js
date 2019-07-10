@@ -75,7 +75,7 @@
 					<b-button
 						id="editor_button_publish_top"
 						:variant="isPublishDisabled ? 'outline-secondary' : 'primary'"
-						@click="confirmPublish"
+						v-b-modal.publishModal
 						:disabled="isPublishDisabled"
 						ref="dataset-publish-button">
 						<font-awesome-icon :icon="publishing ? 'spinner' : 'upload'" :spin="publishing" />
@@ -91,29 +91,21 @@
 		<b-alert variant="danger" :show="!!error" dismissible @dismissed="error=null"><i class="fas fa-ban"></i> API error: {{ error }}</b-alert>
 		<b-alert variant="warning"><font-awesome-icon icon="info"></font-awesome-icon> Publishing: I understand that publishing this dataset:</b-alert>
 
-		<b-card id="publish-verification-card" variant="dark" bg-variant="dark" text-variant="white" v-if="showPublishConfirmation">
-			<h3 slot="title">
-				<font-awesome-icon icon="info" fixed-width />
-				Publishing
-			</h3>
-			<p class="card-text">I understand that publishing this dataset...</p>
-				<ul class="list-unstyled">
-					<li class="font-italic">... will make it available publicly</li>
-					<li class="font-italic">... marks it as ready and enables editing restrictions</li>
-				</ul>
-			<p></p>
-			<div class="float-right">
-				<b-button id="publish-verification-card-button-cancel" variant="outline-light" class="ml-3" @click="showPublishConfirmation = false"><font-awesome-icon icon="times" fixed-width /> cancel</b-button>
-				<b-button id="publish-verification-card-button-help" variant="danger" class="ml-3" @click="showPublishConfirmation = false" v-if="false"><font-awesome-icon icon="info" fixed-width /> help</b-button>
-				<b-button id="publish-verification-card-button-publish" variant="success" :disabled="saving" class="ml-3" @click="publish()"><font-awesome-icon icon="cloud-upload-alt" fixed-width /> publish</b-button>
-			</div>
-		</b-card>
-
 
 		<!-- Modals -->
 		<dataset-json-modal id="dataset-json-modal"></dataset-json-modal>
 		<dataset-overview-modal id="dataset-overview-modal"></dataset-overview-modal>
-		<publish-modal id="publish-modal" :error="publishError" @hidden="publishError = null"></publish-modal>
+		<b-modal ref="publishModal" id="publishModal" title="Publish dataset?"
+			ok-title="Publish" cancel-variant="primary" ok-variant="success" @ok="publish">
+			<div class="d-block text-left">
+				<p>I understand that publishing this dataset:</p>
+				<ul>
+					<li>will make it available publicly</li>
+					<li>marks it as ready and enables editing restrictions</li>
+				</ul>
+			</div>
+		</b-modal>
+		<publish-modal ref="publishErrorModal" id="publishErrorModal" :error="publishError" @hidden="publishError = null"></publish-modal>
 
 		<div v-if="!loading">
 			<ul class="nav nav-tabs">
@@ -144,7 +136,7 @@
 					<b-button-group class="col">
 						<b-button
 							:variant="isPublishDisabled ? 'outline-secondary' : 'primary'"
-							@click="confirmPublish"
+							v-b-modal.publishModal
 							:disabled="isPublishDisabled"
 							ref="dataset-publish-button">
 							<font-awesome-icon :icon="publishing ? 'spinner' : 'upload'" :spin="publishing" />
@@ -168,24 +160,6 @@
 		<div v-else>
 			<font-awesome-icon icon="spinner" spin />
 		</div>
-
-		<b-card id="publish-verification-card-bottom" variant="dark" bg-variant="dark" text-variant="white" v-if="showPublishConfirmation">
-			<h3 slot="title">
-				<font-awesome-icon icon="info" fixed-width />
-				Publishing
-			</h3>
-			<p class="card-text">I understand that publishing this dataset...</p>
-				<ul class="list-unstyled">
-					<li class="font-italic">... will make it available publicly</li>
-					<li class="font-italic">... marks it as ready and enables editing restrictions</li>
-				</ul>
-			<p></p>
-			<div class="float-right">
-				<b-button id="publish-verification-card-bottom_button-cancel" variant="outline-light" class="ml-3" @click="showPublishConfirmation = false"><font-awesome-icon icon="times" fixed-width /> cancel</b-button>
-				<b-button id="publish-verification-card-bottom_button-help" variant="danger" class="ml-3" @click="showPublishConfirmation = false" v-if="false"><font-awesome-icon icon="info" fixed-width /> help</b-button>
-				<b-button id="publish-verification-card-bottom_button-publish" variant="success" :disabled="saving" class="ml-3" @click="publish()"><font-awesome-icon icon="cloud-upload-alt" fixed-width /> publish</b-button>
-			</div>
-		</b-card>
 
 	</div>
 </template>
@@ -248,14 +222,6 @@ export default {
 			}
 			return null
 		},
-		confirmPublish() {
-			const isExisting = !!this.$store.state.metadata.id
-			if (!isExisting) {
-				this.$root.showAlert("Please save your dataset first", "danger")
-				return
-			}
-			this.showPublishConfirmation = true
-		},
 		publish: async function publishCallback() {
 			if (this.saving || this.publishing) {
 				return
@@ -283,14 +249,10 @@ export default {
 				}
 				if (e.response && e.response.data) {
 					this.publishError = e.response.data
-					this.$root.$emit('bv::show::modal', 'publish-modal', this.$refs['dataset-publish-button'])
+					this.$root.$emit('bv::show::modal', 'publishErrorModal', this.$refs['dataset-publish-button'])
 				} else {
 					this.$root.showAlert("Publish failed!", "danger")
 				}
-				// TODO: consider updating Publish modal error boiler plate with this error message
-				//const errorMessage = `Publish failed, please check you have inserted all mandatory fields. Mandatory fields are: creator, description, access_rights and title. The error was: ${e}`
-				//this.$root.showAlert(errorMessage, "danger")
-				this.$root.showAlert("Publish failed!", "danger")
 			} finally {
 				this.publishing = false
 			}
@@ -344,23 +306,12 @@ export default {
 				this.$router.replace({ name: 'editor', params: { id: "new" }})
 			})
 		},
-		/* not used atm due to not working
-		createCloneRecord() {
-			this.loading = true
-			this.$nextTick(() => {
-				this.cloneCurrentRecord()
-				this.initDataset()
-				this.loading = false
-			})
-		},
-		*/
 		initDataset() {
 			if (this.selectedSchema !== null) {
 				this.$store.commit('loadSchema', this.selectedSchema.schema)
 				this.$store.commit('loadHints', this.selectedSchema.ui)
 			}
 		},
-
 		clearRecord() {
 			this.isDataChanged = false
 			this.qvainData = null
@@ -397,6 +348,12 @@ export default {
 				this.$store.commit('setMetadata', { id, schemaId: this.selectedSchema.id })
 				this.qvainData = data
 			} catch (error) {
+				if (error.response && error.response.status == 401) {
+					// there was a permission error
+					// we should redirect the user to login
+					await this.$auth.logoutDueSessionTimeout()
+					this.$router.push({name: "home", params: {missingToken: true}})
+				}
 				console.log(error)
 			} finally {
 				this.loading = false
