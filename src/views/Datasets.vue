@@ -57,7 +57,7 @@
 							<font-awesome-icon icon="history" fixed-width />Versions
 						</b-dropdown-item-button>
 
-						<b-dropdown-item-button size="sm" variant="danger" @click="itemToBeDeleted = row.item.id" v-b-modal.deleteModal>
+						<b-dropdown-item-button size="sm" variant="danger" @click="itemToBeDeleted = row.item" v-b-modal.deleteModal>
 							<font-awesome-icon icon="trash" fixed-width />Delete
 						</b-dropdown-item-button>
 					</b-dropdown>
@@ -69,11 +69,23 @@
 		</b-table>
 
 		<!-- modals -->
-		<b-modal ref="deleteModal" id="deleteModal" title="Delete dataset?"
-			ok-title="Delete" cancel-variant="primary" ok-variant="danger"
-			@ok="del">
-			<p :style="{'text-align': 'center'}">
-				You are about to delete a dataset. This action cannot be reversed. Are you sure you want to delete the dataset?
+		<b-modal
+			v-if="itemToBeDeleted !== null"
+			id="deleteModal"
+			ref="deleteModal"
+			title="Delete dataset?"
+			ok-title="Delete"
+			cancel-variant="primary"
+			ok-variant="danger"
+			@ok="del"
+		>
+			<p>
+				You are about to delete {{ itemToBeDeleted.published ? "published" : "draft" }} dataset "{{ preferredLanguage(itemToBeDeleted.title) }}".
+				This action cannot be reversed. Are you sure you want to delete the dataset?
+			</p>
+
+			<p v-if="itemToBeDeleted.published">
+				The deleted dataset will still have a landing page (direct access via URN/DOI) but it cannot be found through Etsin's search nor is it visible in Qvain anymore.
 			</p>
 		</b-modal>
 
@@ -248,8 +260,8 @@ export default {
 			this.isBusy = true
 			this.error = null
 			try {
-				await apiClient.delete("/datasets/" + this.itemToBeDeleted)
-				this.$root.showAlert("successfully deleted dataset", "success")
+				await apiClient.delete("/datasets/" + this.itemToBeDeleted.id)
+				this.$root.showAlert("Successfully deleted dataset", "success")
 
 				await this.fetchDataset()
 				this.$refs.datasetTable.refresh()
