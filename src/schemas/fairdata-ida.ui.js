@@ -703,6 +703,15 @@ export default {
 		props: {
 			tabFormat: false,
 			showDelete: true,
+			defaultValue: [{
+				"identifier":"http://uri.suomi.fi/codelist/fairdata/license/code/CC-BY-4.0",
+				"title": {
+					"sv": '',
+					"en":"Creative Commons Attribution 4.0 International (CC BY 4.0)",
+					"fi":"Creative Commons Nimeä 4.0 Kansainvälinen (CC BY 4.0)",
+					"und":"Creative Commons Nimeä 4.0 Kansainvälinen (CC BY 4.0)",
+				},
+			}],
 		},
 	},
 	'/properties/access_rights/properties/license/*': {

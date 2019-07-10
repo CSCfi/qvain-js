@@ -172,14 +172,6 @@ export default {
 
 			return `#${index +1}`
 		},
-		doMinus() {
-			// it's safe to pop() a zero-length array
-			if (this.value.length > this.minimum) {
-				this.$store.commit('popValue', { p: this.parent, prop: this.property, val: this.value })
-				return true
-			}
-			return false
-		},
 		doPlus() {
 			if (this.maximum === undefined || this.value.length < this.maximum) {
 				this.$store.commit('pushValue', { p: this.parent, prop: this.property, val: undefined })

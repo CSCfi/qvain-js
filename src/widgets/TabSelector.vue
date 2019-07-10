@@ -69,7 +69,7 @@ export default {
 	name: 'TabSelector',
 	description: "internal dispatch wrapper",
 	widgettype: 'any',
-	props: ['schema', 'value', 'path', 'parent', 'property', 'tab', 'activeTab', 'depth', 'required'],
+	props: ['schema', 'value', 'path', 'parent', 'property', 'tab', 'activeTab', 'depth', 'required', 'defaultValue'],
 	data: function() {
 		return {
 			dataType: null,
@@ -153,7 +153,23 @@ export default {
 				return
 			}
 
-			this.$store.commit('initValue', { p: this.parent, prop: this.property, val: this.emptyValue() })
+			// create new object based on defaultValue, no need for deep copy.
+			const getDefaultValue = () => {
+				const defaultValue = this.uiForSchema.props && this.uiForSchema.props.defaultValue
+				if (!defaultValue) {
+					return
+				} else if (Array.isArray(defaultValue)) {
+					return [...defaultValue]
+				} else if (typeof defaultValue === 'object') {
+					return Object.assign({}, defaultValue)
+				} else {
+					return defaultValue
+				}
+			}
+
+			const val = getDefaultValue() || this.emptyValue()
+			console.log(this.property, val)
+			this.$store.commit('initValue', { p: this.parent, prop: this.property, val })
 		},
 	},
 	computed: {
