@@ -69,7 +69,6 @@
 				</p>
 			</template>
 			<template slot="title" slot-scope="row">
-				
 				<h5 class="mb-1" @click.stop="editDataset(row.item)">
 					<span class="dataset-row-publish-status" @click.stop="editDataset(row.item)">
 						<font-awesome-icon icon="circle" class="text-primary" v-if="row.item.published && !isItemPublishedAndHasUpdates(row.item)" />
@@ -115,9 +114,8 @@
 					</b-button-group>
 					<b-button-group size="sm" class="mr-1">
 						<b-button
-							:disabled="row.item.published"
 							:variant="row.item.published ? 'outline-secondary' : 'danger'"
-							@click="itemToBeDeleted = row.item.id"
+							@click="itemToBeDeleted = row.item"
 							v-b-modal.deleteModal>
 							<font-awesome-icon icon="trash" fixed-width />
 							Delete
@@ -131,16 +129,25 @@
 		</b-table>
 
 		<!-- modals -->
-		<b-modal ref="deleteModal" id="deleteModal" title="Delete dataset?"
-			ok-title="Delete" cancel-variant="primary" ok-variant="danger"
+		<b-modal
+			v-if="itemToBeDeleted !== null"
+			id="deleteModal"
+			ref="deleteModal"
+			title="Delete dataset?"
+			ok-title="Delete"
+			cancel-variant="primary"
+			ok-variant="danger"
 			@ok="del">
-			<p :style="{'text-align': 'center'}">
-				You are about to delete a dataset. This action cannot be reversed. Are you sure you want to delete the dataset?
+			<p>
+				You are about to delete {{ itemToBeDeleted.published ? "published" : "draft" }} dataset "{{ preferredLanguage(itemToBeDeleted.title) }}".
+				This action cannot be reversed. Are you sure you want to delete the dataset?
+			</p>
+
+			<p v-if="itemToBeDeleted.published">
+				The deleted dataset will still have a landing page (direct access via URN/DOI) but it cannot be found through Etsin's search nor is it visible in Qvain anymore.
 			</p>
 		</b-modal>
-
 		<dataset-versions-modal :dataset="activeInModal"></dataset-versions-modal>
-
 	</b-container>
 </template>
 
@@ -323,8 +330,8 @@ export default {
 			this.isBusy = true
 			this.error = null
 			try {
-				await apiClient.delete("/datasets/" + this.itemToBeDeleted)
-				this.$root.showAlert("successfully deleted dataset", "success")
+				await apiClient.delete("/datasets/" + this.itemToBeDeleted.id)
+				this.$root.showAlert("Successfully deleted dataset", "success")
 
 				await this.fetchDataset()
 				this.$refs.datasetTable.refresh()
