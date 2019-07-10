@@ -168,7 +168,6 @@ export default {
 			}
 
 			const val = getDefaultValue() || this.emptyValue()
-			console.log(this.property, val)
 			this.$store.commit('initValue', { p: this.parent, prop: this.property, val })
 		},
 	},
