@@ -1,33 +1,6 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
 	<div :id="property + '_tab-selector'" class="q-tab-selector">
-		<!--
-		Tab schema {{ schema.required }}
-		Widget {{ widget }}
-		this is required {{ required }}
-		property was {{ property }}
-		-->
-
-		<!-- schema-tab-selector -->
-		<div v-if="showWidgets">
-			<p>ui widgets</p>
-			<select v-model="customWidget">
-				<option v-for="(constructor, name) in this.$options.components" :key="constructor">{{ name }}</option>
-			</select>
-		</div>
-
-		<div v-if="showTypeSelector">
-			<p>this schema has multiple possible types; please choose one</p>
-			<select v-model="dataType">
-				<option disabled value="">Please select one</option>
-				<option v-for="type in possibleTypes" :key="type">
-					{{ type }}
-				</option>
-			</select>
-		</div>
-
-		<!-- actual component -->
-		<!-- keep-alive -->
 		<keep-alive>
 			<component v-if="activeTab === myTab"
 				:id="'tab_' + property + '_' + dataType"
@@ -63,8 +36,6 @@
 			</skip>
 			{{ (schema.required || []).includes(property) }}
 		</keep-alive>
-		<!-- <div style="color: #eeeeee;">hidden myTab: {{ myTab }} {{ typeof myTab }} tab: {{ tab }} {{ typeof tab }} active: {{ activeTab }} {{ typeof activeTab }}</div> -->
-
 	</div>
 </template>
 
@@ -98,12 +69,7 @@ export default {
 	name: 'TabSelector',
 	description: "internal dispatch wrapper",
 	widgettype: 'any',
-	/*
-	props: {
-		schema: Object,
-	},
-	*/
-	props: ['schema', 'value', 'path', 'parent', 'property', 'tab', 'activeTab', 'depth', 'required'],
+	props: ['schema', 'value', 'path', 'parent', 'property', 'tab', 'activeTab', 'depth', 'required', 'defaultValue'],
 	data: function() {
 		return {
 			dataType: null,
@@ -130,7 +96,6 @@ export default {
 				return []
 			case 'null':
 				return null
-				//default:
 			}
 			return undefined
 		},
@@ -149,8 +114,6 @@ export default {
 			return undefined
 		},
 		defaultWidget: function(schemaType) {
-			//console.log("schemaType:", schemaType)
-
 			// enum is special because it should handle any type included in its values
 			if (this.schema.enum) {
 				return 'schema-enum'
@@ -173,8 +136,6 @@ export default {
 				// check if the array has values (strings, numbers, null) or nested objects (array, object)
 				// TODO: this only checks "list" validation, not "tuple" validation
 				let typeOfItems = this.schema.items && this.schema.items.type && this.schema.items.type || ""
-				//let hasValues = typeOfItems !== "array" && typeOfItems !== "object"
-				//return hasValues ? 'schema-inline-array' : 'schema-array'
 				return 'schema-array'
 			}
 			case 'boolean':
@@ -192,54 +153,26 @@ export default {
 				return
 			}
 
-
-			let target, key // eslint-disable-line no-unused-vars
-
-			// the parent of the root path is the store
-			if (this.parent === undefined || this.parent === "") {
-				target = this.$store.state
-				key = 'record'
-			} else {
-				target = this.parent
-				key = this['property']
+			// create new object based on defaultValue, no need for deep copy.
+			const getDefaultValue = () => {
+				const defaultValue = this.uiForSchema.props && this.uiForSchema.props.defaultValue
+				if (!defaultValue) {
+					return
+				} else if (Array.isArray(defaultValue)) {
+					return [...defaultValue]
+				} else if (typeof defaultValue === 'object') {
+					return Object.assign({}, defaultValue)
+				} else {
+					return defaultValue
+				}
 			}
 
-			// object and arrays can have children so need to be set to something
-			/*
-			if (this.schema['type'] === 'object' || this.schema['properties']) {
-				this.value = {}
-				this.$store.commit('updateValue', { p: target, prop: this.property, val: {} })
-				console.log("set value to empty object", this.$store.state.record.title, this.value)
-			} else if (this.schema['type'] === 'array') {
-				//this.value = []
-				this.$store.commit('updateValue', { p: target, prop: this.property, val: [] })
-				console.log("set value to empty array")
-			}
-			*/
-			//console.log('updateValue from vivicate', this.parent)
-
-			// if we don't have a parent, we're changing the top level; set the record to the correct empty value
-			/*
-			if (this.parent === undefined || this.parent === "") {
-				console.warn("tab-selector: no parent for", this.path)
-				//this.$store.commit('loadData', this.emptyValue())
-				return
-			}
-			*/
-
-			this.$store.commit('initValue', { p: this.parent, prop: this.property, val: this.emptyValue() })
-			//this.$store.commit('initValue', { p: this.parent, prop: this.property, val: {} })
-			/*
-			else {
-				this.$set(target, key, "abc")
-			}
-			*/
+			const val = getDefaultValue() || this.emptyValue()
+			this.$store.commit('initValue', { p: this.parent, prop: this.property, val })
 		},
 	},
 	computed: {
 		showTypeSelector: function() {
-			// schema type can be array or string (or undefined)
-			//return this.schema['type'] === undefined || typeof this.schema['type'] === 'object'
 			return typeof this.schema['type'] !== 'string'
 		},
 		possibleTypes: function() {
@@ -254,11 +187,6 @@ export default {
 		widgetProps: function() {
 			return this.uiForSchema.props || this.uiForDef.props || undefined
 		},
-		/*
-		ui: function() {
-			return Object.assign({}, this.uiForDef, this.uiForSchema)
-		},
-		*/
 		ui: function() {
 			// if there was a $ref, use that ref's ui as default and load this path's on top of it
 			if (this.schema['$deref']) {
@@ -288,35 +216,11 @@ export default {
 			if (this.path !== this.cachedPath) {
 				console.warn("selector (" + this.path + "): VNode was recycled!")
 			}
-			//if (this.$store.state.record === undefined) {
-			//if (!this.path && this.value === undefined) {
 			if (this.value === undefined) {
 				this.setDataType(this.schema['type'])
 				this.vivicate()
 			}
 		},
-		/*
-		value: function() {
-			console.log("selector: value watcher ran")
-			//if (this.$store.state.record === undefined) {
-			//if (!this.path && this.value === undefined) {
-			if (this.value === undefined) {
-				console.log("data change, undefined value")
-				this.setDataType(this.schema['type'])
-				this.vivicate()
-			}
-			if (this.value !== undefined && this.dataType === 'array' && typeof this.value !== 'object') {
-				console.error("[selector/value] array expected for path", this.path, "got:", typeof this.value)
-				this.hasTypeError = true
-				this.vivicate(true)
-			}
-			if (this.value !== undefined && this.dataType === 'object' && typeof this.value !== 'object') {
-				console.error("[selector/value] array expected for path", this.path, "got:", typeof this.value)
-				this.hasTypeError = true
-				this.vivicate(true)
-			}
-		},
-		*/
 	},
 	components: {
 		'schema-number': SchemaNumber,

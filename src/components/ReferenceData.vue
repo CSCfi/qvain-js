@@ -73,14 +73,6 @@
 					</span>
 				</p>
 			</div>
-			<div :id="property + '_taglist'" v-if="!isMultiselect && !Array.isArray(selectedOptions)" class="tag__list">
-				<p class="tag" :style="{visibility: selectedOptions === null ? 'hidden' : 'visible'}">
-					{{customLabel(selectedOptions)}}
-					<span class="remove-button">
-						<DeleteButton @click="removeValue(-1)" />
-					</span>
-				</p>
-			</div>
 		</div>
 	</record-field>
 </template>
@@ -115,7 +107,6 @@ export default {
 		wrapped: { type: Boolean, default: false },
 		labelNameInSchema: { type: String, default: 'pref_label' },
 		grouped: { type: Boolean, required: false },
-		defaultValue: { type: Object | Array, required: false }
 	},
 	data() {
 		return {
@@ -275,10 +266,6 @@ export default {
 				const label = this.value[this.labelNameInSchema]
 				this.selectedOptions = { identifier, label }
 			}
-		}
-
-		if (this.defaultValue && this.isEmptyObject) {
-			this.selectedOptions = this.defaultValue
 		}
 
 		if (!this.async) {
