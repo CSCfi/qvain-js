@@ -4,8 +4,8 @@
 		class="container datepicker-container"
 		:id="property">
 		<div class="row">
-			<div class="col-sm-1">
-				#{{ property + 1 }}
+			<div class="col-sm-2">
+				{{ title }}
 			</div>
 			<div class="col">
 				<datepicker
@@ -33,7 +33,7 @@
 					v-model="end">
 				</datepicker>
 			</div>
-			<div class="col">
+			<div class="col-sm-2">
 				<delete-button v-if="inArray" @click="$emit('delete', property)"/>
 			</div>
 
@@ -75,8 +75,11 @@ export default {
 				to: this.start,
 			}
 		},
+		label() {
+			return this.property + 1
+		},
 		title() {
-			return this.schema.title
+			return typeof(this.property)=="number" ? '#' + (this.property + 1) : this.schema.title
 		},
 		startDateISO() {
 			return this.start ? this.start.toISOString() : null

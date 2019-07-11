@@ -8,7 +8,7 @@
 
 		<div slot="input">
 			<b-form-group
-				:label-cols="inArray ? 1 : ((makeLabel !== uiLabel) ? 3 : 0)"
+				:label-cols="inArray ? 3 : ((makeLabel !== uiLabel) ? 3 : 0)"
 				:label-for="inArray ? 'input-' + property.toString() : property">
 				<span slot="label" v-if="makeLabel !== uiLabel">
 					{{ makeLabel }}
