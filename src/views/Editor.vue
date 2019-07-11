@@ -61,7 +61,7 @@
 
 				<b-button-group size="sm" v-if="!loading && selectedSchema" class="save-pub-btns">
 					<b-button
-						id="editor_button_save_top" 
+						id="editor_button_save_top"
 						:variant="isSaveDisabled ? 'outline-secondary' : 'success'"
 						@click="save"
 						:disabled="isSaveDisabled"
@@ -403,7 +403,7 @@ export default {
 					this.validator.validateData(this.$store.state.record)
 				}
 				// the data has been changed after the initial load by the user
-				if (mutation.type == 'updateValue') {
+				if (mutation.type == 'updateValue' || mutation.type === 'deleteArrayValue') {
 					this.isDataChanged = true
 				}
 			})

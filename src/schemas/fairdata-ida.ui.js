@@ -5,7 +5,7 @@ export default {
 		{ label: 'Actors', uri: 'actors' },
 		{ label: 'Rights and Licenses', uri: 'rights' },
 		{ label: 'Temporal and Spatial Coverage', uri: 'coverage' },
-		{ label: 'Relations and History', uri: 'relations' },
+		{ label: 'Related Material and History', uri: 'relations' },
 		{ label: 'Files', uri: 'files' },
 		{ label: 'Extra', uri: null },
 	],
@@ -700,6 +700,34 @@ export default {
 		'help': "Can be left empty if the Access Type is Open.",
 	},
 	'/properties/access_rights/properties/license': {
+		props: {
+			tabFormat: false,
+			showDelete: true,
+			defaultValue: [{
+				"identifier":"http://uri.suomi.fi/codelist/fairdata/license/code/CC-BY-4.0",
+				"title": {
+					"sv": '',
+					"en":"Creative Commons Attribution 4.0 International (CC BY 4.0)",
+					"fi":"Creative Commons Nimeä 4.0 Kansainvälinen (CC BY 4.0)",
+					"und":"Creative Commons Nimeä 4.0 Kansainvälinen (CC BY 4.0)",
+				},
+			}],
+		},
+	},
+	'/properties/access_rights/properties/license/*': {
+		props: {
+			oneOfFunc: value => {
+				if (value && value.identifier) {
+					return 0
+				}
+				if (value && value.license) {
+					return 1
+				}
+				return null
+			}
+		}
+	},
+	'/properties/access_rights/properties/license/*/oneOf/0': {
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -713,9 +741,11 @@ export default {
 		},
 		'placeholder': "– choose license –",
 		'title': "license",
-		'required': () => true,
 		'description': "A license agreement signifies what a user is allowed to do with the data.",
 		'help': "Select a license agreement for your dataset.",
+	},
+	'/properties/access_rights/properties/license/*/oneOf/1': {
+		'title': ' '
 	},
 	'/properties/publisher': {
 		'tab': 'extra',

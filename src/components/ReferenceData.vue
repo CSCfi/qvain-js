@@ -28,7 +28,8 @@
 					:searchable="typeahead"
 					:multiple="isMultiselect"
 					:options="options"
-					:showNoResults="true"
+					:showNoResults="false"
+					:showNoOptions="false"
 					:customLabel="customLabel"
 					:placeholder="placeholder"
 					group-values="children"
@@ -38,6 +39,7 @@
 					<div v-bind:class="{ option__child: !option.$groupLabel, option__parent: option.$groupLabel }" slot="option" slot-scope="{ option }" v-if="grouped">
 						{{ option.$groupLabel || customLabel(option) }}
 					</div>
+					<div slot="noOptions"></div>
 					<div v-if="selectedOptions.length > 0" slot="selection">{{placeholder}}</div>
 				</Multiselect>
 
@@ -51,14 +53,16 @@
 					:optionsLimit="count"
 					:taggable="tags"
 					:searchable="typeahead"
+					:showNoOptions="false"
 					:multiple="isMultiselect"
 					:clearOnSelect="false"
-					:options="sortedOptions"
-					:showNoResults="true"
+					:options="options"
+					:showNoResults="false"
 					:customLabel="customLabel"
 					:placeholder="placeholder"
 					@select="atSelect"
 					@search-change="search">
+					<div slot="noOptions"></div>
 					<div slot="noResult">No elements found. Consider changing the search query. You may have to type at least 3 letters.</div>
 					<div slot="selection" slot-scope="{ values, search, isOpen }">
 						<span class="multiselect__single" v-if="values.length &amp;&amp; !isOpen">{{ placeholder }}</span>
@@ -70,14 +74,6 @@
 					{{customLabel(option)}}
 					<span class="remove-button">
 						<DeleteButton @click="removeValue(index)" />
-					</span>
-				</p>
-			</div>
-			<div :id="property + '_taglist'" v-if="!isMultiselect && !Array.isArray(selectedOptions)" class="tag__list">
-				<p class="tag" :style="{visibility: selectedOptions === null ? 'hidden' : 'visible'}">
-					{{customLabel(selectedOptions)}}
-					<span class="remove-button">
-						<DeleteButton @click="removeValue(-1)" />
 					</span>
 				</p>
 			</div>
@@ -115,7 +111,6 @@ export default {
 		wrapped: { type: Boolean, default: false },
 		labelNameInSchema: { type: String, default: 'pref_label' },
 		grouped: { type: Boolean, required: false },
-		defaultValue: { type: Object | Array, required: false }
 	},
 	data() {
 		return {
@@ -180,13 +175,6 @@ export default {
 			// normal case
 			return this.optionItems
 		},
-		sortedOptions() {
-			return this.options.slice().sort((a, b) => {
-				const aLabel = a.label[this.currentLanguage] || a.label['und']
-				const bLabel = b.label[this.currentLanguage] || b.label['und']
-				return aLabel.localeCompare(bLabel)
-			})
-		},
 		isEmptyObject() {
 			return this.value &&
 				typeof this.value === 'object' && Object.keys(this.value).length === 0
@@ -232,17 +220,19 @@ export default {
 		},
 		// TODO: if the es server is under too much stress debounce could be implemented
 		async search(searchQuery) {
+			this.isLoading = true
 			if (!searchQuery) {
+				this.responseData = {}
+				this.isLoading = false
 				return // prevent empty search after removing characters from input
 			}
 
-			this.isLoading = true
 			if (this.async) {
 				// remove special characters, see for list: http://lucene.apache.org/core/3_4_0/queryparsersyntax.html
 				searchQuery = searchQuery.replace(/(\+|-|&&|\|\||!|\(|\)|{|}|\[|\]|\^|"|~|\*|\?|:|\\)/g,"")
 				const q = this.selectedLang ?
-					`label.${this.selectedLang.id}:*${searchQuery}*`:
-					`*${searchQuery}*`
+					`label.${this.selectedLang.id}:${searchQuery}*`:
+					`${searchQuery}*`
 				this.searchReferenceData(q)
 			}
 			this.isLoading = false
@@ -275,10 +265,6 @@ export default {
 				const label = this.value[this.labelNameInSchema]
 				this.selectedOptions = { identifier, label }
 			}
-		}
-
-		if (this.defaultValue && this.isEmptyObject) {
-			this.selectedOptions = this.defaultValue
 		}
 
 		if (!this.async) {
