@@ -1,6 +1,8 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<span :class="variant" v-b-tooltip.hover.auto title="preservation state"><font-awesome-icon icon="archive" fixed-width/> {{ long }}</span>
+	<span :class="variant">
+		{{ long }}
+	</span>
 </template>
 
 <script>
