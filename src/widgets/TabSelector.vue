@@ -39,6 +39,13 @@
 	</div>
 </template>
 
+<style lang="scss">
+.q-tab-selector section > .list-group > .list-group-item {
+	padding: 0 !important;
+	margin-bottom: 1em;
+}
+</style>
+
 <script>
 import SchemaNumber from './Number.vue'
 import SchemaString from './String.vue'

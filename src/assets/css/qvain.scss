@@ -1,6 +1,71 @@
 /* ADD_LICENSE_HEADER */
 @import '../../../node_modules/bootstrap/scss/bootstrap';
 
+@font-face {
+	font-family: 'Lato';
+	src: url('/static/fonts/Lato/Lato-Regular.ttf');
+}
+
+@font-face {
+	font-family: 'Lato';
+	src: url('/static/fonts/Lato/Lato-Italic.ttf');
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Lato';
+	src: url('/static/fonts/Lato/Lato-Bold.ttf');
+	font-weight: 700;
+}
+
+@font-face {
+	font-family: 'Lato';
+	src: url('/static/fonts/Lato/Lato-BoldItalic.ttf');
+	font-weight: 700;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Lato';
+	src: url('/static/fonts/Lato/Lato-Black.ttf');
+	font-weight: 900;
+}
+
+@font-face {
+	font-family: 'Lato';
+	src: url('/static/fonts/Lato/Lato-BlackItalic.ttf');
+	font-weight: 900;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Lato';
+	src: url('/static/fonts/Lato/Lato-Light.ttf');
+	font-weight: 300;
+}
+
+@font-face {
+	font-family: 'Lato';
+	src: url('/static/fonts/Lato/Lato-LightItalic.ttf');
+	font-weight: 300;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Lato';
+	src: url('/static/fonts/Lato/Lato-Hairline.ttf');
+	font-weight: 100;
+}
+
+@font-face {
+	font-family: 'Lato';
+	src: url('/static/fonts/Lato/Lato-HairlineItalic.ttf');
+	font-weight: 100;
+	font-style: italic;
+}
+
+
+
 /*
 body { font-family: "Open Sans", Roboto, sans-sans; }
 h1, h2, h3, h4, h5, h6, h7 { font-family: "Lato", serif; }
@@ -163,16 +228,20 @@ a {
 	color: $fd-primary;
 }
 
+*, .form-control, select, option {
+	font-weight: 300;
+}
+
 // Component headers
-h1.component-title {
-	font-weight: lighter;
+h1.component-title, h2.component-title, h3.component-title, h4.component-title   {
+	font-weight: 300;
 	margin: 1.2rem 0;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
 
-h1 .secondary-text {
+h1 .secondary-text, h2 .secondary-text, h3 .secondary-text, h4 .secondary-text  {
 	border-left: 1px solid #ccc;
 	margin-left: 0.5rem;
 	padding-left: 1rem;
@@ -341,7 +410,7 @@ div.treeview-branch:hover {
 /* autocomplete */
 
 #autocomplete-wrapper {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: 'Lato', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
@@ -368,7 +437,7 @@ div.treeview-branch:hover {
 }
 
 .autocomplete-input input {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: 'Lato', Helvetica, Arial, sans-serif;
 }
 
 ul.options-list {
@@ -507,21 +576,19 @@ body {
 }
 
 .footer {
-	font-weight: lighter;
+	font-weight: 300;
 	font-size: 0.5em;
 }
 
-* {
-	font-weight: lighter !important;
-}
-
 .btn {
-	font-weight: lighter !important;
+	font-weight: 300 !important;
 }
 
 .title {
-	font-size: 1.5em !important;
+	font-size: 1.75em !important;
 	margin-bottom: 0.5em !important;
+	margin-top: 1em;
+	font-weight: 200;
 }
 
 .header__required {
@@ -544,6 +611,13 @@ body {
 	color: #ddd !important;
 }
 
+.badge {
+	font-weight: 300;
+	b {
+		font-weight: bold;
+	}
+}
+
 .tag .delete-button *, .nav-pills .nav-link.active .delete-button {
 	color: $fd-primary-white !important;
 }
@@ -557,3 +631,28 @@ body {
 	padding-top: 0.7em;
 }
 
+.container {
+	max-width: 100% !important;
+}
+
+body {
+	font-family: 'Lato', Helvetica, Arial, sans-serif;
+}
+
+.multiselect__content-wrapper {
+	z-index: 3000 !important;
+}
+
+.jumbotron {
+	margin-left: 1em;
+	margin-right: 1em;
+	padding: 2em;
+}
+
+* {
+	user-select: none;
+}
+
+footer * {
+	user-select: text;
+}
