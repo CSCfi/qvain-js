@@ -87,10 +87,18 @@
 					<b-button-group size="sm" class="mr-1">
 						<b-button
 							variant="primary"
-							size="sm"
 							@click.stop="editDataset(row.item)">
 							<font-awesome-icon icon="pen" fixed-width />
 							Edit
+						</b-button>
+					</b-button-group>
+					<b-button-group size="sm" class="mr-1">
+						<b-button
+							v-if="!row.item.published || isItemPublishedAndHasUpdates(row.item)"
+							variant="success"
+							@click="itemToBePublished = row.item"
+							v-b-modal.publishModal>
+							Publish
 						</b-button>
 					</b-button-group>
 					<b-button-group size="sm" class="mr-1">
@@ -147,6 +155,17 @@
 				The deleted dataset will still have a landing page (direct access via URN/DOI) but it cannot be found through Etsin's search nor is it visible in Qvain anymore.
 			</p>
 		</b-modal>
+		<b-modal ref="publishModal" id="publishModal" title="Publish dataset?"
+			ok-title="Publish" cancel-variant="primary" ok-variant="success" @ok="publish">
+			<div class="d-block text-left">
+				<p>I understand that publishing this dataset:</p>
+				<ul>
+					<li>will make it available publicly</li>
+					<li>marks it as ready and enables editing restrictions</li>
+				</ul>
+			</div>
+		</b-modal>
+		<publish-modal ref="publishErrorModal" id="publishErrorModal" :error="publishError" @hidden="publishError = null"></publish-modal>
 		<dataset-versions-modal :dataset="activeInModal"></dataset-versions-modal>
 	</b-container>
 </template>
@@ -226,6 +245,7 @@ import testList from '@/api/test-datasets.json'
 import PreservationState from '@/components/PreservationState.vue'
 import BusyButton from '@/components/BusyButton.vue'
 import DatasetVersionsModal from '@/components/VersionsModal.vue'
+import PublishModal from '@/components/PublishModal.vue'
 
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
 import formatDate from 'date-fns/format'
@@ -279,6 +299,7 @@ export default {
 		PreservationState,
 		BusyButton,
 		DatasetVersionsModal,
+		'publish-modal': PublishModal,
 	},
 	data() {
 		return {
@@ -287,10 +308,13 @@ export default {
 			filterString: null,
 			showDatasetState: 'all',
 			isBusy: false,
+			publishError: null,
 			error: null,
 			devWarning: process.env.VUE_APP_ENVIRONMENT === 'development',
 			datasetList: [],
-			itemToBeDeleted: null
+			itemToBeDeleted: null,
+			itemToBePublished: null,
+			publishing: false,
 		}
 	},
 	methods: {
@@ -326,6 +350,30 @@ export default {
 		clickedRow(item) {
 			item._showDetails = !item._showDetails
 		},
+
+		async publish() {
+			if (this.publishing) { return }
+			this.publishing = true
+			this.error = null
+			this.publishError = null
+			try {
+				await apiClient.post("/datasets/" + this.itemToBePublished.id + "/publish", {})
+				this.$root.showAlert("successfully published " + this.preferredLanguage(this.itemToBePublished.title) + " dataset", "success")
+				await this.fetchDataset()
+				this.$refs.datasetTable.refresh()
+			} catch (e) {
+				if (e.response && e.response.data) {
+					this.publishError = e.response.data
+					console.log("Show modal error")
+					this.$root.$emit('bv::show::modal', 'publishErrorModal')
+				} else {
+					this.error = getApiError(e)
+				}
+			} finally {
+				this.publishing = false
+			}
+		},
+
 		async del() {
 			this.isBusy = true
 			this.error = null
