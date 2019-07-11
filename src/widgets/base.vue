@@ -82,9 +82,7 @@ export default {
 			return typeof this.uiTab === 'number' ? this.uiTab : this.tab
 		},
 		uiTitle: function() {
-			return this.ui['title'] ?
-				(typeof this.ui['title'] == 'boolean' ? '' : this.ui['title']) :
-				(this.schema['title'] || this.property)
+			return this.ui['title'] || this.schema['title'] || this.property
 		},
 		uiDescription: function() {
 			return this.ui['description'] || this.schema['description']

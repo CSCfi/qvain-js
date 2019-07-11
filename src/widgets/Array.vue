@@ -16,7 +16,7 @@
 				There is not easy way to force v-for to not use inplace update strategy. In this case it is mandatory to make deleting item show correctly.
 				This could be code smell but at the moment the best solution is just to patch this. See https://github.com/xianshenglu/blog/issues/47 for reference.
 			-->
-			<b-container v-if="tabFormat">
+			<b-container v-if="forceArrayUpdateHack && tabFormat">
 				<b-btn
 					class="add-button col"
 					variant="light"
@@ -33,7 +33,7 @@
 					<b-tab
 						v-for="(child, index) in value"
 						style="{margin-top: 5px}"
-						:key="'tab-' + index"
+						:key="index"
 						title-link-class="tab-field-link">
 						<template slot="title">
 							{{ tabTitle(index) }}
@@ -57,8 +57,8 @@
 				</b-tabs>
 			</b-container>
 
-			<b-list-group class="item-list" v-else-if="!tabFormat" flush>
-				<b-list-group-item class="list-item" v-for="(child, index) in value" :key="'tab-' + index">
+			<b-list-group class="item-list" v-else-if="forceArrayUpdateHack && !tabFormat" flush>
+				<b-list-group-item class="list-item" v-for="(child, index) in value" :key="index">
 					<TabSelector
 						style="flex-grow: 1"
 						:schema="schemaForChild(index)"
@@ -141,6 +141,7 @@ export default {
 			minimum: 0,
 			maximum: 0,
 			tabIndex: 0,
+			forceArrayUpdateHack: true,
 		}
 	},
 	methods: {
@@ -180,10 +181,9 @@ export default {
 		doPlus() {
 			if (this.maximum === undefined || this.value.length < this.maximum) {
 				this.$store.commit('pushValue', { p: this.parent, prop: this.property, val: undefined })
-				/*this.$nextTick(function() { // make sure that the tab is there before causing the new tab to be selected
+				this.$nextTick(function() { // make sure that the tab is there before causing the new tab to be selected
 					this.tabIndex = this.value.length - 1
-
-				})*/
+				})
 				return true
 			}
 			return false
@@ -194,6 +194,10 @@ export default {
 					parent: this.parent,
 					property: this.property,
 					index,
+				})
+				this.forceArrayUpdateHack = !this.forceArrayUpdateHack
+				this.$nextTick(() => {
+					this.forceArrayUpdateHack = !this.forceArrayUpdateHack
 				})
 			}
 		},
