@@ -11,7 +11,7 @@
 					<b-col>
 						Fairdata services are offered by the Ministry of Education and Culture.
 						Produced by CSC - IT Center for Science Ltd.
-						Qvain has been produced in collaboration with National Library.
+						Developed by National Library 2016-2019, CSC 2019-&gt;
 						<br />{{ commitHash }} - {{ version }}
 					</b-col>
 					<b-col>
