@@ -113,7 +113,7 @@ export default {
 		nest(flat) {
 			// Inverse of flatten. Turns an array into a nested stucture where each object is a refField child of the next one.
 			// The objects are shallow copied so the original objects stay unchanged.
-			flat = [...flat.reverse()]
+			flat = [...flat].reverse()
 			const root = { ...flat[0] }
 			let obj = root
 			for (let i=1; i<flat.length; i++) {
