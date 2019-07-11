@@ -98,6 +98,15 @@ export default new Vuex.Store({
 			const index = payload.p[payload.prop].findIndex(x => x[payload.search.field] === payload.search.value)
 			Vue.set(payload.p[payload.prop], index, payload.val)
 		},
+		replace(state, payload) {
+			// clear payload.p, assign values from payload.val
+			for (let key in payload.p) {
+				Vue.delete(payload.p, key)
+			}
+			for (let key in payload.val) {
+				Vue.set(payload.p, key, payload.val[key])
+			}
+		},
 		pushValue(state, payload) {
 			payload.p[payload.prop].push(payload.val)
 		},
@@ -150,7 +159,7 @@ export default new Vuex.Store({
 	getters: {
 		// prunedDataset returns a deep-clone of the dataset discarding empty leaves
 		prunedDataset: (state) => {
-			return cloneWithPrune(state.record)
+			return cloneWithPrune(state.record, ["#key"], [ "", undefined ])
 		},
 		// getState returns the validation state for a given path
 		getState: (state) => (path) => {

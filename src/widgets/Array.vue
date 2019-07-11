@@ -162,10 +162,16 @@ export default {
 				return `#${index +1} (Person)`
 			}
 
-			if (tabObjectType === 'Organization' && (tabObject && tabObject.name && (tabObject.name['fi'] || tabObject.name['en']))) {
-				return tabObject.name['fi'] || tabObject.name['en']
+			if (tabObjectType === 'Organization') {
+				// the highest organization level is nested deepest
+				let obj = tabObject
+				while (obj.is_part_of) {
+					obj = obj.is_part_of
+				}
+				if (obj && obj.name && (obj.name['fi'] || obj.name['en'])) {
+					return obj.name['fi'] || obj.name['en']
+				}
 			}
-
 			if (tabObjectType === 'Organization') {
 				return `#${index +1} (Organization)`
 			}

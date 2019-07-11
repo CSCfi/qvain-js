@@ -175,6 +175,7 @@ import DatasetJsonModal from '@/components/DatasetJsonModal.vue'
 import DatasetOverviewModal from '@/components/DatasetOverviewModal.vue'
 import PublishModal from '@/components/PublishModal.vue'
 import Validator from '../../vendor/validator/src/validate.js'
+import cloneWithPrune from '@/lib/cloneWithPrune.js'
 
 export default {
 	name: "editor",
@@ -395,15 +396,16 @@ export default {
 			this.validator = new Validator(
 				this.$store.state.schema,
 				this.$store.state.record,
-				{'allowUndefined': true},
+				{ 'allowUndefined': true },
 			)
 			this.validator.v = this.$store.state.vState
 			this.unsubscribeFunc = this.$store.subscribe((mutation) => {
 				if (mutation.type !== 'initValue') {
-					this.validator.validateData(this.$store.state.record)
-				}
+					const data = cloneWithPrune(this.$store.state.record, ["#key"], [])					
+					this.validator.validateData(data)
+				}					
 				// the data has been changed after the initial load by the user
-				if (mutation.type == 'updateValue' || mutation.type === 'deleteArrayValue') {
+				if (mutation.type === 'updateValue' || mutation.type === 'deleteArrayValue' || mutation.type === 'replace') {
 					this.isDataChanged = true
 				}
 			})
