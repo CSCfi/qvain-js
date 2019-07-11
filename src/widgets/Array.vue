@@ -60,6 +60,7 @@
 			<b-list-group class="item-list" v-else-if="forceArrayUpdateHack && !tabFormat" flush>
 				<b-list-group-item class="list-item" v-for="(child, index) in value" :key="index">
 					<TabSelector
+						style="flex-grow: 1"
 						:schema="schemaForChild(index)"
 						:path="newPath(index)"
 						:value="value[index]"
@@ -71,6 +72,7 @@
 						:depth="depth"
 						@delete="deleteElement"
 						:key="'array-' + index" />
+					<delete-button class="array-delete-button" v-if="showDelete" @click="deleteElement(index)" />
 				</b-list-group-item>
 				<b-list-group-item>
 					<b-btn :id="property + '_array_button_add'" class="col" variant="light" type="button" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
@@ -80,6 +82,10 @@
 	</record-field>
 </template>
 <style lang="scss" scoped>
+
+.list-item {
+	display: inline-flex !important;
+}
 
 .add-button {
 	height: 2.5em;
@@ -127,6 +133,7 @@ export default {
 	props: {
 		tabFormat: { type: Boolean, default: true },
 		wrapped: { type: Boolean, default: true },
+		showDelete: { type: Boolean, default: false }
 	},
 	data() {
 		return {
@@ -170,14 +177,6 @@ export default {
 			}
 
 			return `#${index +1}`
-		},
-		doMinus() {
-			// it's safe to pop() a zero-length array
-			if (this.value.length > this.minimum) {
-				this.$store.commit('popValue', { p: this.parent, prop: this.property, val: this.value })
-				return true
-			}
-			return false
 		},
 		doPlus() {
 			if (this.maximum === undefined || this.value.length < this.maximum) {

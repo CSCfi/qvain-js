@@ -61,7 +61,7 @@
 
 				<b-button-group size="sm" v-if="!loading && selectedSchema" class="save-pub-btns">
 					<b-button
-						id="editor_button_save_top" 
+						id="editor_button_save_top"
 						:variant="isSaveDisabled ? 'outline-secondary' : 'success'"
 						@click="save"
 						:disabled="isSaveDisabled"
@@ -155,6 +155,10 @@
 				<li>In Fairdata IDA (you want to select files from IDA): "Select IDA files"</li>
 				<li>Somewhere else (you want to link files from remote location): "Link Remote Resources"</li>
 				</ul></p>
+
+				<p>
+					You can also make descriptions without any files. In that case, please select either one. The selection cannot be re-done, so if you are not sure whether you'll add files later, select the one you think you'll need in the future.
+				</p>
 			</div>
 		</div>
 		<div v-else>
@@ -401,7 +405,7 @@ export default {
 					this.validator.validateData(data)
 				}					
 				// the data has been changed after the initial load by the user
-				if (mutation.type == 'updateValue' || mutation.type == 'replace') {
+				if (mutation.type === 'updateValue' || mutation.type === 'deleteArrayValue' || mutation.type === 'replace') {
 					this.isDataChanged = true
 				}
 			})

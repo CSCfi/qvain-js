@@ -21,54 +21,119 @@
 		<b-alert variant="danger" :show="!!error" dismissible @dismissed="error = null">{{ error }}</b-alert>
 
 		<!-- table -->
-		<b-table id="dataset-list" ref="datasetTable" :items="datasetList" :fields="fields" select-mode="single" striped hover show-empty selectable :tbody-tr-class="rowClass" filter="truthy value" :filter-function="filter" no-provider-filtering no-provider-sorting :busy.sync="isBusy" primary-key="id" :tbody-transition-props="{'name': 'datasets-flip'}">
-			<template slot="published" slot-scope="row">
-				<div class="dataset-row-publish-status">
-					<font-awesome-icon icon="circle" class="text-primary" v-if="row.item.published && !isItemPublishedAndHasUpdates(row.item)" />
-					<font-awesome-icon icon="circle" class="text-warning" v-else-if="row.item.published && isItemPublishedAndHasUpdates(row.item)" />
-					<font-awesome-icon icon="circle" class="text-success" v-else />
-				</div>
+		<b-table id="dataset-list"
+				ref="datasetTable"
+				:items="datasetList"
+				:fields="fields"
+				striped
+				:tbody-tr-class="rowClass"
+				filter="truthy value"
+				:filter-function="filter"
+				:busy.sync="isBusy"
+				primary-key="id"
+				:tbody-transition-props="{'name': 'datasets-flip'}">
+			<template slot="tree_actions" slot-scope="row">
+				<b-button-toolbar key-nav class="row-main-actions">
+					<b-button-group class="mr-1">
+						<b-button
+							variant="secondary"
+							@click.stop="row.toggleDetails()">
+							<font-awesome-icon
+								:icon="row.detailsShowing ? 'chevron-down' : 'chevron-right'"
+								fixed-width />
+						</b-button>
+					</b-button-group>
+				</b-button-toolbar>
+			</template>
+			<template slot="actions" slot-scope="row">
+				<b-button-group size="sm" class="mr-1">
+					<b-button
+						:variant="row.item.identifier == null ? 'outline-secondary' : 'primary'"
+						@click.stop="view(row.item.identifier)"
+						:disabled="row.item.identifier == null">
+						<font-awesome-icon icon="external-link-alt" fixed-width />
+						Etsin
+					</b-button>
+				</b-button-group>
 			</template>
 			<template slot="owner" slot-scope="data">
 				<span v-b-tooltip.hover.auto :title="data.item.uid">{{ data.item.owner }}</span>
 			</template>
 			<template slot="preservation_state" slot-scope="data">
-				<preservation-state :state="data.item.preservation_state"/>
+				<preservation-state :state="data.item.preservation_state" />
 			</template>
 			<template slot="created" slot-scope="row">
-				{{ friendlyDate(row.item.created) }} ago
-				<p style="margin-bottom: 0px;" class="text-muted"><small>{{ readableIso(row.item.created) }}</small></p>
+				<p class="text-muted" @click.stop="editDataset(row.item)">
+					{{ friendlyDate(row.item.created) }} ago<br />
+					<small>{{ readableIso(row.item.created) }}</small>
+				</p>
 			</template>
 			<template slot="title" slot-scope="row">
-				<h5 class="mb-1">{{ preferredLanguage(row.item.title) }}
+				<h5 class="mb-1" @click.stop="editDataset(row.item)">
+					<span class="dataset-row-publish-status" @click.stop="editDataset(row.item)">
+						<font-awesome-icon icon="circle" class="text-primary" v-if="row.item.published && !isItemPublishedAndHasUpdates(row.item)" />
+						<font-awesome-icon icon="circle" class="text-warning" v-else-if="row.item.published && isItemPublishedAndHasUpdates(row.item)" />
+						<font-awesome-icon icon="circle" class="text-success" v-else />
+					</span>
+					{{ preferredLanguage(row.item.title) }}
 					<b-badge v-if="row.item.next !== null" variant="warning" class="old-version">Old version</b-badge>
 				</h5>
-				<p v-if="row.item.description" class="text-muted">
+				<p v-if="row.item.description" class="text-muted" @click.stop="editDataset(row.item)">
 					<small>{{ preferredLanguage(row.item.description) }}</small>
 				</p>
 			</template>
-			<template slot="actions" slot-scope="row">
-				<div class="actions">
-					<b-button-group>
-						<b-button variant="primary" size="sm" @click.stop="open(row.item.id)"><font-awesome-icon icon="pen" fixed-width />Edit</b-button>
-						<b-button v-if="!row.item.published || isItemPublishedAndHasUpdates(row.item)" variant="success" size="sm" @click="itemToBePublished = row.item" v-b-modal.publishModal>Publish</b-button>
-						<b-button variant="primary" size="sm" @click.stop="view(row.item.identifier)" :disabled="row.item.identifier == null"><font-awesome-icon icon="external-link-alt" fixed-width />View in Etsin</b-button>
-
-						<b-dropdown variant="primary" right text="More" size="sm">
-							<b-dropdown-item-button size="sm" v-b-modal="'dataset-versions-modal'" @click="activeInModal = row.item.id" :disabled="row.item.versions < 1">
-								<font-awesome-icon icon="history" fixed-width />Versions
-							</b-dropdown-item-button>
-
-							<b-dropdown-item-button size="sm" variant="danger" @click="itemToBeDeleted = row.item" v-b-modal.deleteModal>
-								<font-awesome-icon icon="trash" fixed-width />Delete
-							</b-dropdown-item-button>
-						</b-dropdown>
+			<template slot="row-details" slot-scope="row">
+				<b-button-toolbar key-nav>
+					<b-button-group size="sm" class="mr-1">
+						<b-button
+							variant="primary"
+							@click.stop="editDataset(row.item)">
+							<font-awesome-icon icon="pen" fixed-width />
+							Edit
+						</b-button>
 					</b-button-group>
-				</div>
+					<b-button-group size="sm" class="mr-1">
+						<b-button
+							v-if="!row.item.published || isItemPublishedAndHasUpdates(row.item)"
+							variant="success"
+							@click="itemToBePublished = row.item"
+							v-b-modal.publishModal>
+							Publish
+						</b-button>
+					</b-button-group>
+					<b-button-group size="sm" class="mr-1">
+						<b-button
+							:variant="row.item.identifier == null ? 'outline-secondary' : 'primary'"
+							@click.stop="view(row.item.identifier)"
+							:disabled="row.item.identifier == null">
+							<font-awesome-icon icon="external-link-alt" fixed-width />
+							View in Etsin
+						</b-button>
+					</b-button-group>
+					<b-button-group size="sm" class="mr-1">
+						<b-button
+							:variant="row.item.versions < 1 ? 'outline-secondary' : 'secondary'"
+							v-b-modal="'dataset-versions-modal'"
+							@click="activeInModal = row.item.id"
+							:disabled="row.item.versions < 1">
+							<font-awesome-icon icon="history" fixed-width />
+							Versions
+						</b-button>
+					</b-button-group>
+					<b-button-group size="sm" class="mr-1">
+						<b-button
+							variant="danger"
+							@click="itemToBeDeleted = row.item"
+							v-b-modal.deleteModal>
+							<font-awesome-icon icon="trash" fixed-width />
+							Delete
+						</b-button>
+					</b-button-group>
+				</b-button-toolbar>
 			</template>
-            <div slot="table-busy" class="text-center text-primary my-2">
-                <b-spinner class="align-middle"></b-spinner>
-            </div>
+			<div slot="table-busy" class="text-center text-primary my-2">
+				<b-spinner class="align-middle"></b-spinner>
+			</div>
 		</b-table>
 
 		<!-- modals -->
@@ -80,8 +145,7 @@
 			ok-title="Delete"
 			cancel-variant="primary"
 			ok-variant="danger"
-			@ok="del"
-		>
+			@ok="del">
 			<p>
 				You are about to delete {{ itemToBeDeleted.published ? "published" : "draft" }} dataset "{{ preferredLanguage(itemToBeDeleted.title) }}".
 				This action cannot be reversed. Are you sure you want to delete the dataset?
@@ -103,7 +167,6 @@
 		</b-modal>
 		<publish-modal ref="publishErrorModal" id="publishErrorModal" :error="publishError" @hidden="publishError = null"></publish-modal>
 		<dataset-versions-modal :dataset="activeInModal"></dataset-versions-modal>
-
 	</b-container>
 </template>
 
@@ -121,23 +184,33 @@
 		}
 	}
 
-	.actions {
-		width: 265px !important;
-		button {
-			margin-right: 10px;
+	.b-table-details > .container > .row {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		.col:first-child {
+			align-self: flex-start;
+		}
+
+		.col:last-child {
+			align-self: flex-end;
+		}
+	}
+
+	.table td {
+		.text-muted {
+			margin-bottom: 0;
 		}
 	}
 
 	.table td:nth-child(2), .table td:nth-child(2) p {
 		text-align: left !important ;
 		vertical-align: middle !important;
-
-		.text-muted {
-			margin-bottom: 0;
-		}
 	}
 
 	.table td:nth-child(2) h5 {
+		margin-bottom: 0 !important;
 		font-weight: 300 !important;
 	}
 
@@ -150,41 +223,20 @@
 
 	.table td:nth-child(1) {
 		div {
-			text-align: center !important ;
+			text-align: left !important ;
 			vertical-align: middle !important;
 			p {
 				margin-bottom: 0;
 			}
 		}
 	}
-</style>
 
-
-<style>
-	.old-version {
-		color: white;
-		margin-left: 0em;
-		margin-top: 0.2em;
-		position: relative;
-		bottom: 0.12em;
+	.row-main-actions {
+		.btn-group {
+			margin-top: 0.1em;
+		}
 	}
 
-	/* controls */
-	.dataset-filter__button.btn-outline-success:focus {
-		box-shadow: none !important;
-	}
-
-	table#dataset-list thead > tr > th {
-		border-bottom: 0px;
-		border-top: 0px;
-	}
-
-	table#dataset-list.table-striped tbody tr:focus {
-		box-shadow: none !important;
-	}
-	.b-table-row-selected td, .b-table-row-selected {
-		background-color: rgba(0, 0, 0, 0.05)!important;
-	}
 </style>
 
 <script>
@@ -200,11 +252,32 @@ import formatDate from 'date-fns/format'
 
 // id owner created modified published identifier title{} description{} preservation_state
 const fields = [
-	{ label: "Published",   key: "published",          sortable: false },
-	{ label: "Title",       key: "title",              sortable: true, formatter: 'preferredLanguage' },
-	{ label: "Created",     key: "created",            sortable: true },
-	{ label: "PAS State",   key: "preservation_state", sortable: false },
-	{ label: "Actions",     key: "actions",            sortable: false },
+	{
+		label: "Details",
+		key: "tree_actions",
+		sortable: false,
+	},
+	{
+		label: "Dataset",
+		key: "title",
+		sortable: true,
+		formatter: 'preferredLanguage'
+	},
+	{
+		label: "Created",
+		key: "created",
+		sortable: true
+	},
+	{
+		label: "PAS",
+		key: "preservation_state",
+		sortable: true
+	},
+	{
+		label: "",
+		key: "actions",
+		sortable: false
+	},
 ]
 
 function getApiError(error) {
@@ -271,8 +344,11 @@ export default {
 				this.isBusy = false
 			}
 		},
-		open(id) { // should maybe later be changed to link so that accessability is better
-			this.$router.push({ name: 'editor', params: { id: id }})
+		editDataset(item) {
+			this.$router.push({ name: 'editor', params: { id: item.id }})
+		},
+		clickedRow(item) {
+			item._showDetails = !item._showDetails
 		},
 
 		async publish() {
