@@ -155,6 +155,10 @@
 				<li>In Fairdata IDA (you want to select files from IDA): "Select IDA files"</li>
 				<li>Somewhere else (you want to link files from remote location): "Link Remote Resources"</li>
 				</ul></p>
+
+				<p>
+					You can also make descriptions without any files. In that case, please select either one. The selection cannot be re-done, so if you are not sure whether you'll add files later, select the one you think you'll need in the future.
+				</p>
 			</div>
 		</div>
 		<div v-else>
