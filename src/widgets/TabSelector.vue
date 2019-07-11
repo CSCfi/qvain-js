@@ -201,8 +201,8 @@ export default {
 		uiForDef: function() {
 			return ('$deref' in this.schema && this.$store.state.hints[this.schema['$deref']]) || {}
 		},
-		uiTab: function() {
-			return this.$store.state.hints[this.path] && this.$store.state.hints[this.path]['tab']
+		uiTab() {
+			return (this.$store.state.hints[this.path] && this.$store.state.hints[this.path]['tab']) || this.uiForSchema['tab']
 		},
 		myTab: function() {
 			return typeof this.uiTab === 'string' ? this.uiTab : this.tab
