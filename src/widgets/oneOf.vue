@@ -1,46 +1,28 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<wrapper :id="property + '_oneOf'" :wrapped="!inArray">
-		<template v-if="!both">
-			<div v-if="chosen === null" class="conditional-wrapper">
-				<b-button-group>
-					<b-button
-						v-for="(sub, i) in schema['oneOf']"
-						variant="primary"
-						:key="'oneOfSel' + i"
-						@click="setChosen(i)">
-							{{ sub['title'] || '#'+i }}
-					</b-button>
-				</b-button-group>
-			</div>
-			<b-textarea v-if="false" :rows="15" :value="JSON.stringify(schemaForChosen, null, 2)"></b-textarea>
-			<TabSelector
-				v-if="chosen !== null"
-				:schema="schemaForChosen"
-				:path="newPath('oneOf/' + chosen)"
-				:value="value"
-				:parent="parent"
-				:property="property"
-				:tab="myTab"
-				:activeTab="activeTab"
-				:depth="depth"
-				:key="'oneOf-'+chosen" />
-		</template>
-		<template v-else>
-			<div v-for="propName in schema.oneOf.map(obj => obj.title)" :key="propName" style="padding-top: 12px; padding-bottom: 12px;">
-				<TabSelector
-					:required="(schema.required || []).includes(propName)"
-					:schema="schema.oneOf.find(item => item.title === propName)"
-					:path="newPath('oneOf/' + propName)"
-					:value="value[propName]"
-					:parent="value"
-					:property="propName"
-					:tab="myTab"
-					:activeTab="activeTab"
-					:depth="depth"
-					:key="propName" />
-			</div>
-		</template>
+	<wrapper :id="property + '_oneOf'" :wrapped="typeof wrapped === 'undefined' ? !inArray : wrapped">
+		<div v-if="chosen === null" class="conditional-wrapper">
+			<b-button-group>
+				<b-button
+					v-for="(sub, i) in schema['oneOf']"
+					variant="primary"
+					:key="'oneOfSel' + i"
+					@click="setChosen(i)">
+						{{ sub['title'] || '#'+i }}
+				</b-button>
+			</b-button-group>
+		</div>
+		<TabSelector
+			v-if="chosen !== null"
+			:schema="schemaForChosen"
+			:path="newPath('oneOf/' + chosen)"
+			:value="value"
+			:parent="parent"
+			:property="property"
+			:tab="myTab"
+			:activeTab="activeTab"
+			:depth="depth"
+			:key="'oneOf-'+chosen" />
 	</wrapper>
 </template>
 
@@ -70,9 +52,13 @@ export default {
 		Wrapper,
 	},
 	props: {
-		both: {
+		wrapped: {
 			type: Boolean,
-			default: false
+			required: false
+		},
+		oneOfFunc: {
+			type: Function,
+			required: false
 		}
 	},
 	data() {
@@ -102,15 +88,23 @@ export default {
 			return this.schema['oneOf'].map(sub => sub['title'])
 		},
 		currentType() {
-			return this.value && this.value[IDENTIFYING_FIELD] || null
+			const valueType = this.value && this.value[IDENTIFYING_FIELD]
+			const uiSchemaType = this.oneOfFunc && this.value && this.oneOfFunc(this.value)
+			if (!(valueType === null || typeof valueType === 'undefined')) {
+				return valueType
+			} else if (!(uiSchemaType === null || typeof uiSchemaType === 'undefined')) {
+				return uiSchemaType
+			}
+
+			return null
 		},
 	},
 	watch: {
 		currentType: {
 			immediate: true,
-			handler(val) {
-				if (!val) return;
-				let index = this.possibleTypes.indexOf(this.currentType);
+			handler() {
+				if (typeof this.currentType === 'undefined' || this.currentType === null) return;
+				let index = isNaN(this.currentType) ? this.possibleTypes.indexOf(this.currentType) : this.currentType
 				this.chosen = index >= 0 ? index : null;
 			},
 		},
