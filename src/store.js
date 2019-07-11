@@ -72,17 +72,16 @@ export default new Vuex.Store({
 		addTab(state, payload) {
 			Vue.set(state.tabui, payload.tab, payload.schema)
 		},
-		initValue(state, payload) {
+		initValue(state, payload, defaultValue) {
 			// set default value for license if ida schema
-			if (typeof state.metadata.id === 'undefined' && state.metadata.schemaId === 'metax-ida' && payload.prop === 'license') {
-				Vue.set(payload.p, payload.prop, [{
-					"identifier":"http://uri.suomi.fi/codelist/fairdata/license/code/CC-BY-4.0",
-					"title": {
-						"sv": '',
-						"en":"Creative Commons Attribution 4.0 International (CC BY 4.0)",
-						"fi":"Creative Commons Nimeä 4.0 Kansainvälinen (CC BY 4.0)",
-						"und":"Creative Commons Nimeä 4.0 Kansainvälinen (CC BY 4.0)"
-				}}])
+			const isNewDataset = typeof state.metadata.id === 'undefined'
+			const isIDA = state.metadata.schemaId === 'metax-ida'
+			//const shouldAddDefault = 'access_type' in payload.p
+			//const isLicenseField = payload.prop === 'license'
+			// move this to tabselector
+
+			if (isNewDataset && isIDA && defaultValue) {
+				Vue.set(payload.p, payload.prop, defaultValue)
 			} else {
 				Vue.set(payload.p, payload.prop, payload.val)
 			}
