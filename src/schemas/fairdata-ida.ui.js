@@ -569,7 +569,6 @@ export default {
 		'tab': 'extra',
 		'widget': 'reference-data',
 		'props': {
-			'tab': 'extra',
 			'esIndex': "reference_data",
 			'esDoctype': "preservation_event",
 			'typeahead': false,
