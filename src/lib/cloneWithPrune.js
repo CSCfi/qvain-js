@@ -1,6 +1,7 @@
 /* ADD_LICENSE_HEADER */
 /*
-	Make a deep clone of an object, pruning specified keys and values. Only supports JSON primitive types.
+	Make a deep clone of an object, removing specified keys and values and pruning empty branches and leaves.
+	Only supports JSON primitive types.
 
 	Loosely based on deepCopy:
 
