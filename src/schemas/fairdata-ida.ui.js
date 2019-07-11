@@ -5,7 +5,7 @@ export default {
 		{ label: 'Actors', uri: 'actors' },
 		{ label: 'Rights and Licenses', uri: 'rights' },
 		{ label: 'Temporal and Spatial Coverage', uri: 'coverage' },
-		{ label: 'Relations and History', uri: 'relations' },
+		{ label: 'Related Material and History', uri: 'relations' },
 		{ label: 'Files', uri: 'files' },
 		{ label: 'Extra', uri: null },
 	],
