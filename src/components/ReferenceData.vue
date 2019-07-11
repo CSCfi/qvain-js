@@ -240,8 +240,8 @@ export default {
 				// remove special characters, see for list: http://lucene.apache.org/core/3_4_0/queryparsersyntax.html
 				searchQuery = searchQuery.replace(/(\+|-|&&|\|\||!|\(|\)|{|}|\[|\]|\^|"|~|\*|\?|:|\\)/g,"")
 				const q = this.selectedLang ?
-					`label.${this.selectedLang.id}:*${searchQuery}*`:
-					`*${searchQuery}*`
+					`label.${this.selectedLang.id}:${searchQuery}*`:
+					`${searchQuery}*`
 				this.searchReferenceData(q)
 			}
 			this.isLoading = false
