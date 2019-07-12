@@ -1,6 +1,6 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<wrapper :id="property + '_oneOf'" :wrapped="typeof wrapped === 'undefined' ? !inArray : wrapped">
+	<wrapper v-if="!single" :id="property + '_oneOf'" :wrapped="typeof wrapped === 'undefined' ? !inArray : wrapped">
 		<div v-if="chosen === null" class="conditional-wrapper">
 			<b-button-group>
 				<b-button
@@ -8,7 +8,7 @@
 					variant="primary"
 					:key="'oneOfSel' + i"
 					@click="setChosen(i)">
-						{{ sub['title'] || '#'+i }}
+					{{ sub['title'] || '#'+i }}
 				</b-button>
 			</b-button-group>
 		</div>
@@ -24,6 +24,38 @@
 			:depth="depth"
 			:key="'oneOf-'+chosen" />
 	</wrapper>
+
+	<record-field v-else :required="isRequired" :wrapped="wrapped">
+		<title-component slot="title" :title="uiLabel" />
+		<small slot="help" class="text-muted">
+			{{ uiDescription }}
+		</small>
+		<div slot="input">
+			<div class="conditional-wrapper single">
+				<b-button-group>
+					<b-button
+						v-for="(sub, i) in schema['oneOf']"
+						:key="'oneOfSel' + i"
+						:class="{active: chosen === i}"
+						variant="primary"
+						@click="setChosen(i)">
+						{{ sub['title'] || '#'+i }}
+					</b-button>
+				</b-button-group>
+			</div>
+			<TabSelector
+				v-if="chosen !== null"
+				:schema="schemaForChosen"
+				:path="newPath('oneOf/' + chosen)"
+				:value="value"
+				:parent="parent"
+				:property="property"
+				:tab="myTab"
+				:activeTab="activeTab"
+				:depth="depth"
+				:key="'oneOf-'+chosen" />
+		</div>
+	</record-field>
 </template>
 
 <style lang="scss" scoped>
@@ -31,35 +63,48 @@
 	width: 100%;
 	display: inline-flex;
 	justify-content: left;
+	
+	&.single {
+		margin-top: 0.5rem;
+		margin-bottom: 0.5rem;
+	}
 }
-
 </style>
-
 
 <script>
 import Wrapper from '@/components/Wrapper.vue'
+import RecordField from '@/composites/RecordField.vue'
+import TitleComponent from '@/partials/Title.vue'
 import vSchemaBase from '@/widgets/base.vue'
 
 // TODO: find a more generic way to detect relevant oneOf schema
 const IDENTIFYING_FIELD = '@type'
 
 export default {
+	name: 'SchemaOneof',
 	extends: vSchemaBase,
-	name: 'schema-oneof',
 	description: "generic oneof",
 	schematype: 'any',
 	components: {
 		Wrapper,
+		RecordField,
+		TitleComponent,
 	},
 	props: {
 		wrapped: {
 			type: Boolean,
-			required: false
+			required: false,
 		},
 		oneOfFunc: {
 			type: Function,
-			required: false
-		}
+			required: false,
+			default: null,
+		},
+		single: {
+			type: Boolean,
+			required: false,
+			default: false,
+		},
 	},
 	data() {
 		return {
@@ -108,8 +153,6 @@ export default {
 				this.chosen = index >= 0 ? index : null;
 			},
 		},
-	},
-	created() {
 	},
 }
 </script>
