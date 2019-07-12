@@ -10,7 +10,12 @@ export default {
 		{ label: 'Extra', uri: null },
 	],
 	//'': { 'tab': 'description' },
-	'': { 'tab': 'extra', 'order': ["title", "description", "issued", "language"] },
+	'': { 'tab': 'extra',
+		'order': [
+			"title", "description", "issued", "language",
+			"creator", "publisher",
+		],
+	},
 	//'': { 'tab': 'extra' },
 	'#/definitions/langString': {
 		'widget': 'i18n-string',
@@ -822,7 +827,7 @@ export default {
 	},
 	'/properties/access_rights/properties/license/*/oneOf/1': {
 		'title': ' '
-	},	
+	},
 	'/properties/modified': {
 		'tab': 'extra',
 		'title': "modified",
