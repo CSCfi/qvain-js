@@ -35,7 +35,10 @@
 			</template>
 
 			<template slot="row-details" slot-scope="data">
-				<PASMetadata v-if="data.item.type === 'files'" :identifier="data.item.identifier" :file="data.item.file" />
+				<PASMetadata v-if="data.item.type === 'files'"
+					:identifier="data.item.identifier"
+					:file="data.item.file"
+					@saved="updatePasMetadata" />
 				<!--<PASMetadata v-else :identifier="data.item.identifier" :folder="data.item" />-->
 			</template>
 		</b-table>
@@ -134,6 +137,9 @@ export default {
 		}
 	},
 	methods: {
+		updatePasMetadata(param) {
+			console.log('saved', param)
+		},
 		goTo(path) {
 			this.$router.push({
 				name: 'files',

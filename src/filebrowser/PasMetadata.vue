@@ -179,6 +179,7 @@ export default {
 				} else {
 					this.saveResult = 'success';
 					this.dataFromServer = success[0].object; // set ui values based on save result
+					this.$emit('saved', this.dataFromServer)
 				}
 			} catch (error) {
 				this.saveResult = 'failed';
