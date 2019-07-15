@@ -654,3 +654,14 @@ body {
 		opacity: 0.5;
 	}
 }
+
+.editor-index-navigation {
+	z-index: 0 !important;
+}
+
+.nav-link .badge {
+    display: flex;
+	padding-left: 1em;
+	padding-right: 1em;
+    align-items: center;
+}
