@@ -669,11 +669,11 @@ body {
 
 .editor-index-navigation {
 	z-index: 0 !important;
-	.nav-link {
-		overflow:hidden; 
-		white-space: nowrap;
-		word-wrap: none;
-		text-overflow: ellipsis;
-		width: 100%;
-	}
+}
+
+.nav-link .badge {
+    display: flex;
+	padding-left: 1em;
+	padding-right: 1em;
+    align-items: center;
 }
