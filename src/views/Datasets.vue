@@ -486,8 +486,6 @@ export default {
 			this.error = null
 			try {
 				await apiClient.delete("/datasets/" + this.itemToBeDeleted.id)
-				this.$root.showAlert("Successfully deleted dataset", "success")
-
 				await this.fetchDataset()
 				this.$refs.datasetTable.refresh()
 			} catch (e) {
