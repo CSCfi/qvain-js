@@ -28,6 +28,16 @@ export default new Vuex.Store({
 		tabui: {},
 		validation: {},
 		vState: {},
+		datasetsView: {
+			currentPage: 1,
+			perPage: 20,
+			datasetList: null,
+			showState: 'all',
+			filterString: '',
+			filteredCount: null,
+			sortBy: null,
+			sortDesc: false,
+		},
 		stats: {
 			total: 0,
 			pass: 0,
@@ -154,6 +164,11 @@ export default new Vuex.Store({
 		},
 		setLanguages(state, payload) {
 			state.languages = Object.assign({}, state.languages, payload)
+		},
+		updateDatasetsView(state, payload) {
+			for (const key in payload) {
+				Vue.set(state.datasetsView, key, payload[key])
+			}
 		},
 	},
 	getters: {
