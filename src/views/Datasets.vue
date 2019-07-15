@@ -332,6 +332,23 @@
 
 </style>
 
+<style>
+
+	.created-column {
+		width: 200px !important;
+	}
+
+	.details-column {
+		width: 120px !important;
+	}
+	.actions-column {
+		width: 100px !important;
+	}
+	.pas-column {
+		width: 100px !important;
+	}
+</style>
+
 
 <script>
 import apiClient from '@/api/client.js'
@@ -348,27 +365,32 @@ const fields = [
 		label: "Details",
 		key: "tree_actions",
 		sortable: false,
+		class: 'details-column',
 	},
 	{
 		label: "Dataset",
 		key: "title",
 		sortable: true,
 		formatter: 'preferredLanguage',
+		class: 'dataset-column',
 	},
 	{
 		label: "Created",
 		key: "created",
 		sortable: true,
+		class: 'created-column',
 	},
 	{
 		label: "PAS",
 		key: "preservation_state",
 		sortable: true,
+		class: 'pas-column',
 	},
 	{
 		label: "",
 		key: "actions",
 		sortable: false,
+		class: 'actions-column',
 	},
 ]
 
