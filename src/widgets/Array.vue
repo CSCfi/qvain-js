@@ -148,35 +148,11 @@ export default {
 		tabTitle(index) {
 			const objectAtIndexExists = typeof this.parent[this.property][index] !== 'undefined'
 			if (!objectAtIndexExists) {
-				return `#${index +1}`
+				return `#${ index+1 }`
 			}
 
 			const tabObject = this.parent[this.property][index]
-			const tabObjectType = tabObject['@type']
-
-			if (tabObjectType === 'Person' && tabObject.name) {
-				return tabObject.name
-			}
-
-			if (tabObjectType === 'Person') {
-				return `#${index +1} (Person)`
-			}
-
-			if (tabObjectType === 'Organization') {
-				// the highest organization level is nested deepest
-				let obj = tabObject
-				while (obj.is_part_of) {
-					obj = obj.is_part_of
-				}
-				if (obj && obj.name && (obj.name['fi'] || obj.name['en'])) {
-					return obj.name['fi'] || obj.name['en']
-				}
-			}
-			if (tabObjectType === 'Organization') {
-				return `#${index +1} (Organization)`
-			}
-
-			return `#${index +1}`
+			return this.nestedTitle(tabObject, `#${ index+1 } `)
 		},
 		doPlus() {
 			if (this.maximum === undefined || this.value.length < this.maximum) {
