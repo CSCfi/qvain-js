@@ -47,7 +47,7 @@ export default {
 		return {
 			validDefault: 'This field is valid',
 			invalidDefault: 'This field is invalid',
-			uncertainDefault: 'This field might be valid. Some values might be empty.',
+			uncertainDefault: 'Enter a value in at least one language, Other languages can then be left empty',
 		}
 	},
 	components: {
