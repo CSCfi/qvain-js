@@ -19,34 +19,49 @@
 					@update="setFilterString"
 				/>
 			</b-input-group>
+		</b-button-toolbar>
 
-			<div class="pagination-wrapper">
+
+		<!-- alerts -->
+		<b-alert variant="danger" :show="!!error" dismissible @dismissed="error = null">{{ error }}</b-alert>
+
+		<b-row>
+			<b-col offset-md="4" md="2">
 				<b-pagination
+					size="sm"
+					align="center"
+					hide-goto-end-buttons
+					hide-ellipsis
 					:value="datasetsView.currentPage"
 					:per-page="datasetsView.perPage"
 					:total-rows="datasetsView.filteredCount"
 					aria-controls="dataset-list"
-					@change="setPage"
-				/>
-
-				<div class="per-page">
-					<span class="per-page-label">Items per page</span>
-					<b-button-group class="per-page-btns">
-						<b-btn
-							v-for="option in perPageOptions"
-							:key="option"
-							:pressed="datasetsView.perPage == option"
-							class="btn"
-							@click="() => setPerPage(option)"
-						>{{ option }}
-						</b-btn>
-					</b-button-group>
-				</div>
-			</div>
-		</b-button-toolbar>
-
-		<!-- alerts -->
-		<b-alert variant="danger" :show="!!error" dismissible @dismissed="error = null">{{ error }}</b-alert>
+					first-text="First"
+					prev-text="Prev"
+					next-text="Next"
+					last-text="Last"
+					label-page="Page"
+					@input="setPage">
+				</b-pagination>
+			</b-col>
+			<b-col md="2">
+				<b-button-group size="sm">
+					<b-btn
+						@click="() => setPerPage(0)">
+						show all
+					</b-btn>
+					<b-btn
+						v-for="option in perPageOptionsFiltered"
+						:key="option"
+						
+						:pressed="datasetsView.perPage == option"
+						class="btn"
+						@click="() => setPerPage(option)"
+					>{{ option }}
+					</b-btn>
+				</b-button-group>
+			</b-col>
+		</b-row>
 
 		<!-- table -->
 		<b-table
@@ -68,6 +83,9 @@
 			@sort-changed="setSort"
 			@filtered="updateFiltered"
 		>
+			<template slot="row_idx" slot-scope="row">
+				{{ 1 + row.index + (datasetsView.currentPage-1)*datasetsView.perPage }}
+			</template>
 			<template slot="tree_actions" slot-scope="row">
 				<b-button-toolbar key-nav class="row-main-actions">
 					<b-button-group class="mr-1">
@@ -173,6 +191,42 @@
 			</div>
 		</b-table>
 
+		<b-row>
+			<b-col offset-md="4" md="2">
+				<b-pagination
+					hide-goto-end-buttons
+					size="sm"
+					align="center"
+					:value="datasetsView.currentPage"
+					:per-page="datasetsView.perPage"
+					:total-rows="datasetsView.filteredCount"
+					aria-controls="dataset-list"
+					first-text="First"
+					prev-text="Prev"
+					next-text="Next"
+					last-text="Last"
+					label-page="Page"
+					@input="setPage">
+				</b-pagination>
+			</b-col>
+			<b-col md="2">
+				<b-button-group size="sm">
+					<b-btn
+						@click="() => setPerPage(0)">
+						show all
+					</b-btn>
+					<b-btn
+						v-for="option in perPageOptionsFiltered"
+						:key="option"
+						
+						:pressed="datasetsView.perPage == option"
+						class="btn"
+						@click="() => setPerPage(option)"
+					>{{ option }}
+					</b-btn>
+				</b-button-group>
+			</b-col>
+		</b-row>
 		<!-- modals -->
 		<b-modal
 			v-if="itemToBeDeleted !== null"
@@ -274,79 +328,12 @@
 		}
 	}
 
-	.pagination-wrapper {
-		display: flex;
-		flex-wrap: wrap;
-		font-size: 14px;
-		margin: 0;
-		> * {
-			margin: 2px 4px;
-			flex-shrink: 1;
-			flex-grow: 1;
-		}
-	}
-
-	.per-page {
-		display: flex;
-		flex-wrap: nowrap;
-		flex-shrink: 1;
-		flex-grow: 1;
-
-		.per-page-label {
-			border-radius: 4px 0 0 4px;
-			padding: 0.1rem 0.75rem;
-			min-height: 31px;
-
-			color: #495057;
-			background-color: #e9ecef;
-			border: 1px solid #ced4da;
-			border-color: rgb(206, 212, 218);
-			border-right: none;
-
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			margin-right: 0;
-
-			overflow: hidden;
-			white-space: nowrap;
-			text-overflow: ellipsis;
-
-			flex-grow: 0.25;
-		}
-
-		.per-page-btns {
-			flex-grow: 1;
-			display: flex;
-
-			.btn:first-child {
-				padding: 0.1rem 0.5rem;
-				border-top-left-radius: 0;
-				border-bottom-left-radius: 0;
-			}
-
-			.btn {
-				flex-grow: 1;
-				padding: 0.1rem 0.5rem;
-				min-height: 31px;
-				font-size: inherit;
-
-				z-index: 1;
-				color: #007fad;
-				background-color: #fff;
-				border: 1px solid #dee2e6;
-				border-color: rgb(206, 212, 218);
-
-				&.active {
-					color: #fff;
-					background-color: #007fad;
-					border-color: #007fad;
-				}
-			}
-		}
+	.datasets-paging .btn-group {
+		margin-bottom: 1em;
 	}
 
 </style>
+
 
 <script>
 import apiClient from '@/api/client.js'
@@ -359,6 +346,10 @@ import formatDate from 'date-fns/format'
 
 // id owner created modified published identifier title{} description{} preservation_state
 const fields = [
+	{
+		label: "#",
+		key: "row_idx"
+	},
 	{
 		label: "Details",
 		key: "tree_actions",
@@ -600,6 +591,9 @@ export default {
 		filterRegExp() {
 			return new RegExp('.*' + this.datasetsView.filterString + '.*', 'ig')
 		},
+		perPageOptionsFiltered() {
+			return this.perPageOptions.filter(pageSize => pageSize < this.datasetsView.filteredCount)
+		}
 	},
 	async created() {
 		await this.fetchDataset()
