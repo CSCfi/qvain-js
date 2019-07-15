@@ -10,28 +10,28 @@
 					class="dataset-filter__button"
 					:pressed="datasetsView.showState === 'all'"
 					@click="()=>setShowState('all')"
-					:variant="datasetsView.showState === 'all' ? 'secondary' : 'outline-secondary'">
+					variant="secondary">
 					All
 				</b-btn>
 				<b-btn
 					class="dataset-filter__button"
 					:pressed="datasetsView.showState === 'draft'"
 					@click="()=>setShowState('draft')"
-					:variant="datasetsView.showState === 'draft' ? 'success' : 'outline-secondary'">
+					variant="success">
 					Draft
 				</b-btn>
 				<b-btn
 					class="dataset-filter__button"
 					:pressed="datasetsView.showState === 'published'"
 					@click="()=>setShowState('published')"
-					:variant="datasetsView.showState === 'published' ? 'primary' : 'outline-secondary'">
+					variant="primary">
 					Published
 				</b-btn>
 				<b-btn
 					class="dataset-filter__button"
 					:pressed="datasetsView.showState === 'unpublishedchanges'"
 					@click="()=>setShowState('unpublishedchanges')"
-					:variant="datasetsView.showState === 'unpublishedchanges' ? 'warning' : 'outline-secondary'">
+					variant="warning">
 					Unpublished Changes
 				</b-btn>
 			</b-button-group>
@@ -352,6 +352,10 @@
 
 	.datasets-paging .btn-group {
 		margin-bottom: 1em;
+	}
+
+	.btn.active {
+		font-weight: 600 !important;
 	}
 
 </style>
