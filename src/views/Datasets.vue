@@ -26,7 +26,7 @@
 					:per-page="datasetsView.perPage"
 					:total-rows="datasetsView.filteredCount"
 					aria-controls="dataset-list"
-					@change="setPage"
+					@input="setPage"
 				/>
 
 				<div class="per-page">
