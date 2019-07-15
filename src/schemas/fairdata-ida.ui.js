@@ -223,6 +223,7 @@ export default {
 		'tab': 'actors',
 		'title': "Publisher",
 		'widget': "schema-oneof",
+		'description': "An agent who has permission to distribute the dataset or who has made the dataset available.",
 		'props': {
 			single: true,
 			wrapped: true,
