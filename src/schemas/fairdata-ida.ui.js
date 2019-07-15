@@ -518,8 +518,8 @@ export default {
 		},
 		'placeholder': "– choose contributor type –",
 		'label': "contributor type",
-		'description': "Type of contribution the given creator had on the dataset.",
-		'help': "Select the type of contribution the creator had on the dataset.",
+		'description': "Type of contribution the given publisher had on the dataset.",
+		'help': "Select the type of contribution the publisher had on the dataset.",
 	},
 	'/properties/publisher/oneOf/*/properties/member_of/properties/contributor_type': {
 		'widget': 'reference-data',
@@ -534,8 +534,8 @@ export default {
 		},
 		'placeholder': "– choose contributor type –",
 		'label': "contributor type",
-		'description': "Type of contribution the creator had on the dataset.",
-		'help': "Select the type of contribution the creator had on the dataset.",
+		'description': "Type of contribution the publisher had on the dataset.",
+		'help': "Select the type of contribution the publisher had on the dataset.",
 	},
 	'/properties/publisher/oneOf/*/properties/contributor_role': {
 		'widget': 'reference-data',
@@ -550,8 +550,8 @@ export default {
 		},
 		'placeholder': "– choose contributor role –",
 		'label': "contributor role",
-		'description': "Role of the creator regarding this dataset.",
-		'help': "What was the role of the given creator on this dataset.",
+		'description': "Role of the publisher regarding this dataset.",
+		'help': "What was the role of the given publisher on this dataset.",
 	},
 	'/properties/publisher/oneOf/*/properties/telephone': {
 		'props': {
