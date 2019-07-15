@@ -173,31 +173,7 @@ export default {
 				return ""
 			}
 			const tabObject = this.value
-			const tabObjectType = tabObject['@type']
-
-			if (tabObjectType === 'Person' && tabObject.name) {
-				return tabObject.name
-			}
-
-			if (tabObjectType === 'Person') {
-				return `(Person)`
-			}
-
-			if (tabObjectType === 'Organization') {
-				// the highest organization level is nested deepest
-				let obj = tabObject
-				while (obj.is_part_of) {
-					obj = obj.is_part_of
-				}
-				if (obj && obj.name && (obj.name['fi'] || obj.name['en'])) {
-					return obj.name['fi'] || obj.name['en']
-				}
-			}
-			if (tabObjectType === 'Organization') {
-				return `(Organization)`
-			}
-
-			return ``
+			return this.nestedTitle(tabObject, "")
 		},
 		schemaForChosen() {
 			return this.chosen !== null ? this.schema['oneOf'][this.chosen] : {}
