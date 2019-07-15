@@ -666,3 +666,14 @@ body {
 		border-color: rgb(206, 212, 218);
 	}
 }
+
+.editor-index-navigation {
+	z-index: 0 !important;
+	.nav-link {
+		overflow:hidden; 
+		white-space: nowrap;
+		word-wrap: none;
+		text-overflow: ellipsis;
+		width: 100%;
+	}
+}

@@ -128,8 +128,9 @@
 								:variant="$route.params.tab === tab.uri ? 'info' : 'secondary'">
 								{{ index+1 }}
 							</b-badge>
-							&nbsp;&nbsp;
-							{{ tab.label }}
+							<small>
+								{{ tab.label }}
+							</small>
 						</b-nav-item>
 					</b-nav>
 				</b-col>
