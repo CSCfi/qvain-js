@@ -13,7 +13,6 @@
 					placeholder="Select Date"
 					monday-first
 					bootstrapStyling
-					typeable
 					format="dd.MM.yyyy"
 					:id="property + '_date'"
 					class="col"
