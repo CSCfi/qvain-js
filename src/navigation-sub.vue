@@ -18,34 +18,22 @@
 			</b-navbar-nav>
 			<b-navbar-nav key="links">
 				<b-button v-if="!isActiveRoute('datasets')" size="sm" variant="primary" key="datasets" to="/datasets">
-					<span v-if="isActiveRoute('home')">
-						<font-awesome-icon icon="table" />
-						&nbsp;
-						Datasets
-					</span>
-					<span v-else-if="isEditActive || isDraftActive">
-						<font-awesome-icon icon="table" />
-						&nbsp;
-						Datasets
-					</span>
-					<span v-else>
-						<font-awesome-icon icon="table" />
-						Datasets
-					</span>
+					<font-awesome-icon icon="table" />
+					&nbsp;
+					Datasets
 				</b-button>
 			</b-navbar-nav>
 			<b-navbar-nav class="ml-auto">
 				<b-button-group class="page-actions">
 					<b-button
-					id="button-new-dataset"
-
-					key="new"
-					:variant="isActiveRoute('editor') || isActiveRoute('tab') ? 'primary' : 'success'"
-					size="sm"
-					to="/dataset/new">
-					<font-awesome-icon icon="plus" />
-					&nbsp;
-					New dataset
+						id="button-new-dataset"
+						key="new"
+						:variant="isActiveRoute('editor') || isActiveRoute('tab') ? 'primary' : 'success'"
+						size="sm"
+						to="/dataset/new">
+						<font-awesome-icon icon="plus" />
+						&nbsp;
+						New dataset
 					</b-button>
 				</b-button-group>
 			</b-navbar-nav>
