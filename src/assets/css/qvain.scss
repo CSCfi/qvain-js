@@ -650,19 +650,7 @@ body {
 }
 
 .pagination {
-	.page-item {
-		flex-grow: 1;
-	}
-
-	.page-link {
-		flex-grow: 1;
-		height: 100%;
-		max-height: none;
-		min-height: 31px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0.1rem 0.75rem;
-		border-color: rgb(206, 212, 218);
+	.page-item.disabled {
+		opacity: 0.5;
 	}
 }
