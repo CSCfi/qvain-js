@@ -315,7 +315,6 @@ export default {
 					this.$store.commit('setMetadata', { id })
 					this.$router.replace({ name: 'tab', params: { id: id, tab: this.$route.params.tab }})
 
-					this.$root.showAlert("Success! Created as " + id, "success")
 				}
 				this.isDataChanged = false
 			} catch(error) {
