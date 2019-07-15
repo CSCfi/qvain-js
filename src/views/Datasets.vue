@@ -6,10 +6,34 @@
 		<!-- controls -->
 		<b-button-toolbar class="mb-4 tool-bar">
 			<b-button-group class="filter-buttons" size="sm">
-				<b-btn class="dataset-filter__button" :pressed="'datasetsView.showState' === 'all'" @click="()=>setShowState('all')" variant="secondary">All</b-btn>
-				<b-btn class="dataset-filter__button" :pressed="'datasetsView.showState' === 'draft'" @click="()=>setShowState('draft')" variant="success">Draft</b-btn>
-				<b-btn class="dataset-filter__button" :pressed="'datasetsView.showState' === 'published'" @click="()=>setShowState('published')" variant="primary">Published</b-btn>
-				<b-btn class="dataset-filter__button" :pressed="'datasetsView.showState' === 'unpublishedchanges'" @click="()=>setShowState('unpublishedchanges')" variant="warning">Unpublished Changes</b-btn>
+				<b-btn
+					class="dataset-filter__button"
+					:pressed="datasetsView.showState === 'all'"
+					@click="()=>setShowState('all')"
+					:variant="datasetsView.showState === 'all' ? 'secondary' : 'outline-secondary'">
+					All
+				</b-btn>
+				<b-btn
+					class="dataset-filter__button"
+					:pressed="datasetsView.showState === 'draft'"
+					@click="()=>setShowState('draft')"
+					:variant="datasetsView.showState === 'all' || datasetsView.showState === 'draft' ? 'success' : 'outline-secondary'">
+					Draft
+				</b-btn>
+				<b-btn
+					class="dataset-filter__button"
+					:pressed="datasetsView.showState === 'published'"
+					@click="()=>setShowState('published')"
+					:variant="datasetsView.showState === 'all' || datasetsView.showState === 'published' ? 'primary' : 'outline-secondary'">
+					Published
+				</b-btn>
+				<b-btn
+					class="dataset-filter__button"
+					:pressed="datasetsView.showState === 'unpublishedchanges'"
+					@click="()=>setShowState('unpublishedchanges')"
+					:variant="datasetsView.showState === 'all' || datasetsView.showState === 'unpublishedchanges' ? 'warning' : 'outline-secondary'">
+					Unpublished Changes
+				</b-btn>
 			</b-button-group>
 
 			<b-input-group class="search" size="sm" prepend="Search">
