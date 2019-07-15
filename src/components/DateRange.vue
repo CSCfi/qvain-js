@@ -13,7 +13,6 @@
 					:inline="false"
 					bootstrapStyling
 					monday-first
-					typeable
 					placeholder="From"
 					format="dd.MM.yyyy"
 					:disabledDates="disableBefore"
@@ -26,7 +25,6 @@
 					:inline="false"
 					monday-first
 					bootstrapStyling
-					typeable
 					format="dd.MM.yyyy"
 					placeholder="To"
 					:disabledDates="disableAfter"
