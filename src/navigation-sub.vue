@@ -79,11 +79,6 @@ export default {
 		},
 	},
 	methods: {
-		async logout() {
-			if (!await this.$auth.logout()) {
-				this.$root.showAlert("Failed to sign out. Please try again later.", "danger")
-			}
-		},
 		isActiveRoute(routeName) {
 			if (!this.$route.name) { return false }
 			return this.$route.name == routeName;
