@@ -6,7 +6,7 @@
 		</template>
 
 		<template slot="lead">
-			The Fairdata metadata editor.
+			Research Dataset Metadata Tool
 		</template>
 
 		<hr class="my-4">
