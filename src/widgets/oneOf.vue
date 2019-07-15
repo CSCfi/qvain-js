@@ -134,16 +134,14 @@ export default {
 	props: {
 		wrapped: {
 			type: Boolean,
-			required: false,
+			default: false,
 		},
 		oneOfFunc: {
 			type: Function,
-			required: false,
 			default: null,
 		},
 		single: {
 			type: Boolean,
-			required: false,
 			default: false,
 		},
 	},
