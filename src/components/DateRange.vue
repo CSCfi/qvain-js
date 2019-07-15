@@ -26,7 +26,6 @@ All Rights Reserved.
 					:inline="false"
 					bootstrapStyling
 					monday-first
-					typeable
 					placeholder="From"
 					format="dd.MM.yyyy"
 					:disabledDates="disableBefore"
@@ -39,7 +38,6 @@ All Rights Reserved.
 					:inline="false"
 					monday-first
 					bootstrapStyling
-					typeable
 					format="dd.MM.yyyy"
 					placeholder="To"
 					:disabledDates="disableAfter"

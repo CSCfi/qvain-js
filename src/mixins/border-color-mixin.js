@@ -46,9 +46,12 @@ export default {
 			//return colours[depth % 10]
 		},
 		listItemStyle(depth) {
-			const width = 6 //11 - depth;
+			const width = 2 //11 - depth;
 			if (depth < 2) return null
-			return { 'border-left': `solid ${width}px ${this.borderColor(depth)} !important` }
+			return {
+				'border-left': `solid ${width}px ${this.borderColor(depth)} !important`,
+				'padding-left':'10px'
+			}
 		},
 	},
 }

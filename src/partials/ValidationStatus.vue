@@ -5,6 +5,7 @@ Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
 	Eemeli Kouhia <eemeli.kouhia@gofore.com>
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Shreyas Deshpande <31839853+ShreyasDeshpande@users.noreply.github.com>
 
 License: GPLv3
 
@@ -60,7 +61,7 @@ export default {
 		return {
 			validDefault: 'This field is valid',
 			invalidDefault: 'This field is invalid',
-			uncertainDefault: 'This field might be valid. Some values might be empty.',
+			uncertainDefault: 'Enter a value in at least one language, other languages can then be left empty',
 		}
 	},
 	components: {

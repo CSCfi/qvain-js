@@ -123,7 +123,9 @@ export default {
 			return typeof this.uiTab === 'number' ? this.uiTab : this.tab
 		},
 		uiTitle: function() {
-			return this.ui['title'] || this.schema['title'] || this.property
+			var title = this.ui['title'] || this.schema['title'] || this.property
+			if (!title || title === ' ') return null;
+			return title;
 		},
 		uiDescription: function() {
 			return this.ui['description'] || this.schema['description']
