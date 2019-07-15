@@ -649,14 +649,6 @@ body {
 	padding: 2em;
 }
 
-* {
-	user-select: none;
-}
-
-footer * {
-	user-select: text;
-}
-
 .pagination {
 	.page-item {
 		flex-grow: 1;
