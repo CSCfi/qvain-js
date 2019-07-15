@@ -37,9 +37,14 @@
 				<a href="https://www.fairdata.fi/hyodyntaminen/kayttopolitiikat-ja-ehdot/">Terms of Usage</a></li>
 				</ul>
 			</p>
-			<p></p>
 
-			<p><a :href="$auth.loginUrl" class="btn btn-info btn-lg" role="button">Log in using Haka or CSC credentials</a></p>
+			<p>
+				<a :href="$auth.loginUrl" class="btn btn-info btn-lg" role="button">
+					<font-awesome-icon icon="sign-in-alt" />
+					&nbsp;
+					Login
+				</a>
+			</p>
 		</div>
 
 		<div v-else>
