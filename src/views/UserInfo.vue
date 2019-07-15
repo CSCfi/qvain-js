@@ -50,18 +50,15 @@
 				label-for="input-projects"
 				label-cols-sm="4"
 				label-cols-lg="3">
-
-				<b-form-checkbox-group
-					id="input-projects"
-					name="input-projects"
-					v-if="$auth.user.projects > 0"
-					>
-					<b-form-checkbox
+				<div>
+					<b-badge
 						v-for="project in $auth.user.projects"
 						:key="project"
-						:value="project">{{ project }}</b-form-checkbox>
-				</b-form-checkbox-group>
-				<b-form-text v-else>(no projects)</b-form-text>
+						:value="project">{{ project }}</b-badge>
+					
+					<b-badge v-if="$auth.user.projects.length === 0">(no projects)</b-badge>
+				</div>
+		
 			</b-form-group>	
 		</b-form>
 		<div v-else>
@@ -77,6 +74,15 @@
 
 	#form-userinfo {
 		margin: 1em;
+	}
+
+	#projects div {
+		margin-top: 0.25em;
+		margin-bottom: 0.25em;
+	}
+	#projects .badge {
+		font-size: 1em;
+		margin-left: 0.5em;
 	}
 </style>
 <script>
