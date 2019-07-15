@@ -566,6 +566,7 @@ export default {
 		'help': "Select what was done.",
 	},
 	'/properties/provenance/*/properties/preservation_event': {
+		'tab': 'extra',
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -596,6 +597,9 @@ export default {
 		'title': "Event outcome",
 		'description': "Succeeded/Failed",
 		'help': "Select whether the event succeeded or failed",
+	},
+	'/properties/provenance/0/properties/variable': {
+		'tab': 'extra',
 	},
 	'/properties/provenance/*/properties/used_entity/*/properties/type': {
 		'widget': 'reference-data',
