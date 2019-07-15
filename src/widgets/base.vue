@@ -113,6 +113,9 @@ export default {
 		uiDescription: function() {
 			return this.ui['description'] || this.schema['description']
 		},
+		uiExample: function() {
+			return this.ui['example'] || this.schema['example']
+		},
 		uiLabel: function() {
 			if (this.inArray) {
 				return null

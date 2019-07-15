@@ -3,7 +3,13 @@
 	<record-field :required="required" :wrapped="false" :header="!inArray">
 		<title-component slot="title" :title="uiLabel" />
 		<small slot="help" class="text-muted">
-			{{ uiDescription }}
+			{{ uiDescription }}
+			<div v-if="uiExample">
+				<b-badge variant="info">Example</b-badge>
+				<span v-for="(example, index) in uiExample" :key="index">
+					{{ example }}
+				</span>
+			</div>
 		</small>
 
 		<div slot="input">
