@@ -37,7 +37,6 @@ export default {
 	name: "token-login",
 	data: () => {
 		return {
-			//token: null,
 			tokenInput: process.env.VUE_APP_DEV_TOKEN || null,
 			error: null,
 		}
@@ -59,8 +58,6 @@ export default {
 			return this.$route.hash.charAt(0) == '#' ? this.$route.hash.substr(1) : this.$route.hash
 		},
 		redirTo() {
-			// TODO: read query for redirect-to location
-			//return this.$route
 			return { name: 'home' }
 		},
 	},
@@ -76,19 +73,11 @@ export default {
 			return
 		}
 
-		// logged in already; but don't redirect: token might be invalid, so read new token
-		/*
-		if (this.$auth.loggedIn) {
-			this.$router.push(this.$route.query.redirect || "/")
-		}
-		*/
-		// got token, login and redir if successful
-		//console.log("token:", this.token)
 		if (this.token && this.$auth.login(this.token)) {
 			//console.log("token was valid!")
 			this.error = null
 			let vm = this
-			vm.$router.push({ name: 'home' })
+			vm.$router.push({ name: 'datasets' })
 		} else {
 			this.error = this.token ? "invalid login token" : "no token received"
 			this.$router.replace({name: 'home', params: {missingToken: true}})
