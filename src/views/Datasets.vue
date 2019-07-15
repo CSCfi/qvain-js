@@ -83,15 +83,13 @@
 			@sort-changed="setSort"
 			@filtered="updateFiltered"
 		>
-			<template slot="row_idx" slot-scope="row">
-				{{ 1 + row.index + (datasetsView.currentPage-1)*datasetsView.perPage }}
-			</template>
 			<template slot="tree_actions" slot-scope="row">
 				<b-button-toolbar key-nav class="row-main-actions">
 					<b-button-group class="mr-1">
 						<b-button
 							variant="secondary"
 							@click.stop="row.toggleDetails()">
+							{{ 1 + row.index + (datasetsView.currentPage-1)*datasetsView.perPage }}
 							<font-awesome-icon
 								:icon="row.detailsShowing ? 'chevron-down' : 'chevron-right'"
 								fixed-width />
@@ -346,10 +344,6 @@ import formatDate from 'date-fns/format'
 
 // id owner created modified published identifier title{} description{} preservation_state
 const fields = [
-	{
-		label: "#",
-		key: "row_idx"
-	},
 	{
 		label: "Details",
 		key: "tree_actions",
