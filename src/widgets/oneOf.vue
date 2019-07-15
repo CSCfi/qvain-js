@@ -5,8 +5,8 @@
 			<b-button-group>
 				<b-button
 					v-for="(sub, i) in schema['oneOf']"
-					variant="primary"
 					:key="'oneOfSel' + i"
+					variant="primary"
 					@click="setChosen(i)">
 					{{ sub['title'] || '#'+i }}
 				</b-button>
@@ -21,7 +21,7 @@
 			:parent="parent"
 			:property="property"
 			:tab="myTab"
-			:activeTab="activeTab"
+			:active-tab="activeTab"
 			:depth="depth"
 		/>
 	</wrapper>
@@ -29,14 +29,16 @@
 	<record-field
 		v-else
 		:required="isRequired"
-		:wrapped="wrapped">
+		:wrapped="wrapped"
+	>
 		<title-component
 			slot="title"
 			:title="uiLabel"
 		/>
 		<small
 			slot="help"
-			class="text-muted">
+			class="text-muted"
+		>
 			{{ uiDescription }}
 		</small>
 		<div slot="input">
@@ -83,7 +85,7 @@
 				:parent="parent"
 				:property="property"
 				:tab="myTab"
-				:activeTab="activeTab"
+				:active-tab="activeTab"
 				:depth="depth"
 			/>
 		</div>
@@ -120,15 +122,15 @@ const IDENTIFYING_FIELD = '@type'
 
 export default {
 	name: 'SchemaOneof',
-	extends: vSchemaBase,
-	description: "generic oneof",
-	schematype: 'any',
 	components: {
 		Wrapper,
 		RecordField,
 		TitleComponent,
 		DeleteButton,
 	},
+	extends: vSchemaBase,
+	description: "generic oneof",
+	schematype: 'any',
 	props: {
 		wrapped: {
 			type: Boolean,
