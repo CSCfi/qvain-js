@@ -2,31 +2,50 @@
 <template>
 	<record-field :required="required" :wrapped="true" :error="!isValid">
 		<title-component slot="title" :title="uiLabel" />
-		<small slot="help" class="text-muted">
-			{{ uiDescription }}
+		<small
+			slot="help"
+			class="text-muted"
+		>
+			{{ uiDescription }}
 		</small>
-		
-		<div slot="header-right" class="header__right">
+
+		<div
+			slot="header-right"
+			class="header__right"
+		>
 			<ValidationStatus :status="validationStatus" />
 		</div>
 
 		<div slot="input">
-			<b-tabs class="tabs-nav" v-model="tabIndex" vertical pills justified nav-wrapper-class="col-3">
-				<b-tab v-for="key in languageKeys" :key="key">
+			<b-tabs
+				v-model="tabIndex"
+				class="tabs-nav"
+				vertical
+				pills
+				justified
+				nav-wrapper-class="col-3"
+				@input="tabShown"
+				@changed="tabsChanged"
+			>
+				<b-tab
+					v-for="(key, index) in languageKeys"
+					:key="key"
+					@click="()=>setTab(index)"
+				>
 					<template slot="title">
 						<delete-button @click="deleteLang(key)" />
 						{{ languages[key] }}
 					</template>
 
 					<b-form-textarea
+						:id="property + '_textarea-' + key"
+						:ref="'textarea-tab-' + index"
 						class="textarea"
-						rows=6
+						rows="6"
 						:placeholder="'Start typing in ' + languages[key]"
 						:value="state[key]"
-						:id="property + '_textarea-' + key"
-						:ref="'textarea-tab-' + key"
-						@input="v => changeText(key, v)">
-					</b-form-textarea>
+						@input="v => changeText(key, v)"
+					/>
 				</b-tab>
 
 				<div slot="empty">
@@ -40,10 +59,10 @@
 					class="col lang-select-tab"
 					ref="langSelect"
 					:id="property + '_language-select'"
-					@change="userRequestedNewLanguage">	
+					@change="userRequestedNewLanguage">
 				</language-select>
 			</div>
-			
+
 		</div>
 	</record-field>
 </template>
@@ -77,7 +96,6 @@ import LanguageSelect from '@/components/LanguageSelect.vue'
 import ValidationStatus from '@/partials/ValidationStatus.vue'
 import RecordField from '@/composites/RecordField.vue'
 import TitleComponent from '@/partials/Title.vue'
-import InfoIcon from '@/partials/InfoIcon.vue'
 import DeleteButton from '@/partials/DeleteButton.vue'
 
 import autosize from 'autosize'
@@ -92,13 +110,13 @@ export default {
 		ValidationStatus,
 		RecordField,
 		TitleComponent,
-		InfoIcon,
 		DeleteButton,
 	},
 	data() {
 		return {
 			languages: langCodes2,
 			tabIndex: 0,
+			targetTabIndex: null,
 			state: {},
 		}
 	},
@@ -134,6 +152,9 @@ export default {
 			this.$set(this.state, lang, '')
 		},
 		deleteLang(lang) {
+			if (!(lang in this.state)) {
+				return
+			}
 			this.$delete(this.state, lang)
 		},
 		updateValue() {
@@ -143,40 +164,46 @@ export default {
 				val: this.state,
 			})
 		},
-		async focusOnLastTab() {
-			const last = Object.keys(this.value || {}).length - 1
-			// bootstrap-vue takes a couple ticks to add a new tab to the DOM
-			await this.$nextTick()
-			await this.$nextTick()
-			this.tabIndex = last
-			this.focusOnTextarea()
+		focusOnLastTab() {
+			const lastIndex = Object.keys(this.value || {}).length - 1
+			this.setTab(lastIndex, true)
 		},
-		async focusOnTabWithLanguage(lang) {
+		focusOnTabWithLanguage(lang) {
 			const i = Object.keys(this.value || {}).indexOf(lang)
 			if (i >= 0) {
-				// bootstrap-vue takes a couple ticks to add a new tab to the DOM
-				await this.$nextTick()
-				await this.$nextTick()
-				this.tabIndex = i
+				this.setTab(i)
 				return true
 			}
 			return false
 		},
 		focusOnTextarea() {
-			// this gets called after switching tabs, so try to make sure the DOM updated
-			this.$nextTick(() => {
-				let ref = this.$refs['textarea-tab-' + this.tabIndex]
-				if (Array.isArray(ref)) {
-					ref = ref[0]
-				}
-				ref && ref.$el && ref.$el.focus()
-			})
+			let ref = this.$refs['textarea-tab-' + this.tabIndex]
+			if (Array.isArray(ref)) {
+				ref = ref[0]
+			}
+			ref && ref.$el && ref.$el.focus()
 		},
 		populateLanguages(languages) {
 			for (const lang in languages) {
 				if (languages[lang]) {
 					this.addLanguage(lang)
 				}
+			}
+		},
+		setTab(index) {
+			this.tabIndex = index
+			this.targetTabIndex = index
+		},
+		async tabShown(index) {
+			if (index === this.targetTabIndex) {
+				this.targetTabIndex = null
+				await this.$nextTick() // wait for the textarea to become visible
+				this.focusOnTextarea()
+			}
+		},
+		tabsChanged() {
+			if (this.targetTabIndex !== null) {
+				this.tabIndex = this.targetTabIndex
 			}
 		},
 	},
