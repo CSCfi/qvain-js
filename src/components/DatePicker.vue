@@ -27,9 +27,8 @@ export default {
         return {
             internal_value: null,
             initial_value: null,
-            time: null,
             componentKey: 0,
-            dateRegexp: /^(([1-9]|0[1-9]|[12]\d|3[01])\.([1-9]|0[1-9]|1[0-2])\.[12]\d{3})$/,
+            dateRegexp: /^((([1-9]|0[1-9]|[12]\d|3[01])\.([1-9]|0[1-9]|1[0-2])(\.[12]\d{3})?)|([1-9]|0[1-9]|[12]\d|3[01]))$/
         }
 	},
 	computed: {
@@ -40,6 +39,8 @@ export default {
 			set: function(new_value) {
 				if (this.dateRegexp.test(new_value)) {
 					var date_array = new_value.split(".")
+
+
                     this.internal_value = date_array[2] + "-" + date_array[1] + "-" + date_array[0]
 				}
 			}
@@ -49,6 +50,29 @@ export default {
         submitChange: function(event) {
             var new_value = event.target.value
             if (this.dateRegexp.test(new_value)) {
+                var hours = new_value.split(".")
+                var parts = hours.length
+
+                for(var i=0; i<hours.length; i++) {
+                    hours[i] = hours[i].padStart(2, '0')
+                }
+                for (var i=0; i<3-parts; i++) {
+                    hours.push("00")
+                }
+
+                // ensure that the month is not empty
+                if (hours[1] === "00") {
+                    hours[1] = String(new Date().getMonth()+1).padStart(2, '0')
+                }
+
+                // ensure that the year is not empty
+                hours[2] = hours[2].padStart(4, '0')
+                if (hours[2] === "0000") {
+                    hours[2] = new Date().getFullYear()
+                }
+
+                new_value = hours.join(".")
+
                 this.$emit('change', new_value)
                 this.internal_value = new_value
                 this.initial_value = new_value
