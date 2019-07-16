@@ -46,11 +46,8 @@
 
 <script>
 import vSchemaBase from './base.vue'
-import { dataPointer } from '../../tmp/datapointer.js'
-
 import RecordField from '@/composites/RecordField.vue'
 import TitleComponent from '@/partials/Title.vue'
-import InfoIcon from '@/partials/InfoIcon.vue'
 import DeleteButton from '@/partials/DeleteButton.vue'
 
 export default {
@@ -61,7 +58,6 @@ export default {
 	components: {
 		RecordField,
 		TitleComponent,
-		InfoIcon,
 		DeleteButton,
 	},
 	data() {
@@ -113,12 +109,6 @@ export default {
 		},
 		ctxIcon() {
 			return this.hover ? "trash" : "pen"
-		},
-		datapath() {
-			return dataPointer(this.path)
-		},
-		dataValue() {
-			return this.$store.getters.getPath(this.datapath)
 		},
 	},
 	directives: {
