@@ -29,24 +29,29 @@
 				<b-tabs
 					:value="tabIndex"
 					class="tab-array-margin"
-					pills>
+					pills
+					@input="tabShown"
+					@changed="tabsChanged"
+				>
 					<b-tab
 						v-for="(child, index) in value"
-						style="{margin-top: 5px}"
 						:key="index"
-						title-link-class="tab-field-link">
+						style="{margin-top: 5px}"
+						title-link-class="tab-field-link"
+						@click="()=>setTab(index)"
+					>
 						<template slot="title">
 							{{ tabTitle(index) }}
 							<delete-button @click="deleteElement(index)" />
 						</template>
 
 						<TabSelector
+							:id="property + '_array_' + index + '_tab-selector'"
 							:schema="schemaForChild(index)"
 							:path="newPath(index)"
 							:value="value[index]"
 							:parent="parent[property]"
 							:property="index"
-							:id="property + '_array_' + index + '_tab-selector'"
 							:tab="myTab"
 							:activeTab="activeTab"
 							:depth="depth"
@@ -60,13 +65,13 @@
 			<b-list-group class="item-list" v-else-if="forceArrayUpdateHack && !tabFormat" flush>
 				<b-list-group-item class="list-item" v-for="(child, index) in value" :key="index">
 					<TabSelector
+						:id="property + '_array_' + index + '_tab-selector'"
 						style="flex-grow: 1"
 						:schema="schemaForChild(index)"
 						:path="newPath(index)"
 						:value="value[index]"
 						:parent="parent[property]"
 						:property="index"
-						:id="property + '_array_' + index + '_tab-selector'"
 						:tab="myTab"
 						:activeTab="activeTab"
 						:depth="depth"
@@ -114,7 +119,6 @@
 import vSchemaBase from './base.vue'
 import RecordField from '@/composites/RecordField.vue'
 import TitleComponent from '@/partials/Title.vue'
-import InfoIcon from '@/partials/InfoIcon.vue'
 import ValidationStatus from '@/partials/ValidationStatus.vue'
 import DeleteButton from '@/partials/DeleteButton.vue'
 
@@ -126,7 +130,6 @@ export default {
 	components: {
 		RecordField,
 		TitleComponent,
-		InfoIcon,
 		ValidationStatus,
 		DeleteButton,
 	},
@@ -141,6 +144,7 @@ export default {
 			minimum: 0,
 			maximum: 0,
 			tabIndex: 0,
+			targetTabIndex: null,
 			forceArrayUpdateHack: true,
 		}
 	},
@@ -157,9 +161,7 @@ export default {
 		doPlus() {
 			if (this.maximum === undefined || this.value.length < this.maximum) {
 				this.$store.commit('pushValue', { p: this.parent, prop: this.property, val: undefined })
-				this.$nextTick(function() { // make sure that the tab is there before causing the new tab to be selected
-					this.tabIndex = this.value.length - 1
-				})
+				this.setTab(this.value.length - 1)
 				return true
 			}
 			return false
@@ -190,6 +192,22 @@ export default {
 			this.minimum = typeof this.schema['minItems'] === 'number' && this.schema['minItems'] > 0 ? this.schema.minItems : 0
 			this.maximum = typeof this.schema['maxItems'] === 'number' && this.schema['maxItems'] > 0 ? this.schema.maxItems : undefined
 			if (this.isTuple && !this.allowAdditional) this.maximum = this.schema['items'].length
+		},
+		setTab(index) {
+			this.tabIndex = index
+			this.targetTabIndex = index
+		},
+		tabShown(index) {
+			if (index === this.targetTabIndex) {
+				this.targetTabIndex = null
+			}
+		},
+		async tabsChanged() {
+			if (this.targetTabIndex !== null) {
+				this.tabIndex = 0 // trigger tabIndex change in b-tabs
+				await this.$nextTick()
+				this.tabIndex = this.targetTabIndex
+			}
 		},
 	},
 	computed: {
