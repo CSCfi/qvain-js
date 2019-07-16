@@ -9,25 +9,13 @@
 			</div>
 			<div class="col">
 				<datepicker
-					:highlighted="highlightedSelected"
-					:inline="false"
-					bootstrapStyling
-					monday-first
-					placeholder="From"
-					format="dd.MM.yyyy"
-					:disabledDates="disableBefore"
+					v-bind:format="schema.properties.start_date.format"
 					v-model="start">
 				</datepicker>
 			</div>
 			<div class="col">
 				<datepicker
-					:highlighted="highlightedSelected"
-					:inline="false"
-					monday-first
-					bootstrapStyling
-					format="dd.MM.yyyy"
-					placeholder="To"
-					:disabledDates="disableAfter"
+					v-bind:format="schema.properties.end_date.format"
 					v-model="end">
 				</datepicker>
 			</div>
@@ -41,7 +29,7 @@
 </template>
 
 <script>
-import datepicker from 'vuejs-datepicker'
+import datepicker from '@/components/DateTimePicker.vue'
 import SchemaBase from '@/widgets/base.vue'
 import { distanceInWords } from 'date-fns'
 import DeleteButton from '@/partials/DeleteButton.vue'
@@ -60,54 +48,28 @@ export default {
 		}
 	},
 	computed: {
-		timeBetweenString() {
-			return distanceInWords(this.end, this.start)
-		},
-		disableBefore() {
-			return {
-				from: this.end,
-			}
-		},
-		disableAfter() {
-			return {
-				to: this.start,
-			}
-		},
-		label() {
-			return this.property + 1
-		},
 		title() {
 			return typeof(this.property)=="number" ? '#' + (this.property + 1) : this.schema.title
-		},
-		startDateISO() {
-			return this.start ? this.start.toISOString() : null
-		},
-		endDateISO() {
-			return this.end ? this.end.toISOString() : null
-		},
-		highlightedSelected() {
-			return {
-				from: this.start,
-				to: this.end
-			}
 		},
 	},
 	methods: {
 		updateValue() {
 			this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: {
-				start_date: this.startDateISO, end_date: this.endDateISO,
+				start_date: this.start, end_date: this.end,
 			}})
 		},
 	},
 	created() {
-		this.start = this.value.start_date ? new Date(this.value.start_date) : null
-		this.end = this.value.end_date ? new Date(this.value.end_date) : null
+		this.start = this.value.start_date
+		this.end = this.value.end_date
 	},
 	watch: {
 		start() {
+			console.log("updated value start")
 			this.updateValue()
 		},
 		end() {
+			console.log("updated value end")
 			this.updateValue()
 		},
 	},
