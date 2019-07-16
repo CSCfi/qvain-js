@@ -11,7 +11,6 @@ export default {
 	'SchemaOneOf': require('./oneOf.vue').default,
 	'SchemaEnum': require('./Enum.vue').default,
 	'widget-googlemaps': require('./widget-googlemaps.vue').default,
-	'refdata-list': require('./refdata/list.vue').default,
 	'reference-data': require('../components/ReferenceData.vue').default,
 	'i18n-string': require('@/components/i18nStrings.vue').default,
 	'i18n-textarea': require('@/components/i18nTextarea.vue').default,
