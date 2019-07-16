@@ -150,6 +150,7 @@ export default {
 				return
 			}
 			this.$set(this.state, lang, '')
+			this.$store.commit('setLanguages', {[lang]:true})
 		},
 		deleteLang(lang) {
 			if (!(lang in this.state)) {
