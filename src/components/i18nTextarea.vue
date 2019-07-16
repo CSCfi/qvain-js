@@ -39,7 +39,7 @@
 
 					<b-form-textarea
 						:id="property + '_textarea-' + key"
-						:ref="'textarea-tab-' + index"
+						:ref="'textarea-tab-' + key"
 						class="textarea"
 						rows="6"
 						:placeholder="'Start typing in ' + languages[key]"
@@ -175,7 +175,7 @@ export default {
 			return false
 		},
 		focusOnTextarea() {
-			let ref = this.$refs['textarea-tab-' + this.tabIndex]
+			let ref = this.$refs['textarea-tab-' + Object.keys(this.value || {})[this.tabIndex]]
 			if (Array.isArray(ref)) {
 				ref = ref[0]
 			}
