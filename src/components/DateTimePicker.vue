@@ -57,11 +57,13 @@ export default {
     },
 	watch: {
 		time() {
-			console.log("time has changed")
+            console.log("time has changed")
+            console.log(this.time)
 			//this.updateValue()
 		},
 		date() {
 			console.log("date has changed")
+            console.log(this.date)
 			//this.updateValue()
 		},
 	},

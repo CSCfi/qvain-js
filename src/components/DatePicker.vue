@@ -48,8 +48,7 @@ export default {
 	methods: {
         submitChange: function(event) {
             var new_value = event.target.value
-            var date_value_is_ok = (this.format === 'date-time' || this.format === 'date') && this.dateRegexp.test(new_value)
-            if (date_value_is_ok) {
+            if (this.dateRegexp.test(new_value)) {
                 this.$emit('change', new_value)
                 this.internal_value = new_value
                 this.initial_value = new_value
@@ -60,8 +59,7 @@ export default {
         },
         validateDate: function(event) {
             var new_value = event.target.value
-            var date_value_is_ok = (this.format === 'date-time' || this.format === 'date') && this.dateRegexp.test(new_value)
-            if (date_value_is_ok) {
+            if (this.dateRegexp.test(new_value)) {
                 this.$emit('input', new_value)
                 this.internal_value = new_value
                 this.initial_value = new_value
