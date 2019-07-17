@@ -14,47 +14,70 @@ All Rights Reserved.
 -->
 <template>
 	<div
-		class="container datepicker-container"
+		class="container daterange-container"
 		:id="property">
 		<div class="row">
 			<div class="col-sm-2">
-				{{ title }}
+				<p>
+					{{ title }}
+					<delete-button v-if="inArray" @click="$emit('delete', property)"/>
+				</p>
+				<b-badge v-if="timeBetweenString">
+					{{ timeBetweenString }}
+				</b-badge>
+				<div class="error-badges" v-if="toIsEarlierThanFrom">
+					<b-badge
+						variant="danger">
+						<span>To &lt; From</span>
+					</b-badge>
+				</div>
 			</div>
 			<div class="col">
-				<datepicker
-					:highlighted="highlightedSelected"
-					:inline="false"
-					bootstrapStyling
-					monday-first
-					placeholder="From"
-					format="dd.MM.yyyy"
-					:disabledDates="disableBefore"
+				<datetimepicker
+					:title="'From'"
+					:format="schema.properties.start_date.format"
 					v-model="start">
-				</datepicker>
+				</datetimepicker>
 			</div>
 			<div class="col">
-				<datepicker
-					:highlighted="highlightedSelected"
-					:inline="false"
-					monday-first
-					bootstrapStyling
-					format="dd.MM.yyyy"
-					placeholder="To"
-					:disabledDates="disableAfter"
+				<datetimepicker
+					:title="'To'"
+					:format="schema.properties.end_date.format"
 					v-model="end">
-				</datepicker>
+				</datetimepicker>
 			</div>
-			<div class="col-sm-2">
-				<delete-button v-if="inArray" @click="$emit('delete', property)"/>
-			</div>
-
 		</div>
 	</div>
-
 </template>
 
+<style lang="scss">
+.daterange-title.container {
+	margin: 0em;
+	padding: 0em;
+	.row {
+		margin: 0em;
+		padding: 0em;
+		padding-left: 0.5em;
+		.col, .col-sm-2 {
+			margin: 0em;
+			padding: 0em;
+		}
+	}
+}
+.daterange-title.container * .input-group {
+	margin-top: 0.5em;
+}
+.daterange-title.container * .input-group:last-child {
+	margin-top: 0.25em;
+	padding-left: 1em;
+}
+.error-badges {
+	padding-top: 0.5em;
+}
+</style>
+
 <script>
-import datepicker from 'vuejs-datepicker'
+import DateTimePicker from '@/components/DateTimePicker.vue'
 import SchemaBase from '@/widgets/base.vue'
 import { distanceInWords } from 'date-fns'
 import DeleteButton from '@/partials/DeleteButton.vue'
@@ -63,72 +86,56 @@ export default {
 	name: 'date-range',
 	extends: SchemaBase,
 	components: {
-		datepicker,
+		"datetimepicker": DateTimePicker,
 		DeleteButton,
 	},
 	data() {
 		return {
 			start: null,
 			end: null,
+			isInitializing: true,
 		}
 	},
 	computed: {
 		timeBetweenString() {
-			return distanceInWords(this.end, this.start)
-		},
-		disableBefore() {
-			return {
-				from: this.end,
-			}
-		},
-		disableAfter() {
-			return {
-				to: this.start,
-			}
-		},
-		label() {
-			return this.property + 1
+			if (!this.end || !this.start) { return null }
+			return distanceInWords(this.end, this.start)	
 		},
 		title() {
 			return typeof(this.property)=="number" ? '#' + (this.property + 1) : this.schema.title
 		},
-		startDateISO() {
-			return this.start ? this.start.toISOString() : null
-		},
-		endDateISO() {
-			return this.end ? this.end.toISOString() : null
-		},
-		highlightedSelected() {
-			return {
-				from: this.start,
-				to: this.end
+		toIsEarlierThanFrom() {
+			if (!this.end || !this.start) { return false }
+			const endDate = new Date(this.end)
+			const startDate = new Date(this.start)
+			if (endDate < startDate) {
+				return true
 			}
-		},
+		}
 	},
 	methods: {
 		updateValue() {
+			if (this.isInitializing) { return }
 			this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: {
-				start_date: this.startDateISO, end_date: this.endDateISO,
+				start_date: this.start, end_date: this.end,
 			}})
 		},
 	},
 	created() {
-		this.start = this.value.start_date ? new Date(this.value.start_date) : null
-		this.end = this.value.end_date ? new Date(this.value.end_date) : null
+		this.isInitializing = true
+		this.start = this.value.start_date
+		this.end = this.value.end_date
+		this.isInitializing = false
 	},
 	watch: {
 		start() {
+			if (this.isInitializing) { return }
 			this.updateValue()
 		},
 		end() {
+			if (this.isInitializing) { return }
 			this.updateValue()
 		},
 	},
 }
 </script>
-
-<style lang="scss" scoped>
-	.datepicker-container .row:last-child {
-		margin-top: 1em;
-	}
-</style>

@@ -498,7 +498,8 @@ export default {
 		'$route.params.id': async function(newId, oldId) {
 			if (this.id === 'new') {
 				this.clearRecord()
-			} else if (this.id !== 'edit') {
+			} else if (this.id !== 'edit' && this.$store.state.metadata.id !== this.id) {
+				this.clearRecord()
 				await this.openRecord(this.id)
 			}
 		},
@@ -512,7 +513,7 @@ export default {
 	async mounted() {
 		if (this.id === 'new') {
 			this.clearRecord()
-		} else if (this.id !== 'edit') {
+		} else if (this.id !== 'edit' && this.$store.state.metadata.id !== this.id) {
 			await this.openRecord(this.id)
 		}
 

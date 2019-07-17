@@ -5,8 +5,8 @@ Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
 	Jori Niemi <3295718+tahme@users.noreply.github.com>
-	Eemeli Kouhia <eemeli.kouhia@gofore.com>
 	Kauhia <Kauhia@users.noreply.github.com>
+	Eemeli Kouhia <eemeli.kouhia@gofore.com>
 
 License: GPLv3
 
@@ -40,7 +40,7 @@ export default {
 		'help': "An item possibly defined in multiple languages.",
 	},
 	'#/definitions/Person': {
-		'order': ["name", "email", "telephone", "identifier"],
+		'order': [ "name", "email", "telephone", "identifier" ],
 	},
 	'#/definitions/Organization': {
 		'title': "Organisational hierarchy",
@@ -48,9 +48,9 @@ export default {
 		'widget': 'SelfReferentialObject',
 		'props': {
 			'refField': "is_part_of",
-			'levels': ["organisation", "faculty or division", "department or unit"],
+			'levels': [ "organisation", "faculty or division", "department or unit" ],
 		},
-		'order': ["name", "email", "telephone", "identifier"],
+		'order': [ "name", "email", "telephone", "identifier" ],
 	},
 	'#/definitions/Document': {
 		'visible': false,
@@ -691,7 +691,7 @@ export default {
 		'description': "Succeeded/Failed",
 		'help': "Select whether the event succeeded or failed",
 	},
-	'/properties/provenance/0/properties/variable': {
+	'/properties/provenance/*/properties/variable': {
 		'tab': 'extra',
 	},
 	'/properties/provenance/*/properties/used_entity/*/properties/type': {
@@ -726,6 +726,38 @@ export default {
 		'description': "Type of contribution the given person or organization had on the entity used on the dataset.",
 		'help': "Select the type of contribution the given person or organization had on the entity used on the dataset.",
 	},
+	'/properties/provenance/*/properties/was_associated_with/*/oneOf/*/properties/contributor_type': {
+		'widget': 'reference-data',
+		'props': {
+			'esIndex': "reference_data",
+			'esDoctype': "contributor_type",
+			'typeahead': true,
+			'tags': false,
+			'async': false,
+			'count': 100,
+			'grouped': false,
+		},
+		'placeholder': "– choose contributor type –",
+		'label': "contributor type",
+		'description': "Type of contribution the given person or organization had on the entity used on the dataset.",
+		'help': "Select the type of contribution the given person or organization had on the entity used on the dataset.",
+	},
+	'/properties/provenance/*/properties/was_associated_with/*/oneOf/*/properties/contributor_role': {
+		'widget': 'reference-data',
+		'props': {
+			'esIndex': "reference_data",
+			'esDoctype': "contributor_role",
+			'typeahead': true,
+			'tags': false,
+			'async': false,
+			'count': 100,
+			'grouped': false,
+		},
+		'placeholder': "– choose contributor role –",
+		'label': "contributor role",
+		'description': "Role of the creator regarding this dataset.",
+		'help': "What was the role of the given creator on this dataset.",
+	},
 	'/properties/provenance/*/properties/temporal': {
 		'widget': 'date-range',
 	},
@@ -748,7 +780,7 @@ export default {
 			"access_process",
 			"access_url",
 		],
-		'order': ["license", "access_type", "restriction_grounds", "available"],
+		'order': [ "license", "access_type", "restriction_grounds", "available" ],
 	},
 	'/properties/access_rights/properties/access_type': {
 		'widget': 'reference-data',
@@ -826,8 +858,8 @@ export default {
 					return 1
 				}
 				return null
-			}
-		}
+			},
+		},
 	},
 	'/properties/access_rights/properties/license/*/oneOf/0': {
 		'widget': 'reference-data',
@@ -847,7 +879,7 @@ export default {
 		'help': "Select a license agreement for your dataset.",
 	},
 	'/properties/access_rights/properties/license/*/oneOf/1': {
-		'title': ' '
+		'title': ' ',
 	},
 	'/properties/modified': {
 		'tab': 'extra',

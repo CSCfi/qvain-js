@@ -35,7 +35,7 @@ All Rights Reserved.
 						v-for="(val, lang) in state"
 						label-cols=3
 						:label-for="property + '_' + lang + '_input'">
-					
+
 					<span slot="label">
 						<DeleteButton slot="label" @click="deleteLanguage(lang)"/>
 						{{ languages[lang] }}
@@ -43,7 +43,7 @@ All Rights Reserved.
 
 					<b-input-group>
 						<b-form-input
-							:id="property + '_' + lang + '_input'" 
+							:id="property + '_' + lang + '_input'"
 							type="text"
 							:ref="lang"
 							required
@@ -167,10 +167,9 @@ export default {
 				}
 			},
 			deep: true,
-
-			"$store.state.languages": function(languages) {
-				this.populateLanguages(languages)
-			},
+		},
+		"$store.state.languages": function(languages) {
+			this.populateLanguages(languages)
 		},
 	},
 	created() {

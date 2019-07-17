@@ -14,7 +14,6 @@ Copyright (C) 2019 Ministry of Culture and Education, Finland.
 All Rights Reserved.
 */
 import FairdataIdaSchema from './fairdata-ida.schema.json'
-import FairdataIdaOldSchema from './fairdata-ida-old.schema.json'
 import FairdataAttSchema from './fairdata-att.schema.json'
 import FairdataIdaUi from './fairdata-ida.ui.js'
 import fairdataAttUiDiff from './fairdata-att.ui.diff.js'

@@ -28,12 +28,10 @@ Vue.use(Vuex)
 export default new Vuex.Store({
 	state: {
 		record: undefined,
-		dataset: {},
 		schema: {},
 		hints: {},
 		metadata: {},
 		languages: { 'fi':true, 'en':true, 'sv':true },
-		defaultDescriptionLang: 'fi',
 		UI_VALID_KEYWORDS: [
 			'widget',
 			'option',
@@ -42,8 +40,6 @@ export default new Vuex.Store({
 			'placeholder',
 			'tab',
 		],
-		tabui: {},
-		validation: {},
 		vState: {},
 		datasetsView: {
 			currentPage: 1,
@@ -95,9 +91,6 @@ export default new Vuex.Store({
 		},
 		delHints(state, payload) {
 			Vue.delete(state.hints[payload.path])
-		},
-		addTab(state, payload) {
-			Vue.set(state.tabui, payload.tab, payload.schema)
 		},
 		initValue(state, payload, defaultValue) {
 			// set default value for license if ida schema
@@ -155,9 +148,6 @@ export default new Vuex.Store({
 		},
 		addProp(state, payload) {
 			Vue.set(payload.val, payload.prop, undefined)
-		},
-		setPath(state, payload) {
-			vuePointer.set(state.dataset, payload.path, payload.value)
 		},
 		setState(state, payload) {
 			Vue.set(state.vState, payload.path, {
