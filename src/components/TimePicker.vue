@@ -37,10 +37,10 @@ export default {
 	},
 	computed: {
 		timeString: {
-			get: function() {
+			get() {
 				return this.internal_value
 			},
-			set: function(new_value) {
+			set(new_value) {
 				if (this.isInitializing) { return }
 				if (this.timeRegexp.test(new_value)) {
 					this.internal_value = new_value

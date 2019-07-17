@@ -6,14 +6,14 @@
 			{{ uiDescription }}
 		</small>
 
-		<div slot="input" class="container">
-			<div class="row">
+		<b-row slot="input">
+			<b-col>
 				<datepicker
 					:format="schema.format"
 					v-model="date">
 				</datepicker>
-			</div>
-		</div>
+			</b-col>
+		</b-row>
 	</record-field>
 </template>
 
