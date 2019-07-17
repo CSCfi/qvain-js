@@ -1,11 +1,18 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
 	<div
-		class="container datepicker-container"
+		class="container daterange-container"
 		:id="property">
 		<div class="row">
 			<div class="col-sm-2">
-				{{ title }}
+				<p>
+					{{ title }}
+					<delete-button v-if="inArray" @click="$emit('delete', property)"/>
+				</p>
+				<b-badge v-if="timeBetweenString">
+					{{ timeBetweenString }}
+				</b-badge>
+
 			</div>
 			<div class="col">
 				<datetimepicker
@@ -21,12 +28,32 @@
 					v-model="end">
 				</datetimepicker>
 			</div>
-			<div class="col-sm-2">
-				<delete-button v-if="inArray" @click="$emit('delete', property)"/>
-			</div>
 		</div>
 	</div>
 </template>
+
+<style lang="scss">
+.daterange-title.container {
+	margin: 0em;
+	padding: 0em;
+	.row {
+		margin: 0em;
+		padding: 0em;
+		padding-left: 0.5em;
+		.col, .col-sm-2 {
+			margin: 0em;
+			padding: 0em;
+		}
+	}
+}
+.daterange-title.container * .input-group {
+	margin-top: 0.5em;
+}
+.daterange-title.container * .input-group:last-child {
+	margin-top: 0.25em;
+	padding-left: 1em;
+}
+</style>
 
 <script>
 import DateTimePicker from '@/components/DateTimePicker.vue'
@@ -49,6 +76,10 @@ export default {
 		}
 	},
 	computed: {
+		timeBetweenString() {
+			if (!this.end || !this.start) { return null }
+			return distanceInWords(this.end, this.start)	
+		},
 		title() {
 			return typeof(this.property)=="number" ? '#' + (this.property + 1) : this.schema.title
 		},

@@ -351,7 +351,7 @@
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: center;
-		align-items: start;
+		align-items: flex-start;
 		margin-left: -0.5rem;
 		margin-right: -0.5rem;
 		margin-bottom: 0.5rem;
