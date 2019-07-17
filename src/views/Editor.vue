@@ -95,6 +95,18 @@
 								Publish
 							</b-button>
 						</b-col>
+						<b-col v-if="!loading && isPublished">
+							<b-button
+								id="editor_button_etsin_top"
+								variant="info"
+								block
+								@click="viewInEtsin()"
+								ref="dataset-etsin-button">
+								<font-awesome-icon icon="external-link-alt" />
+								&nbsp;
+								Etsin
+							</b-button>
+						</b-col>
 					</b-row>
 				</b-container>
 			</b-collapse>
@@ -139,6 +151,16 @@
 
 				<b-col v-if="selectedSchema">
 					<router-view></router-view>
+				</b-col>
+
+				<b-col v-else-if="loading">
+					<b-container>
+						<b-row>
+							<b-col>
+								<font-awesome-icon icon="spinner" spin />
+							</b-col>
+						</b-row>
+					</b-container>
 				</b-col>
 
 				<b-col v-else-if="!loading" class="schema-help-text">
@@ -260,6 +282,9 @@ export default {
 			}
 			return null
 		},
+		viewInEtsin() {
+			window.open(`${process.env.VUE_APP_ETSIN_API_URL}/${this.qvainData.identifier}`, '_blank')
+		},
 		publish: async function publishCallback() {
 			if (this.saving || this.publishing) {
 				return
@@ -269,9 +294,13 @@ export default {
 				this.showPublishConfirmation = false
 				const isExisting = !!this.$store.state.metadata.id
 				if (isExisting) {
-					const response = await apiClient.post("/datasets/" + this.$store.state.metadata.id + "/publish", {})
-					this.clearRecord() // clear editor dataset
-					this.$router.replace({ name: "datasets"}) // redirect to datasets page
+					const currentId = this.$store.state.metadata.id
+					const response = await apiClient.post("/datasets/" + currentId + "/publish", {})
+					const { data } = await apiClient.get(`/datasets/${currentId}`)
+					this.qvainData = data
+
+					//this.clearRecord() // clear editor dataset
+					//this.$router.replace({ name: "datasets"}) // redirect to datasets page
 				} else {
 					this.$root.showAlert("Please save your dataset first", "danger")
 				}
@@ -310,6 +339,8 @@ export default {
 					await apiClient.put("/datasets/" + currentId, payload)
 					const { data } = await apiClient.get(`/datasets/${currentId}`)
 					this.qvainData = data
+					this.clearRecord()
+					this.openRecord(this.id)
 				} else {
 					const { data: { id }} = await apiClient.post("/datasets/", payload)
 					const { data } = await apiClient.get(`/datasets/${id}`)
@@ -317,7 +348,6 @@ export default {
 
 					this.$store.commit('setMetadata', { id })
 					this.$router.replace({ name: 'tab', params: { id: id, tab: this.$route.params.tab }})
-
 				}
 				this.isDataChanged = false
 			} catch(error) {
@@ -448,8 +478,11 @@ export default {
 		isPublishDisabled() {
 			return this.loading || this.rateLimited || this.$store.state.metadata.id == null || (this.qvainData && this.qvainData.published && this.qvainData.synced >= this.qvainData.modified) || this.isDataChanged || this.saving || this.publishing
 		},
+		isPublished() {
+			return this.qvainData && this.qvainData.published
+		},
 		isPublishedAndUpdateAvailable() {
-			return this.qvainData && this.qvainData.published && (this.qvainData.modified > this.qvainData.synced)
+			return this.isPublished && (this.qvainData.modified > this.qvainData.synced)
 		},
 		isSaveDisabled() {
 			return this.loading || this.rateLimited || this.isDataChanged == false || this.saving || this.publishing
@@ -498,7 +531,7 @@ export default {
 	async mounted() {
 		if (this.id === 'new') {
 			this.clearRecord()
-		} else if (this.id !== 'edit' && this.$store.state.metadata.id !== this.id) {
+		} else if (this.id !== 'edit') {
 			await this.openRecord(this.id)
 		}
 
