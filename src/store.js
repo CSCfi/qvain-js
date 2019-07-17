@@ -207,6 +207,23 @@ export default new Vuex.Store({
 				}).join('/')
 
 			return state.hints['/' + searchPathOneOfSensitive] || state.hints['/' + searchPathNoNumber] || {}
+
+			/*const splitPath = path
+				.split('/')
+				.filter(key => key !== '')
+
+			const matchingPath = uiPath => {
+				const splitUiPath = uiPath
+					.split('/')
+					.filter(key => key !== '')
+
+				if (splitUiPath.length !== splitPath.length) return false
+				return splitUiPath.every((val, index) => val === '*' || val === splitPath[index])
+			}
+
+			const uiPath = Object.keys(state.hints).find(matchingPath)
+			console.log(path, uiPath)
+			return state.hints[uiPath] || {}*/
 		},
 		// uiValidKeywordsList returns a static array of valid keywords
 		uiValidKeywordsList: (state) => {
