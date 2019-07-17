@@ -12,7 +12,12 @@
 				<b-badge v-if="timeBetweenString">
 					{{ timeBetweenString }}
 				</b-badge>
-
+				<div class="error-badges" v-if="toIsEarlierThanFrom">
+					<b-badge
+						variant="danger">
+						<span>To &lt; From</span>
+					</b-badge>
+				</div>
 			</div>
 			<div class="col">
 				<datetimepicker
@@ -53,6 +58,9 @@
 	margin-top: 0.25em;
 	padding-left: 1em;
 }
+.error-badges {
+	padding-top: 0.5em;
+}
 </style>
 
 <script>
@@ -83,6 +91,14 @@ export default {
 		title() {
 			return typeof(this.property)=="number" ? '#' + (this.property + 1) : this.schema.title
 		},
+		toIsEarlierThanFrom() {
+			if (!this.end || !this.start) { return false }
+			const end_date = new Date(this.end)
+			const start_date = new Date(this.start)
+			if (end_date < start_date) {
+				return true
+			}
+		}
 	},
 	methods: {
 		updateValue() {
