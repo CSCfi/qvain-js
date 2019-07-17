@@ -4,7 +4,7 @@
 		<div class="input-group-prepend">
 			<b-button
 				@click="updateOffset"> 
-				Offset
+				UTC ±
 			</b-button>
 		</div>
 		<input
@@ -51,7 +51,11 @@ export default {
 	},
 	methods: {
 		updateOffset() {
-			var local_offset = new Date(this.date).getTimezoneOffset()
+			// this.date is in day.month.year format
+			// javascript Date expects it to month.day.year format
+			var [day, month, year] = this.date.split(".")
+			var monthIndex = month - 1
+			var local_offset = new Date(year, monthIndex, day).getTimezoneOffset()
 			// local_offset is -180 for Helsinki
 			// lets convert it to hh:mm format
 			var is_ahead_of_utc = local_offset < 0
@@ -62,7 +66,7 @@ export default {
 			if (is_ahead_of_utc) {
 				symbol = "+"
 			} else if (is_utc) {
-				symbol = ""
+				symbol = "+"
 			} else {
 				symbol = "-"
 			}
@@ -117,20 +121,15 @@ export default {
 	created() {
 		this.isInitializing = true
 		this.initial_value = this.value
-		if (!this.initial_value) {
+		this.internal_value = this.initial_value
+		if (this.date && !this.value) {
 			this.updateOffset()
 		}
-		this.internal_value = this.initial_value
 		this.isInitializing = false
 	},
 	watch: {
 		date(value) {
-			var local_offset = new Date(this.date)
-			//.getTimezoneOffset()
-			console.log("date changed")
-			console.log(this.date)
-			console.log(local_offset)
-			console.log(new Date())
+			this.updateOffset()
 		},
 	}
 }

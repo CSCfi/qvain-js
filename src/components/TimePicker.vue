@@ -2,7 +2,9 @@
 <template>
 	<div class="input-group">
 		<div class="input-group-prepend">
-			<span class="input-group-text">Time</span>
+			<span class="input-group-text">
+				Time
+			</span>
 		</div>
 		<input
 			:value="timeString"
