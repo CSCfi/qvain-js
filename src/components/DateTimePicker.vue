@@ -135,13 +135,15 @@ export default {
 			const time_value = this.internal_value.split("T")
 			const time_value_with_timezone = time_value[1]
 			let timezone_prefix = "-"
-			if (time_value_with_timezone.indexOf("+") > 0) {
-				timezone_prefix = "+"
+			if (time_value_with_timezone) {
+				if (time_value_with_timezone.indexOf("+") > 0) {
+					timezone_prefix = "+"
+				}
+				const time_and_timezone = time_value_with_timezone.split(timezone_prefix)
+				this.timezone = timezone_prefix + time_and_timezone[1]
+				this.time = time_and_timezone[0]
 			}
-			const time_and_timezone = time_value_with_timezone.split(timezone_prefix)
 			this.date = time_value[0]
-			this.time = time_and_timezone[0]
-			this.timezone = timezone_prefix + time_and_timezone[1]
 		}
 		this.isInitializing = false
 	},
