@@ -24,10 +24,8 @@
 			<div class="col-sm-2">
 				<delete-button v-if="inArray" @click="$emit('delete', property)"/>
 			</div>
-
 		</div>
 	</div>
-
 </template>
 
 <script>

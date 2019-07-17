@@ -5,10 +5,9 @@
 			<span class="input-group-text">Date</span>
 		</div>
 		<input
-			:key="componentKey"
-			v-bind:value="dateString"
-			v-on:input="validateDate"
-			v-on:change="submitChange"
+			:value="dateString"
+			@input="validateDate"
+			@change="submitChange"
 			placeholder="dd.MM.yyyy"
 			class="form-control" />
 	</div>
@@ -18,8 +17,6 @@
 
 export default {
 	name: 'datepicker',
-	components: {
-	},
 	model: {
 		prop: 'value',
 		event: 'input'
@@ -38,10 +35,10 @@ export default {
 	},
 	computed: {
 		dateString: {
-			get: function() {
+			get() {
 				return this.internal_value
 			},
-			set: function(new_value) {
+			set(new_value) {
 				if (this.isInitializing) { return }
 				if (this.dateRegexp.test(new_value)) {
 					var date_array = new_value.split(".")
@@ -51,7 +48,7 @@ export default {
 		},
 	},
 	methods: {
-		submitChange: function(event) {
+		submitChange(event) {
 			if (this.isInitializing) { return }
 			let new_value = event.target.value
 			if (!new_value || new_value === '') {
@@ -89,7 +86,7 @@ export default {
 				this.internal_value = this.initial_value
 			}
 		},
-		validateDate: function(event) {
+		validateDate(event) {
 			if (this.isInitializing) { return }
 			const new_value = event.target.value
 			if (this.dateRegexp.test(new_value)) {

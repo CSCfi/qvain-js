@@ -9,7 +9,7 @@
 		<div slot="input" class="container">
 			<div class="row">
 				<datepicker
-					v-bind:format="schema.format"
+					:format="schema.format"
 					v-model="date">
 				</datepicker>
 			</div>

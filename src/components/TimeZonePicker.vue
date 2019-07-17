@@ -34,10 +34,10 @@ export default {
 	},
 	computed: {
 		timezoneString: {
-			get: function() {
+			get() {
 				return this.internal_value
 			},
-			set: function(new_value) {
+			set(new_value) {
 				if (this.isInitializing) { return }
 				if (this.timezoneRegexp.test(new_value)) {
 					this.internal_value = new_value
@@ -46,7 +46,7 @@ export default {
 		},
 	},
 	methods: {
-		submitChange: function(event) {
+		submitChange(event) {
 			if (this.isInitializing) { return }
 			let new_value = event.target.value
 			if (!new_value || new_value === '') {
@@ -82,7 +82,7 @@ export default {
 				this.internal_value = this.initial_value
 			}
 		},
-		validateTimeZone: function(event) {
+		validateTimeZone(event) {
 			if (this.isInitializing) { return }
 			const new_value = event.target.value
 			if (this.timezoneRegexp.test(new_value)) {
