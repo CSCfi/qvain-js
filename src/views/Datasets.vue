@@ -49,43 +49,41 @@
 		<!-- alerts -->
 		<b-alert variant="danger" :show="!!error" dismissible @dismissed="error = null">{{ error }}</b-alert>
 
-		<b-row>
-			<b-col offset-md="4" md="2">
-				<b-pagination
-					size="sm"
-					align="center"
-					hide-goto-end-buttons
-					hide-ellipsis
-					:value="datasetsView.currentPage"
-					:per-page="datasetsView.perPage"
-					:total-rows="datasetsView.filteredCount"
-					aria-controls="dataset-list"
-					first-text="First"
-					prev-text="Prev"
-					next-text="Next"
-					last-text="Last"
-					label-page="Page"
-					@input="setPage">
-				</b-pagination>
-			</b-col>
-			<b-col md="2">
-				<b-button-group size="sm">
-					<b-btn
-						@click="() => setPerPage(0)">
-						show all
-					</b-btn>
-					<b-btn
-						v-for="option in perPageOptionsFiltered"
-						:key="option"
-						
-						:pressed="datasetsView.perPage == option"
-						class="btn"
-						@click="() => setPerPage(option)"
-					>{{ option }}
-					</b-btn>
-				</b-button-group>
-			</b-col>
-		</b-row>
+		<div class="pagination-controls">
+			<b-pagination
+				size="sm"
+				align="center"
+				hide-goto-end-buttons
+				hide-ellipsis
+				:value="datasetsView.currentPage"
+				:per-page="datasetsView.perPage || datasetsView.filteredCount"
+				:total-rows="datasetsView.filteredCount"
+				aria-controls="dataset-list"
+				first-text="First"
+				prev-text="Prev"
+				next-text="Next"
+				last-text="Last"
+				label-page="Page"
+				@input="setPage"
+			/>
+
+			<b-button-group size="sm">
+				<b-btn
+					:pressed="datasetsView.perPage === 0"
+					@click="() => setPerPage(0)"
+				>
+					show all
+				</b-btn>
+				<b-btn
+					v-for="option in perPageOptionsFiltered"
+					:key="option"
+					:pressed="datasetsView.perPage === option"
+					class="btn"
+					@click="() => setPerPage(option)"
+				>{{ option }}
+				</b-btn>
+			</b-button-group>
+		</div>
 
 		<!-- table -->
 		<b-table
@@ -213,42 +211,41 @@
 			</div>
 		</b-table>
 
-		<b-row>
-			<b-col offset-md="4" md="2">
-				<b-pagination
-					hide-goto-end-buttons
-					size="sm"
-					align="center"
-					:value="datasetsView.currentPage"
-					:per-page="datasetsView.perPage"
-					:total-rows="datasetsView.filteredCount"
-					aria-controls="dataset-list"
-					first-text="First"
-					prev-text="Prev"
-					next-text="Next"
-					last-text="Last"
-					label-page="Page"
-					@input="setPage">
-				</b-pagination>
-			</b-col>
-			<b-col md="2">
-				<b-button-group size="sm">
-					<b-btn
-						@click="() => setPerPage(0)">
-						show all
-					</b-btn>
-					<b-btn
-						v-for="option in perPageOptionsFiltered"
-						:key="option"
-						
-						:pressed="datasetsView.perPage == option"
-						class="btn"
-						@click="() => setPerPage(option)"
-					>{{ option }}
-					</b-btn>
-				</b-button-group>
-			</b-col>
-		</b-row>
+		<div class="pagination-controls">
+			<b-pagination
+				size="sm"
+				align="center"
+				hide-goto-end-buttons
+				hide-ellipsis
+				:value="datasetsView.currentPage"
+				:per-page="datasetsView.perPage || datasetsView.filteredCount"
+				:total-rows="datasetsView.filteredCount"
+				aria-controls="dataset-list"
+				first-text="First"
+				prev-text="Prev"
+				next-text="Next"
+				last-text="Last"
+				label-page="Page"
+				@input="setPage"
+			/>
+
+			<b-button-group size="sm">
+				<b-btn
+					:pressed="datasetsView.perPage === 0"
+					@click="() => setPerPage(0)"
+				>
+					show all
+				</b-btn>
+				<b-btn
+					v-for="option in perPageOptionsFiltered"
+					:key="option"
+					:pressed="datasetsView.perPage === option"
+					class="btn"
+					@click="() => setPerPage(option)"
+				>{{ option }}
+				</b-btn>
+			</b-button-group>
+		</div>
 		<!-- modals -->
 		<b-modal
 			v-if="itemToBeDeleted !== null"
@@ -350,8 +347,19 @@
 		}
 	}
 
-	.datasets-paging .btn-group {
-		margin-bottom: 1em;
+	.pagination-controls {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		align-items: start;
+		margin-left: -0.5rem;
+		margin-right: -0.5rem;
+		margin-bottom: 0.5rem;
+		& > * {
+			margin-left: 0.5rem;
+			margin-right: 0.5rem;
+			margin-bottom: 4px;
+		}
 	}
 
 </style>
