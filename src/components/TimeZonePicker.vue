@@ -30,8 +30,8 @@ export default {
 	},
 	data() {
 		return {
-			internal_value: null,
-			initial_value: null,
+			internalValue: null,
+			initialValue: null,
 			isInitializing: true,
 			inputRegexp: /^[-+\d:]+$/,
 			timezoneRegexp: /^[+-]?(2[0-3]|[0-1]?\d)(:[0-5]?\d|:)?$/
@@ -40,12 +40,12 @@ export default {
 	computed: {
 		timezoneString: {
 			get() {
-				return this.internal_value
+				return this.internalValue
 			},
-			set(new_value) {
+			set(newValue) {
 				if (this.isInitializing) { return }
-				if (this.timezoneRegexp.test(new_value)) {
-					this.internal_value = new_value
+				if (this.timezoneRegexp.test(newValue)) {
+					this.internalValue = newValue
 				}
 			}
 		},
@@ -54,45 +54,45 @@ export default {
 		updateOffset() {
 			const [day, month, year] = this.fromExternalFormat(this.timezonedate).split(".")
 			const monthIndex = month - 1
-			const local_offset = new Date(year, monthIndex, day).getTimezoneOffset()
-			if (isNaN(local_offset)) {
-				this.initial_value = null
-				this.internal_value = this.initial_value
-				this.$emit('input', this.initial_value)
+			const localOffset = new Date(year, monthIndex, day).getTimezoneOffset()
+			if (isNaN(localOffset)) {
+				this.initialValue = null
+				this.internalValue = this.initialValue
+				this.$emit('input', this.initialValue)
 				return
 			}
-			// local_offset is -180 for Helsinki
+			// localOffset is -180 for Helsinki
 			// lets convert it to hh:mm format
-			const is_ahead_of_utc = local_offset < 0
-			const is_utc = local_offset === 0
-			const hours = String(Math.abs(local_offset/60)).padStart(2,"0")
-			const minutes = String(Math.abs(local_offset%60)).padStart(2,"0")
+			const isAheadOfUtc = localOffset < 0
+			const isUtc = localOffset === 0
+			const hours = String(Math.abs(localOffset/60)).padStart(2,"0")
+			const minutes = String(Math.abs(localOffset%60)).padStart(2,"0")
 			let symbol = ""
-			if (is_ahead_of_utc) {
+			if (isAheadOfUtc) {
 				symbol = "+"
-			} else if (is_utc) {
+			} else if (isUtc) {
 				symbol = "+"
 			} else {
 				symbol = "-"
 			}
-			this.initial_value = symbol + hours + ":" + minutes
-			this.internal_value = this.initial_value
-			this.$emit('input', this.initial_value)
+			this.initialValue = symbol + hours + ":" + minutes
+			this.internalValue = this.initialValue
+			this.$emit('input', this.initialValue)
 		},
 		submitChange(event) {
 			if (this.isInitializing) { return }
-			let new_value = event.target.value
-			if (!new_value || new_value === '') {
-				this.internal_value = new_value
-				this.initial_value = new_value
-				this.$emit('input', new_value)
-			} else if (this.timezoneRegexp.test(new_value)) {
+			let newValue = event.target.value
+			if (!newValue || newValue === '') {
+				this.internalValue = newValue
+				this.initialValue = newValue
+				this.$emit('input', newValue)
+			} else if (this.timezoneRegexp.test(newValue)) {
 				let symbol = "+"
-				if (new_value[0]==="+" || new_value[0]==="-") {
-					symbol = new_value[0]
-					new_value = new_value.substring(1)
+				if (newValue[0]==="+" || newValue[0]==="-") {
+					symbol = newValue[0]
+					newValue = newValue.substring(1)
 				}
-				let hours = new_value.split(":")
+				let hours = newValue.split(":")
 				const parts = hours.length
 
 				for(var i=0; i<hours.length; i++) {
@@ -105,41 +105,41 @@ export default {
 				if (hours[0] == "00") {
 					symbol = ""
 				}
-				new_value = symbol + hours.join(":")
-				this.internal_value = new_value
-				this.initial_value = new_value
-				this.$emit('input', new_value)
+				newValue = symbol + hours.join(":")
+				this.internalValue = newValue
+				this.initialValue = newValue
+				this.$emit('input', newValue)
 			} else {
-				this.internal_value = this.initial_value
-				this.$emit('input', this.internal_value)
+				this.internalValue = this.initialValue
+				this.$emit('input', this.internalValue)
 			}
 		},
-		toExternalFormat(internal_format) {
-			if (!internal_format) { return internal_format }
-			const [day, month, year] = internal_format.split(".")
+		toExternalFormat(internalFormat) {
+			if (!internalFormat) { return internalFormat }
+			const [day, month, year] = internalFormat.split(".")
 			return year + "-" + month + "-" + day
 		},
-		fromExternalFormat(external_format) {
-			if (!external_format) { return external_format }
-			const [year, month, day] = external_format.split("-")
+		fromExternalFormat(externalFormat) {
+			if (!externalFormat) { return externalFormat }
+			const [year, month, day] = externalFormat.split("-")
 			return day + "." + month + "." + year
 		},
 		validate(event) {
 			if (this.isInitializing) { return }
-			const new_value = event.target.value
-			if (this.timezoneRegexp.test(new_value)) {
-				this.internal_value = new_value
-				this.initial_value = this.internal_value
-			} else if (!this.inputRegexp.test(new_value) && new_value !== '') {
-				this.internal_value = this.initial_value
+			const newValue = event.target.value
+			if (this.timezoneRegexp.test(newValue)) {
+				this.internalValue = newValue
+				this.initialValue = this.internalValue
+			} else if (!this.inputRegexp.test(newValue) && newValue !== '') {
+				this.internalValue = this.initialValue
 				this.$forceUpdate();
 			}
 		},
 	},
 	created() {
 		this.isInitializing = true
-		this.initial_value = this.value
-		this.internal_value = this.initial_value
+		this.initialValue = this.value
+		this.internalValue = this.initialValue
 		if (this.timezonedate && !this.value) {
 			this.updateOffset()
 		}

@@ -73,8 +73,8 @@ export default {
 	},
 	data() {
 		return {
-			internal_value: null,
-			initial_value: null,
+			internalValue: null,
+			initialValue: null,
 			date: null,
 			time: null,
 			timezone: null,
@@ -83,45 +83,45 @@ export default {
 	},
 
 	methods: {
-		toExternalDateFormat(internal_format) {
-			if (!internal_format) { return internal_format }
-			const [date, time] = internal_format.split("T")
+		toExternalDateFormat(internalFormat) {
+			if (!internalFormat) { return internalFormat }
+			const [date, time] = internalFormat.split("T")
 			return date
 		},
-		toExternalTimeFormat(internal_format) {
-			if (!internal_format) { return internal_format }
-			const [date, time] = internal_format.split("T")
+		toExternalTimeFormat(internalFormat) {
+			if (!internalFormat) { return internalFormat }
+			const [date, time] = internalFormat.split("T")
 			return time
 		},
-		fromExternalDateFormat(external_format) {
-			if (!external_format) { return external_format }
-			const [year, month, day] = external_format.split("-")
+		fromExternalDateFormat(externalFormat) {
+			if (!externalFormat) { return externalFormat }
+			const [year, month, day] = externalFormat.split("-")
 			return day + "." + month + "." + year
 		},
 		updateValue() {
 			if (this.isInitializing) { return }
-			let time_value = this.time
-			if (!time_value) {
-				time_value = "00:00:00"
+			let timeValue = this.time
+			if (!timeValue) {
+				timeValue = "00:00:00"
 			}
-			let date_value = this.date
-			if (!date_value) {
-				date_value = "0000-00-00"
+			let dateValue = this.date
+			if (!dateValue) {
+				dateValue = "0000-00-00"
 			}
-			let time_zone_value = this.timezone
+			let timeZoneValue = this.timezone
 			if (!this.timezone) {
-				time_zone_value = "00:00"
+				timeZoneValue = "00:00"
 			}
-			if (time_zone_value[0] !== "-" && time_zone_value[0] !== "+") {
-				time_zone_value = "-" + time_zone_value
+			if (timeZoneValue[0] !== "-" && timeZoneValue[0] !== "+") {
+				timeZoneValue = "-" + timeZoneValue
 			}
-			this.internal_value = date_value + "T" + time_value + time_zone_value
+			this.internalValue = dateValue + "T" + timeValue + timeZoneValue
 			if (this.format === "date-time") {
-				this.$emit('input', this.internal_value)
+				this.$emit('input', this.internalValue)
 			} else if (this.format === "date") {
-				this.$emit('input', this.toExternalDateFormat(this.internal_value))
+				this.$emit('input', this.toExternalDateFormat(this.internalValue))
 			} else if (this.format === "time") {
-				this.$emit('input', this.toExternalTimeFormat(this.internal_value))
+				this.$emit('input', this.toExternalTimeFormat(this.internalValue))
 			} else {
 				console.log("Unhandled data format (" + this.format + ") for DateTimePicker")
 			}
@@ -129,21 +129,21 @@ export default {
 	},
 	created() {
 		this.isInitializing = true
-		this.internal_value = this.value
-		this.initial_value = this.value
-		if (this.internal_value) {
-			const time_value = this.internal_value.split("T")
-			const time_value_with_timezone = time_value[1]
-			let timezone_prefix = "-"
-			if (time_value_with_timezone) {
-				if (time_value_with_timezone.indexOf("+") > 0) {
-					timezone_prefix = "+"
+		this.internalValue = this.value
+		this.initialValue = this.value
+		if (this.internalValue) {
+			const timeValue = this.internalValue.split("T")
+			const timeValueWithTimezone = timeValue[1]
+			let timezonePrefix = "-"
+			if (timeValueWithTimezone) {
+				if (timeValueWithTimezone.indexOf("+") > 0) {
+					timezonePrefix = "+"
 				}
-				const time_and_timezone = time_value_with_timezone.split(timezone_prefix)
-				this.timezone = timezone_prefix + time_and_timezone[1]
-				this.time = time_and_timezone[0]
+				const timeAndTimezone = timeValueWithTimezone.split(timezonePrefix)
+				this.timezone = timezonePrefix + timeAndTimezone[1]
+				this.time = timeAndTimezone[0]
 			}
-			this.date = time_value[0]
+			this.date = timeValue[0]
 		}
 		this.isInitializing = false
 	},

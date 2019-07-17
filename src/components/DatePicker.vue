@@ -41,8 +41,8 @@ export default {
 	},
 	data() {
 		return {
-			internal_value: null,
-			initial_value: null,
+			internalValue: null,
+			initialValue: null,
 			isInitializing: true,
 			inputRegexp: /^[\d\.]+$/,
 			dateRegexp: /^((([1-9]|0[1-9]|[12]\d|3[01])\.([1-9]|0[1-9]|1[0-2])(\.[12]\d{3})?)|([1-9]|0[1-9]|[12]\d|3[01]))$/
@@ -51,71 +51,71 @@ export default {
 	computed: {
 		dateString: {
 			get() {
-				return this.internal_value
+				return this.internalValue
 			}
 		},
 	},
 	methods: {
 		submitChange(event) {
 			if (this.isInitializing) { return }
-			let new_value = event.target.value
-			if (!new_value || new_value === '') {
-				this.internal_value = new_value
-				this.initial_value = new_value
-				this.$emit('input', this.toExternalFormat(new_value))
-			} else if (this.dateRegexp.test(new_value)) {
-				let date_structure = new_value.split(".")
-				const parts = date_structure.length
-				for(var i=0; i<date_structure.length; i++) {
-					date_structure[i] = date_structure[i].padStart(2, '0')
+			let newValue = event.target.value
+			if (!newValue || newValue === '') {
+				this.internalValue = newValue
+				this.initialValue = newValue
+				this.$emit('input', this.toExternalFormat(newValue))
+			} else if (this.dateRegexp.test(newValue)) {
+				let dateStructure = newValue.split(".")
+				const parts = dateStructure.length
+				for(var i=0; i<dateStructure.length; i++) {
+					dateStructure[i] = dateStructure[i].padStart(2, '0')
 				}
 				for (var i=0; i<3-parts; i++) {
-					date_structure.push("00")
+					dateStructure.push("00")
 				}
 				// ensure that the month is not empty
-				if (date_structure[1] === "00") {
-					date_structure[1] = String(new Date().getMonth()+1).padStart(2, '0')
+				if (dateStructure[1] === "00") {
+					dateStructure[1] = String(new Date().getMonth()+1).padStart(2, '0')
 				}
 				// ensure that the year is not empty
-				date_structure[2] = date_structure[2].padStart(4, '0')
-				if (date_structure[2] === "0000") {
-					date_structure[2] = new Date().getFullYear()
+				dateStructure[2] = dateStructure[2].padStart(4, '0')
+				if (dateStructure[2] === "0000") {
+					dateStructure[2] = new Date().getFullYear()
 				}
-				new_value = date_structure.join(".")
-				this.internal_value = new_value
-				this.initial_value = new_value
-				this.$emit('input', this.toExternalFormat(new_value))
+				newValue = dateStructure.join(".")
+				this.internalValue = newValue
+				this.initialValue = newValue
+				this.$emit('input', this.toExternalFormat(newValue))
 			} else {
-				this.internal_value = this.initial_value
-				this.$emit('input', this.toExternalFormat(this.internal_value))
+				this.internalValue = this.initialValue
+				this.$emit('input', this.toExternalFormat(this.internalValue))
 			}
 		},
-		toExternalFormat(internal_format) {
-			if (!internal_format) { return internal_format }
-			const [day, month, year] = internal_format.split(".")
+		toExternalFormat(internalFormat) {
+			if (!internalFormat) { return internalFormat }
+			const [day, month, year] = internalFormat.split(".")
 			return year + "-" + month + "-" + day
 		},
-		fromExternalFormat(external_format) {
-			if (!external_format) { return external_format }
-			const [year, month, day] = external_format.split("-")
+		fromExternalFormat(externalFormat) {
+			if (!externalFormat) { return externalFormat }
+			const [year, month, day] = externalFormat.split("-")
 			return day + "." + month + "." + year
 		},
 		validate(event) {
 			if (this.isInitializing) { return }
-			const new_value = event.target.value
-			if (this.dateRegexp.test(new_value)) {
-				this.internal_value = new_value
-				this.initial_value = this.internal_value
-			} else if (!this.inputRegexp.test(new_value) && new_value !== '') {
-				this.internal_value = this.initial_value
+			const newValue = event.target.value
+			if (this.dateRegexp.test(newValue)) {
+				this.internalValue = newValue
+				this.initialValue = this.internalValue
+			} else if (!this.inputRegexp.test(newValue) && newValue !== '') {
+				this.internalValue = this.initialValue
 				this.$forceUpdate();
 			}
 		},
 	},
 	created() {
 		this.isInitializing = true
-		this.internal_value = this.fromExternalFormat(this.value)
-		this.initial_value = this.fromExternalFormat(this.value)
+		this.internalValue = this.fromExternalFormat(this.value)
+		this.initialValue = this.fromExternalFormat(this.value)
 		this.isInitializing = false
 	}
 }

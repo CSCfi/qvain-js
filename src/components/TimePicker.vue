@@ -28,8 +28,8 @@ export default {
 	},
 	data() {
 		return {
-			internal_value: null,
-			initial_value: null,
+			internalValue: null,
+			initialValue: null,
 			isInitializing: true,
 			inputRegexp: /^[\d:]+$/,
 			timeRegexp: /^((0[0-9]|1\d|2[0-3]|[0-9])|((0[0-9]|1\d|2[0-3]|[0-9]):){1}(([0-5][0-9]|[0-9]):?){1,2})$/
@@ -38,12 +38,12 @@ export default {
 	computed: {
 		timeString: {
 			get() {
-				return this.internal_value
+				return this.internalValue
 			},
-			set(new_value) {
+			set(newValue) {
 				if (this.isInitializing) { return }
-				if (this.timeRegexp.test(new_value)) {
-					this.internal_value = new_value
+				if (this.timeRegexp.test(newValue)) {
+					this.internalValue = newValue
 				}
 			}
 		},
@@ -51,13 +51,13 @@ export default {
 	methods: {
 		submitChange(event) {
 			if (this.isInitializing) { return }
-			let new_value = event.target.value
-			if (!new_value || new_value === '') {
-				this.internal_value = new_value
-				this.initial_value = new_value
-				this.$emit('input', new_value)
-			} else if (this.timeRegexp.test(new_value)) {
-				let hours = new_value.split(":")
+			let newValue = event.target.value
+			if (!newValue || newValue === '') {
+				this.internalValue = newValue
+				this.initialValue = newValue
+				this.$emit('input', newValue)
+			} else if (this.timeRegexp.test(newValue)) {
+				let hours = newValue.split(":")
 				const parts = hours.length
 				for(var i=0; i<hours.length; i++) {
 					hours[i] = hours[i].padStart(2, '0')
@@ -65,31 +65,31 @@ export default {
 				for (var i=0; i<3-parts; i++) {
 					hours.push("00")
 				}
-				new_value = hours.join(":")
-				this.internal_value = new_value
-				this.initial_value = new_value
-				this.$emit('input', new_value)
+				newValue = hours.join(":")
+				this.internalValue = newValue
+				this.initialValue = newValue
+				this.$emit('input', newValue)
 			} else {
-				this.internal_value = this.initial_value
-				this.$emit('input', this.internal_value)
+				this.internalValue = this.initialValue
+				this.$emit('input', this.internalValue)
 			}
 		},
 		validate(event) {
 			if (this.isInitializing) { return }
-			const new_value = event.target.value
-			if (this.timeRegexp.test(new_value)) {
-				this.internal_value = new_value
-				this.initial_value = this.internal_value
-			} else if (!this.inputRegexp.test(new_value) && new_value !== '') {
-				this.internal_value = this.initial_value
+			const newValue = event.target.value
+			if (this.timeRegexp.test(newValue)) {
+				this.internalValue = newValue
+				this.initialValue = this.internalValue
+			} else if (!this.inputRegexp.test(newValue) && newValue !== '') {
+				this.internalValue = this.initialValue
 				this.$forceUpdate();
 			}
 		},
 	},
 	created() {
 		this.isInitializing = true
-		this.internal_value = this.value
-		this.initial_value = this.value
+		this.internalValue = this.value
+		this.initialValue = this.value
 		this.isInitializing = false
 	}
 }

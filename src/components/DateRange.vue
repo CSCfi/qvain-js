@@ -93,9 +93,9 @@ export default {
 		},
 		toIsEarlierThanFrom() {
 			if (!this.end || !this.start) { return false }
-			const end_date = new Date(this.end)
-			const start_date = new Date(this.start)
-			if (end_date < start_date) {
+			const endDate = new Date(this.end)
+			const startDate = new Date(this.start)
+			if (endDate < startDate) {
 				return true
 			}
 		}
