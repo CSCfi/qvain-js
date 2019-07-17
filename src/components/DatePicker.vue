@@ -13,6 +13,22 @@
 	</div>
 </template>
 
+<style lang="scss">
+.datepicker-container {
+	margin: 0em;
+	padding: 0em;
+	.row {
+		margin: 0em;
+		padding: 0em;
+		.col, .col-sm-2 {
+			margin: 0em;
+			padding: 0em;
+		}
+	}
+}
+</style>
+
+
 <script>
 
 export default {

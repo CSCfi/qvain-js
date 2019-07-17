@@ -31,6 +31,19 @@
 </template>
 
 <style lang="scss">
+.datetimepicker.container {
+	margin: 0em;
+	padding: 0em;
+	.row {
+		margin: 0em;
+		padding: 0em;
+		padding-left: 0.5em;
+		.col, .col-sm-2 {
+			margin: 0em;
+			padding: 0em;
+		}
+	}
+}
 .datetimepicker.container * .input-group {
 	margin-top: 0.5em;
 }
