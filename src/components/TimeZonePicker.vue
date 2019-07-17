@@ -8,7 +8,7 @@
 			</b-button>
 		</div>
 		<input
-			:value="timezoneString"
+			v-bind:value="timezoneString"
 			@input="validateTimeZone"
 			@change="submitChange"
 			placeholder="[+-]hh:mm"
@@ -26,14 +26,14 @@ export default {
 	props: {
 		format: String,
 		value: String,
-		date: String
+		timezonedate: String
 	},
 	data() {
 		return {
 			internal_value: null,
 			initial_value: null,
 			isInitializing: true,
-			timezoneRegexp: /^[+-]?((0[0-9]|1\d|2[0-3]|[0-9])|((0[0-9]|1\d|2[0-3]|[0-9])){1})$/
+			timezoneRegexp: /^[+-]?(2[0-3]|[0-1]?\d)(:[0-5]?\d|:)?$/
 		}
 	},
 	computed: {
@@ -53,9 +53,15 @@ export default {
 		updateOffset() {
 			// this.date is in day.month.year format
 			// javascript Date expects it to month.day.year format
-			var [day, month, year] = this.date.split(".")
+			var [day, month, year] = this.timezonedate.split(".")
 			var monthIndex = month - 1
 			var local_offset = new Date(year, monthIndex, day).getTimezoneOffset()
+			if (isNaN(local_offset)) {
+				this.initial_value = null
+				this.internal_value = this.initial_value
+				this.$emit('input', this.initial_value)
+				return
+			}
 			// local_offset is -180 for Helsinki
 			// lets convert it to hh:mm format
 			var is_ahead_of_utc = local_offset < 0
@@ -72,6 +78,7 @@ export default {
 			}
 			this.initial_value = symbol + hours + ":" + minutes
 			this.internal_value = this.initial_value
+			this.$emit('input', this.initial_value)
 		},
 		submitChange(event) {
 			if (this.isInitializing) { return }
@@ -107,6 +114,7 @@ export default {
 				this.$emit('input', new_value)
 			} else {
 				this.internal_value = this.initial_value
+				this.$emit('input', this.internal_value)
 			}
 		},
 		validateTimeZone(event) {
@@ -114,7 +122,6 @@ export default {
 			var new_value = event.target.value
 			if (this.timezoneRegexp.test(new_value)) {
 				this.internal_value = new_value
-				this.initial_value = new_value
 			}
 		},
 	},
@@ -122,13 +129,13 @@ export default {
 		this.isInitializing = true
 		this.initial_value = this.value
 		this.internal_value = this.initial_value
-		if (this.date && !this.value) {
+		if (this.timezonedate && !this.value) {
 			this.updateOffset()
 		}
 		this.isInitializing = false
 	},
 	watch: {
-		date(value) {
+		timezonedate(value) {
 			this.updateOffset()
 		},
 	}

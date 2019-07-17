@@ -20,7 +20,7 @@
 						<timezonepicker
 							v-if="format === 'date-time' || format === 'time'"
 							:format="format"
-							:date="date"
+							:timezonedate="date"
 							v-model="timezone">
 						</timezonepicker>
 					</b-form-group>
@@ -105,7 +105,7 @@ export default {
 			const time_and_timezone = time_value_with_timezone.split(timezone_prefix)
 			this.date = time_value[0]
 			this.time = time_and_timezone[0]
-			this.timezone = time_and_timezone[1]
+			this.timezone = timezone_prefix + time_and_timezone[1]
 		}
 		this.isInitializing = false
 	},
@@ -115,6 +115,10 @@ export default {
 			this.updateValue()
 		},
 		date() {
+			if (this.isInitializing) { return }
+			this.updateValue()
+		},
+		timezone() {
 			if (this.isInitializing) { return }
 			this.updateValue()
 		},

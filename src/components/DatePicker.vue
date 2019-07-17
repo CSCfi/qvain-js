@@ -84,6 +84,7 @@ export default {
 				this.initial_value = new_value
 			} else {
 				this.internal_value = this.initial_value
+				this.$emit('input', this.internal_value)
 			}
 		},
 		validateDate(event) {
@@ -91,7 +92,6 @@ export default {
 			var new_value = event.target.value
 			if (this.dateRegexp.test(new_value)) {
 				this.internal_value = new_value
-				this.initial_value = new_value
 			}
 		},
 	},
