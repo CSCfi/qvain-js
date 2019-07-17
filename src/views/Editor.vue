@@ -124,12 +124,15 @@
 				<b-col md="3" v-if="!!selectedSchema">
 					<b-nav class="sticky-top editor-index-navigation" vertical>
 						<b-nav-item v-for="(tab, index) in tabs" :key="tab.uri" :to="`/dataset/${id}/${tab.uri}`">
-							<b-badge
-								:variant="$route.params.tab === tab.uri ? 'info' : 'secondary'">
-								{{ index+1 }}
-							</b-badge>
-							&nbsp;&nbsp;
-							{{ tab.label }}
+							<b-row>
+								<b-badge
+									:variant="$route.params.tab === tab.uri ? 'info' : 'secondary'">
+									{{ index+1 }}
+								</b-badge>
+								<b-col>
+									{{ tab.label }}
+								</b-col>
+							</b-row>
 						</b-nav-item>
 					</b-nav>
 				</b-col>
@@ -315,7 +318,6 @@ export default {
 					this.$store.commit('setMetadata', { id })
 					this.$router.replace({ name: 'tab', params: { id: id, tab: this.$route.params.tab }})
 
-					this.$root.showAlert("Success! Created as " + id, "success")
 				}
 				this.isDataChanged = false
 			} catch(error) {
@@ -481,7 +483,8 @@ export default {
 		'$route.params.id': async function(newId, oldId) {
 			if (this.id === 'new') {
 				this.clearRecord()
-			} else if (this.id !== 'edit') {
+			} else if (this.id !== 'edit' && this.$store.state.metadata.id !== this.id) {
+				this.clearRecord()
 				await this.openRecord(this.id)
 			}
 		},
@@ -495,7 +498,7 @@ export default {
 	async mounted() {
 		if (this.id === 'new') {
 			this.clearRecord()
-		} else if (this.id !== 'edit') {
+		} else if (this.id !== 'edit' && this.$store.state.metadata.id !== this.id) {
 			await this.openRecord(this.id)
 		}
 

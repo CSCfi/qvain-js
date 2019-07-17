@@ -6,10 +6,34 @@
 		<!-- controls -->
 		<b-button-toolbar class="mb-4 tool-bar">
 			<b-button-group class="filter-buttons" size="sm">
-				<b-btn class="dataset-filter__button" :pressed="'datasetsView.showState' === 'all'" @click="()=>setShowState('all')" variant="secondary">All</b-btn>
-				<b-btn class="dataset-filter__button" :pressed="'datasetsView.showState' === 'draft'" @click="()=>setShowState('draft')" variant="success">Draft</b-btn>
-				<b-btn class="dataset-filter__button" :pressed="'datasetsView.showState' === 'published'" @click="()=>setShowState('published')" variant="primary">Published</b-btn>
-				<b-btn class="dataset-filter__button" :pressed="'datasetsView.showState' === 'unpublishedchanges'" @click="()=>setShowState('unpublishedchanges')" variant="warning">Unpublished Changes</b-btn>
+				<b-btn
+					class="dataset-filter__button"
+					:pressed="datasetsView.showState === 'all'"
+					@click="()=>setShowState('all')"
+					:variant="datasetsView.showState === 'all' ? 'secondary' : 'outline-secondary'">
+					All
+				</b-btn>
+				<b-btn
+					class="dataset-filter__button"
+					:pressed="datasetsView.showState === 'draft'"
+					@click="()=>setShowState('draft')"
+					:variant="datasetsView.showState === 'all' || datasetsView.showState === 'draft' ? 'success' : 'outline-secondary'">
+					Draft
+				</b-btn>
+				<b-btn
+					class="dataset-filter__button"
+					:pressed="datasetsView.showState === 'published'"
+					@click="()=>setShowState('published')"
+					:variant="datasetsView.showState === 'all' || datasetsView.showState === 'published' ? 'primary' : 'outline-secondary'">
+					Published
+				</b-btn>
+				<b-btn
+					class="dataset-filter__button"
+					:pressed="datasetsView.showState === 'unpublishedchanges'"
+					@click="()=>setShowState('unpublishedchanges')"
+					:variant="datasetsView.showState === 'all' || datasetsView.showState === 'unpublishedchanges' ? 'warning' : 'outline-secondary'">
+					Unpublished Changes
+				</b-btn>
 			</b-button-group>
 
 			<b-input-group class="search" size="sm" prepend="Search">
@@ -19,34 +43,47 @@
 					@update="setFilterString"
 				/>
 			</b-input-group>
-
-			<div class="pagination-wrapper">
-				<b-pagination
-					:value="datasetsView.currentPage"
-					:per-page="datasetsView.perPage"
-					:total-rows="datasetsView.filteredCount"
-					aria-controls="dataset-list"
-					@input="setPage"
-				/>
-
-				<div class="per-page">
-					<span class="per-page-label">Items per page</span>
-					<b-button-group class="per-page-btns">
-						<b-btn
-							v-for="option in perPageOptions"
-							:key="option"
-							:pressed="datasetsView.perPage == option"
-							class="btn"
-							@click="() => setPerPage(option)"
-						>{{ option }}
-						</b-btn>
-					</b-button-group>
-				</div>
-			</div>
 		</b-button-toolbar>
+
 
 		<!-- alerts -->
 		<b-alert variant="danger" :show="!!error" dismissible @dismissed="error = null">{{ error }}</b-alert>
+
+		<div class="pagination-controls">
+			<b-pagination
+				size="sm"
+				align="center"
+				hide-goto-end-buttons
+				hide-ellipsis
+				:value="datasetsView.currentPage"
+				:per-page="datasetsView.perPage || datasetsView.filteredCount"
+				:total-rows="datasetsView.filteredCount"
+				aria-controls="dataset-list"
+				first-text="First"
+				prev-text="Prev"
+				next-text="Next"
+				last-text="Last"
+				label-page="Page"
+				@input="setPage"
+			/>
+
+			<b-button-group size="sm">
+				<b-btn
+					:pressed="datasetsView.perPage === 0"
+					@click="() => setPerPage(0)"
+				>
+					show all
+				</b-btn>
+				<b-btn
+					v-for="option in perPageOptionsFiltered"
+					:key="option"
+					:pressed="datasetsView.perPage === option"
+					class="btn"
+					@click="() => setPerPage(option)"
+				>{{ option }}
+				</b-btn>
+			</b-button-group>
+		</div>
 
 		<!-- table -->
 		<b-table
@@ -74,6 +111,7 @@
 						<b-button
 							variant="secondary"
 							@click.stop="row.toggleDetails()">
+							{{ 1 + row.index + (datasetsView.currentPage-1)*datasetsView.perPage }}
 							<font-awesome-icon
 								:icon="row.detailsShowing ? 'chevron-down' : 'chevron-right'"
 								fixed-width />
@@ -173,6 +211,41 @@
 			</div>
 		</b-table>
 
+		<div class="pagination-controls">
+			<b-pagination
+				size="sm"
+				align="center"
+				hide-goto-end-buttons
+				hide-ellipsis
+				:value="datasetsView.currentPage"
+				:per-page="datasetsView.perPage || datasetsView.filteredCount"
+				:total-rows="datasetsView.filteredCount"
+				aria-controls="dataset-list"
+				first-text="First"
+				prev-text="Prev"
+				next-text="Next"
+				last-text="Last"
+				label-page="Page"
+				@input="setPage"
+			/>
+
+			<b-button-group size="sm">
+				<b-btn
+					:pressed="datasetsView.perPage === 0"
+					@click="() => setPerPage(0)"
+				>
+					show all
+				</b-btn>
+				<b-btn
+					v-for="option in perPageOptionsFiltered"
+					:key="option"
+					:pressed="datasetsView.perPage === option"
+					class="btn"
+					@click="() => setPerPage(option)"
+				>{{ option }}
+				</b-btn>
+			</b-button-group>
+		</div>
 		<!-- modals -->
 		<b-modal
 			v-if="itemToBeDeleted !== null"
@@ -274,79 +347,40 @@
 		}
 	}
 
-	.pagination-wrapper {
+	.pagination-controls {
 		display: flex;
 		flex-wrap: wrap;
-		font-size: 14px;
-		margin: 0;
-		> * {
-			margin: 2px 4px;
-			flex-shrink: 1;
-			flex-grow: 1;
-		}
-	}
-
-	.per-page {
-		display: flex;
-		flex-wrap: nowrap;
-		flex-shrink: 1;
-		flex-grow: 1;
-
-		.per-page-label {
-			border-radius: 4px 0 0 4px;
-			padding: 0.1rem 0.75rem;
-			min-height: 31px;
-
-			color: #495057;
-			background-color: #e9ecef;
-			border: 1px solid #ced4da;
-			border-color: rgb(206, 212, 218);
-			border-right: none;
-
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			margin-right: 0;
-
-			overflow: hidden;
-			white-space: nowrap;
-			text-overflow: ellipsis;
-
-			flex-grow: 0.25;
-		}
-
-		.per-page-btns {
-			flex-grow: 1;
-			display: flex;
-
-			.btn:first-child {
-				padding: 0.1rem 0.5rem;
-				border-top-left-radius: 0;
-				border-bottom-left-radius: 0;
-			}
-
-			.btn {
-				flex-grow: 1;
-				padding: 0.1rem 0.5rem;
-				min-height: 31px;
-				font-size: inherit;
-
-				z-index: 1;
-				color: #007fad;
-				background-color: #fff;
-				border: 1px solid #dee2e6;
-				border-color: rgb(206, 212, 218);
-
-				&.active {
-					color: #fff;
-					background-color: #007fad;
-					border-color: #007fad;
-				}
-			}
+		justify-content: center;
+		align-items: start;
+		margin-left: -0.5rem;
+		margin-right: -0.5rem;
+		margin-bottom: 0.5rem;
+		& > * {
+			margin-left: 0.5rem;
+			margin-right: 0.5rem;
+			margin-bottom: 4px;
 		}
 	}
 
 </style>
+
+<style>
+
+	.created-column {
+		width: 200px !important;
+	}
+
+	.details-column {
+		width: 120px !important;
+	}
+	.actions-column {
+		width: 100px !important;
+	}
+	.pas-column {
+		width: 100px !important;
+	}
+</style>
+
 
 <script>
 import apiClient from '@/api/client.js'
@@ -363,27 +397,32 @@ const fields = [
 		label: "Details",
 		key: "tree_actions",
 		sortable: false,
+		class: 'details-column',
 	},
 	{
 		label: "Dataset",
 		key: "title",
 		sortable: true,
 		formatter: 'preferredLanguage',
+		class: 'dataset-column',
 	},
 	{
 		label: "Created",
 		key: "created",
 		sortable: true,
+		class: 'created-column',
 	},
 	{
 		label: "PAS",
 		key: "preservation_state",
 		sortable: true,
+		class: 'pas-column',
 	},
 	{
 		label: "",
 		key: "actions",
 		sortable: false,
+		class: 'actions-column',
 	},
 ]
 
@@ -486,8 +525,6 @@ export default {
 			this.error = null
 			try {
 				await apiClient.delete("/datasets/" + this.itemToBeDeleted.id)
-				this.$root.showAlert("Successfully deleted dataset", "success")
-
 				await this.fetchDataset()
 				this.$refs.datasetTable.refresh()
 			} catch (e) {
@@ -600,6 +637,9 @@ export default {
 		filterRegExp() {
 			return new RegExp('.*' + this.datasetsView.filterString + '.*', 'ig')
 		},
+		perPageOptionsFiltered() {
+			return this.perPageOptions.filter(pageSize => pageSize < this.datasetsView.filteredCount)
+		}
 	},
 	async created() {
 		await this.fetchDataset()

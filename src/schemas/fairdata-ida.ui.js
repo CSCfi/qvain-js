@@ -758,7 +758,7 @@ export default {
 	},
 	'/properties/access_rights': {
 		'tab': 'rights',
-		'title': "Access rights",
+		'title': " ",
 		'description': "*** description for access rights goes here ***",
 		'ignored': [
 			"description",
@@ -777,6 +777,7 @@ export default {
 			'async': false,
 			'count': 100,
 			'grouped': false,
+			'wrapped': true,
 		},
 		'placeholder': "– choose access type –",
 		'title': "access type",
@@ -785,6 +786,9 @@ export default {
 	},
 	'/properties/access_rights/properties/available': {
 		'widget': 'date',
+		'props': {
+			'wrapped': true,
+		},
 		'required': record => record.access_rights.access_type &&
 			record.access_rights.access_type.identifier === 'http://uri.suomi.fi/codelist/fairdata/access_type/code/embargo',
 		'visible': record => record.access_rights.access_type &&
@@ -801,6 +805,7 @@ export default {
 			'async': false,
 			'count': 100,
 			'grouped': false,
+			'wrapped': true,
 		},
 		'placeholder': "– choose restriction grounds –",
 		'title': "restriction grounds",
