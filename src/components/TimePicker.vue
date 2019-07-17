@@ -8,7 +8,7 @@
 		</div>
 		<input
 			:value="timeString"
-			@input="validateTime"
+			@input="validate"
 			@change="submitChange"
 			placeholder="hh:mm:ss"
 			class="form-control" />
@@ -31,6 +31,7 @@ export default {
 			internal_value: null,
 			initial_value: null,
 			isInitializing: true,
+			inputRegexp: /^[\d:]+$/,
 			timeRegexp: /^((0[0-9]|1\d|2[0-3]|[0-9])|((0[0-9]|1\d|2[0-3]|[0-9]):){1}(([0-5][0-9]|[0-9]):?){1,2})$/
 		}
 	},
@@ -48,7 +49,7 @@ export default {
 		},
 	},
 	methods: {
-		submitChange: function(event) {
+		submitChange(event) {
 			if (this.isInitializing) { return }
 			var new_value = event.target.value
 			if (!new_value || new_value === '') {
@@ -76,11 +77,15 @@ export default {
 				this.$emit('input', this.internal_value)
 			}
 		},
-		validateTime: function(event) {
+		validate(event) {
 			if (this.isInitializing) { return }
 			var new_value = event.target.value
 			if (this.timeRegexp.test(new_value)) {
 				this.internal_value = new_value
+				this.initial_value = this.internal_value
+			} else if (!this.inputRegexp.test(new_value) && new_value !== '') {
+				this.internal_value = this.initial_value
+				this.$forceUpdate();
 			}
 		},
 	},

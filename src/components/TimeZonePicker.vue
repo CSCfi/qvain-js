@@ -9,7 +9,7 @@
 		</div>
 		<input
 			v-bind:value="timezoneString"
-			@input="validateTimeZone"
+			@input="validate"
 			@change="submitChange"
 			placeholder="[+-]hh:mm"
 			class="form-control" />
@@ -33,6 +33,7 @@ export default {
 			internal_value: null,
 			initial_value: null,
 			isInitializing: true,
+			inputRegexp: /^[-+\d:]+$/,
 			timezoneRegexp: /^[+-]?(2[0-3]|[0-1]?\d)(:[0-5]?\d|:)?$/
 		}
 	},
@@ -117,11 +118,15 @@ export default {
 				this.$emit('input', this.internal_value)
 			}
 		},
-		validateTimeZone(event) {
+		validate(event) {
 			if (this.isInitializing) { return }
 			var new_value = event.target.value
 			if (this.timezoneRegexp.test(new_value)) {
 				this.internal_value = new_value
+				this.initial_value = this.internal_value
+			} else if (!this.inputRegexp.test(new_value) && new_value !== '') {
+				this.internal_value = this.initial_value
+				this.$forceUpdate();
 			}
 		},
 	},

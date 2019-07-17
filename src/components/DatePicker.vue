@@ -6,7 +6,7 @@
 		</div>
 		<input
 			:value="dateString"
-			@input="validateDate"
+			@input="validate"
 			@change="submitChange"
 			placeholder="dd.MM.yyyy"
 			class="form-control" />
@@ -30,6 +30,7 @@ export default {
 			internal_value: null,
 			initial_value: null,
 			isInitializing: true,
+			inputRegexp: /^[\d\.]+$/,
 			dateRegexp: /^((([1-9]|0[1-9]|[12]\d|3[01])\.([1-9]|0[1-9]|1[0-2])(\.[12]\d{3})?)|([1-9]|0[1-9]|[12]\d|3[01]))$/
 		}
 	},
@@ -87,11 +88,14 @@ export default {
 				this.$emit('input', this.internal_value)
 			}
 		},
-		validateDate(event) {
+		validate(event) {
 			if (this.isInitializing) { return }
 			var new_value = event.target.value
 			if (this.dateRegexp.test(new_value)) {
 				this.internal_value = new_value
+			} else if (!this.inputRegexp.test(new_value) && new_value !== '') {
+				this.internal_value = this.initial_value
+				this.$forceUpdate();
 			}
 		},
 	},
