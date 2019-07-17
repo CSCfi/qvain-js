@@ -56,7 +56,7 @@
 				hide-goto-end-buttons
 				hide-ellipsis
 				:value="datasetsView.currentPage"
-				:per-page="datasetsView.perPage"
+				:per-page="datasetsView.perPage || datasetsView.filteredCount"
 				:total-rows="datasetsView.filteredCount"
 				aria-controls="dataset-list"
 				first-text="First"
@@ -69,14 +69,15 @@
 
 			<b-button-group size="sm">
 				<b-btn
-					@click="() => setPerPage(0)">
+					:pressed="datasetsView.perPage === 0"
+					@click="() => setPerPage(0)"
+				>
 					show all
 				</b-btn>
 				<b-btn
 					v-for="option in perPageOptionsFiltered"
 					:key="option"
-
-					:pressed="datasetsView.perPage == option"
+					:pressed="datasetsView.perPage === option"
 					class="btn"
 					@click="() => setPerPage(option)"
 				>{{ option }}
@@ -217,7 +218,7 @@
 				hide-goto-end-buttons
 				hide-ellipsis
 				:value="datasetsView.currentPage"
-				:per-page="datasetsView.perPage"
+				:per-page="datasetsView.perPage || datasetsView.filteredCount"
 				:total-rows="datasetsView.filteredCount"
 				aria-controls="dataset-list"
 				first-text="First"
@@ -230,14 +231,15 @@
 
 			<b-button-group size="sm">
 				<b-btn
-					@click="() => setPerPage(0)">
+					:pressed="datasetsView.perPage === 0"
+					@click="() => setPerPage(0)"
+				>
 					show all
 				</b-btn>
 				<b-btn
 					v-for="option in perPageOptionsFiltered"
 					:key="option"
-
-					:pressed="datasetsView.perPage == option"
+					:pressed="datasetsView.perPage === option"
 					class="btn"
 					@click="() => setPerPage(option)"
 				>{{ option }}
