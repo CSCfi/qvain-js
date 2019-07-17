@@ -8,7 +8,7 @@
 			</b-button>
 		</div>
 		<input
-			v-bind:value="timezoneString"
+			:value="timezoneString"
 			@input="validate"
 			@change="submitChange"
 			placeholder="[+-]hh:mm"

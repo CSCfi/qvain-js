@@ -48,9 +48,6 @@ export default {
 			this.date = null
 		},
 	},
-	computed: {
-
-	},
 	created() {
 		this.date = this.value ? this.value : null
 	},
