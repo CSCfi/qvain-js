@@ -52,8 +52,6 @@ export default {
 	},
 	methods: {
 		updateOffset() {
-			// this.date is in day.month.year format
-			// javascript Date expects it to month.day.year format
 			const [day, month, year] = this.fromExternalFormat(this.timezonedate).split(".")
 			const monthIndex = month - 1
 			const local_offset = new Date(year, monthIndex, day).getTimezoneOffset()
