@@ -12,7 +12,7 @@
 <script>
 
 export default {
-	name: 'time-picker',
+	name: 'timepicker',
 	components: {
     },
     model: {
@@ -46,7 +46,11 @@ export default {
 	methods: {
         submitChange: function(event) {
             var new_value = event.target.value
-            if (this.timeRegexp.test(new_value)) {
+            if (!new_value || new_value === '') {
+                this.internal_value = new_value
+                this.initial_value = new_value
+                this.$emit('input', new_value)
+            } else if (this.timeRegexp.test(new_value)) {
                 var hours = new_value.split(":")
                 var parts = hours.length
 
@@ -61,7 +65,7 @@ export default {
 
                 this.internal_value = new_value
                 this.initial_value = new_value
-                this.$emit('change', new_value)
+                this.$emit('input', new_value)
             } else {
                 this.internal_value = this.initial_value
             }
@@ -70,7 +74,7 @@ export default {
         validateTime: function(event) {
             var new_value = event.target.value
             if (this.timeRegexp.test(new_value)) {
-                this.$emit('input', new_value)
+                //this.$emit('input', new_value)
                 this.internal_value = new_value
                 this.initial_value = new_value
             }

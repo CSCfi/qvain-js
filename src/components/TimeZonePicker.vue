@@ -2,17 +2,17 @@
 <template>
    <input
         :key="componentKey"
-        v-bind:value="dateString"
-        v-on:input="validateDate"
+        v-bind:value="timezoneString"
+        v-on:input="validateTimeZone"
         v-on:change="submitChange"
-        placeholder="dd.MM.yyyy"
+        placeholder="hh:mm"
         class="form-control" />
 </template>
 
 <script>
 
 export default {
-	name: 'datepicker',
+	name: 'timezonepicker',
 	components: {
     },
     model: {
@@ -28,20 +28,17 @@ export default {
             internal_value: null,
             initial_value: null,
             componentKey: 0,
-            dateRegexp: /^((([1-9]|0[1-9]|[12]\d|3[01])\.([1-9]|0[1-9]|1[0-2])(\.[12]\d{3})?)|([1-9]|0[1-9]|[12]\d|3[01]))$/
+            timezoneRegexp: /^((0[0-9]|1\d|2[0-3]|[0-9])|((0[0-9]|1\d|2[0-3]|[0-9]):){1})$/
         }
 	},
 	computed: {
-        dateString: {
+        timezoneString: {
 			get: function() {
                 return this.internal_value
 			},
 			set: function(new_value) {
-				if (this.dateRegexp.test(new_value)) {
-					var date_array = new_value.split(".")
-
-
-                    this.internal_value = date_array[2] + "-" + date_array[1] + "-" + date_array[0]
+				if (this.timezoneRegexp.test(new_value)) {
+                    this.internal_value = new_value
 				}
 			}
         },
@@ -53,41 +50,30 @@ export default {
                 this.internal_value = new_value
                 this.initial_value = new_value
                 this.$emit('input', new_value)
-            } else if (this.dateRegexp.test(new_value)) {
-                var hours = new_value.split(".")
+            } else if (this.timezoneRegexp.test(new_value)) {
+                var hours = new_value.split(":")
                 var parts = hours.length
 
                 for(var i=0; i<hours.length; i++) {
                     hours[i] = hours[i].padStart(2, '0')
                 }
-                for (var i=0; i<3-parts; i++) {
+                for (var i=0; i<2-parts; i++) {
                     hours.push("00")
                 }
 
-                // ensure that the month is not empty
-                if (hours[1] === "00") {
-                    hours[1] = String(new Date().getMonth()+1).padStart(2, '0')
-                }
+                new_value = hours.join(":")
 
-                // ensure that the year is not empty
-                hours[2] = hours[2].padStart(4, '0')
-                if (hours[2] === "0000") {
-                    hours[2] = new Date().getFullYear()
-                }
-
-                new_value = hours.join(".")
-
-                this.$emit('input', new_value)
                 this.internal_value = new_value
                 this.initial_value = new_value
+                this.$emit('input', new_value)
             } else {
                 this.internal_value = this.initial_value
             }
             this.forceRerender()
         },
-        validateDate: function(event) {
+        validateTimeZone: function(event) {
             var new_value = event.target.value
-            if (this.dateRegexp.test(new_value)) {
+            if (this.timezoneRegexp.test(new_value)) {
                 this.internal_value = new_value
                 this.initial_value = new_value
             }

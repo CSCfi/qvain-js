@@ -66,10 +66,12 @@ export default {
 	watch: {
 		start() {
 			console.log("updated value start")
+			console.log(this.start)
 			this.updateValue()
 		},
 		end() {
 			console.log("updated value end")
+			console.log(this.end)
 			this.updateValue()
 		},
 	},
