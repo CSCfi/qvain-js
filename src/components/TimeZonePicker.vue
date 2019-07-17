@@ -5,10 +5,9 @@
 			<span class="input-group-text">Zone</span>
 		</div>
 		<input
-			:key="componentKey"
-			v-bind:value="timezoneString"
-			v-on:input="validateTimeZone"
-			v-on:change="submitChange"
+			:value="timezoneString"
+			@input="validateTimeZone"
+			@change="submitChange"
 			placeholder="[+-]hh:mm"
 			class="form-control" />
 	</div>
@@ -30,7 +29,6 @@ export default {
 			internal_value: null,
 			initial_value: null,
 			isInitializing: true,
-			componentKey: 0,
 			timezoneRegexp: /^[+-]?((0[0-9]|1\d|2[0-3]|[0-9])|((0[0-9]|1\d|2[0-3]|[0-9]):){1})$/
 		}
 	},
@@ -50,20 +48,19 @@ export default {
 	methods: {
 		submitChange: function(event) {
 			if (this.isInitializing) { return }
-			var new_value = event.target.value
+			let new_value = event.target.value
 			if (!new_value || new_value === '') {
 				this.internal_value = new_value
 				this.initial_value = new_value
 				this.$emit('input', new_value)
 			} else if (this.timezoneRegexp.test(new_value)) {
-				var symbol = "-"
+				let symbol = "-"
 				if (new_value[0]==="+" || new_value[0]==="-") {
 					symbol = new_value[0]
 					new_value = new_value.substring(1)
 				}
-				var hours = new_value.split(":")
-				var parts = hours.length
-				console.log(hours)
+				let hours = new_value.split(":")
+				const parts = hours.length
 
 				for(var i=0; i<hours.length; i++) {
 					hours[i] = hours[i].padStart(2, '0')
@@ -84,19 +81,15 @@ export default {
 			} else {
 				this.internal_value = this.initial_value
 			}
-			this.forceRerender()
 		},
 		validateTimeZone: function(event) {
 			if (this.isInitializing) { return }
-			var new_value = event.target.value
+			const new_value = event.target.value
 			if (this.timezoneRegexp.test(new_value)) {
 				this.internal_value = new_value
 				this.initial_value = new_value
 			}
 		},
-		forceRerender() {
-			this.componentKey += 1;  
-		}
 	},
 	created() {
 		this.isInitializing = true

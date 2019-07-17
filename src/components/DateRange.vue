@@ -9,15 +9,15 @@
 			</div>
 			<div class="col">
 				<datetimepicker
-					v-bind:title="'From'"
-					v-bind:format="schema.properties.start_date.format"
+					:title="'From'"
+					:format="schema.properties.start_date.format"
 					v-model="start">
 				</datetimepicker>
 			</div>
 			<div class="col">
 				<datetimepicker
-					v-bind:title="'To'"
-					v-bind:format="schema.properties.end_date.format"
+					:title="'To'"
+					:format="schema.properties.end_date.format"
 					v-model="end">
 				</datetimepicker>
 			</div>

@@ -53,7 +53,7 @@ export default {
 	methods: {
 		submitChange: function(event) {
 			if (this.isInitializing) { return }
-			var new_value = event.target.value
+			let new_value = event.target.value
 			if (!new_value || new_value === '') {
 				this.internal_value = new_value
 				this.initial_value = new_value
@@ -91,7 +91,7 @@ export default {
 		},
 		validateDate: function(event) {
 			if (this.isInitializing) { return }
-			var new_value = event.target.value
+			const new_value = event.target.value
 			if (this.dateRegexp.test(new_value)) {
 				this.internal_value = new_value
 				this.initial_value = new_value

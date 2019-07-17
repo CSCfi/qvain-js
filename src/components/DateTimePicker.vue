@@ -9,17 +9,17 @@
 						:description="description">
 						<datepicker
 							v-if="format === 'date-time' || format === 'date'"
-							v-bind:format="format"
+							:format="format"
 							v-model="date">
 						</datepicker>
 						<timepicker
 							v-if="format === 'date-time' || format === 'time'"
-							v-bind:format="format"
+							:format="format"
 							v-model="time">
 						</timepicker>
 						<timezonepicker
 							v-if="format === 'date-time' || format === 'time'"
-							v-bind:format="format"
+							:format="format"
 							v-model="timezone">
 						</timezonepicker>
 					</b-form-group>
@@ -51,7 +51,7 @@ export default {
 		title: String,
 		description: String,
 	},
-	data: function () {
+	data() {
 		return {
 			internal_value: null,
 			initial_value: null,
@@ -65,15 +65,15 @@ export default {
 	methods: {
 		updateValue() {
 			if (this.isInitializing) { return }
-			var time_value = this.time
+			let time_value = this.time
 			if (!time_value) {
 				time_value = "00:00:00"
 			}
-			var date_value = this.date
+			let date_value = this.date
 			if (!date_value) {
 				date_value = "0000-00-00"
 			}
-			var time_zone_value = this.timezone
+			let time_zone_value = this.timezone
 			if (!this.timezone) {
 				time_zone_value = "00:00"
 			}
@@ -89,13 +89,13 @@ export default {
 		this.internal_value = this.value
 		this.initial_value = this.value
 		if (this.internal_value) {
-			var time_value = this.internal_value.split("T")
-			var time_value_with_timezone = time_value[1]
-			var timezone_prefix = "-"
+			const time_value = this.internal_value.split("T")
+			const time_value_with_timezone = time_value[1]
+			let timezone_prefix = "-"
 			if (time_value_with_timezone.indexOf("+") > 0) {
 				timezone_prefix = "+"
 			}
-			var time_and_timezone = time_value_with_timezone.split(timezone_prefix)
+			const time_and_timezone = time_value_with_timezone.split(timezone_prefix)
 			this.date = time_value[0]
 			this.time = time_and_timezone[0]
 			this.timezone = time_and_timezone[1]

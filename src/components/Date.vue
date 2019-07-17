@@ -56,7 +56,6 @@ export default {
 	},
 	watch: {
 		date() {
-			console.log("date changed")
 			this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: this.date })
 		},
 	},
