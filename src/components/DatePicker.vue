@@ -82,9 +82,9 @@ export default {
 					date_structure[2] = new Date().getFullYear()
 				}
 				new_value = date_structure.join(".")
-				this.$emit('input', this.toExternalFormat(new_value))
 				this.internal_value = new_value
 				this.initial_value = new_value
+				this.$emit('input', this.toExternalFormat(new_value))
 			} else {
 				this.internal_value = this.initial_value
 				this.$emit('input', this.toExternalFormat(this.internal_value))
