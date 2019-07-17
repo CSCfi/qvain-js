@@ -54,9 +54,9 @@ export default {
 		updateOffset() {
 			// this.date is in day.month.year format
 			// javascript Date expects it to month.day.year format
-			var [day, month, year] = this.timezonedate.split(".")
-			var monthIndex = month - 1
-			var local_offset = new Date(year, monthIndex, day).getTimezoneOffset()
+			const [day, month, year] = this.timezonedate.split(".")
+			const monthIndex = month - 1
+			const local_offset = new Date(year, monthIndex, day).getTimezoneOffset()
 			if (isNaN(local_offset)) {
 				this.initial_value = null
 				this.internal_value = this.initial_value
@@ -65,11 +65,11 @@ export default {
 			}
 			// local_offset is -180 for Helsinki
 			// lets convert it to hh:mm format
-			var is_ahead_of_utc = local_offset < 0
-			var is_utc = local_offset === 0
-			var hours = String(Math.abs(local_offset/60)).padStart(2,"0")
-			var minutes = String(Math.abs(local_offset%60)).padStart(2,"0")
-			var symbol = ""
+			const is_ahead_of_utc = local_offset < 0
+			const is_utc = local_offset === 0
+			const hours = String(Math.abs(local_offset/60)).padStart(2,"0")
+			const minutes = String(Math.abs(local_offset%60)).padStart(2,"0")
+			let symbol = ""
 			if (is_ahead_of_utc) {
 				symbol = "+"
 			} else if (is_utc) {
@@ -83,19 +83,19 @@ export default {
 		},
 		submitChange(event) {
 			if (this.isInitializing) { return }
-			var new_value = event.target.value
+			let new_value = event.target.value
 			if (!new_value || new_value === '') {
 				this.internal_value = new_value
 				this.initial_value = new_value
 				this.$emit('input', new_value)
 			} else if (this.timezoneRegexp.test(new_value)) {
-				var symbol = "+"
+				let symbol = "+"
 				if (new_value[0]==="+" || new_value[0]==="-") {
 					symbol = new_value[0]
 					new_value = new_value.substring(1)
 				}
-				var hours = new_value.split(":")
-				var parts = hours.length
+				let hours = new_value.split(":")
+				const parts = hours.length
 
 				for(var i=0; i<hours.length; i++) {
 					hours[i] = hours[i].padStart(2, '0')
@@ -120,7 +120,7 @@ export default {
 		},
 		validate(event) {
 			if (this.isInitializing) { return }
-			var new_value = event.target.value
+			const new_value = event.target.value
 			if (this.timezoneRegexp.test(new_value)) {
 				this.internal_value = new_value
 				this.initial_value = this.internal_value

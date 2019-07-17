@@ -51,14 +51,14 @@ export default {
 	methods: {
 		submitChange(event) {
 			if (this.isInitializing) { return }
-			var new_value = event.target.value
+			let new_value = event.target.value
 			if (!new_value || new_value === '') {
 				this.internal_value = new_value
 				this.initial_value = new_value
 				this.$emit('input', new_value)
 			} else if (this.timeRegexp.test(new_value)) {
-				var hours = new_value.split(":")
-				var parts = hours.length
+				let hours = new_value.split(":")
+				const parts = hours.length
 
 				for(var i=0; i<hours.length; i++) {
 					hours[i] = hours[i].padStart(2, '0')
@@ -79,7 +79,7 @@ export default {
 		},
 		validate(event) {
 			if (this.isInitializing) { return }
-			var new_value = event.target.value
+			const new_value = event.target.value
 			if (this.timeRegexp.test(new_value)) {
 				this.internal_value = new_value
 				this.initial_value = this.internal_value
