@@ -48,14 +48,14 @@ export default {
 	methods: {
 		submitChange: function(event) {
 			if (this.isInitializing) { return }
-			let new_value = event.target.value
+			var new_value = event.target.value
 			if (!new_value || new_value === '') {
 				this.internal_value = new_value
 				this.initial_value = new_value
 				this.$emit('input', new_value)
 			} else if (this.timeRegexp.test(new_value)) {
-				let hours = new_value.split(":")
-				const parts = hours.length
+				var hours = new_value.split(":")
+				var parts = hours.length
 
 				for(var i=0; i<hours.length; i++) {
 					hours[i] = hours[i].padStart(2, '0')
@@ -75,7 +75,7 @@ export default {
 		},
 		validateTime: function(event) {
 			if (this.isInitializing) { return }
-			const new_value = event.target.value
+			var new_value = event.target.value
 			if (this.timeRegexp.test(new_value)) {
 				this.internal_value = new_value
 				this.initial_value = new_value

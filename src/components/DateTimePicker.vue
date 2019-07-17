@@ -20,6 +20,7 @@
 						<timezonepicker
 							v-if="format === 'date-time' || format === 'time'"
 							:format="format"
+							:date="date"
 							v-model="timezone">
 						</timezonepicker>
 					</b-form-group>
@@ -29,8 +30,14 @@
 	</b-container>
 </template>
 
-<style>
-
+<style lang="scss">
+.datetimepicker.container * .input-group {
+	margin-top: 0.5em;
+}
+.datetimepicker.container * .input-group:last-child {
+	margin-top: 0.25em;
+	padding-left: 1em;
+}
 </style>
 
 <script>

@@ -79,9 +79,3 @@ export default {
 	},
 }
 </script>
-
-<style lang="scss" scoped>
-	.datepicker-container .row:last-child {
-		margin-top: 1em;
-	}
-</style>
