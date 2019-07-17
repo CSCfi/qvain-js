@@ -1,12 +1,17 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-   <input
-        :key="componentKey"
-        v-bind:value="timeString"
-        v-on:input="validateTime"
-        v-on:change="submitChange"
-        placeholder="hh:mm:ss"
-        class="form-control" />
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <span class="input-group-text">Time</span>
+        </div>
+        <input
+            :key="componentKey"
+            v-bind:value="timeString"
+            v-on:input="validateTime"
+            v-on:change="submitChange"
+            placeholder="hh:mm:ss"
+            class="form-control" />
+    </div>
 </template>
 
 <script>
@@ -28,6 +33,7 @@ export default {
             internal_value: null,
             initial_value: null,
             componentKey: 0,
+            isInitializing: true,
             timeRegexp: /^((0[0-9]|1\d|2[0-3]|[0-9])|((0[0-9]|1\d|2[0-3]|[0-9]):){1}(([0-5][0-9]|[0-9]):?){1,2})$/
         }
 	},
@@ -37,6 +43,7 @@ export default {
                 return this.internal_value
 			},
 			set: function(new_value) {
+                if (this.isInitializing) { return }
 				if (this.timeRegexp.test(new_value)) {
                     this.internal_value = new_value
 				}
@@ -45,6 +52,7 @@ export default {
 	},
 	methods: {
         submitChange: function(event) {
+            if (this.isInitializing) { return }
             var new_value = event.target.value
             if (!new_value || new_value === '') {
                 this.internal_value = new_value
@@ -72,9 +80,9 @@ export default {
             this.forceRerender()
         },
         validateTime: function(event) {
+            if (this.isInitializing) { return }
             var new_value = event.target.value
             if (this.timeRegexp.test(new_value)) {
-                //this.$emit('input', new_value)
                 this.internal_value = new_value
                 this.initial_value = new_value
             }
@@ -84,8 +92,10 @@ export default {
         }
 	},
 	created() {
+        this.isInitializing = true
         this.internal_value = this.value
         this.initial_value = this.value
+        this.isInitializing = false
 	}
 }
 </script>

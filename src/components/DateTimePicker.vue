@@ -2,21 +2,29 @@
 <template>
     <b-container class="datetimepicker" :key="componentKey">
         <b-row>
-            <datepicker
-                v-if="format === 'date-time' || format === 'date'"
-                v-bind:format="format"
-                v-model="date">
-            </datepicker>
-            <timepicker
-                v-if="format === 'date-time' || format === 'time'"
-                v-bind:format="format"
-                v-model="time">
-            </timepicker>
-            <timezonepicker
-                v-if="format === 'date-time' || format === 'time'"
-                v-bind:format="format"
-                v-model="timezone">
-            </timezonepicker>
+            <b-col>
+                <b-form>
+                    <b-form-group
+                        :label="title"
+                        :description="description">
+                        <datepicker
+                            v-if="format === 'date-time' || format === 'date'"
+                            v-bind:format="format"
+                            v-model="date">
+                        </datepicker>
+                        <timepicker
+                            v-if="format === 'date-time' || format === 'time'"
+                            v-bind:format="format"
+                            v-model="time">
+                        </timepicker>
+                        <timezonepicker
+                            v-if="format === 'date-time' || format === 'time'"
+                            v-bind:format="format"
+                            v-model="timezone">
+                        </timezonepicker>
+                    </b-form-group>
+                </b-form>
+            </b-col>
         </b-row>
     </b-container>
 </template>
@@ -41,6 +49,8 @@ export default {
     props: {
         format: String,
         value: String,
+        title: String,
+        description: String,
     },
 	data: function () {
         return {
@@ -50,6 +60,7 @@ export default {
             date: null,
             time: null,
             timezone: null,
+            isInitializing: true,
         }
 	},
 
@@ -58,8 +69,9 @@ export default {
             this.componentKey += 1;  
         },
         updateValue() {
+            if (this.isInitializing) { return }
             var time_value = this.time
-            if (!time_value) {
+            if (!time_value) {
                 time_value = "00:00:00"
             }
             var date_value = this.date
@@ -70,25 +82,39 @@ export default {
             if (!this.timezone) {
                 time_zone_value = "00:00"
             }
-            this.internal_value = date_value + "T" + time_value + "-" + time_zone_value
+            if (time_zone_value[0] !== "-" && time_zone_value[0] !== "+") {
+                time_zone_value = "-" + time_zone_value
+            }
+            this.internal_value = date_value + "T" + time_value + time_zone_value
             this.$emit('input', this.internal_value)
         }
 	},
 	created() {
+        this.isInitializing = true
         this.internal_value = this.value
         this.initial_value = this.value
         if (this.internal_value) {
-            this.date = this.internal_value.split("T")[0]
-            this.time = this.internal_value.split("T")[1].split("-")[0]
-            this.timezone = this.internal_value.split("T")[1].split("-")[1]
+            var time_value = this.internal_value.split("T")
+            var time_value_with_timezone = time_value[1]
+            var timezone_prefix = "-"
+            if (time_value_with_timezone.indexOf("+") > 0) {
+                timezone_prefix = "+"
+            }
+            var time_and_timezone = time_value_with_timezone.split(timezone_prefix)
+            this.date = time_value[0]
+            this.time = time_and_timezone[0]
+            this.timezone = time_and_timezone[1]
         }
+        this.isInitializing = false
     },
 	watch: {
 		time() {
-			this.updateValue()
+            if (this.isInitializing) { return }
+            this.updateValue()
 		},
 		date() {
-			this.updateValue()
+            if (this.isInitializing) { return }
+            this.updateValue()
 		},
 	},
 }

@@ -1,12 +1,17 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-   <input
-        :key="componentKey"
-        v-bind:value="dateString"
-        v-on:input="validateDate"
-        v-on:change="submitChange"
-        placeholder="dd.MM.yyyy"
-        class="form-control" />
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <span class="input-group-text">Date</span>
+        </div>
+        <input
+            :key="componentKey"
+            v-bind:value="dateString"
+            v-on:input="validateDate"
+            v-on:change="submitChange"
+            placeholder="dd.MM.yyyy"
+            class="form-control" />
+    </div>
 </template>
 
 <script>
@@ -28,6 +33,7 @@ export default {
             internal_value: null,
             initial_value: null,
             componentKey: 0,
+            isInitializing: true,
             dateRegexp: /^((([1-9]|0[1-9]|[12]\d|3[01])\.([1-9]|0[1-9]|1[0-2])(\.[12]\d{3})?)|([1-9]|0[1-9]|[12]\d|3[01]))$/
         }
 	},
@@ -37,10 +43,9 @@ export default {
                 return this.internal_value
 			},
 			set: function(new_value) {
+                if (this.isInitializing) { return }
 				if (this.dateRegexp.test(new_value)) {
 					var date_array = new_value.split(".")
-
-
                     this.internal_value = date_array[2] + "-" + date_array[1] + "-" + date_array[0]
 				}
 			}
@@ -48,6 +53,7 @@ export default {
 	},
 	methods: {
         submitChange: function(event) {
+            if (this.isInitializing) { return }
             var new_value = event.target.value
             if (!new_value || new_value === '') {
                 this.internal_value = new_value
@@ -86,6 +92,7 @@ export default {
             this.forceRerender()
         },
         validateDate: function(event) {
+            if (this.isInitializing) { return }
             var new_value = event.target.value
             if (this.dateRegexp.test(new_value)) {
                 this.internal_value = new_value
@@ -97,8 +104,10 @@ export default {
         }
 	},
 	created() {
+        this.isInitializing = true
         this.internal_value = this.value
         this.initial_value = this.value
+        this.isInitializing = false
 	}
 }
 </script>

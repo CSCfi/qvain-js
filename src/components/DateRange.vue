@@ -8,16 +8,18 @@
 				{{ title }}
 			</div>
 			<div class="col">
-				<datepicker
+				<datetimepicker
+					v-bind:title="'From'"
 					v-bind:format="schema.properties.start_date.format"
 					v-model="start">
-				</datepicker>
+				</datetimepicker>
 			</div>
 			<div class="col">
-				<datepicker
+				<datetimepicker
+					v-bind:title="'To'"
 					v-bind:format="schema.properties.end_date.format"
 					v-model="end">
-				</datepicker>
+				</datetimepicker>
 			</div>
 			<div class="col-sm-2">
 				<delete-button v-if="inArray" @click="$emit('delete', property)"/>
@@ -29,7 +31,7 @@
 </template>
 
 <script>
-import datepicker from '@/components/DateTimePicker.vue'
+import DateTimePicker from '@/components/DateTimePicker.vue'
 import SchemaBase from '@/widgets/base.vue'
 import { distanceInWords } from 'date-fns'
 import DeleteButton from '@/partials/DeleteButton.vue'
@@ -38,13 +40,14 @@ export default {
 	name: 'date-range',
 	extends: SchemaBase,
 	components: {
-		datepicker,
+		"datetimepicker": DateTimePicker,
 		DeleteButton,
 	},
 	data() {
 		return {
 			start: null,
 			end: null,
+			isInitializing: true,
 		}
 	},
 	computed: {
@@ -54,24 +57,25 @@ export default {
 	},
 	methods: {
 		updateValue() {
+			if (this.isInitializing) { return }
 			this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: {
 				start_date: this.start, end_date: this.end,
 			}})
 		},
 	},
 	created() {
+		this.isInitializing = true
 		this.start = this.value.start_date
 		this.end = this.value.end_date
+		this.isInitializing = false
 	},
 	watch: {
 		start() {
-			console.log("updated value start")
-			console.log(this.start)
+			if (this.isInitializing) { return }
 			this.updateValue()
 		},
 		end() {
-			console.log("updated value end")
-			console.log(this.end)
+			if (this.isInitializing) { return }
 			this.updateValue()
 		},
 	},
