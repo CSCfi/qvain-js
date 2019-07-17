@@ -54,7 +54,7 @@ export default {
 		updateOffset() {
 			// this.date is in day.month.year format
 			// javascript Date expects it to month.day.year format
-			const [day, month, year] = this.timezonedate.split(".")
+			const [day, month, year] = this.fromExternalFormat(this.timezonedate).split(".")
 			const monthIndex = month - 1
 			const local_offset = new Date(year, monthIndex, day).getTimezoneOffset()
 			if (isNaN(local_offset)) {
@@ -118,6 +118,16 @@ export default {
 				this.$emit('input', this.internal_value)
 			}
 		},
+		toExternalFormat(internal_format) {
+			if (!internal_format) { return internal_format }
+			const [day, month, year] = internal_format.split(".")
+			return year + "-" + month + "-" + day
+		},
+		fromExternalFormat(external_format) {
+			if (!external_format) { return external_format }
+			const [year, month, day] = external_format.split("-")
+			return day + "." + month + "." + year
+		},
 		validate(event) {
 			if (this.isInitializing) { return }
 			const new_value = event.target.value
@@ -132,6 +142,10 @@ export default {
 	},
 	created() {
 		this.isInitializing = true
+		console.log("timezonepicker created")
+		console.log(this.value)
+
+
 		this.initial_value = this.value
 		this.internal_value = this.initial_value
 		if (this.timezonedate && !this.value) {

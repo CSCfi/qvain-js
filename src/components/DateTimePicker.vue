@@ -83,6 +83,16 @@ export default {
 	},
 
 	methods: {
+		toExternalDateFormat(internal_format) {
+			if (!internal_format) { return internal_format }
+			const [day, month, year] = internal_format.split(".")
+			return year + "-" + month + "-" + day
+		},
+		fromExternalDateFormat(external_format) {
+			if (!external_format) { return external_format }
+			const [year, month, day] = external_format.split("-")
+			return day + "." + month + "." + year
+		},
 		updateValue() {
 			if (this.isInitializing) { return }
 			let time_value = this.time

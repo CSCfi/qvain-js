@@ -54,13 +54,6 @@ export default {
 		dateString: {
 			get() {
 				return this.internal_value
-			},
-			set(new_value) {
-				if (this.isInitializing) { return }
-				if (this.dateRegexp.test(new_value)) {
-					var date_array = new_value.split(".")
-					this.internal_value = date_array[2] + "-" + date_array[1] + "-" + date_array[0]
-				}
 			}
 		},
 	},
@@ -96,13 +89,23 @@ export default {
 
 				new_value = hours.join(".")
 
-				this.$emit('input', new_value)
+				this.$emit('input', this.toExternalFormat(new_value))
 				this.internal_value = new_value
 				this.initial_value = new_value
 			} else {
 				this.internal_value = this.initial_value
-				this.$emit('input', this.internal_value)
+				this.$emit('input', this.toExternalFormat(this.internal_value))
 			}
+		},
+		toExternalFormat(internal_format) {
+			if (!internal_format) { return internal_format }
+			const [day, month, year] = internal_format.split(".")
+			return year + "-" + month + "-" + day
+		},
+		fromExternalFormat(external_format) {
+			if (!external_format) { return external_format }
+			const [year, month, day] = external_format.split("-")
+			return day + "." + month + "." + year
 		},
 		validate(event) {
 			if (this.isInitializing) { return }
@@ -117,8 +120,8 @@ export default {
 	},
 	created() {
 		this.isInitializing = true
-		this.internal_value = this.value
-		this.initial_value = this.value
+		this.internal_value = this.fromExternalFormat(this.value)
+		this.initial_value = this.fromExternalFormat(this.value)
 		this.isInitializing = false
 	}
 }
