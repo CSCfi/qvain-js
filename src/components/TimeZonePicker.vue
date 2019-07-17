@@ -107,9 +107,7 @@ export default {
 				if (hours[0] == "00") {
 					symbol = ""
 				}
-
 				new_value = symbol + hours.join(":")
-
 				this.internal_value = new_value
 				this.initial_value = new_value
 				this.$emit('input', new_value)
@@ -142,10 +140,6 @@ export default {
 	},
 	created() {
 		this.isInitializing = true
-		console.log("timezonepicker created")
-		console.log(this.value)
-
-
 		this.initial_value = this.value
 		this.internal_value = this.initial_value
 		if (this.timezonedate && !this.value) {

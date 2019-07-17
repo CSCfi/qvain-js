@@ -59,16 +59,13 @@ export default {
 			} else if (this.timeRegexp.test(new_value)) {
 				let hours = new_value.split(":")
 				const parts = hours.length
-
 				for(var i=0; i<hours.length; i++) {
 					hours[i] = hours[i].padStart(2, '0')
 				}
 				for (var i=0; i<3-parts; i++) {
 					hours.push("00")
 				}
-
 				new_value = hours.join(":")
-
 				this.internal_value = new_value
 				this.initial_value = new_value
 				this.$emit('input', new_value)

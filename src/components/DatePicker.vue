@@ -28,9 +28,7 @@
 }
 </style>
 
-
 <script>
-
 export default {
 	name: 'datepicker',
 	model: {
@@ -66,33 +64,24 @@ export default {
 				this.initial_value = new_value
 				this.$emit('input', this.toExternalFormat(new_value))
 			} else if (this.dateRegexp.test(new_value)) {
-				console.log(new_value)
 				let date_structure = new_value.split(".")
 				const parts = date_structure.length
-
 				for(var i=0; i<date_structure.length; i++) {
 					date_structure[i] = date_structure[i].padStart(2, '0')
 				}
 				for (var i=0; i<3-parts; i++) {
 					date_structure.push("00")
 				}
-
 				// ensure that the month is not empty
 				if (date_structure[1] === "00") {
 					date_structure[1] = String(new Date().getMonth()+1).padStart(2, '0')
 				}
-
 				// ensure that the year is not empty
 				date_structure[2] = date_structure[2].padStart(4, '0')
 				if (date_structure[2] === "0000") {
 					date_structure[2] = new Date().getFullYear()
 				}
-
-				console.log("After")
-				console.log(date_structure)
-
 				new_value = date_structure.join(".")
-				
 				this.$emit('input', this.toExternalFormat(new_value))
 				this.internal_value = new_value
 				this.initial_value = new_value
@@ -102,15 +91,11 @@ export default {
 			}
 		},
 		toExternalFormat(internal_format) {
-			console.log("toExternalFormat")
-			console.log(internal_format)
 			if (!internal_format) { return internal_format }
 			const [day, month, year] = internal_format.split(".")
 			return year + "-" + month + "-" + day
 		},
 		fromExternalFormat(external_format) {
-			console.log("fromExternalFormat")
-			console.log(external_format)
 			if (!external_format) { return external_format }
 			const [year, month, day] = external_format.split("-")
 			return day + "." + month + "." + year
@@ -128,7 +113,6 @@ export default {
 		},
 	},
 	created() {
-		console.log("datepicker created")
 		this.isInitializing = true
 		this.internal_value = this.fromExternalFormat(this.value)
 		this.initial_value = this.fromExternalFormat(this.value)

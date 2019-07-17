@@ -85,8 +85,13 @@ export default {
 	methods: {
 		toExternalDateFormat(internal_format) {
 			if (!internal_format) { return internal_format }
-			const [day, month, year] = internal_format.split(".")
-			return year + "-" + month + "-" + day
+			const [date, time] = internal_format.split("T")
+			return date
+		},
+		toExternalTimeFormat(internal_format) {
+			if (!internal_format) { return internal_format }
+			const [date, time] = internal_format.split("T")
+			return time
 		},
 		fromExternalDateFormat(external_format) {
 			if (!external_format) { return external_format }
@@ -111,7 +116,15 @@ export default {
 				time_zone_value = "-" + time_zone_value
 			}
 			this.internal_value = date_value + "T" + time_value + time_zone_value
-			this.$emit('input', this.internal_value)
+			if (this.format === "date-time") {
+				this.$emit('input', this.internal_value)
+			} else if (this.format === "date") {
+				this.$emit('input', this.toExternalDateFormat(this.internal_value))
+			} else if (this.format === "time") {
+				this.$emit('input', this.toExternalTimeFormat(this.internal_value))
+			} else {
+				console.log("Unhandled data format (" + this.format + ") for DateTimePicker")
+			}
 		}
 	},
 	created() {
