@@ -287,7 +287,7 @@ export default {
 				size: 'md',
 				buttonSize: 'md',
 				okVariant: 'danger',
-				okTitle: 'YES',
+				okTitle: 'Yes',
 				cancelTitle: noButtonTitle,
 				footerClass: 'p-2',
 				hideHeaderClose: false,
