@@ -137,8 +137,13 @@ export default {
 		}
 	},
 	methods: {
-		updatePasMetadata(param) {
-			console.log('saved', param)
+		updatePasMetadata(savedData) {
+			// Expects only files since it has no way of knowing the type, and atm only file metadata can be edited
+			const editedFile = this.directory.files.find(file => file.identifier === savedData.identifier)
+			if (editedFile) {
+				// purposefully merge to editedFile so that reactivity works
+				Object.assign(editedFile, savedData)
+			}
 		},
 		goTo(path) {
 			this.$router.push({
