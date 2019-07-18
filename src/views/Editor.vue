@@ -298,9 +298,6 @@ export default {
 					const response = await apiClient.post("/datasets/" + currentId + "/publish", {})
 					const { data } = await apiClient.get(`/datasets/${currentId}`)
 					this.qvainData = data
-
-					//this.clearRecord() // clear editor dataset
-					//this.$router.replace({ name: "datasets"}) // redirect to datasets page
 				} else {
 					this.$root.showAlert("Please save your dataset first", "danger")
 				}
