@@ -113,7 +113,7 @@ export default {
 				{
 					key: 'identifier',
 					sortable: true,
-					tdClass: 'align-middle',
+					tdClass: 'align-middle word-break-all',
 				},
 				{
 					key: 'date_modified',
