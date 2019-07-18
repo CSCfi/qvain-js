@@ -115,7 +115,6 @@
 		<b-alert variant="danger" :show="!!error" dismissible @dismissed="error=null"><i class="fas fa-ban"></i> API error: {{ error }}</b-alert>
 		<b-alert variant="warning"><font-awesome-icon icon="info"></font-awesome-icon> Publishing: I understand that publishing this dataset:</b-alert>
 
-
 		<!-- Modals -->
 		<dataset-json-modal id="dataset-json-modal"></dataset-json-modal>
 		<dataset-overview-modal id="dataset-overview-modal"></dataset-overview-modal>
@@ -282,6 +281,23 @@ export default {
 			}
 			return null
 		},
+		confirmUnsavedChanges(callback) {
+			this.$bvModal.msgBoxConfirm('If you will select <yes> then all the unsaved changes will be lost. Are you sure?', {
+				title: 'All the unsaved changes will be lost.',
+				size: 'xl',
+				buttonSize: 'xl',
+				okVariant: 'danger',
+				okTitle: 'YES',
+				cancelTitle: 'NO',
+				footerClass: 'p-2',
+				hideHeaderClose: false,
+				centered: true
+			})
+			.then(callback)
+			.catch(err => {
+				console.log(err)
+			})
+		},
 		viewInEtsin() {
 			window.open(`${process.env.VUE_APP_ETSIN_API_URL}/${this.qvainData.identifier}`, '_blank')
 		},
@@ -388,6 +404,14 @@ export default {
 			this.reloadDatasetCounter = 0
 		},
 		reloadDataset: function() {
+			if (this.isDataChanged) {
+				this.confirmUnsavedChanges(value => {
+					this.clearRecord()
+					this.openRecord(this.id)
+					this.reloadDatasetCounter = 0
+				})
+				return
+			}
 			if (this.reloadDatasetCounter == 0) {
 				this.reloadDatasetCounter += 1
 				this.reloadDatasetTimer = setTimeout(this.cancelReloadDataset, 2000)
@@ -518,6 +542,15 @@ export default {
 				await this.openRecord(this.id)
 			}
 		},
+	},
+	beforeRouteLeave(to, from, next) {
+		if (!this.isDataChanged) {
+			next();
+			return
+		}
+		this.confirmUnsavedChanges((value) => {
+			next(value)
+		})
 	},
 	destroyed: function() {
 		if (this.reloadDatasetTimer) {
