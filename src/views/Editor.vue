@@ -403,10 +403,12 @@ export default {
 		},
 		reloadDataset: function() {
 			if (this.isDataChanged) {
-				this.confirmUnsavedChanges("Do you want to reload dataset?", "No, I do not want to.", value => {
-					this.clearRecord()
-					this.openRecord(this.id)
-					this.reloadDatasetCounter = 0
+				this.confirmUnsavedChanges("Do you want to reload the dataset?", "No, I do not want to.", value => {
+					if (value) {
+						this.clearRecord()
+						this.openRecord(this.id)
+						this.reloadDatasetCounter = 0
+					}
 				})
 				return
 			}
@@ -547,7 +549,11 @@ export default {
 			return
 		}
 		this.confirmUnsavedChanges("Leave the editor?", "No, I want to stay.", (value) => {
-			next(value)
+			if (!value || value === null) {
+				next(false)
+			} else {
+				next()
+			}
 		})
 	},
 	destroyed: function() {
