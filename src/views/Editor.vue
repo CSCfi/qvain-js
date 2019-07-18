@@ -110,6 +110,18 @@ All Rights Reserved.
 								Publish
 							</b-button>
 						</b-col>
+						<b-col v-if="!loading && isPublished">
+							<b-button
+								id="editor_button_etsin_top"
+								variant="info"
+								block
+								@click="viewInEtsin()"
+								ref="dataset-etsin-button">
+								<font-awesome-icon icon="external-link-alt" />
+								&nbsp;
+								Etsin
+							</b-button>
+						</b-col>
 					</b-row>
 				</b-container>
 			</b-collapse>
@@ -117,7 +129,6 @@ All Rights Reserved.
 
 		<b-alert variant="danger" :show="!!error" dismissible @dismissed="error=null"><i class="fas fa-ban"></i> API error: {{ error }}</b-alert>
 		<b-alert variant="warning"><font-awesome-icon icon="info"></font-awesome-icon> Publishing: I understand that publishing this dataset:</b-alert>
-
 
 		<!-- Modals -->
 		<dataset-json-modal id="dataset-json-modal"></dataset-json-modal>
@@ -154,6 +165,16 @@ All Rights Reserved.
 
 				<b-col v-if="selectedSchema">
 					<router-view></router-view>
+				</b-col>
+
+				<b-col v-else-if="loading">
+					<b-container class="page-is-loading">
+						<b-row>
+							<b-col>
+								<font-awesome-icon icon="spinner" spin />
+							</b-col>
+						</b-row>
+					</b-container>
 				</b-col>
 
 				<b-col v-else-if="!loading" class="schema-help-text">
@@ -275,6 +296,26 @@ export default {
 			}
 			return null
 		},
+		confirmUnsavedChanges(dialogTitle, noButtonTitle, callback) {
+			this.$bvModal.msgBoxConfirm('If you will select <yes> then all the unsaved changes will be lost. Are you sure?', {
+				title: dialogTitle,
+				size: 'md',
+				buttonSize: 'md',
+				okVariant: 'danger',
+				okTitle: 'Yes',
+				cancelTitle: noButtonTitle,
+				footerClass: 'p-2',
+				hideHeaderClose: false,
+				centered: true
+			})
+			.then(callback)
+			.catch(err => {
+				console.log(err)
+			})
+		},
+		viewInEtsin() {
+			window.open(`${process.env.VUE_APP_ETSIN_API_URL}/${this.qvainData.identifier}`, '_blank')
+		},
 		publish: async function publishCallback() {
 			if (this.saving || this.publishing) {
 				return
@@ -284,9 +325,10 @@ export default {
 				this.showPublishConfirmation = false
 				const isExisting = !!this.$store.state.metadata.id
 				if (isExisting) {
-					const response = await apiClient.post("/datasets/" + this.$store.state.metadata.id + "/publish", {})
-					this.clearRecord() // clear editor dataset
-					this.$router.replace({ name: "datasets"}) // redirect to datasets page
+					const currentId = this.$store.state.metadata.id
+					const response = await apiClient.post("/datasets/" + currentId + "/publish", {})
+					const { data } = await apiClient.get(`/datasets/${currentId}`)
+					this.qvainData = data
 				} else {
 					this.$root.showAlert("Please save your dataset first", "danger")
 				}
@@ -332,7 +374,6 @@ export default {
 
 					this.$store.commit('setMetadata', { id })
 					this.$router.replace({ name: 'tab', params: { id: id, tab: this.$route.params.tab }})
-
 				}
 				this.isDataChanged = false
 			} catch(error) {
@@ -376,6 +417,16 @@ export default {
 			this.reloadDatasetCounter = 0
 		},
 		reloadDataset: function() {
+			if (this.isDataChanged) {
+				this.confirmUnsavedChanges("Do you want to reload the dataset?", "No, I do not want to.", value => {
+					if (value) {
+						this.clearRecord()
+						this.openRecord(this.id)
+						this.reloadDatasetCounter = 0
+					}
+				})
+				return
+			}
 			if (this.reloadDatasetCounter == 0) {
 				this.reloadDatasetCounter += 1
 				this.reloadDatasetTimer = setTimeout(this.cancelReloadDataset, 2000)
@@ -463,8 +514,11 @@ export default {
 		isPublishDisabled() {
 			return this.loading || this.rateLimited || this.$store.state.metadata.id == null || (this.qvainData && this.qvainData.published && this.qvainData.synced >= this.qvainData.modified) || this.isDataChanged || this.saving || this.publishing
 		},
+		isPublished() {
+			return this.qvainData && this.qvainData.published
+		},
 		isPublishedAndUpdateAvailable() {
-			return this.qvainData && this.qvainData.published && (this.qvainData.modified > this.qvainData.synced)
+			return this.isPublished && (this.qvainData.modified > this.qvainData.synced)
 		},
 		isSaveDisabled() {
 			return this.loading || this.rateLimited || this.isDataChanged == false || this.saving || this.publishing
@@ -504,6 +558,19 @@ export default {
 			}
 		},
 	},
+	beforeRouteLeave(to, from, next) {
+		if (!this.isDataChanged) {
+			next();
+			return
+		}
+		this.confirmUnsavedChanges("Leave the editor?", "No, I want to stay.", (value) => {
+			if (!value || value === null) {
+				next(false)
+			} else {
+				next()
+			}
+		})
+	},
 	destroyed: function() {
 		if (this.reloadDatasetTimer) {
 			clearTimeout(this.reloadDatasetTimer)
@@ -513,7 +580,7 @@ export default {
 	async mounted() {
 		if (this.id === 'new') {
 			this.clearRecord()
-		} else if (this.id !== 'edit' && this.$store.state.metadata.id !== this.id) {
+		} else if (this.id !== 'edit') {
 			await this.openRecord(this.id)
 		}
 
@@ -615,5 +682,10 @@ h1.component-title {
 	font-weight: 300;
 }
 
+.page-is-loading {
+	margin-top: 2em;
+	margin-left: auto;
+	margin-right: auto;
+}
 
 </style>
