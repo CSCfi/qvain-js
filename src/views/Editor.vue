@@ -281,14 +281,14 @@ export default {
 			}
 			return null
 		},
-		confirmUnsavedChanges(callback) {
+		confirmUnsavedChanges(dialogTitle, noButtonTitle, callback) {
 			this.$bvModal.msgBoxConfirm('If you will select <yes> then all the unsaved changes will be lost. Are you sure?', {
-				title: 'All the unsaved changes will be lost.',
+				title: dialogTitle,
 				size: 'md',
 				buttonSize: 'md',
 				okVariant: 'danger',
 				okTitle: 'YES',
-				cancelTitle: 'NO',
+				cancelTitle: noButtonTitle,
 				footerClass: 'p-2',
 				hideHeaderClose: false,
 				centered: true
@@ -403,7 +403,7 @@ export default {
 		},
 		reloadDataset: function() {
 			if (this.isDataChanged) {
-				this.confirmUnsavedChanges(value => {
+				this.confirmUnsavedChanges("Do you want to reload dataset?", "No, I do not want to.", value => {
 					this.clearRecord()
 					this.openRecord(this.id)
 					this.reloadDatasetCounter = 0
@@ -546,7 +546,7 @@ export default {
 			next();
 			return
 		}
-		this.confirmUnsavedChanges((value) => {
+		this.confirmUnsavedChanges("Leave the editor?", "No, I want to stay.", (value) => {
 			next(value)
 		})
 	},
