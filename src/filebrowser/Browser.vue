@@ -35,7 +35,10 @@
 			</template>
 
 			<template slot="row-details" slot-scope="data">
-				<PASMetadata v-if="data.item.type === 'files'" :identifier="data.item.identifier" :file="data.item.file" />
+				<PASMetadata v-if="data.item.type === 'files'"
+					:identifier="data.item.identifier"
+					:file="data.item.file"
+					@saved="updatePasMetadata" />
 				<!--<PASMetadata v-else :identifier="data.item.identifier" :folder="data.item" />-->
 			</template>
 		</b-table>
@@ -134,6 +137,14 @@ export default {
 		}
 	},
 	methods: {
+		updatePasMetadata(savedData) {
+			// Expects only files since it has no way of knowing the type, and atm only file metadata can be edited
+			const editedFile = this.directory.files.find(file => file.identifier === savedData.identifier)
+			if (editedFile) {
+				// purposefully merge to editedFile so that reactivity works
+				Object.assign(editedFile, savedData)
+			}
+		},
 		goTo(path) {
 			this.$router.push({
 				name: 'files',
@@ -151,7 +162,6 @@ export default {
 				})
 				this.directory = data
 			} catch (error) {
-				console.log(error)
 				if (error.response && error.response.status == 401) {
 					// there was a permission error
 					// we should redirect the user to login
