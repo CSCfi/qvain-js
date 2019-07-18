@@ -4,10 +4,15 @@
 		<div v-if="header" class="header">
 			<b-container fluid>
 				<b-row class="row">
-					<b-col><slot name="title"/><span v-if="required" class="header__required">*</span></b-col>
+					<b-col>
+						<slot name="title"/>
+						<b-badge v-if="required" variant="danger">REQUIRED</b-badge>
+					</b-col>
 				</b-row>
 				<b-row>
-					<b-col><slot name="help"/></b-col>
+					<b-col>
+						<slot name="help"/>
+					</b-col>
 				</b-row>
 			</b-container>
 			<div class="header__right">
@@ -15,7 +20,7 @@
 			</div>
 		</div>
 
-		<b-container class="error-container"><slot name="errors"/></b-container>
+		<b-container class="error-container" v-if="hasErrorsSlot"><slot name="errors"/></b-container>
 
 		<b-container><slot name="input"/></b-container>
 	</wrapper>
@@ -27,7 +32,7 @@
 .header {
 	width: 100%;
 	display: inline-flex;
-	margin-bottom: 1em;
+	margin-bottom: 0.1em;
 
 	&__label {
 		display: inline-flex;
@@ -40,6 +45,11 @@
 
 	&__required {
 		color: red;
+	}
+	* .badge {
+		vertical-align: middle;
+		margin-top: -0.5em;
+		font-size: 0.8em;
 	}
 }
 .error-container {
@@ -73,5 +83,10 @@ export default {
 			default: false,
 		},
 	},
+	computed: {
+		hasErrorsSlot() {
+			return !!this.$slots['errors']
+		}
+	}
 }
 </script>

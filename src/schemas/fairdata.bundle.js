@@ -1,6 +1,5 @@
 /* ADD_LICENSE_HEADER */
 import FairdataIdaSchema from './fairdata-ida.schema.json'
-import FairdataIdaOldSchema from './fairdata-ida-old.schema.json'
 import FairdataAttSchema from './fairdata-att.schema.json'
 import FairdataIdaUi from './fairdata-ida.ui.js'
 import fairdataAttUiDiff from './fairdata-att.ui.diff.js'
@@ -56,7 +55,9 @@ export default {
 	ida: {
 		schema: FairdataIdaSchema,
 		ui: FairdataIdaUi,
+		title: "IDA",
 		name: "Select IDA files", // "Fairdata (IDA)",
+		description: "You want to select files from IDA.",
 		id: "metax-ida",
 		family: 2,
 		cloneFunc: clone,
@@ -72,7 +73,9 @@ export default {
 	att: {
 		schema: FairdataAttSchema,
 		ui: FairdataAttUi,
+		title: "Remote Resources",
 		name: "Link Remote resources", // "Fairdata (ATT)",
+		description: "You want to link files from remote location.",
 		id: "metax-att",
 		family: 2,
 		cloneFunc: clone,

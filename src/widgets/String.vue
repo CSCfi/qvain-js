@@ -3,12 +3,18 @@
 	<record-field :required="required" :wrapped="false" :header="!inArray">
 		<title-component slot="title" :title="uiLabel" />
 		<small slot="help" class="text-muted">
-			{{ uiDescription }}
+			{{ uiDescription }}
+			<div v-if="uiExample">
+				<b-badge variant="info">Example</b-badge>
+				<span v-for="(example, index) in uiExample" :key="index">
+					{{ example }}
+				</span>
+			</div>
 		</small>
 
 		<div slot="input">
 			<b-form-group
-				:label-cols="inArray ? 1 : ((makeLabel !== uiLabel) ? 3 : 0)"
+				:label-cols="inArray ? 3 : ((makeLabel !== uiLabel) ? 3 : 0)"
 				:label-for="inArray ? 'input-' + property.toString() : property">
 				<span slot="label" v-if="makeLabel !== uiLabel">
 					{{ makeLabel }}
@@ -40,11 +46,8 @@
 
 <script>
 import vSchemaBase from './base.vue'
-import { dataPointer } from '../../tmp/datapointer.js'
-
 import RecordField from '@/composites/RecordField.vue'
 import TitleComponent from '@/partials/Title.vue'
-import InfoIcon from '@/partials/InfoIcon.vue'
 import DeleteButton from '@/partials/DeleteButton.vue'
 
 export default {
@@ -55,7 +58,6 @@ export default {
 	components: {
 		RecordField,
 		TitleComponent,
-		InfoIcon,
 		DeleteButton,
 	},
 	data() {
@@ -107,12 +109,6 @@ export default {
 		},
 		ctxIcon() {
 			return this.hover ? "trash" : "pen"
-		},
-		datapath() {
-			return dataPointer(this.path)
-		},
-		dataValue() {
-			return this.$store.getters.getPath(this.datapath)
 		},
 	},
 	directives: {

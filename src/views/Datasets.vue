@@ -6,38 +6,112 @@
 		<!-- controls -->
 		<b-button-toolbar class="mb-4 tool-bar">
 			<b-button-group class="filter-buttons" size="sm">
-				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'all'" @click="() => showDatasetState = 'all'" variant="secondary">All</b-btn>
-				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'draft'" @click="() => showDatasetState = 'draft'" variant="success">Draft</b-btn>
-				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'published'" @click="() => showDatasetState = 'published'" variant="primary">Published</b-btn>
-				<b-btn class="dataset-filter__button" :pressed="showDatasetState === 'unpublishedchanges'" @click="() => showDatasetState = 'unpublishedchanges'" variant="warning">Unpublished Changes</b-btn>
+				<b-btn
+					class="dataset-filter__button"
+					:pressed="datasetsView.showState === 'all'"
+					@click="()=>setShowState('all')"
+					:variant="datasetsView.showState === 'all' ? 'secondary' : 'outline-secondary'">
+					All
+				</b-btn>
+				<b-btn
+					class="dataset-filter__button"
+					:pressed="datasetsView.showState === 'draft'"
+					@click="()=>setShowState('draft')"
+					:variant="datasetsView.showState === 'all' || datasetsView.showState === 'draft' ? 'success' : 'outline-secondary'">
+					Draft
+				</b-btn>
+				<b-btn
+					class="dataset-filter__button"
+					:pressed="datasetsView.showState === 'published'"
+					@click="()=>setShowState('published')"
+					:variant="datasetsView.showState === 'all' || datasetsView.showState === 'published' ? 'primary' : 'outline-secondary'">
+					Published
+				</b-btn>
+				<b-btn
+					class="dataset-filter__button"
+					:pressed="datasetsView.showState === 'unpublishedchanges'"
+					@click="()=>setShowState('unpublishedchanges')"
+					:variant="datasetsView.showState === 'all' || datasetsView.showState === 'unpublishedchanges' ? 'warning' : 'outline-secondary'">
+					Unpublished Changes
+				</b-btn>
 			</b-button-group>
 
 			<b-input-group class="search" size="sm" prepend="Search">
-				<b-form-input v-model="filterString" placeholder="type here to search" />
+				<b-form-input
+					:value="datasetsView.filterString"
+					placeholder="type here to search"
+					@update="setFilterString"
+				/>
 			</b-input-group>
 		</b-button-toolbar>
+
 
 		<!-- alerts -->
 		<b-alert variant="danger" :show="!!error" dismissible @dismissed="error = null">{{ error }}</b-alert>
 
+		<div class="pagination-controls">
+			<b-pagination
+				size="sm"
+				align="center"
+				hide-goto-end-buttons
+				hide-ellipsis
+				:value="datasetsView.currentPage"
+				:per-page="datasetsView.perPage || datasetsView.filteredCount"
+				:total-rows="datasetsView.filteredCount"
+				aria-controls="dataset-list"
+				first-text="First"
+				prev-text="Prev"
+				next-text="Next"
+				last-text="Last"
+				label-page="Page"
+				@input="setPage"
+			/>
+
+			<b-button-group size="sm">
+				<b-btn
+					:pressed="datasetsView.perPage === 0"
+					@click="() => setPerPage(0)"
+				>
+					show all
+				</b-btn>
+				<b-btn
+					v-for="option in perPageOptionsFiltered"
+					:key="option"
+					:pressed="datasetsView.perPage === option"
+					class="btn"
+					@click="() => setPerPage(option)"
+				>{{ option }}
+				</b-btn>
+			</b-button-group>
+		</div>
+
 		<!-- table -->
-		<b-table id="dataset-list"
-				ref="datasetTable"
-				:items="datasetList"
-				:fields="fields"
-				striped
-				:tbody-tr-class="rowClass"
-				filter="truthy value"
-				:filter-function="filter"
-				:busy.sync="isBusy"
-				primary-key="id"
-				:tbody-transition-props="{'name': 'datasets-flip'}">
+		<b-table
+			id="dataset-list"
+			ref="datasetTable"
+			:items="datasetsView.datasetList"
+			:fields="fields"
+			striped
+			hover
+			:tbody-tr-class="rowClass"
+			filter="truthy value"
+			:filter-function="filter"
+			:busy.sync="isBusy"
+			primary-key="id"
+			:sort-by.sync="datasetsView.sortBy"
+			:sort-desc.sync="datasetsView.sortDesc"
+			:current-page="datasetsView.currentPage"
+			:per-page="datasetsView.perPage"
+			@sort-changed="setSort"
+			@filtered="updateFiltered"
+		>
 			<template slot="tree_actions" slot-scope="row">
 				<b-button-toolbar key-nav class="row-main-actions">
 					<b-button-group class="mr-1">
 						<b-button
 							variant="secondary"
 							@click.stop="row.toggleDetails()">
+							{{ 1 + row.index + (datasetsView.currentPage-1)*datasetsView.perPage }}
 							<font-awesome-icon
 								:icon="row.detailsShowing ? 'chevron-down' : 'chevron-right'"
 								fixed-width />
@@ -48,7 +122,7 @@
 			<template slot="actions" slot-scope="row">
 				<b-button-group size="sm" class="mr-1">
 					<b-button
-						:variant="row.item.identifier == null ? 'outline-secondary' : 'primary'"
+						:variant="row.item.identifier == null ? 'outline-secondary' : 'info'"
 						@click.stop="view(row.item.identifier)"
 						:disabled="row.item.identifier == null">
 						<font-awesome-icon icon="external-link-alt" fixed-width />
@@ -63,13 +137,13 @@
 				<preservation-state :state="data.item.preservation_state" />
 			</template>
 			<template slot="created" slot-scope="row">
-				<p class="text-muted" @click.stop="editDataset(row.item)">
+				<p class="text-muted pointer" @click.stop="editDataset(row.item)">
 					{{ friendlyDate(row.item.created) }} ago<br />
 					<small>{{ readableIso(row.item.created) }}</small>
 				</p>
 			</template>
 			<template slot="title" slot-scope="row">
-				<h5 class="mb-1" @click.stop="editDataset(row.item)">
+				<h5 class="mb-1 pointer" @click.stop="editDataset(row.item)">
 					<span class="dataset-row-publish-status" @click.stop="editDataset(row.item)">
 						<font-awesome-icon icon="circle" class="text-primary" v-if="row.item.published && !isItemPublishedAndHasUpdates(row.item)" />
 						<font-awesome-icon icon="circle" class="text-warning" v-else-if="row.item.published && isItemPublishedAndHasUpdates(row.item)" />
@@ -78,7 +152,7 @@
 					{{ preferredLanguage(row.item.title) }}
 					<b-badge v-if="row.item.next !== null" variant="warning" class="old-version">Old version</b-badge>
 				</h5>
-				<p v-if="row.item.description" class="text-muted" @click.stop="editDataset(row.item)">
+				<p v-if="row.item.description" class="text-muted pointer" @click.stop="editDataset(row.item)">
 					<small>{{ preferredLanguage(row.item.description) }}</small>
 				</p>
 			</template>
@@ -86,7 +160,7 @@
 				<b-button-toolbar key-nav>
 					<b-button-group size="sm" class="mr-1">
 						<b-button
-							variant="primary"
+							:variant="isItemPublishedAndHasUpdates(row.item) ? 'warning' : 'success'"
 							@click.stop="editDataset(row.item)">
 							<font-awesome-icon icon="pen" fixed-width />
 							Edit
@@ -94,16 +168,17 @@
 					</b-button-group>
 					<b-button-group size="sm" class="mr-1">
 						<b-button
-							v-if="!row.item.published || isItemPublishedAndHasUpdates(row.item)"
-							variant="success"
+							:disabled="row.item.published && !isItemPublishedAndHasUpdates(row.item)"
+							:variant="row.item.published && !isItemPublishedAndHasUpdates(row.item) ? 'outline-secondary' : 'primary'"
 							@click="itemToBePublished = row.item"
 							v-b-modal.publishModal>
+							<font-awesome-icon :icon="publishing ? 'spinner' : 'upload'" :spin="publishing" />
 							Publish
 						</b-button>
 					</b-button-group>
 					<b-button-group size="sm" class="mr-1">
 						<b-button
-							:variant="row.item.identifier == null ? 'outline-secondary' : 'primary'"
+							:variant="row.item.identifier == null ? 'outline-secondary' : 'info'"
 							@click.stop="view(row.item.identifier)"
 							:disabled="row.item.identifier == null">
 							<font-awesome-icon icon="external-link-alt" fixed-width />
@@ -136,6 +211,41 @@
 			</div>
 		</b-table>
 
+		<div class="pagination-controls">
+			<b-pagination
+				size="sm"
+				align="center"
+				hide-goto-end-buttons
+				hide-ellipsis
+				:value="datasetsView.currentPage"
+				:per-page="datasetsView.perPage || datasetsView.filteredCount"
+				:total-rows="datasetsView.filteredCount"
+				aria-controls="dataset-list"
+				first-text="First"
+				prev-text="Prev"
+				next-text="Next"
+				last-text="Last"
+				label-page="Page"
+				@input="setPage"
+			/>
+
+			<b-button-group size="sm">
+				<b-btn
+					:pressed="datasetsView.perPage === 0"
+					@click="() => setPerPage(0)"
+				>
+					show all
+				</b-btn>
+				<b-btn
+					v-for="option in perPageOptionsFiltered"
+					:key="option"
+					:pressed="datasetsView.perPage === option"
+					class="btn"
+					@click="() => setPerPage(option)"
+				>{{ option }}
+				</b-btn>
+			</b-button-group>
+		</div>
 		<!-- modals -->
 		<b-modal
 			v-if="itemToBeDeleted !== null"
@@ -237,13 +347,44 @@
 		}
 	}
 
+	.pagination-controls {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		align-items: flex-start;
+		margin-left: -0.5rem;
+		margin-right: -0.5rem;
+		margin-bottom: 0.5rem;
+		& > * {
+			margin-left: 0.5rem;
+			margin-right: 0.5rem;
+			margin-bottom: 4px;
+		}
+	}
+
 </style>
+
+<style>
+
+	.created-column {
+		width: 200px !important;
+	}
+
+	.details-column {
+		width: 120px !important;
+	}
+	.actions-column {
+		width: 100px !important;
+	}
+	.pas-column {
+		width: 100px !important;
+	}
+</style>
+
 
 <script>
 import apiClient from '@/api/client.js'
-import testList from '@/api/test-datasets.json'
 import PreservationState from '@/components/PreservationState.vue'
-import BusyButton from '@/components/BusyButton.vue'
 import DatasetVersionsModal from '@/components/VersionsModal.vue'
 import PublishModal from '@/components/PublishModal.vue'
 
@@ -256,27 +397,32 @@ const fields = [
 		label: "Details",
 		key: "tree_actions",
 		sortable: false,
+		class: 'details-column',
 	},
 	{
 		label: "Dataset",
 		key: "title",
 		sortable: true,
-		formatter: 'preferredLanguage'
+		formatter: 'preferredLanguage',
+		class: 'dataset-column',
 	},
 	{
 		label: "Created",
 		key: "created",
-		sortable: true
+		sortable: true,
+		class: 'created-column',
 	},
 	{
 		label: "PAS",
 		key: "preservation_state",
-		sortable: true
+		sortable: true,
+		class: 'pas-column',
 	},
 	{
 		label: "",
 		key: "actions",
-		sortable: false
+		sortable: false,
+		class: 'actions-column',
 	},
 ]
 
@@ -297,7 +443,6 @@ export default {
 	name: "dataset-list",
 	components: {
 		PreservationState,
-		BusyButton,
 		DatasetVersionsModal,
 		'publish-modal': PublishModal,
 	},
@@ -305,21 +450,21 @@ export default {
 		return {
 			activeInModal: null,
 			fields: fields,
-			filterString: null,
-			showDatasetState: 'all',
 			isBusy: false,
 			publishError: null,
 			error: null,
 			devWarning: process.env.VUE_APP_ENVIRONMENT === 'development',
-			datasetList: [],
 			itemToBeDeleted: null,
 			itemToBePublished: null,
 			publishing: false,
+			sortBy: null,
+			sortDesc: false,
+			perPageOptions: [ 10, 20, 50 ],
 		}
 	},
 	methods: {
 		async fetchDataset() {
-			this.isBusy = true
+			this.isBusy = this.datasetsView.datasetList === null
 			try {
 				this.error = null
 				const { data } = await apiClient.get("/datasets/")
@@ -330,7 +475,7 @@ export default {
 					}
 					return cmp
 				})
-				this.datasetList = data
+				this.setDatasetList(data)
 			} catch (e) {
 				if (e.response && e.response.status == 401) {
 					// there was a permission error
@@ -339,7 +484,7 @@ export default {
 					this.$router.push({name: "home", params: {missingToken: true}})
 				}
 				this.error = getApiError(e)
-				this.datasetList = []
+				this.setDatasetList([])
 			} finally {
 				this.isBusy = false
 			}
@@ -358,7 +503,6 @@ export default {
 			this.publishError = null
 			try {
 				await apiClient.post("/datasets/" + this.itemToBePublished.id + "/publish", {})
-				this.$root.showAlert("successfully published " + this.preferredLanguage(this.itemToBePublished.title) + " dataset", "success")
 				await this.fetchDataset()
 				this.$refs.datasetTable.refresh()
 			} catch (e) {
@@ -375,12 +519,12 @@ export default {
 		},
 
 		async del() {
+			if (this.deleting) { return }
 			this.isBusy = true
+			this.deleting = true
 			this.error = null
 			try {
 				await apiClient.delete("/datasets/" + this.itemToBeDeleted.id)
-				this.$root.showAlert("Successfully deleted dataset", "success")
-
 				await this.fetchDataset()
 				this.$refs.datasetTable.refresh()
 			} catch (e) {
@@ -393,6 +537,7 @@ export default {
 				this.error = getApiError(e)
 			} finally {
 				this.isBusy = false
+				this.deleting = false
 			}
 		},
 		view(extid) {
@@ -415,13 +560,13 @@ export default {
 			return this.filterState(item) && this.filterTitles(item)
 		},
 		filterState(item) {
-			return this.showDatasetState === 'all' ||
-				(this.showDatasetState === 'published' && item.published && !this.isItemPublishedAndHasUpdates(item)) ||
-				(this.showDatasetState === 'draft' && !item.published) ||
-				(this.showDatasetState === 'unpublishedchanges' && this.isItemPublishedAndHasUpdates(item) )
+			return this.datasetsView.showState === 'all' ||
+				(this.datasetsView.showState === 'published' && item.published && !this.isItemPublishedAndHasUpdates(item)) ||
+				(this.datasetsView.showState === 'draft' && !item.published) ||
+				(this.datasetsView.showState === 'unpublishedchanges' && this.isItemPublishedAndHasUpdates(item) )
 		},
 		filterTitles(item) {
-			if (!this.filterString) return true // don't filter null.toString()
+			if (!this.datasetsView.filterString) return true // don't filter null.toString()
 
 			// use reactivity to cache regex
 			//let regex = new RegExp('.*' + this.filterString + '.*', 'ig')
@@ -454,12 +599,47 @@ export default {
 
 			this.$router.replace({ name: 'editor', params: { id: 'new' }})
 		},
+		setDatasetList(list) {
+			this.$store.commit('updateDatasetsView', { datasetList: list })
+		},
+		setPage(page) {
+			this.$store.commit('updateDatasetsView', { currentPage: page })
+		},
+		setPerPage(perPage) {
+			if (this.datasetsView.perPage == perPage) {
+				return
+			}
+			this.$store.commit('updateDatasetsView', { currentPage: 1, perPage: perPage })
+		},
+		setSort(ctx) {
+			this.$store.commit('updateDatasetsView', { sortBy: ctx.sortBy, sortDesc: ctx.sortDesc })
+		},
+		updateFiltered(filtered) {
+			this.setFilteredCount(filtered.length)
+		},
+		setFilteredCount(count) {
+			if (count == this.datasetsView.filteredCount) {
+				return
+			}
+			this.$store.commit('updateDatasetsView', { filteredCount: count })
+		},
+		setShowState(state) {
+			this.$store.commit('updateDatasetsView', { showState: state })
+		},
+		setFilterString(state) {
+			this.$store.commit('updateDatasetsView', { filterString: state })
+		},
 	},
 	computed: {
-		filterRegExp() {
-			return new RegExp('.*' + this.filterString + '.*', 'ig')
+		datasetsView() {
+			return this.$store.state.datasetsView
 		},
-
+		filterRegExp() {
+			return new RegExp('.*' + this.datasetsView.filterString + '.*', 'ig')
+		},
+		perPageOptionsFiltered() {
+			return this.perPageOptions.filter(pageSize => pageSize < this.datasetsView.filteredCount)
+		}
 	},
 	async created() {
 		await this.fetchDataset()

@@ -10,7 +10,12 @@ export default {
 		{ label: 'Extra', uri: null },
 	],
 	//'': { 'tab': 'description' },
-	'': { 'tab': 'extra', 'order': ["title", "description", "issued", "language"] },
+	'': { 'tab': 'extra',
+		'order': [
+			"title", "description", "issued", "language",
+			"creator", "publisher",
+		],
+	},
 	//'': { 'tab': 'extra' },
 	'#/definitions/langString': {
 		'widget': 'i18n-string',
@@ -20,17 +25,17 @@ export default {
 		'help': "An item possibly defined in multiple languages.",
 	},
 	'#/definitions/Person': {
-		'order': ["name", "email", "telephone", "identifier"],
+		'order': [ "name", "email", "telephone", "identifier" ],
 	},
 	'#/definitions/Organization': {
 		'title': "Organisational hierarchy",
-		'description': "Hierarchical structure of organisation. Here you can provide an organisation or company's information. You need to provide at least one name, but if desired, you can provide multiple organisational divisions for faculty or department.",
+		'description': "Hierarchical structure of the organisation. Here you can provide an organisation's or a company's information. You need to provide at least one name, but if desired, you can provide multiple organisational divisions for faculties or departments.",
 		'widget': 'SelfReferentialObject',
 		'props': {
 			'refField': "is_part_of",
-			'levels': ["organisation", "faculty or division", "department or unit"],
+			'levels': [ "organisation", "faculty or division", "department or unit" ],
 		},
-		'order': ["name", "email", "telephone", "identifier"],
+		'order': [ "name", "email", "telephone", "identifier" ],
 	},
 	'#/definitions/Document': {
 		'visible': false,
@@ -39,7 +44,7 @@ export default {
 		'tab': 'description',
 		'label': "Title",
 		'title': "Name of the dataset",
-		'description': "Dataset must have a name, i.e. title. There can be only one name, but it can have translations. Please give the language of the name (and its translations).",
+		'description': "A dataset must have a name, i.e. title. There can only be one name, but it can have translations. Please give the language of the name (and its translations).",
 		'placeholder': "title",
 		'widget': 'i18n-string',
 		'props': {
@@ -49,7 +54,7 @@ export default {
 	'/properties/keyword': {
 		'tab': 'description',
 		'title': "Keywords",
-		'description': "Give free keywords that characterize the dataset. Below, there is an other field for controlled subject headings.",
+		'description': "Give free keywords that characterize the dataset. Below, there is another field for controlled subject headings.",
 		'placeholder': "keywords",
 		'widget': "schema-array",
 		'props': {
@@ -91,7 +96,7 @@ export default {
 		'props': {
 			'large': true,
 		},
-		'description': "A characterization of the dataset that lucidly describes the dataset. Add new field for each language version. Please define the language used in each case.",
+		'description': "A characterization of the dataset that lucidly describes the dataset. Add a new field for each language version. Please define the language used in each case.",
 	},
 	'/properties/bibliographic_citation': {
 		'tab': 'extra',
@@ -180,7 +185,7 @@ export default {
 	'/properties/is_output_of': {
 		'tab': 'actors',
 		'title': "Producer Project",
-		'description': "Project in which the dataset was created",
+		'description': "A project in which the dataset was created",
 	},
 	'/properties/is_output_of/*/properties/funder_type': {
 		'widget': 'reference-data',
@@ -214,6 +219,16 @@ export default {
 		'description': "Type of contribution the given creator had on the dataset.",
 		'help': "Select the type of contribution the creator had on the dataset.",
 	},
+	'/properties/publisher': {
+		'tab': 'actors',
+		'title': "Publisher",
+		'widget': "schema-oneof",
+		'description': "An agent who has permission to distribute the dataset or who has made the dataset available.",
+		'props': {
+			single: true,
+			wrapped: true,
+		},
+	},
 	'/properties/creator': {
 		'tab': 'actors',
 		'title': "Creator of the dataset",
@@ -229,6 +244,9 @@ export default {
 		'description': 'Please write your name in first_name last_name fashion if possible',
 	},
 	'/properties/curator/*/oneOf/0/properties/name': {
+		'description': 'Please write your name in first_name last_name fashion if possible',
+	},
+	'/properties/publisher/oneOf/0/properties/name': {
 		'description': 'Please write your name in first_name last_name fashion if possible',
 	},
 	'/properties/creator/*/oneOf/*/properties/contributor_type': {
@@ -331,7 +349,7 @@ export default {
 	'/properties/contributor': {
 		'tab': 'actors',
 		'title': "Contributor",
-		'description': "The organization or person that has participated in collecting, managing, or distributing of the dataset, or that has otherwise contributed to its development.",
+		'description': "The organization or person that has participated in collecting, managing, or distributing the dataset, or that has otherwise contributed to its development.",
 	},
 	'/properties/contributor/*/oneOf/*/properties/contributor_role': {
 		'widget': 'reference-data',
@@ -384,7 +402,7 @@ export default {
 	'/properties/curator': {
 		'tab': 'actors',
 		'title': "Curator",
-		'description': "Person tasked with reviewing, enhancing, cleaning, and standardizing metadata and the associated data.",
+		'description': "A person tasked with reviewing, enhancing, cleaning, and standardizing metadata and the associated data.",
 	},
 	'/properties/curator/*/oneOf/*/properties/contributor_role': {
 		'widget': 'reference-data',
@@ -438,7 +456,7 @@ export default {
 	'/properties/rights_holder': {
 		'tab': 'actors',
 		'title': "Rights holder",
-		'description': "A person or an organization that may edit, modify, share and restrict access to the dataset. The owner may also share or surrender these privileges to others.",
+		'description': "A person or an organization that may edit, modify, share or restrict access to the dataset. The owner may also share or surrender these privileges to others.",
 	},
 	'/properties/rights_holder/*/oneOf/*/properties/contributor_role': {
 		'widget': 'reference-data',
@@ -487,6 +505,66 @@ export default {
 		'label': "contributor type",
 		'description': "Type of contribution the given rights holder had on the dataset.",
 		'help': "Select the type of contribution the given rights holder had on the dataset.",
+	},
+	'/properties/publisher/oneOf/*/properties/contributor_type': {
+		'widget': 'reference-data',
+		'props': {
+			'esIndex': "reference_data",
+			'esDoctype': "contributor_type",
+			'typeahead': true,
+			'tags': false,
+			'async': false,
+			'count': 100,
+			'grouped': false,
+		},
+		'placeholder': "– choose contributor type –",
+		'label': "contributor type",
+		'description': "Type of contribution the given publisher had on the dataset.",
+		'help': "Select the type of contribution the publisher had on the dataset.",
+	},
+	'/properties/publisher/oneOf/*/properties/member_of/properties/contributor_type': {
+		'widget': 'reference-data',
+		'props': {
+			'esIndex': "reference_data",
+			'esDoctype': "contributor_type",
+			'typeahead': true,
+			'tags': false,
+			'async': false,
+			'count': 100,
+			'grouped': false,
+		},
+		'placeholder': "– choose contributor type –",
+		'label': "contributor type",
+		'description': "Type of contribution the publisher had on the dataset.",
+		'help': "Select the type of contribution the publisher had on the dataset.",
+	},
+	'/properties/publisher/oneOf/*/properties/contributor_role': {
+		'widget': 'reference-data',
+		'props': {
+			'esIndex': "reference_data",
+			'esDoctype': "contributor_role",
+			'typeahead': true,
+			'tags': false,
+			'async': false,
+			'count': 100,
+			'grouped': false,
+		},
+		'placeholder': "– choose contributor role –",
+		'label': "contributor role",
+		'description': "Role of the publisher regarding this dataset.",
+		'help': "What was the role of the given publisher on this dataset.",
+	},
+	'/properties/publisher/oneOf/*/properties/telephone': {
+		'props': {
+			'tabFormat': false,
+			'wrapped': false,
+		},
+	},
+	'/properties/publisher/oneOf/*/properties/member_of/properties/telephone': {
+		'props': {
+			'tabFormat': false,
+			'wrapped': false,
+		},
 	},
 	'/properties/relation': {
 		'tab': 'relations',
@@ -566,6 +644,7 @@ export default {
 		'help': "Select what was done.",
 	},
 	'/properties/provenance/*/properties/preservation_event': {
+		'tab': 'extra',
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -596,6 +675,9 @@ export default {
 		'title': "Event outcome",
 		'description': "Succeeded/Failed",
 		'help': "Select whether the event succeeded or failed",
+	},
+	'/properties/provenance/*/properties/variable': {
+		'tab': 'extra',
 	},
 	'/properties/provenance/*/properties/used_entity/*/properties/type': {
 		'widget': 'reference-data',
@@ -629,6 +711,38 @@ export default {
 		'description': "Type of contribution the given person or organization had on the entity used on the dataset.",
 		'help': "Select the type of contribution the given person or organization had on the entity used on the dataset.",
 	},
+	'/properties/provenance/*/properties/was_associated_with/*/oneOf/*/properties/contributor_type': {
+		'widget': 'reference-data',
+		'props': {
+			'esIndex': "reference_data",
+			'esDoctype': "contributor_type",
+			'typeahead': true,
+			'tags': false,
+			'async': false,
+			'count': 100,
+			'grouped': false,
+		},
+		'placeholder': "– choose contributor type –",
+		'label': "contributor type",
+		'description': "Type of contribution the given person or organization had on the entity used on the dataset.",
+		'help': "Select the type of contribution the given person or organization had on the entity used on the dataset.",
+	},
+	'/properties/provenance/*/properties/was_associated_with/*/oneOf/*/properties/contributor_role': {
+		'widget': 'reference-data',
+		'props': {
+			'esIndex': "reference_data",
+			'esDoctype': "contributor_role",
+			'typeahead': true,
+			'tags': false,
+			'async': false,
+			'count': 100,
+			'grouped': false,
+		},
+		'placeholder': "– choose contributor role –",
+		'label': "contributor role",
+		'description': "Role of the creator regarding this dataset.",
+		'help': "What was the role of the given creator on this dataset.",
+	},
 	'/properties/provenance/*/properties/temporal': {
 		'widget': 'date-range',
 	},
@@ -644,14 +758,14 @@ export default {
 	},
 	'/properties/access_rights': {
 		'tab': 'rights',
-		'title': "Access rights",
+		'title': " ",
 		'description': "*** description for access rights goes here ***",
 		'ignored': [
 			"description",
 			"access_process",
 			"access_url",
 		],
-		'order': ["license", "access_type", "restriction_grounds", "available"],
+		'order': [ "license", "access_type", "restriction_grounds", "available" ],
 	},
 	'/properties/access_rights/properties/access_type': {
 		'widget': 'reference-data',
@@ -663,6 +777,7 @@ export default {
 			'async': false,
 			'count': 100,
 			'grouped': false,
+			'wrapped': true,
 		},
 		'placeholder': "– choose access type –",
 		'title': "access type",
@@ -671,6 +786,9 @@ export default {
 	},
 	'/properties/access_rights/properties/available': {
 		'widget': 'date',
+		'props': {
+			'wrapped': true,
+		},
 		'required': record => record.access_rights.access_type &&
 			record.access_rights.access_type.identifier === 'http://uri.suomi.fi/codelist/fairdata/access_type/code/embargo',
 		'visible': record => record.access_rights.access_type &&
@@ -687,6 +805,7 @@ export default {
 			'async': false,
 			'count': 100,
 			'grouped': false,
+			'wrapped': true,
 		},
 		'placeholder': "– choose restriction grounds –",
 		'title': "restriction grounds",
@@ -724,8 +843,8 @@ export default {
 					return 1
 				}
 				return null
-			}
-		}
+			},
+		},
 	},
 	'/properties/access_rights/properties/license/*/oneOf/0': {
 		'widget': 'reference-data',
@@ -745,11 +864,7 @@ export default {
 		'help': "Select a license agreement for your dataset.",
 	},
 	'/properties/access_rights/properties/license/*/oneOf/1': {
-		'title': ' '
-	},
-	'/properties/publisher': {
-		'tab': 'extra',
-		'title': "Publisher",
+		'title': ' ',
 	},
 	'/properties/modified': {
 		'tab': 'extra',

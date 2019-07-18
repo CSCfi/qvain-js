@@ -11,12 +11,10 @@ Vue.use(Vuex)
 export default new Vuex.Store({
 	state: {
 		record: undefined,
-		dataset: {},
 		schema: {},
 		hints: {},
 		metadata: {},
 		languages: { 'fi':true, 'en':true, 'sv':true },
-		defaultDescriptionLang: 'fi',
 		UI_VALID_KEYWORDS: [
 			'widget',
 			'option',
@@ -25,9 +23,17 @@ export default new Vuex.Store({
 			'placeholder',
 			'tab',
 		],
-		tabui: {},
-		validation: {},
 		vState: {},
+		datasetsView: {
+			currentPage: 1,
+			perPage: 20,
+			datasetList: null,
+			showState: 'all',
+			filterString: '',
+			filteredCount: null,
+			sortBy: null,
+			sortDesc: false,
+		},
 		stats: {
 			total: 0,
 			pass: 0,
@@ -69,9 +75,6 @@ export default new Vuex.Store({
 		delHints(state, payload) {
 			Vue.delete(state.hints[payload.path])
 		},
-		addTab(state, payload) {
-			Vue.set(state.tabui, payload.tab, payload.schema)
-		},
 		initValue(state, payload, defaultValue) {
 			// set default value for license if ida schema
 			const isNewDataset = typeof state.metadata.id === 'undefined'
@@ -98,6 +101,15 @@ export default new Vuex.Store({
 			const index = payload.p[payload.prop].findIndex(x => x[payload.search.field] === payload.search.value)
 			Vue.set(payload.p[payload.prop], index, payload.val)
 		},
+		replace(state, payload) {
+			// clear payload.p, assign values from payload.val
+			for (let key in payload.p) {
+				Vue.delete(payload.p, key)
+			}
+			for (let key in payload.val) {
+				Vue.set(payload.p, key, payload.val[key])
+			}
+		},
 		pushValue(state, payload) {
 			payload.p[payload.prop].push(payload.val)
 		},
@@ -119,9 +131,6 @@ export default new Vuex.Store({
 		},
 		addProp(state, payload) {
 			Vue.set(payload.val, payload.prop, undefined)
-		},
-		setPath(state, payload) {
-			vuePointer.set(state.dataset, payload.path, payload.value)
 		},
 		setState(state, payload) {
 			Vue.set(state.vState, payload.path, {
@@ -146,11 +155,16 @@ export default new Vuex.Store({
 		setLanguages(state, payload) {
 			state.languages = Object.assign({}, state.languages, payload)
 		},
+		updateDatasetsView(state, payload) {
+			for (const key in payload) {
+				Vue.set(state.datasetsView, key, payload[key])
+			}
+		},
 	},
 	getters: {
 		// prunedDataset returns a deep-clone of the dataset discarding empty leaves
 		prunedDataset: (state) => {
-			return cloneWithPrune(state.record)
+			return cloneWithPrune(state.record, ["#key"], [ "", undefined ])
 		},
 		// getState returns the validation state for a given path
 		getState: (state) => (path) => {

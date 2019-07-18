@@ -6,7 +6,7 @@
 		</template>
 
 		<template slot="lead">
-			Welcome to Qvain, the Fairdata metadata editor.
+			Research Dataset Metadata Tool
 		</template>
 
 		<hr class="my-4">
@@ -28,15 +28,23 @@
 		</div>
 
 		<div v-else-if="!$auth.loggedIn">
-			<p>In order to use Qvain, you need to log in using Haka or CSC credentials.</p>
-			<p><small>
-				By using Qvain the user agrees that he or she has asked consent from all persons whose personal information the user will add to the 
-				descriptive data and informed them of how they can get their personal data removed. By using Qvain the user agrees to the 
-				<a href="https://www.fairdata.fi/hyodyntaminen/kayttopolitiikat-ja-ehdot/">Terms of Usage</a>.
-				</small>
+			<p>
+				By using Qvain the user agrees:
+				<ul>
+				<li>That he or she has asked consent from all persons whose personal information the user will add to the 
+				descriptive data and informed them of how they can get their personal data removed.</li>
+				<li>the 
+				<a href="https://www.fairdata.fi/hyodyntaminen/kayttopolitiikat-ja-ehdot/">Terms of Usage</a></li>
+				</ul>
 			</p>
 
-			<p><a :href="$auth.loginUrl" class="btn btn-info btn-lg" role="button">Login now!</a></p>
+			<p>
+				<a :href="$auth.loginUrl" class="btn btn-info btn-lg" role="button">
+					<font-awesome-icon icon="sign-in-alt" />
+					&nbsp;
+					Login
+				</a>
+			</p>
 		</div>
 
 		<div v-else>

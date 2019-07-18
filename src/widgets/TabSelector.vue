@@ -39,6 +39,13 @@
 	</div>
 </template>
 
+<style lang="scss">
+.q-tab-selector section > .list-group > .list-group-item {
+	padding: 0 !important;
+	margin-bottom: 1em;
+}
+</style>
+
 <script>
 import SchemaNumber from './Number.vue'
 import SchemaString from './String.vue'
@@ -49,8 +56,6 @@ import SchemaAnyOf from './anyOf.vue'
 import SchemaAllOf from './allOf.vue'
 import SchemaOneOf from './oneOf.vue'
 import SchemaEnum from './Enum.vue'
-import WidgetGoogleMaps from './widget-googlemaps.vue'
-import refdataList from './refdata/list.vue'
 import i18nString from '@/components/i18nStrings.vue'
 import i18nTextarea from '@/components/i18nTextarea.vue'
 import TabbedArray from './TabbedArray.vue'
@@ -201,8 +206,8 @@ export default {
 		uiForDef: function() {
 			return ('$deref' in this.schema && this.$store.state.hints[this.schema['$deref']]) || {}
 		},
-		uiTab: function() {
-			return this.$store.state.hints[this.path] && this.$store.state.hints[this.path]['tab']
+		uiTab() {
+			return (this.$store.state.hints[this.path] && this.$store.state.hints[this.path]['tab']) || this.uiForSchema['tab']
 		},
 		myTab: function() {
 			return typeof this.uiTab === 'string' ? this.uiTab : this.tab
@@ -232,8 +237,6 @@ export default {
 		'schema-allof': SchemaAllOf,
 		'schema-oneof': SchemaOneOf,
 		'schema-enum': SchemaEnum,
-		'widget-googlemaps': WidgetGoogleMaps,
-		'refdata-list': refdataList,
 		'reference-data': ReferenceData,
 		'i18n-string': i18nString,
 		'i18n-textarea': i18nTextarea,

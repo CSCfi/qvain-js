@@ -31,6 +31,32 @@ export default {
 		newPath: function(prop) {
 			return this.path + '/' + prop
 		},
+		nestedTitle: function(object, defaultPrefix) {
+			const objectType = object['@type']
+			if (objectType === 'Person' && object.name) {
+				return object.name
+			}
+
+			if (objectType === 'Person') {
+				return defaultPrefix+`(Person)`
+			}
+
+			if (objectType === 'Organization') {
+				// the highest organization level is nested deepest
+				let obj = object
+				while (obj.is_part_of) {
+					obj = obj.is_part_of
+				}
+				if (obj && obj.name && (obj.name['fi'] || obj.name['en'])) {
+					return obj.name['fi'] || obj.name['en']
+				}
+			}
+			if (objectType === 'Organization') {
+				return defaultPrefix+`(Organization)`
+			}
+
+			return defaultPrefix
+		},
 	},
 	computed: {
 		isVisible() {
@@ -82,10 +108,15 @@ export default {
 			return typeof this.uiTab === 'number' ? this.uiTab : this.tab
 		},
 		uiTitle: function() {
-			return this.ui['title'] || this.schema['title'] || this.property
+			var title = this.ui['title'] || this.schema['title'] || this.property
+			if (!title || title === ' ') return null;
+			return title;
 		},
 		uiDescription: function() {
 			return this.ui['description'] || this.schema['description']
+		},
+		uiExample: function() {
+			return this.ui['example'] || this.schema['example']
 		},
 		uiLabel: function() {
 			if (this.inArray) {

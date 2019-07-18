@@ -222,7 +222,9 @@ export default {
 		async search(searchQuery) {
 			this.isLoading = true
 			if (!searchQuery) {
-				this.responseData = {}
+				if (this.async) {
+					this.responseData = {}
+				}
 				this.isLoading = false
 				return // prevent empty search after removing characters from input
 			}
