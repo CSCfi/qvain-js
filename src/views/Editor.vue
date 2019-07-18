@@ -284,8 +284,8 @@ export default {
 		confirmUnsavedChanges(callback) {
 			this.$bvModal.msgBoxConfirm('If you will select <yes> then all the unsaved changes will be lost. Are you sure?', {
 				title: 'All the unsaved changes will be lost.',
-				size: 'xl',
-				buttonSize: 'xl',
+				size: 'md',
+				buttonSize: 'md',
 				okVariant: 'danger',
 				okTitle: 'YES',
 				cancelTitle: 'NO',
