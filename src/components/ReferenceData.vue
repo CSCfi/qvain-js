@@ -4,9 +4,9 @@ This file is part of Qvain -project.
 Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
 	Eemeli Kouhia <eemeli.kouhia@gofore.com>
-	Kauhia <Kauhia@users.noreply.github.com>
 	Jori Niemi <3295718+tahme@users.noreply.github.com>
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Kauhia <Kauhia@users.noreply.github.com>
 
 License: GPLv3
 
@@ -15,24 +15,25 @@ Copyright (C) 2019 Ministry of Culture and Education, Finland.
 All Rights Reserved.
 -->
 <template>
-	<record-field v-if="isVisible" :required="isRequired" :wrapped="wrapped">
+	<record-field :id="property + '_referenceData'" v-if="isVisible" :required="isRequired" :wrapped="wrapped">
 		<title-component slot="title" :title="uiLabel" />
-		<div slot="header-right" class="header__right">
-			<!--<ValidationStatus :status="validationStatus" />-->
-			<InfoIcon :description="uiDescription"/>
-		</div>
+		<small slot="help" class="text-muted">
+			{{ uiDescription }}
+		</small>
 
 		<div slot="input">
 			<div class="input-row__inline">
 				<Multiselect v-if="showLang"
 					v-model="selectedLang"
 					:options="languages"
+					:id="property + '_language-select'"
 					placeholder="Select language"
 					label="language"
 					class="lang-select"/>
 
 				<Multiselect v-if="optionsShouldBeGrouped"
 					class="value-select"
+					:id="property + '_value-select'"
 					v-model="selectedOptions"
 					track-by="identifier"
 					:internalSearch="!async"
@@ -42,7 +43,8 @@ All Rights Reserved.
 					:searchable="typeahead"
 					:multiple="isMultiselect"
 					:options="options"
-					:showNoResults="true"
+					:showNoResults="false"
+					:showNoOptions="false"
 					:customLabel="customLabel"
 					:placeholder="placeholder"
 					group-values="children"
@@ -52,11 +54,13 @@ All Rights Reserved.
 					<div v-bind:class="{ option__child: !option.$groupLabel, option__parent: option.$groupLabel }" slot="option" slot-scope="{ option }" v-if="grouped">
 						{{ option.$groupLabel || customLabel(option) }}
 					</div>
+					<div slot="noOptions"></div>
 					<div v-if="selectedOptions.length > 0" slot="selection">{{placeholder}}</div>
 				</Multiselect>
 
 				<Multiselect v-else
 					class="value-select"
+					:id="property + '_value-select'"
 					v-model="selectedOptions"
 					track-by="identifier"
 					:internalSearch="!async"
@@ -64,33 +68,27 @@ All Rights Reserved.
 					:optionsLimit="count"
 					:taggable="tags"
 					:searchable="typeahead"
+					:showNoOptions="false"
 					:multiple="isMultiselect"
 					:clearOnSelect="false"
-					:options="sortedOptions"
-					:showNoResults="true"
+					:options="options"
+					:showNoResults="false"
 					:customLabel="customLabel"
 					:placeholder="placeholder"
 					@select="atSelect"
 					@search-change="search">
+					<div slot="noOptions"></div>
 					<div slot="noResult">No elements found. Consider changing the search query. You may have to type at least 3 letters.</div>
 					<div slot="selection" slot-scope="{ values, search, isOpen }">
 						<span class="multiselect__single" v-if="values.length &amp;&amp; !isOpen">{{ placeholder }}</span>
 					</div>
 				</Multiselect>
 			</div>
-			<div v-if="isMultiselect" class="tag__list">
+			<div :id="property + '_taglist'" v-if="isMultiselect" class="tag__list">
 				<p v-for="(option, index) in Array.from(selectedOptions)" :key="option.identifier" class="tag">
 					{{customLabel(option)}}
 					<span class="remove-button">
 						<DeleteButton @click="removeValue(index)" />
-					</span>
-				</p>
-			</div>
-			<div v-if="!isMultiselect && !Array.isArray(selectedOptions)" class="tag__list">
-				<p class="tag" :style="{visibility: selectedOptions === null ? 'hidden' : 'visible'}">
-					{{customLabel(selectedOptions)}}
-					<span class="remove-button">
-						<DeleteButton @click="removeValue(-1)" />
 					</span>
 				</p>
 			</div>
@@ -128,7 +126,6 @@ export default {
 		wrapped: { type: Boolean, default: false },
 		labelNameInSchema: { type: String, default: 'pref_label' },
 		grouped: { type: Boolean, required: false },
-		defaultValue: { type: Object | Array, required: false }
 	},
 	data() {
 		return {
@@ -141,6 +138,7 @@ export default {
 			],
 			selectedLang: null,
 			isLoading: false,
+			isInitializing: true,
 		}
 	},
 	computed: {
@@ -192,13 +190,6 @@ export default {
 			// normal case
 			return this.optionItems
 		},
-		sortedOptions() {
-			return this.options.slice().sort((a, b) => {
-				const aLabel = a.label[this.currentLanguage] || a.label['und']
-				const bLabel = b.label[this.currentLanguage] || b.label['und']
-				return aLabel.localeCompare(bLabel)
-			})
-		},
 		isEmptyObject() {
 			return this.value &&
 				typeof this.value === 'object' && Object.keys(this.value).length === 0
@@ -231,26 +222,34 @@ export default {
 			}
 		},
 		async getAllReferenceData() {
+			this.isLoading = true
 			const res = await esApiSearchClient(this.esIndex, this.esDoctype, undefined, this.count)
 			this.responseData = res.data
+			this.isLoading = false
 		},
 		async searchReferenceData(searchQuery) {
+			this.isLoading = true
 			const res = await esApiSearchClient(this.esIndex, this.esDoctype, searchQuery, this.count)
 			this.responseData = res.data
+			this.isLoading = false
 		},
 		// TODO: if the es server is under too much stress debounce could be implemented
 		async search(searchQuery) {
+			this.isLoading = true
 			if (!searchQuery) {
+				if (this.async) {
+					this.responseData = {}
+				}
+				this.isLoading = false
 				return // prevent empty search after removing characters from input
 			}
 
-			this.isLoading = true
 			if (this.async) {
 				// remove special characters, see for list: http://lucene.apache.org/core/3_4_0/queryparsersyntax.html
 				searchQuery = searchQuery.replace(/(\+|-|&&|\|\||!|\(|\)|{|}|\[|\]|\^|"|~|\*|\?|:|\\)/g,"")
 				const q = this.selectedLang ?
-					`label.${this.selectedLang.id}:*${searchQuery}*`:
-					`*${searchQuery}*`
+					`label.${this.selectedLang.id}:${searchQuery}*`:
+					`${searchQuery}*`
 				this.searchReferenceData(q)
 			}
 			this.isLoading = false
@@ -268,7 +267,7 @@ export default {
 			}
 		},
 	},
-	async created() {
+	created: function() {
 		if (this.isMultiselect && this.isArray) {
 			this.selectedOptions = this.value.map(v => ({
 				identifier: v.identifier, label: v[this.labelNameInSchema]
@@ -285,13 +284,15 @@ export default {
 			}
 		}
 
-		if (this.defaultValue && this.isEmptyObject) {
-			this.selectedOptions = this.defaultValue
-		}
-
 		if (!this.async) {
 			this.getAllReferenceData()
 		}
+	},
+	beforeUpdate: function() {
+		this.isInitializing = true
+	},
+	updated: function() {
+		this.isInitializing = false
 	},
 	watch: {
 		selectedOptions() {
@@ -314,7 +315,9 @@ export default {
 				storableOptions = mapToStore(this.selectedOptions)
 			}
 
-			this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: storableOptions })
+			if (!this.isInitializing) {
+				this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: storableOptions })
+			}
 		},
 	},
 }
@@ -338,8 +341,8 @@ export default {
 }
 
 .tag {
-	color: white;
-	background: #007fad;
+	color: $fd-primary-white;
+	background: $fd-primary;
 	border-radius: 5px;
 
 	padding: 4px 4px 4px 10px;
@@ -405,12 +408,6 @@ export default {
 	background: $danger;
 }
 
-.multiselect__tags {
-	border: 0;
-	border-radius: 0;
-	border-bottom: solid 1px lightgray;
-	height: 40px;
-}
 
 .multiselect__single,
 .multiselect__placeholder,

@@ -17,25 +17,23 @@ All Rights Reserved.
 <template>
 	<record-field v-if="isVisible" :required="isRequired" :wrapped="wrapped">
 		<title-component slot="title" :title="uiLabel" />
-		<div slot="header-right">
-			<InfoIcon :description="uiDescription"/>
-		</div>
+		<small slot="help" class="text-muted">
+			{{ uiDescription }}
+		</small>
 
-		<div slot="input">
-			<div class="wrap">
-				<p>Select date:</p>
-				<datepicker class="widget ml-2"
-					placeholder="Click to select"
+		<b-row slot="input">
+			<b-col>
+				<datepicker
+					:format="schema.format"
 					v-model="date">
 				</datepicker>
-				<delete-button v-if="date !== null" @click="clear()" />
-			</div>
-		</div>
+			</b-col>
+		</b-row>
 	</record-field>
 </template>
 
 <script>
-import Datepicker from 'vuejs-datepicker'
+import Datepicker from '@/components/DateTimePicker.vue'
 import SchemaBase from '@/widgets/base.vue'
 import DeleteButton from '@/partials/DeleteButton.vue'
 import InfoIcon from '@/partials/InfoIcon.vue'
@@ -65,51 +63,13 @@ export default {
 			this.date = null
 		},
 	},
-	computed: {
-		dateString() {
-			if (!this.date) {
-				return '';
-				// CSCQVAIN-129:
-				// Set update payload to '' so that store empties the value.
-				// This is a hack but proper implementation would require more sophisticated logic.
-			}
-
-			if (this.schema.format === 'date') {
-				return this.date.toISOString().split('T')[0]
-			}
-
-			// if format is date-time
-			return this.date.toISOString()
-		},
-	},
 	created() {
-		this.date = this.value ? new Date(this.value) : null
+		this.date = this.value ? this.value : null
 	},
 	watch: {
 		date() {
-			this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: this.dateString })
+			this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: this.date })
 		},
 	},
 }
 </script>
-
-
-<style lang="scss" scoped>
-	.wrap {
-		display: inline-flex;
-
-		> p {
-			margin: 0;
-			display: flex;
-			align-items: center;
-		}
-	}
-</style>
-
-<style lang="scss">
-	.widget.vdp-datepicker div input {
-		border-radius: 5px;
-		border: 1px solid #ced4da;
-		padding: 0.375rem 0.75rem;
-	}
-</style>

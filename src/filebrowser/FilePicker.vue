@@ -177,6 +177,12 @@ export default {
 			}
 		} catch(e) {
 			console.log('error retriving project', e)
+			if (e.response && e.response.status == 401) {
+				// there was a permission error
+				// we should redirect the user to login
+				await this.$auth.logoutDueSessionTimeout()
+				this.$router.push({name: "home", params: {missingToken: true}})
+			}
 		}
 	},
 	watch: {

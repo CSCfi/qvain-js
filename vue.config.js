@@ -78,13 +78,13 @@ module.exports = {
 		// set watch options for dev server mode (e.g. npm run serve)
 		config.devServer.watchOptions({
 			poll: 1500,
-			ignored: [/node_modules/],
+			ignored: [ /\/node_modules\//, /\/tests\// ],
 		})
 
 		// set watch options for build mode with watch enabled (e.g. npm run watch)
 		config.watchOptions({
 			poll: 1500,
-			ignored: [/node_modules/],
+			ignored: [ /\/node_modules\//, /\/tests\// ],
 		})
 	},
 	css: {

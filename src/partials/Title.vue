@@ -13,21 +13,10 @@ Copyright (C) 2019 Ministry of Culture and Education, Finland.
 All Rights Reserved.
 -->
 <template functional>
-	<p class="title">
+	<span class="title">
 		{{ props.title }}
-	</p>
+	</span>
 </template>
-
-<style lang="scss" scoped>
-
-.title {
-	margin: 0;
-	font-size: 16px;
-	font-weight: 700;
-	color:black;
-	font-family: -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-}
-</style>
 
 <script>
 export default {

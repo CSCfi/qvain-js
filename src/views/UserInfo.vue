@@ -13,86 +13,91 @@ Copyright (C) 2019 Ministry of Culture and Education, Finland.
 All Rights Reserved.
 -->
 <template>
-	<div>
-		<h1>About me</h1>
+	<b-container>
+		<h1 class="component-title">User Information</h1>
 
-		<div v-if="$auth.user" role="tablist">
-			<b-card no-body class="mb-1">
-				<b-card-header header-tag="header" class="p-1" role="tab">
-					<b-btn block href="#" v-b-toggle.userinfo-tab1 variant="secondary">User</b-btn>
-				</b-card-header>
-				<b-collapse id="userinfo-tab1" visible accordion="userinfo-accordion" role="tabpanel">
-					<b-card-body>
-						<dl class="row card-text">
-							<dt class="col-sm-2">Name</dt>
-							<dd class="col-sm-10">{{ $auth.user.name || "–" }}</dd>
+		<b-form v-if="$auth.user" id="form-userinfo">
+			<b-form-group
+				id="organisation"
+				label-cols-sm="4"
+				label-cols-lg="3"
+				label="Organisation"
+				label-for="input-organisation">
+				<b-form-input
+					id="input-organisation"
+					v-model="$auth.user.organisation"
+					disabled
+					>
+				</b-form-input>				
+			</b-form-group>
 
-							<dt class="col-sm-2">ID</dt>
-							<dd class="col-sm-10">{{ $auth.user.id || "–" }}</dd>
-
-							<dt class="col-sm-2">Email</dt>
-							<dd class="col-sm-10">{{ $auth.user.email || "–" }}</dd>
-						</dl>
-					</b-card-body>
-				</b-collapse>
-			</b-card>
-			<b-card no-body class="mb-1">
-				<b-card-header header-tag="header" class="p-1" role="tab">
-					<b-btn block href="#" v-b-toggle.userinfo-tab2 variant="secondary">Organisation</b-btn>
-				</b-card-header>
-				<b-collapse id="userinfo-tab2" visible accordion="userinfo-accordion" role="tabpanel">
-					<b-card-body>
-						<dl class="row card-text">
-							<dt class="col-sm-2">Organisation</dt>
-							<dd class="col-sm-10">{{ $auth.user.organisation || "–" }}</dd>
-
-							<dt class="col-sm-2">Organisation type</dt>
-							<dd class="col-sm-10">{{ $auth.user.organisation_type || "–" }}</dd>
-
-							<dt class="col-sm-2">EPPN</dt>
-							<dd class="col-sm-10">{{ $auth.user.eppn || "–" }}</dd>
-						</dl>
-					</b-card-body>
-				</b-collapse>
-			</b-card>
-			<b-card no-body class="mb-1">
-				<b-card-header header-tag="header" class="p-1" role="tab">
-					<b-btn block href="#" v-b-toggle.userinfo-tab3 variant="secondary">Projects</b-btn>
-				</b-card-header>
-				<b-collapse id="userinfo-tab3" accordion="userinfo-accordion" role="tabpanel">
-					<b-card-body>
-						<dl class="row card-text">
-							<dt class="col-sm-2">IDA projects</dt>
-							<dd class="col-sm-10">
-								<ul v-if="$auth.user.projects" class="list-inline">
-								<li v-for="project in $auth.user.projects" :key="project" class="list-inline-item"><span class="badge badge-secondary text-monospace">{{ project }}</span></li>
-								</ul>
-								<span v-else class="font-italic">No projects</span>
-							</dd>
-						</dl>
-					</b-card-body>
-				</b-collapse>
-			</b-card>
-			<b-card no-body class="mb-1">
-				<b-card-header header-tag="header" class="p-1" role="tab">
-					<b-btn block href="#" v-b-toggle.userinfo-tab4 variant="secondary">Session</b-btn>
-				</b-card-header>
-				<b-collapse id="userinfo-tab4" accordion="userinfo-accordion" role="tabpanel">
-					<b-card-body>
-						<b-form-textarea id="jwt-token-contents" class="card-text" rows="16" style="font-family: monospace;" plaintext :value="stringifiedToken">
-						</b-form-textarea>
-					</b-card-body>
-				</b-collapse>
-			</b-card>
-		</div>
-
+			<b-form-group
+				id="username"
+				label-cols-sm="4"
+				label-cols-lg="3"
+				label="User"
+				label-for="input-username">
+				<b-form-input
+					id="input-username"
+					v-model="$auth.user.name"
+					disabled
+					>
+				</b-form-input>				
+			</b-form-group>
+			<b-form-group
+				id="email"
+				label-cols-sm="4"
+				label-cols-lg="3"
+				label="Email"
+				label-for="input-email">
+				<b-form-input
+					id="input-email"
+					v-model="$auth.user.email"
+					disabled
+					>
+				</b-form-input>				
+			</b-form-group>
+			<b-form-group
+				id="projects"
+				label="IDA Projects"
+				label-for="input-projects"
+				label-cols-sm="4"
+				label-cols-lg="3">
+				<div>
+					<b-badge
+						v-for="project in $auth.user.projects"
+						:key="project"
+						:value="project">{{ project }}</b-badge>
+					
+					<b-badge v-if="$auth.user.projects.length === 0">(no projects)</b-badge>
+				</div>
+		
+			</b-form-group>	
+		</b-form>
 		<div v-else>
 			<b-alert variant="secondary" show><p class="font-italic">You are not logged in.</p></b-alert>
 		</div>
 
-	</div>
+	</b-container>
 </template>
+<style scoped>
+	#form-userinfo > .form-group {
+		margin-top: 1em
+	}
 
+	#form-userinfo {
+		margin: 1em;
+	}
+
+	#projects div {
+		margin-top: 0.25em;
+		margin-bottom: 0.25em;
+	}
+	#projects .badge {
+		font-size: 1em;
+		margin-left: 0.5em;
+	}
+</style>
 <script>
 export default {
 	name: "user-info",

@@ -5,8 +5,6 @@ Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
 	Eemeli Kouhia <eemeli.kouhia@gofore.com>
-	Kauhia <Kauhia@users.noreply.github.com>
-	Jori Niemi <3295718+tahme@users.noreply.github.com>
 
 License: GPLv3
 
@@ -17,71 +15,52 @@ All Rights Reserved.
 <template>
 	<record-field :required="required" :wrapped="false" :header="!inArray">
 		<title-component slot="title" :title="uiLabel" />
-		<div slot="header-right" class="header__right">
-			<InfoIcon :description="uiDescription"/>
-		</div>
+		<small slot="help" class="text-muted">
+			{{ uiDescription }}
+			<div v-if="uiExample">
+				<b-badge variant="info">Example</b-badge>
+				<span v-for="(example, index) in uiExample" :key="index">
+					{{ example }}
+				</span>
+			</div>
+		</small>
 
-		<div slot="input" class="input">
-			<p v-if="inArray" class="input__number">#{{property}}</p>
-			<b-form-input
-				:type="inputType"
-				:placeholder="uiPlaceholder"
-				:value="value"
-				:state="isValid ? null : false"
-				@input.native="updateValue">
-			</b-form-input>
-			<span class="input__delete">
-				<delete-button v-if="inArray" @click="deleteMe" />
-			</span>
+		<div slot="input">
+			<b-form-group
+				:label-cols="inArray ? 3 : ((makeLabel !== uiLabel) ? 3 : 0)"
+				:label-for="inArray ? 'input-' + property.toString() : property">
+				<span slot="label" v-if="makeLabel !== uiLabel">
+					{{ makeLabel }}
+					<delete-button v-if="inArray" slot="label" @click="deleteMe"/>
+				</span>
+
+				<b-input-group>
+					<b-form-input
+						:id="inArray ? 'input-' + property.toString() : property"
+						:type="inputType"
+						:placeholder="uiPlaceholder"
+						:value="value"
+						:state="isValid ? null : false"
+						@input.native="updateValue">
+					</b-form-input>
+				</b-input-group>
+			</b-form-group>
 		</div>
 	</record-field>
 </template>
 
 <style lang="scss" scoped>
-.input {
-	width: 100%;
-	display: inline-flex;
-	align-items: center;
-
-	.input__number {
-		margin: 0 10px;
-	}
-
-	.input__delete {
-		align-self: stretch;
-		margin: 0 10px 0 2px;
-		display: flex;
-	}
-}
-
-input[type=text].form-control,
-input[type=url].form-control {
-	border: 0;
-	border-radius: 0;
-	border-bottom: solid 1px lightgray;
-
-	&:focus {
-		border-bottom-color: #2ec7ff;
-	}
-
-	&.is-valid:focus {
-		box-shadow: none;
-	}
-
-	&.is-invalid:focus {
-		box-shadow: none;
-	}
+.remove-button {
+	margin: 0 10px 0 2px;
+	display: flex;
 }
 </style>
 
 
 <script>
 import vSchemaBase from './base.vue'
-import { dataPointer } from '../../tmp/datapointer.js'
-
 import RecordField from '@/composites/RecordField.vue'
 import TitleComponent from '@/partials/Title.vue'
-import InfoIcon from '@/partials/InfoIcon.vue'
 import DeleteButton from '@/partials/DeleteButton.vue'
 
 export default {
@@ -92,7 +71,6 @@ export default {
 	components: {
 		RecordField,
 		TitleComponent,
-		InfoIcon,
 		DeleteButton,
 	},
 	data() {
@@ -144,12 +122,6 @@ export default {
 		},
 		ctxIcon() {
 			return this.hover ? "trash" : "pen"
-		},
-		datapath() {
-			return dataPointer(this.path)
-		},
-		dataValue() {
-			return this.$store.getters.getPath(this.datapath)
 		},
 	},
 	directives: {

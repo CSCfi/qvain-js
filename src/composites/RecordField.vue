@@ -15,15 +15,27 @@ All Rights Reserved.
 <template>
 	<wrapper :wrapped="wrapped" :error="error">
 		<div v-if="header" class="header">
-			<div class="header__label">
-				<slot name="title"/><span v-if="required" class="header__required">*</span>
-			</div>
+			<b-container fluid>
+				<b-row class="row">
+					<b-col>
+						<slot name="title"/>
+						<b-badge v-if="required" variant="danger">REQUIRED</b-badge>
+					</b-col>
+				</b-row>
+				<b-row>
+					<b-col>
+						<slot name="help"/>
+					</b-col>
+				</b-row>
+			</b-container>
 			<div class="header__right">
 				<slot name="header-right"/>
 			</div>
 		</div>
 
-		<slot name="input"/>
+		<b-container class="error-container" v-if="hasErrorsSlot"><slot name="errors"/></b-container>
+
+		<b-container><slot name="input"/></b-container>
 	</wrapper>
 </template>
 
@@ -33,7 +45,7 @@ All Rights Reserved.
 .header {
 	width: 100%;
 	display: inline-flex;
-	margin-bottom: 5px;
+	margin-bottom: 0.1em;
 
 	&__label {
 		display: inline-flex;
@@ -47,8 +59,15 @@ All Rights Reserved.
 	&__required {
 		color: red;
 	}
+	* .badge {
+		vertical-align: middle;
+		margin-top: -0.5em;
+		font-size: 0.8em;
+	}
 }
-
+.error-container {
+	margin-bottom: 1em;
+}
 
 </style>
 
@@ -77,5 +96,10 @@ export default {
 			default: false,
 		},
 	},
+	computed: {
+		hasErrorsSlot() {
+			return !!this.$slots['errors']
+		}
+	}
 }
 </script>

@@ -6,6 +6,7 @@ Author(s):
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
 	Eemeli Kouhia <eemeli.kouhia@gofore.com>
 	Kauhia <Kauhia@users.noreply.github.com>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
 
 License: GPLv3
 
@@ -23,28 +24,37 @@ All Rights Reserved.
 				<sup><font-awesome-icon icon="quote-left" class="text-muted" /></sup>
 				{{ uiDescription }}
 			</p>
-			<div class="mb-3" v-for="(org, i) in flattened" :key="'level-' + i">
-				<b-btn href="#" v-b-toggle="domId + '-accordion-' + i" variant="link" style="text-align: left;">
-					<font-awesome-icon icon="angle-right" fixed-width />
-					Level {{ i + 1 }}{{ getDescriptionForLevel(i) }}
-				</b-btn>
-				<b-btn v-if="i > 0" class="btn-outline-secondary danger-on-hover border-0" @click="remove(i)">
-					<font-awesome-icon icon="trash" />
-				</b-btn>
+			<div
+				v-for="(org, i) in flattened"
+				:key="getKey(org)"
+				class="mb-3"
+			>
+				<div class="header-row">
+					<b-btn href="#" v-b-toggle="domId + '-accordion-' + i" style="text-align: left;">
+						<font-awesome-icon class="when-opened" icon="angle-down" fixed-width />
+						<font-awesome-icon class="when-closed" icon="angle-right" fixed-width />
+						Level {{ i + 1 }}{{ getDescriptionForLevel(i) }}
+						<DeleteButton v-if="i > 0" @click="remove(i)"/>
+					</b-btn>
+				</div>
+
 				<b-collapse :id="domId + '-accordion-' + i" :visible="opened" :accordion="domId + '-accordion'" role="tabpanel">
-					<FlatObject :schema="schema"
+					<FlatObject
+						:key="getKey(org)"
+						:schema="schema"
 						:path="path"
+						:parent="i < countLevels - 1 ? flattened[i + 1] : value"
 						:value="org"
-						:parent="i ? flattened[i - 1] : value"
 						:property="i ? refField : property"
 						:tab="myTab"
 						:activeTab="activeTab"
 						:depth="depth"
-						:key="'level-' + i">
-					</FlatObject>
+					/>
 				</b-collapse>
 			</div>
-			<b-button class="m-3" @click="add()"><font-awesome-icon icon="plus" fixed-width /> Add another level</b-button>
+			<div class="header-row">
+				<b-button class="m-3" variant="outline-dark" @click="add()"><font-awesome-icon icon="plus" fixed-width /> Add another level</b-button>
+			</div>
 			</b-collapse>
 		</wrapper>
 </template>
@@ -53,11 +63,21 @@ All Rights Reserved.
 .margin-left {
 	margin-left: 20px;
 }
+.collapsed > .when-opened,
+:not(.collapsed) > .when-closed {
+  display: none;
+}
+
+.header-row {
+	margin-left: 1.5em;
+	margin-right: 1.5em;
+}
 </style>
 
 <script>
 import SchemaBase from './base.vue'
 import Wrapper from '@/components/Wrapper.vue'
+import DeleteButton from '@/partials/DeleteButton.vue'
 import BorderColorMixin from '../mixins/border-color-mixin.js'
 
 export default {
@@ -68,6 +88,7 @@ export default {
 	mixins: [BorderColorMixin],
 	components: {
 		Wrapper,
+		DeleteButton,
 	},
 	props: {
 		'refField': String,
@@ -76,42 +97,67 @@ export default {
 	data: function() {
 		return {
 			opened: true,
+			keyCount: 0,
 		}
 	},
 	methods: {
-		add() {
-			let obj = this.value
+		getKey(obj) {
+			if (obj["#key"] === undefined) {
+				obj["#key"] = 'org-' + this.keyCount++
+			}
+			return obj["#key"]
+		},
+		flatten(nested) {
+			// Turns a nested structure where each object can have a refField child into
+			// an array with the deepest nested object as the first element.
+			let obj = nested
+			let arr = []
+
+			if (!obj || typeof obj !== 'object') return arr
+
+			arr.push(obj)
 			while (this.refField in obj) {
 				obj = obj[this.refField]
+				if (!obj || typeof obj !== 'object') return arr
+				arr.push(obj)
 			}
-			this.$store.commit('updateValue', {
-				p: obj,
-				prop: this.refField,
-				val: {},
+
+			arr.reverse()
+			return arr
+		},
+		nest(flat) {
+			// Inverse of flatten. Turns an array into a nested stucture where each object is a refField child of the next one.
+			// The objects are shallow copied so the original objects stay unchanged.
+			flat = [...flat].reverse()
+			const root = { ...flat[0] }
+			let obj = root
+			for (let i=1; i<flat.length; i++) {
+				obj[this.refField] = { ...flat[i] }
+				obj = obj[this.refField]
+			}
+			this.$delete(obj, this.refField) // remove child from the deepest object
+			return root
+		},
+		add() {
+			const arr = [...this.flattened]
+			arr.push({})
+			const obj = this.nest(arr)
+			this.$store.commit('replace', {
+				p: this.value,
+				val: obj,
 			})
-			//obj[this.refField] = undefined
-			//return obj[this.refField]
 		},
 		remove(level) {
-			// don't allow deleting top level for now
-			if (!level) return
-
-			let obj = this.value
-			let i = 0
-			let parent = this.parent
-			while (i !== level && this.refField in obj) {
-				parent = obj
-				obj = obj[this.refField]
-				i++
-			}
-			if (level === i) {
-				this.$store.commit('deleteValue', {
-					p: parent,
-					// property name of top-level in parent might be different, e.g. memberOf/partOf/partOf/partOf/...
-					prop: i == 0 ? this.property : this.refField,
-				})
+			if (this.countLevels <= 1) {
 				return
 			}
+			const arr = [...this.flattened]
+			arr.splice(level, 1)
+			const obj = this.nest(arr)
+			this.$store.commit('replace', {
+				p: this.value,
+				val: obj,
+			})
 		},
 		getDescriptionForLevel(level) {
 			return this.levels && this.levels[level] ? ': ' + this.levels[level] : ""
@@ -129,20 +175,7 @@ export default {
 			return depth + 1
 		},
 		flattened() {
-			let obj = this.value
-			let arr = []
-
-			if (!obj || typeof obj !== 'object') return arr
-
-			arr.push(obj)
-
-			while (this.refField in obj) {
-				obj = obj[this.refField]
-				if (!obj || typeof obj !== 'object') return arr
-				arr.push(obj)
-			}
-
-			return arr
+			return this.flatten(this.value)
 		},
 	},
 }

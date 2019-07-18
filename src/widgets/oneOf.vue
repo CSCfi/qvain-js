@@ -4,8 +4,9 @@ This file is part of Qvain -project.
 Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
-	Eemeli Kouhia <eemeli.kouhia@gofore.com>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
 	Kauhia <Kauhia@users.noreply.github.com>
+	Eemeli Kouhia <eemeli.kouhia@gofore.com>
 
 License: GPLv3
 
@@ -14,77 +15,150 @@ Copyright (C) 2019 Ministry of Culture and Education, Finland.
 All Rights Reserved.
 -->
 <template>
-	<wrapper :wrapped="!inArray">
-		<template v-if="!both">
-			<div v-if="chosen === null" class="conditional-wrapper">
-				<b-dropdown class="m-2" text="Choose type" variant="primary">
-					<b-dropdown-item v-for="(sub, i) in schema['oneOf']"
+	<wrapper v-if="!single" :id="property + '_oneOf'" :wrapped="typeof wrapped === 'undefined' ? !inArray : wrapped">
+		<div v-if="chosen === null" class="conditional-wrapper">
+			<b-button-group>
+				<b-button
+					v-for="(sub, i) in schema['oneOf']"
+					:key="'oneOfSel' + i"
+					variant="primary"
+					@click="setChosen(i)">
+					{{ sub['title'] || '#'+i }}
+				</b-button>
+			</b-button-group>
+		</div>
+		<TabSelector
+			v-if="chosen !== null"
+			:key="'oneOf-'+chosen"
+			:schema="schemaForChosen"
+			:path="newPath('oneOf/' + chosen)"
+			:value="value"
+			:parent="parent"
+			:property="property"
+			:tab="myTab"
+			:active-tab="activeTab"
+			:depth="depth"
+		/>
+	</wrapper>
+
+	<record-field
+		v-else
+		:required="isRequired"
+		:wrapped="wrapped"
+	>
+		<title-component
+			slot="title"
+			:title="uiLabel"
+		/>
+		<small
+			slot="help"
+			class="text-muted"
+		>
+			{{ uiDescription }}
+		</small>
+		<div slot="input">
+			<div
+				v-if="chosen === null"
+				class="conditional-wrapper single"
+			>
+				<b-button-group>
+					<b-button
+						v-for="(sub, i) in schema['oneOf']"
 						:key="'oneOfSel' + i"
-						@click="setChosen(i)">
+						variant="primary"
+						@click="setChosen(i)"
+					>
 						{{ sub['title'] || '#'+i }}
-					</b-dropdown-item>
-				</b-dropdown>
+					</b-button>
+				</b-button-group>
 			</div>
-			<b-textarea v-if="false" :rows="15" :value="JSON.stringify(schemaForChosen, null, 2)"></b-textarea>
+
+			<b-tabs
+				v-if="chosen !== null"
+				class="conditional-wrapper single"
+				pills
+			>
+				<b-tab
+					v-for="(child, index) in [value]"
+					:key="index"
+					title-link-class="tab-field-link"
+				>
+					<template slot="title">
+						{{ tabTitle }}
+						<delete-button @click="deleteChosen" />
+					</template>
+				</b-tab>
+			</b-tabs>
+
 			<TabSelector
 				v-if="chosen !== null"
+				:key="'oneOf-'+chosen"
+				class="tab-content"
 				:schema="schemaForChosen"
 				:path="newPath('oneOf/' + chosen)"
 				:value="value"
 				:parent="parent"
 				:property="property"
 				:tab="myTab"
-				:activeTab="activeTab"
+				:active-tab="activeTab"
 				:depth="depth"
-				:key="'oneOf-'+chosen" />
-		</template>
-		<template v-else>
-			<div v-for="propName in schema.oneOf.map(obj => obj.title)" :key="propName" style="padding-top: 12px; padding-bottom: 12px;">
-				<TabSelector
-					:required="(schema.required || []).includes(propName)"
-					:schema="schema.oneOf.find(item => item.title === propName)"
-					:path="newPath('oneOf/' + propName)"
-					:value="value[propName]"
-					:parent="value"
-					:property="propName"
-					:tab="myTab"
-					:activeTab="activeTab"
-					:depth="depth"
-					:key="propName" />
-			</div>
-		</template>
-	</wrapper>
+			/>
+		</div>
+	</record-field>
 </template>
 
 <style lang="scss" scoped>
+
 .conditional-wrapper {
 	width: 100%;
 	display: inline-flex;
-	justify-content: center;
+	justify-content: left;
+
+	&.single {
+		margin-top: 0.5rem;
+		margin-bottom: 0.5rem;
+	}
+}
+
+.tab-content {
+	margin-top: 0.5rem;
 }
 </style>
 
-
 <script>
 import Wrapper from '@/components/Wrapper.vue'
+import RecordField from '@/composites/RecordField.vue'
+import TitleComponent from '@/partials/Title.vue'
 import vSchemaBase from '@/widgets/base.vue'
+import DeleteButton from '@/partials/DeleteButton.vue'
 
 // TODO: find a more generic way to detect relevant oneOf schema
 const IDENTIFYING_FIELD = '@type'
 
 export default {
-	extends: vSchemaBase,
-	name: 'schema-oneof',
-	description: "generic oneof",
-	schematype: 'any',
+	name: 'SchemaOneof',
 	components: {
 		Wrapper,
+		RecordField,
+		TitleComponent,
+		DeleteButton,
 	},
+	extends: vSchemaBase,
+	description: "generic oneof",
+	schematype: 'any',
 	props: {
-		both: {
+		wrapped: {
 			type: Boolean,
-			default: false
-		}
+			default: false,
+		},
+		oneOfFunc: {
+			type: Function,
+			default: null,
+		},
+		single: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	data() {
 		return {
@@ -104,8 +178,18 @@ export default {
 			})
 			this.chosen = i
 		},
+		deleteChosen() {
+			this.setChosen(null)
+		},
 	},
 	computed: {
+		tabTitle() {
+			if (this.chosen === null || !this.value) {
+				return ""
+			}
+			const tabObject = this.value
+			return this.nestedTitle(tabObject, "")
+		},
 		schemaForChosen() {
 			return this.chosen !== null ? this.schema['oneOf'][this.chosen] : {}
 		},
@@ -113,20 +197,26 @@ export default {
 			return this.schema['oneOf'].map(sub => sub['title'])
 		},
 		currentType() {
-			return this.value && this.value[IDENTIFYING_FIELD] || null
+			const valueType = this.value && this.value[IDENTIFYING_FIELD]
+			const uiSchemaType = this.oneOfFunc && this.value && this.oneOfFunc(this.value)
+			if (!(valueType === null || typeof valueType === 'undefined')) {
+				return valueType
+			} else if (!(uiSchemaType === null || typeof uiSchemaType === 'undefined')) {
+				return uiSchemaType
+			}
+
+			return null
 		},
 	},
 	watch: {
 		currentType: {
 			immediate: true,
-			handler(val) {
-				if (!val) return;
-				let index = this.possibleTypes.indexOf(this.currentType);
+			handler() {
+				if (typeof this.currentType === 'undefined' || this.currentType === null) return
+				let index = isNaN(this.currentType) ? this.possibleTypes.indexOf(this.currentType) : this.currentType
 				this.chosen = index >= 0 ? index : null;
 			},
 		},
-	},
-	created() {
 	},
 }
 </script>

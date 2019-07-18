@@ -6,6 +6,7 @@ Author(s):
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
 	Eemeli Kouhia <eemeli.kouhia@gofore.com>
 	Jori Niemi <3295718+tahme@users.noreply.github.com>
+	Kauhia <Kauhia@users.noreply.github.com>
 
 License: GPLv3
 
@@ -14,52 +15,73 @@ Copyright (C) 2019 Ministry of Culture and Education, Finland.
 All Rights Reserved.
 -->
 <template>
-	<record-field class="min-height" :required="required" :wrapped="wrapped" :header="!inArray" :error="!isValid">
+	<record-field :id="property + '_array'" class="min-height" :required="required" :wrapped="wrapped" :header="!inArray" :error="!isValid">
 		<title-component slot="title" :title="uiLabel" />
-		<div slot="header-right" class="header__right">
-			<p :key="error" v-for="error in errors" class="error-message">{{ error }}</p>
+		<small slot="help" class="text-muted">
+			{{ uiDescription }}
+		</small>
+		<div slot="header-right">
 			<ValidationStatus v-if="!isValid" :status="'invalid'" />
-			<InfoIcon :description="uiDescription"/>
+		</div>
+		<div slot="errors">
+			<b-badge variant="danger" :key="error" v-for="error in errors">{{ error }}</b-badge>
 		</div>
 		<div slot="input">
 			<!--
 				There is not easy way to force v-for to not use inplace update strategy. In this case it is mandatory to make deleting item show correctly.
 				This could be code smell but at the moment the best solution is just to patch this. See https://github.com/xianshenglu/blog/issues/47 for reference.
 			-->
-			<b-tabs v-if="forceArrayUpdateHack && tabFormat" :value="tabIndex" class="tab-array-margin" pills>
-				<b-tab
-					v-for="(child, index) in value"
-					style="{margin-top: 5px}"
-					:key="index"
-					title-link-class="tab-field-link">
-					<template slot="title">
-						{{ tabTitle(index) }}
-						<delete-button @click="deleteElement(index)" />
-					</template>
+			<b-container v-if="forceArrayUpdateHack && tabFormat">
+				<b-btn
+					class="add-button col"
+					variant="light"
+					type="button"
+					:disabled="value.length >= this.maximum"
+					@click="doPlus()">
+					<font-awesome-icon icon="plus" fixed-width />
+				</b-btn>
 
-					<TabSelector
-						:schema="schemaForChild(index)"
-						:path="newPath(index)"
-						:value="value[index]"
-						:parent="parent[property]"
-						:property="index"
-						:tab="myTab"
-						:activeTab="activeTab"
-						:depth="depth"
-						@delete="deleteElement"
-						:key="'array-' + index" />
-				</b-tab>
+				<b-tabs
+					:value="tabIndex"
+					class="tab-array-margin"
+					pills
+					@input="tabShown"
+					@changed="tabsChanged"
+				>
+					<b-tab
+						v-for="(child, index) in value"
+						:key="index"
+						style="{margin-top: 5px}"
+						title-link-class="tab-field-link"
+						@click="()=>setTab(index)"
+					>
+						<template slot="title">
+							{{ tabTitle(index) }}
+							<delete-button @click="deleteElement(index)" />
+						</template>
 
-				<div slot="tabs" class="input__controls">
-					<b-btn class="input__control" type="button" variant="primary" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
-				</div>
+						<TabSelector
+							:id="property + '_array_' + index + '_tab-selector'"
+							:schema="schemaForChild(index)"
+							:path="newPath(index)"
+							:value="value[index]"
+							:parent="parent[property]"
+							:property="index"
+							:tab="myTab"
+							:activeTab="activeTab"
+							:depth="depth"
+							@delete="deleteElement"
+							:key="'array-' + index" />
+					</b-tab>
 
-			</b-tabs>
+				</b-tabs>
+			</b-container>
 
 			<b-list-group class="item-list" v-else-if="forceArrayUpdateHack && !tabFormat" flush>
-
 				<b-list-group-item class="list-item" v-for="(child, index) in value" :key="index">
 					<TabSelector
+						:id="property + '_array_' + index + '_tab-selector'"
+						style="flex-grow: 1"
 						:schema="schemaForChild(index)"
 						:path="newPath(index)"
 						:value="value[index]"
@@ -70,44 +92,41 @@ All Rights Reserved.
 						:depth="depth"
 						@delete="deleteElement"
 						:key="'array-' + index" />
+					<delete-button class="array-delete-button" v-if="showDelete" @click="deleteElement(index)" />
 				</b-list-group-item>
-				<div class="input__controls">
-					<b-btn class="input__control" type="button" variant="primary" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
-				</div>
+				<b-list-group-item>
+					<b-btn :id="property + '_array_button_add'" class="col" variant="light" type="button" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
+				</b-list-group-item>
 			</b-list-group>
 		</div>
 	</record-field>
 </template>
 <style lang="scss" scoped>
-.error-message {
-	display: inline-block;
-}
-
-.input__controls {
-	margin-left: auto;
-	margin-top: 10px;
-
-	.input__control {
-		height: 40px;
-	}
-}
 
 .list-item {
-	margin-top: 10px;
-	margin-bottom: 0px;
-	border-bottom: 0;
-	border-top: 0;
-	padding: 0;
+	display: inline-flex !important;
+}
+
+.add-button {
+	height: 2.5em;
+	margin-bottom: 1em;
 }
 .min-height {
 	min-height: 108px;
 }
+
+.nav-pills li:not(:first-child) {
+	margin-left: 1em !important;
+}
+
 </style>
 
 <style>
+
 .tab-array-margin.tabs .tab-content {
 	margin-top: 15px;
 }
+
 </style>
 
 
@@ -115,7 +134,6 @@ All Rights Reserved.
 import vSchemaBase from './base.vue'
 import RecordField from '@/composites/RecordField.vue'
 import TitleComponent from '@/partials/Title.vue'
-import InfoIcon from '@/partials/InfoIcon.vue'
 import ValidationStatus from '@/partials/ValidationStatus.vue'
 import DeleteButton from '@/partials/DeleteButton.vue'
 
@@ -127,13 +145,13 @@ export default {
 	components: {
 		RecordField,
 		TitleComponent,
-		InfoIcon,
 		ValidationStatus,
 		DeleteButton,
 	},
 	props: {
 		tabFormat: { type: Boolean, default: true },
 		wrapped: { type: Boolean, default: true },
+		showDelete: { type: Boolean, default: false }
 	},
 	data() {
 		return {
@@ -141,6 +159,7 @@ export default {
 			minimum: 0,
 			maximum: 0,
 			tabIndex: 0,
+			targetTabIndex: null,
 			forceArrayUpdateHack: true,
 		}
 	},
@@ -148,44 +167,16 @@ export default {
 		tabTitle(index) {
 			const objectAtIndexExists = typeof this.parent[this.property][index] !== 'undefined'
 			if (!objectAtIndexExists) {
-				return `#${index +1}`
+				return `#${ index+1 }`
 			}
 
 			const tabObject = this.parent[this.property][index]
-			const tabObjectType = tabObject['@type']
-
-			if (tabObjectType === 'Person' && tabObject.name) {
-				return tabObject.name
-			}
-
-			if (tabObjectType === 'Person') {
-				return `#${index +1} (Person)`
-			}
-
-			if (tabObjectType === 'Organization' && (tabObject.name['fi'] || tabObject.name['en'])) {
-				return tabObject.name['fi'] || tabObject.name['en']
-			}
-
-			if (tabObjectType === 'Organization') {
-				return `#${index +1} (Organization)`
-			}
-
-			return `#${index +1}`
-		},
-		doMinus() {
-			// it's safe to pop() a zero-length array
-			if (this.value.length > this.minimum) {
-				this.$store.commit('popValue', { p: this.parent, prop: this.property, val: this.value })
-				return true
-			}
-			return false
+			return this.nestedTitle(tabObject, `#${ index+1 } `)
 		},
 		doPlus() {
 			if (this.maximum === undefined || this.value.length < this.maximum) {
 				this.$store.commit('pushValue', { p: this.parent, prop: this.property, val: undefined })
-				this.$nextTick(function() { // make sure that the tab is there before causing the new tab to be selected
-					this.tabIndex = this.value.length - 1
-				})
+				this.setTab(this.value.length - 1)
 				return true
 			}
 			return false
@@ -216,6 +207,22 @@ export default {
 			this.minimum = typeof this.schema['minItems'] === 'number' && this.schema['minItems'] > 0 ? this.schema.minItems : 0
 			this.maximum = typeof this.schema['maxItems'] === 'number' && this.schema['maxItems'] > 0 ? this.schema.maxItems : undefined
 			if (this.isTuple && !this.allowAdditional) this.maximum = this.schema['items'].length
+		},
+		setTab(index) {
+			this.tabIndex = index
+			this.targetTabIndex = index
+		},
+		tabShown(index) {
+			if (index === this.targetTabIndex) {
+				this.targetTabIndex = null
+			}
+		},
+		async tabsChanged() {
+			if (this.targetTabIndex !== null) {
+				this.tabIndex = 0 // trigger tabIndex change in b-tabs
+				await this.$nextTick()
+				this.tabIndex = this.targetTabIndex
+			}
 		},
 	},
 	computed: {

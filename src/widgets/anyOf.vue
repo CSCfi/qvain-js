@@ -13,7 +13,7 @@ Copyright (C) 2019 Ministry of Culture and Education, Finland.
 All Rights Reserved.
 -->
 <template>
-	<div>
+	<div :id="property + '_anyOf'">
 		<!-- (anyof component) -->
 		<h2 v-bind:class="{ 'metainfo': !schema.title, 'missing': !schema.title }">{{ schema.title || "missing title" }}</h2>
 

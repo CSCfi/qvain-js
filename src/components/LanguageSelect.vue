@@ -14,7 +14,7 @@ Copyright (C) 2019 Ministry of Culture and Education, Finland.
 All Rights Reserved.
 -->
 <template>
-	<b-input-group>
+	<b-input-group class="language_select">
 		<b-input-group-text class="height" slot="prepend">
 			<font-awesome-icon icon="plus" fixed-width class="text-dark" />
 		</b-input-group-text>
@@ -49,7 +49,7 @@ export default {
 		value: String,
 		placeholder: {
 			type: String,
-			default: "Select language",
+			default: "Add translation",
 		},
 	},
 	data() {

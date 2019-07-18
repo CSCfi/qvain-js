@@ -4,8 +4,9 @@ This file is part of Qvain -project.
 Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
-	Shreyas Deshpande <31839853+ShreyasDeshpande@users.noreply.github.com>
 	Kauhia <Kauhia@users.noreply.github.com>
+	Shreyas Deshpande <31839853+ShreyasDeshpande@users.noreply.github.com>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
 	Aaron Hakala <aaron.hakala@metropolia.fi>
 	Eemeli Kouhia <eemeli.kouhia@gofore.com>
 
@@ -17,29 +18,20 @@ All Rights Reserved.
 */
 import Vue from 'vue'
 import Vuex from 'vuex'
-//import jsonPointer from 'json-pointer'
-//import {api as vuePointer} from '../vendor/json-pointer/index.js'
-import vuePointer from '../vendor/json-pointer/index.js'
 import cloneWithPrune from './lib/cloneWithPrune.js'
-//const vuePointer = require('../vendor/json-pointer/index.js').default
-//import * as vuePointer from '../vendor/json-pointer/index.js'
 import getDotted from 'lodash.get'
 import hasDotted from 'lodash.has'
+import vuePointer from '../vendor/json-pointer/index.js'
 
 Vue.use(Vuex)
-
-// temporary counter to check how often a getter is called
-//let counter = 0
 
 export default new Vuex.Store({
 	state: {
 		record: undefined,
-		dataset: {},
 		schema: {},
 		hints: {},
 		metadata: {},
 		languages: { 'fi':true, 'en':true, 'sv':true },
-		defaultDescriptionLang: 'fi',
 		UI_VALID_KEYWORDS: [
 			'widget',
 			'option',
@@ -48,9 +40,17 @@ export default new Vuex.Store({
 			'placeholder',
 			'tab',
 		],
-		tabui: {},
-		validation: {},
 		vState: {},
+		datasetsView: {
+			currentPage: 1,
+			perPage: 20,
+			datasetList: null,
+			showState: 'all',
+			filterString: '',
+			filteredCount: null,
+			sortBy: null,
+			sortDesc: false,
+		},
 		stats: {
 			total: 0,
 			pass: 0,
@@ -66,7 +66,6 @@ export default new Vuex.Store({
 			state.metadata = {}
 		},
 		loadData(state, record) {
-			//state.record = record
 			Vue.set(state, 'record', record)
 		},
 		mergeData(state, payload) {
@@ -78,36 +77,34 @@ export default new Vuex.Store({
 			Vue.set(state, 'schema', schema)
 		},
 		changeSchema(state) {
-			//state.schema.properties.creator.description = "I changed it!"
-			//delete state.schema.properties.creator
-			//Vue.delete(state.schema, 'properties')
 			Vue.delete(state.schema.properties, 'creator')
-			//Vue.set(state.schema.properties, 'creature', "frankenstein")
-			//Vue.set(state, 'schema', {})
 		},
 		loadHints(state, hints) {
-			//state.hints = hints
 			Vue.set(state, 'hints', hints)
 		},
 		setHints(state, payload) {
-			//state.hints[payload.path] = payload.hints
 			Object.keys(payload.hints).forEach((key) => (payload.hints[key] == null || payload.hints[key] == undefined) && delete payload.hints[key])
 			Vue.set(state.hints, payload.path, payload.hints)
 		},
 		setHint(state, payload) {
-			//state.hints[payload.path] = payload.hint
 			Vue.set(state.hints, payload.path, payload.hint)
 		},
 		delHints(state, payload) {
 			Vue.delete(state.hints[payload.path])
 		},
-		addTab(state, payload) {
-			Vue.set(state.tabui, payload.tab, payload.schema)
-		},
-		initValue(state, payload) {
-			//console.log("store init for", payload.p, "payload:", payload, "state:", state)
-			//payload.p[payload.prop] = payload.val
-			Vue.set(payload.p, payload.prop, payload.val)
+		initValue(state, payload, defaultValue) {
+			// set default value for license if ida schema
+			const isNewDataset = typeof state.metadata.id === 'undefined'
+			const isIDA = state.metadata.schemaId === 'metax-ida'
+			//const shouldAddDefault = 'access_type' in payload.p
+			//const isLicenseField = payload.prop === 'license'
+			// move this to tabselector
+
+			if (isNewDataset && isIDA && defaultValue) {
+				Vue.set(payload.p, payload.prop, defaultValue)
+			} else {
+				Vue.set(payload.p, payload.prop, payload.val)
+			}
 		},
 		updateValue(state, payload) {
 			Vue.set(payload.p, payload.prop, payload.val)
@@ -121,12 +118,19 @@ export default new Vuex.Store({
 			const index = payload.p[payload.prop].findIndex(x => x[payload.search.field] === payload.search.value)
 			Vue.set(payload.p[payload.prop], index, payload.val)
 		},
+		replace(state, payload) {
+			// clear payload.p, assign values from payload.val
+			for (let key in payload.p) {
+				Vue.delete(payload.p, key)
+			}
+			for (let key in payload.val) {
+				Vue.set(payload.p, key, payload.val[key])
+			}
+		},
 		pushValue(state, payload) {
-			//console.log("store push for", payload.p, "payload:", payload)
 			payload.p[payload.prop].push(payload.val)
 		},
 		pushMultiple(state, payload) {
-			//console.log('store push for', payload.p, 'payload:', payload)
 			payload.p[payload.prop].push(...payload.val)
 		},
 		popValue(state, payload) {
@@ -145,25 +149,6 @@ export default new Vuex.Store({
 		addProp(state, payload) {
 			Vue.set(payload.val, payload.prop, undefined)
 		},
-		setPath(state, payload) {
-			/*
-			if (state.dataset === undefined) {
-				state.dataset = {}
-			}
-			*/
-			//jsonPointer.set(state.dataset, payload.path, payload.value)
-			//var obj = jsonPointer.get(state.dataset, payload.path)
-			//Vue.set(obj,
-			//Vue.set(state.dataset['rights_holder'], 'identifier', payload.value)
-			vuePointer.set(state.dataset, payload.path, payload.value)
-		},
-
-		/*
-		setValue(state, payload) {
-			console.log("store update for", payload.old, "to:", payload.new)
-			payload.old = payload.new
-		},
-		*/
 		setState(state, payload) {
 			Vue.set(state.vState, payload.path, {
 				v: payload.v,
@@ -187,11 +172,16 @@ export default new Vuex.Store({
 		setLanguages(state, payload) {
 			state.languages = Object.assign({}, state.languages, payload)
 		},
+		updateDatasetsView(state, payload) {
+			for (const key in payload) {
+				Vue.set(state.datasetsView, key, payload[key])
+			}
+		},
 	},
 	getters: {
 		// prunedDataset returns a deep-clone of the dataset discarding empty leaves
 		prunedDataset: (state) => {
-			return cloneWithPrune(state.record)
+			return cloneWithPrune(state.record, ["#key"], [ "", undefined ])
 		},
 		// getState returns the validation state for a given path
 		getState: (state) => (path) => {

@@ -5885,6 +5885,9 @@
 								"additionalProperties": false
 							}
 						},
+						"required": [
+							"identifier"
+						],
 						"additionalProperties": false
 					},
 					"relation_type": {
@@ -6235,66 +6238,85 @@
 					"title": "License",
 					"description": "A legal document giving official permission to do something with the resource.",
 					"@type": "@id",
-					"minItems": 0,
 					"type": "array",
 					"items": {
-						"type": "object",
-						"$deref": "#/definitions/ResearchDataLicenseDocument",
-						"title": "License Document",
-						"minProperties": 1,
-						"@id": "http://purl.org/dc/terms/LicenseDocument",
-						"description": "A legal document giving official permission to do something with a Resource.",
-						"properties": {
-							"identifier": {
-								"@id": "http://purl.org/dc/terms/identifier",
-								"title": "Identifier",
-								"description": "License identifier from the reference data.",
-								"@type": "@id",
-								"minLength": 1,
-								"type": "string",
-								"format": "uri"
-							},
-							"title": {
-								"@id": "http://purl.org/dc/terms/title",
-								"title": "Title",
-								"description": "A name given to the resource.",
-								"@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+						"oneOf": [
+							{
 								"type": "object",
-								"$deref": "#/definitions/langString",
+								"$deref": "#/definitions/ResearchDataLicenseDocument",
+								"title": "License dropdown",
 								"minProperties": 1,
-								"additionalProperties": {
-									"minLength": 1,
-									"type": "string"
-								}
+								"@id": "http://purl.org/dc/terms/LicenseDocument",
+								"description": "A legal document giving official permission to do something with a Resource.",
+								"properties": {
+									"identifier": {
+										"@id": "http://purl.org/dc/terms/identifier",
+										"title": "Identifier",
+										"description": "License identifier from the reference data.",
+										"@type": "@id",
+										"minLength": 1,
+										"type": "string",
+										"format": "uri"
+									},
+									"title": {
+										"@id": "http://purl.org/dc/terms/title",
+										"title": "Title",
+										"description": "A name given to the resource.",
+										"@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+										"type": "object",
+										"$deref": "#/definitions/langString",
+										"minProperties": 1,
+										"additionalProperties": {
+											"minLength": 1,
+											"type": "string"
+										}
+									},
+									"description": {
+										"@id": "http://purl.org/dc/terms/description",
+										"title": "Description",
+										"description": "Description may include but is not limited to: an abstract, a table of contents, a graphical representation, or a free-text account of the resource. An account of the resource.",
+										"@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+										"type": "object",
+										"$deref": "#/definitions/langString",
+										"minProperties": 1,
+										"additionalProperties": {
+											"minLength": 1,
+											"type": "string"
+										}
+									},
+									"license": {
+										"@id": "http://schema.org/license",
+										"title": "Licence URL",
+										"description": "A referenced license document that applies to this content",
+										"@type": "http://www.w3.org/2001/XMLSchema#anyURI",
+										"minLength": 1,
+										"type": "string",
+										"format": "uri"
+									}
+								},
+								"required": [],
+								"additionalProperties": false
 							},
-							"description": {
-								"@id": "http://purl.org/dc/terms/description",
-								"title": "Description",
-								"description": "Description may include but is not limited to: an abstract, a table of contents, a graphical representation, or a free-text account of the resource. An account of the resource.",
-								"@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+							{
 								"type": "object",
-								"$deref": "#/definitions/langString",
-								"minProperties": 1,
-								"additionalProperties": {
-									"minLength": 1,
-									"type": "string"
-								}
-							},
-							"license": {
-								"@id": "http://schema.org/license",
-								"title": "Licence URL",
-								"description": "A referenced license document that applies to this content",
-								"@type": "http://www.w3.org/2001/XMLSchema#anyURI",
-								"minLength": 1,
-								"type": "string",
-								"format": "uri"
+								"title": "Free form License URL",
+								"properties": {
+									"license": {
+										"@id": "http://schema.org/license",
+										"title": "Licence URL",
+										"description": "A referenced license document that applies to this content",
+										"@type": "http://www.w3.org/2001/XMLSchema#anyURI",
+										"minLength": 1,
+										"type": "string"
+									}
+								},
+								"required": [],
+								"additionalProperties": false
+
 							}
-						},
-						"required": [
-							"identifier"
-						],
-						"additionalProperties": false
-					}
+						]
+					},
+					"minItems": 0
 				},
 				"access_url": {
 					"@id": "http://xmlns.com/foaf/0.1/Document",

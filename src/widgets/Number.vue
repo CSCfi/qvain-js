@@ -4,7 +4,6 @@ This file is part of Qvain -project.
 Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
-	Eemeli Kouhia <eemeli.kouhia@gofore.com>
 	Aaron Hakala <aaron.hakala@metropolia.fi>
 
 License: GPLv3
@@ -14,25 +13,40 @@ Copyright (C) 2019 Ministry of Culture and Education, Finland.
 All Rights Reserved.
 -->
 <template>
-	<div>
-		<!-- (number widget) -->
-		<b-form-group label-cols="2" :description="uiDescription" :label="makeLabel" :feedback="feedback" :state="isValid">
-			<b-input-group>
-				<b-form-input id="jack" type="number" name="" :placeholder="uiPlaceholder" :step="schema['multipleOf']" :value="parent[property]" :state="isValid" @input.native="updateValue" @focus.native="isValid || $root.$emit('bv::show::popover', 'jack')" @blur.native="$root.$emit('bv::hide::popover', 'jack')"></b-form-input>
-				<b-input-group-append v-if="inArray">
-					<b-btn type="button" variant="danger" @click="deleteMe">
-						<font-awesome-icon :icon="icon.faMinus" />
-					</b-btn>
-				</b-input-group-append>
-			</b-input-group>
-		</b-form-group>
-	</div>
+	<record-field :required="required" >
+		<title-component slot="title" :title="makeLabel" />
+		<small slot="help" class="text-muted">
+			{{ uiDescription }}
+			{{ makeLabel }}
+		</small>
+
+		<div slot="input">
+			<b-form-group
+				:label-cols="inArray ? 3 : ((makeLabel !== uiLabel) ? 3 : 0)"
+				:label-for="inArray ? 'input-' + property.toString() : property">
+				<b-input-group>
+					<b-form-input
+						:id="inArray ? 'input-' + property.toString() : property"
+						type="number"
+						:placeholder="uiPlaceholder"
+						:value="parent[property]"
+						:step="schema['multipleOf']"
+						:state="isValid ? null : false"
+						@input.native="updateValue">
+					</b-form-input>
+				</b-input-group>
+			</b-form-group>
+		</div>
+	</record-field>
+
 </template>
 
 <script>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faMinus } from '@fortawesome/free-solid-svg-icons'
 import vSchemaBase from './base.vue'
+import RecordField from '@/composites/RecordField.vue'
+import TitleComponent from '@/partials/Title.vue'
 
 function toNumber(val) {
 	const n = parseFloat(val, 10)
@@ -44,6 +58,11 @@ export default {
 	name: 'schema-number',
 	description: 'generic number',
 	schematype: 'number',
+	components: {
+		FontAwesomeIcon,
+		RecordField,
+		TitleComponent,
+	},
 	data: function() {
 		return {
 			label: '',
@@ -72,9 +91,11 @@ export default {
 				? '#' + (this.property + 1)
 				: this.uiTitle
 		},
-	},
-	components: {
-		FontAwesomeIcon,
+		uiLabel: function() {
+			return typeof this.property === 'number'
+				? '#' + (this.property + 1)
+				: this.uiTitle
+		}
 	},
 }
 </script>

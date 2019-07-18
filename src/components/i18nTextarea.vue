@@ -6,7 +6,6 @@ Author(s):
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
 	Eemeli Kouhia <eemeli.kouhia@gofore.com>
 	Jori Niemi <3295718+tahme@users.noreply.github.com>
-	Kauhia <Kauhia@users.noreply.github.com>
 	Shreyas Deshpande <31839853+ShreyasDeshpande@users.noreply.github.com>
 
 License: GPLv3
@@ -18,83 +17,90 @@ All Rights Reserved.
 <template>
 	<record-field :required="required" :wrapped="true" :error="!isValid">
 		<title-component slot="title" :title="uiLabel" />
-		<div slot="header-right" class="header__right">
+		<small
+			slot="help"
+			class="text-muted"
+		>
+			{{ uiDescription }}
+		</small>
+
+		<div
+			slot="header-right"
+			class="header__right"
+		>
 			<ValidationStatus :status="validationStatus" />
-			<InfoIcon :description="uiDescription"/>
 		</div>
 
 		<div slot="input">
-			<b-tabs class="tabs-nav" v-model="tabIndex" pills>
-				<b-tab v-for="key in languageKeys" :key="key" no-body title-link-class="tab-field-link">
+			<b-tabs
+				v-model="tabIndex"
+				class="tabs-nav"
+				vertical
+				pills
+				justified
+				nav-wrapper-class="col-3"
+				@input="tabShown"
+				@changed="tabsChanged"
+			>
+				<b-tab
+					v-for="(key, index) in languageKeys"
+					:key="key"
+					@click="()=>setTab(index)"
+				>
 					<template slot="title">
-						{{ languages[key] }}
 						<delete-button @click="deleteLang(key)" />
+						{{ languages[key] }}
 					</template>
 
 					<b-form-textarea
-						class="textarea"
-						placeholder="Start typing!"
-						:value="state[key]"
-						:id="'textarea-' + key"
+						:id="property + '_textarea-' + key"
 						:ref="'textarea-tab-' + key"
-						@input="v => changeText(key, v)">
-					</b-form-textarea>
+						class="textarea"
+						rows="6"
+						:placeholder="'Start typing in ' + languages[key]"
+						:value="state[key]"
+						@input="v => changeText(key, v)"
+					/>
 				</b-tab>
-
-				<template slot="tabs" v-if="languageKeys.length > 0">
-					<div> <!-- this div makes the tab stay on first line -->
-						<language-select ref="langSelect"
-							class="lang-select-tab"
-							v-model="selectedLanguage"
-							@keyup.enter.native="lang => selectedLanguage = lang">
-						</language-select>
-					</div>
-				</template>
 
 				<div slot="empty">
 					<p class="intro-text">
 						Start by selecting the language. You may add as many languages as you wish by clicking them from the dropdown below.
 					</p>
-					<div class="language-row">
-						<language-select class="input-width" @change="addTab" />
-					</div>
 				</div>
 			</b-tabs>
+			<div class="row">
+				<language-select
+					class="col lang-select-tab"
+					ref="langSelect"
+					:id="property + '_language-select'"
+					@change="userRequestedNewLanguage">
+				</language-select>
+			</div>
+
 		</div>
 	</record-field>
 </template>
 
 <style lang="scss" scoped>
 .lang-select-tab {
-	height: 40px;
-	margin-left: 10px;
-}
-.textarea {
-	min-height: 100px;
-	overflow: hidden;
-	resize: none;
-    background-image: linear-gradient(white, white 30px, #ccc 30px, #ccc 31px, white 31px);
-    background-size: 100% 31px;
-    border: 0px solid #ccc;
-    border-radius: 8px;
-    line-height: 31px;
-    font-family: Arial, Helvetica, Sans-serif;
-    padding: 8px;
+	margin-top: 1em;
+	margin-bottom: 0;
 }
 
 .intro-text {
 	text-align: center;
 }
-.language-row {
-	display: inline-flex;
-	justify-content: space-around;
-	width: 100%;
-	border: 0;
 
-	.input-width {
-		width: 220px;
+.card-body {
+	padding: 0 !important;
+	height: auto;
+	textarea {
+		height: auto;
 	}
 }
+
+
 </style>
 
 
@@ -105,7 +111,6 @@ import LanguageSelect from '@/components/LanguageSelect.vue'
 import ValidationStatus from '@/partials/ValidationStatus.vue'
 import RecordField from '@/composites/RecordField.vue'
 import TitleComponent from '@/partials/Title.vue'
-import InfoIcon from '@/partials/InfoIcon.vue'
 import DeleteButton from '@/partials/DeleteButton.vue'
 
 import autosize from 'autosize'
@@ -120,14 +125,13 @@ export default {
 		ValidationStatus,
 		RecordField,
 		TitleComponent,
-		InfoIcon,
 		DeleteButton,
 	},
 	data() {
 		return {
 			languages: langCodes2,
 			tabIndex: 0,
-			selectedLanguage: null,
+			targetTabIndex: null,
 			state: {},
 		}
 	},
@@ -145,6 +149,10 @@ export default {
 		},
 	},
 	methods: {
+		userRequestedNewLanguage: function(lang) {
+			this.addLanguage(lang)
+			this.focusOnLastTab()
+		},
 		changeText(key, value) {
 			const el = this.$refs['textarea-tab-' + key][0].$el
 			autosize(el)
@@ -152,18 +160,15 @@ export default {
 			this.$set(this.state, key, value)
 			this.updateValue()
 		},
-		addTab(lang) {
+		addLanguage(lang) {
 			if (lang in this.state) {
-				this.focusOnTabWithLanguage(lang)
 				return
 			}
 			this.$set(this.state, lang, '')
-			this.updateValue()
-			this.focusOnLastTab()
+			this.$store.commit('setLanguages', {[lang]:true})
 		},
 		deleteLang(lang) {
 			this.$delete(this.state, lang)
-			this.updateValue()
 		},
 		updateValue() {
 			this.$store.commit('updateValue', {
@@ -172,59 +177,57 @@ export default {
 				val: this.state,
 			})
 		},
-		async focusOnLastTab() {
-			const last = Object.keys(this.value || {}).length - 1
-			// bootstrap-vue takes a couple ticks to add a new tab to the DOM
-			await this.$nextTick()
-			await this.$nextTick()
-			this.tabIndex = last
-			this.focusOnTextarea()
+		focusOnLastTab() {
+			const lastIndex = Object.keys(this.value || {}).length - 1
+			this.setTab(lastIndex, true)
 		},
-		async focusOnTabWithLanguage(lang) {
+		focusOnTabWithLanguage(lang) {
 			const i = Object.keys(this.value || {}).indexOf(lang)
 			if (i >= 0) {
-				// bootstrap-vue takes a couple ticks to add a new tab to the DOM
-				await this.$nextTick()
-				await this.$nextTick()
-				this.tabIndex = i
+				this.setTab(i)
 				return true
 			}
 			return false
 		},
 		focusOnTextarea() {
-			// this gets called after switching tabs, so try to make sure the DOM updated
-			this.$nextTick(() => {
-				let ref = this.$refs['textarea-tab-' + this.tabIndex]
-				if (Array.isArray(ref)) {
-					ref = ref[0]
-				}
-				ref && ref.$el && ref.$el.focus()
-			})
+			let ref = this.$refs['textarea-tab-' + Object.keys(this.value || {})[this.tabIndex]]
+			if (Array.isArray(ref)) {
+				ref = ref[0]
+			}
+			ref && ref.$el && ref.$el.focus()
 		},
 		populateLanguages(languages) {
 			for (const lang in languages) {
 				if (languages[lang]) {
-					this.addTab(lang)
+					this.addLanguage(lang)
 				}
+			}
+		},
+		setTab(index) {
+			this.tabIndex = index
+			this.targetTabIndex = index
+		},
+		async tabShown(index) {
+			if (index === this.targetTabIndex) {
+				this.targetTabIndex = null
+				await this.$nextTick() // wait for the textarea to become visible
+				this.focusOnTextarea()
+			}
+		},
+		tabsChanged() {
+			if (this.targetTabIndex !== null) {
+				this.tabIndex = this.targetTabIndex
 			}
 		},
 	},
 	watch: {
-		selectedLanguage(lang) {
-			if (!lang) {
-				return
-			}
-			this.addTab(lang)
-		},
 		"$store.state.languages": function(languages) {
 			this.populateLanguages(languages)
 		},
-
 	},
 	created() {
 		this.state = this.value || {}
 		this.populateLanguages(this.$store.state.languages)
-		this.focusOnTabWithLanguage(this.$store.state.defaultDescriptionLang)
 	},
 }
 </script>
