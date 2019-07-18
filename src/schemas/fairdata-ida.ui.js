@@ -29,7 +29,7 @@ export default {
 	},
 	'#/definitions/Organization': {
 		'title': "Organisational hierarchy",
-		'description': "Hierarchical structure of organisation. Here you can provide an organisation or company's information. You need to provide at least one name, but if desired, you can provide multiple organisational divisions for faculty or department.",
+		'description': "Hierarchical structure of the organisation. Here you can provide an organisation's or a company's information. You need to provide at least one name, but if desired, you can provide multiple organisational divisions for faculties or departments.",
 		'widget': 'SelfReferentialObject',
 		'props': {
 			'refField': "is_part_of",
@@ -44,7 +44,7 @@ export default {
 		'tab': 'description',
 		'label': "Title",
 		'title': "Name of the dataset",
-		'description': "Dataset must have a name, i.e. title. There can be only one name, but it can have translations. Please give the language of the name (and its translations).",
+		'description': "A dataset must have a name, i.e. title. There can only be one name, but it can have translations. Please give the language of the name (and its translations).",
 		'placeholder': "title",
 		'widget': 'i18n-string',
 		'props': {
@@ -54,7 +54,7 @@ export default {
 	'/properties/keyword': {
 		'tab': 'description',
 		'title': "Keywords",
-		'description': "Give free keywords that characterize the dataset. Below, there is an other field for controlled subject headings.",
+		'description': "Give free keywords that characterize the dataset. Below, there is another field for controlled subject headings.",
 		'placeholder': "keywords",
 		'widget': "schema-array",
 		'props': {
@@ -96,7 +96,7 @@ export default {
 		'props': {
 			'large': true,
 		},
-		'description': "A characterization of the dataset that lucidly describes the dataset. Add new field for each language version. Please define the language used in each case.",
+		'description': "A characterization of the dataset that lucidly describes the dataset. Add a new field for each language version. Please define the language used in each case.",
 	},
 	'/properties/bibliographic_citation': {
 		'tab': 'extra',
@@ -185,7 +185,7 @@ export default {
 	'/properties/is_output_of': {
 		'tab': 'actors',
 		'title': "Producer Project",
-		'description': "Project in which the dataset was created",
+		'description': "A project in which the dataset was created",
 	},
 	'/properties/is_output_of/*/properties/funder_type': {
 		'widget': 'reference-data',
@@ -349,7 +349,7 @@ export default {
 	'/properties/contributor': {
 		'tab': 'actors',
 		'title': "Contributor",
-		'description': "The organization or person that has participated in collecting, managing, or distributing of the dataset, or that has otherwise contributed to its development.",
+		'description': "The organization or person that has participated in collecting, managing, or distributing the dataset, or that has otherwise contributed to its development.",
 	},
 	'/properties/contributor/*/oneOf/*/properties/contributor_role': {
 		'widget': 'reference-data',
@@ -402,7 +402,7 @@ export default {
 	'/properties/curator': {
 		'tab': 'actors',
 		'title': "Curator",
-		'description': "Person tasked with reviewing, enhancing, cleaning, and standardizing metadata and the associated data.",
+		'description': "A person tasked with reviewing, enhancing, cleaning, and standardizing metadata and the associated data.",
 	},
 	'/properties/curator/*/oneOf/*/properties/contributor_role': {
 		'widget': 'reference-data',
@@ -456,7 +456,7 @@ export default {
 	'/properties/rights_holder': {
 		'tab': 'actors',
 		'title': "Rights holder",
-		'description': "A person or an organization that may edit, modify, share and restrict access to the dataset. The owner may also share or surrender these privileges to others.",
+		'description': "A person or an organization that may edit, modify, share or restrict access to the dataset. The owner may also share or surrender these privileges to others.",
 	},
 	'/properties/rights_holder/*/oneOf/*/properties/contributor_role': {
 		'widget': 'reference-data',
