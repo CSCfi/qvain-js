@@ -5885,6 +5885,9 @@
 								"additionalProperties": false
 							}
 						},
+						"required": [
+							"identifier"
+						],
 						"additionalProperties": false
 					},
 					"relation_type": {
