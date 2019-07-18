@@ -153,7 +153,7 @@
 				</b-col>
 
 				<b-col v-else-if="loading">
-					<b-container>
+					<b-container class="page-is-loading">
 						<b-row>
 							<b-col>
 								<font-awesome-icon icon="spinner" spin />
@@ -667,5 +667,10 @@ h1.component-title {
 	font-weight: 300;
 }
 
+.page-is-loading {
+	margin-top: 2em;
+	margin-left: auto;
+	margin-right: auto;
+}
 
 </style>
