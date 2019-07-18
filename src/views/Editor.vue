@@ -352,8 +352,6 @@ export default {
 					await apiClient.put("/datasets/" + currentId, payload)
 					const { data } = await apiClient.get(`/datasets/${currentId}`)
 					this.qvainData = data
-					this.clearRecord()
-					this.openRecord(this.id)
 				} else {
 					const { data: { id }} = await apiClient.post("/datasets/", payload)
 					const { data } = await apiClient.get(`/datasets/${id}`)
