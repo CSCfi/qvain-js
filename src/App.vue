@@ -1,4 +1,17 @@
-<!-- ADD_LICENSE_HEADER -->
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Aaron Hakala <aaron.hakala@metropolia.fi>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
 	<div id="app">
 		<b-alert id="root_alert" :show="$root.dismissCountDown" style="z-index: 1000; position: fixed; top: 1rem; left: 0; right: 0; width: 90%; margin: 0 auto; opacity: 0.90;" dismissible :variant="$root.alertVariant" @dismissed="$root.dismissAlert" @dismiss-count-down="$root.countDownChanged">
