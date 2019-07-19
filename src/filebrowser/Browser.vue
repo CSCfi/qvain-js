@@ -42,6 +42,19 @@
 				<!--<PASMetadata v-else :identifier="data.item.identifier" :folder="data.item" />-->
 			</template>
 		</b-table>
+		<b-pagination
+			size="sm"
+			align="center"
+			hide-goto-end-buttons
+			hide-ellipsis
+			v-model="pagination.page"
+			:per-page="pagination.limit"
+			first-text="First"
+			prev-text="Prev"
+			next-text="Next"
+			last-text="Last"
+			label-page="Page"/>
+			<!--:total-rows="datasetsView.filteredCount"-->
 	</div>
 </template>
 
@@ -134,6 +147,10 @@ export default {
 				directories: [],
 				files: [],
 			},
+			pagination: {
+				page: 1,
+				limit: 2
+			}
 		}
 	},
 	methods: {
@@ -158,7 +175,7 @@ export default {
 			try {
 				this.error = null
 				const { data } = await fileAPI.get('/directories/files', {
-					params: { project: this.project, path: this.path },
+					params: { project: this.project, path: this.path, limit: this.pagination.limit, offset: this.offset },
 				})
 				this.directory = data
 			} catch (error) {
@@ -193,6 +210,9 @@ export default {
 		},
 	},
 	computed: {
+		offset() {
+			return this.pagination.limit * (this.pagination.page - 1)
+		},
 		path() {
 			const { relpath } = this.$route.params
 			if (!relpath) {
