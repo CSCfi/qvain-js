@@ -9,8 +9,8 @@
     "test": "mocha --require babel-register",
     "clean": "rm -rf build/"
   },
-  "author": "Ministry of Education and Culture, Finland",
-  "license": "ISC",
+  "author": "Wouter Van Hemel",
+  "license": "MIT",
   "private": true,
   "dependencies": {
     "deep-equal": "^1.0.1",
