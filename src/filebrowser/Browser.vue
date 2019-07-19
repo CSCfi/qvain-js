@@ -30,6 +30,13 @@
 				<span v-else>{{data.item.name}}</span>
 			</template>
 
+			<template
+				slot="identifier"
+				slot-scope="data"
+			>
+				{{ data.item.type !== 'files' ? '' : data.item.identifier }}
+			</template>
+			
 			<template slot="actions" slot-scope="data">
 				<b-btn variant="primary" v-if="data.item.type === 'files'" size="sm" @click.stop="data.toggleDetails" class="mr-2">{{ data.detailsShowing ? 'Hide' : 'Show'}} PAS metadata</b-btn>
 			</template>
