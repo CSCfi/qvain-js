@@ -12,11 +12,14 @@
 							(no title)
 						</span>
 						<span class="secondary-text text-muted">
-							<span >
-								{{ selectedSchema.title }}
+							<span>
+								{{ selectedSchema.title }}
 							</span>
 						</span>
-						<span class="secondary-text text-muted" v-if="qvainData">
+						<span
+							v-if="qvainData"
+							class="secondary-text text-muted"
+						>
 							<span v-if="qvainData && qvainData.published && !isPublishedAndUpdateAvailable">
 								<font-awesome-icon icon="circle" class="fa-sm text-primary" />
 								&nbsp;
@@ -44,7 +47,6 @@
 								&nbsp;<span>Unsaved draft</span>
 							</span>
 						</span>
-
 					</h4>
 				</b-row>
 				<b-navbar-toggle target="nav-collapse" class="navbar-toggler ml-auto"></b-navbar-toggle>
@@ -69,8 +71,8 @@
 						</b-col>
 						<b-col>
 							<b-button
-								v-if="!loading && selectedSchema" 
-								id="editor_button_save_top" 
+								v-if="!loading && selectedSchema"
+								id="editor_button_save_top"
 								:variant="isSaveDisabled ? 'outline-secondary' : 'success'"
 								@click="save"
 								:disabled="isSaveDisabled"
@@ -116,8 +118,8 @@
 		<b-alert variant="warning"><font-awesome-icon icon="info"></font-awesome-icon> Publishing: I understand that publishing this dataset:</b-alert>
 
 		<!-- Modals -->
-		<dataset-json-modal id="dataset-json-modal"></dataset-json-modal>
-		<dataset-overview-modal id="dataset-overview-modal"></dataset-overview-modal>
+		<dataset-json-modal id="dataset-json-modal" />
+		<dataset-overview-modal id="dataset-overview-modal"/>
 		<b-modal ref="publishModal" id="publishModal" title="Publish dataset?"
 			ok-title="Publish" cancel-variant="primary" ok-variant="success" @ok="publish">
 			<div class="d-block text-left">
@@ -128,7 +130,12 @@
 				</ul>
 			</div>
 		</b-modal>
-		<publish-modal ref="publishErrorModal" id="publishErrorModal" :error="publishError" @hidden="publishError = null"></publish-modal>
+		<publish-modal
+			id="publishErrorModal"
+			ref="publishErrorModal"
+			:error="publishError"
+			@hidden="publishError = null"
+		/>
 
 		<b-container>
 			<b-row no-gutters>
@@ -218,7 +225,6 @@
 				</b-col>
 			</b-row>
 		</b-container>
-
 	</b-container>
 </template>
 
@@ -291,7 +297,7 @@ export default {
 				cancelTitle: noButtonTitle,
 				footerClass: 'p-2',
 				hideHeaderClose: false,
-				centered: true
+				centered: true,
 			})
 			.then(callback)
 			.catch(err => {
@@ -482,9 +488,9 @@ export default {
 			this.validator.v = this.$store.state.vState
 			this.unsubscribeFunc = this.$store.subscribe((mutation) => {
 				if (mutation.type !== 'initValue') {
-					const data = cloneWithPrune(this.$store.state.record, ["#key"], [])					
+					const data = cloneWithPrune(this.$store.state.record, ["#key"], [])
 					this.validator.validateData(data)
-				}					
+				}
 				// the data has been changed after the initial load by the user
 				if (mutation.type === 'updateValue' || mutation.type === 'deleteArrayValue' || mutation.type === 'replace') {
 					this.isDataChanged = true
@@ -545,7 +551,7 @@ export default {
 	},
 	beforeRouteLeave(to, from, next) {
 		if (!this.isDataChanged) {
-			next();
+			next()
 			return
 		}
 		this.confirmUnsavedChanges("Leave the editor?", "No, I want to stay.", (value) => {
@@ -649,7 +655,7 @@ h1.component-title {
 	margin-bottom: 0;
 	.secondary-text {
 		font-size: 0.5em;
-		
+
 		display:inline-block;
 		//word-wrap: normal;
 		text-overflow: ellipsis;
