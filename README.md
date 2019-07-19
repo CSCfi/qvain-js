@@ -101,5 +101,5 @@ Note that because Qvain depends on [Vue](https://vuejs.org/v2/guide/installation
 ## License
 
 Qvain metadata description tool
-Copyright (c) 2016–2019 Ministry of Education and Culture, Finland.
+Copyright (c) 2016–2019 National Library of Finland
 Licensed under the GPL 3.0

@@ -9,7 +9,7 @@
     "test": "mocha --require babel-register",
     "clean": "rm -rf build/"
   },
-  "author": "Ministry of Education and Culture, Finland",
+  "author": "Wouter Van Hemel",
   "license": "ISC",
   "private": true,
   "dependencies": {

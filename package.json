@@ -1,8 +1,8 @@
 {
   "name": "qvain-js",
   "description": "Qvain metadata editor",
-  "version": "0.10.2",
-  "author": "Ministry of Education and Culture, Finland",
+  "version": "0.10.0",
+  "author": "Wouter Van Hemel",
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
