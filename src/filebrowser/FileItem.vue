@@ -26,10 +26,10 @@
 				</p>
 			</div>
 			<b-btn-group class="ml-auto">
-				<b-btn variant="primary" class="px-3 py-2" v-b-toggle="single.identifier">
+				<b-btn :disabled="readonly" variant="primary" class="px-3 py-2" v-b-toggle="single.identifier">
 					<font-awesome-icon :icon="icons.faPen"/>
 				</b-btn>
-				<b-btn variant="danger" class="px-3 py-2" @click="$emit('delete', { type, fields: single })">
+				<b-btn :disabled="readonly" variant="danger" class="px-3 py-2" @click="$emit('delete', { type, fields: single })">
 					<font-awesome-icon :icon="icons.faTrash"/>
 				</b-btn>
 			</b-btn-group>
@@ -112,6 +112,7 @@ export default {
 		"single",
 		"removeItem",
 		"type",
+		"readonly",
 	],
 	data() {
 		return {

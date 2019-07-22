@@ -11,6 +11,13 @@
 						<span v-else>
 							(no title)
 						</span>
+						<b-badge
+							v-if="$store.state.metadata.isOldVersion"
+							variant="warning"
+							class="old-version"
+						>
+							Old version
+						</b-badge>
 						<span class="secondary-text text-muted">
 							<span>
 								{{ selectedSchema.title }}
@@ -547,6 +554,15 @@ export default {
 				this.clearRecord()
 				await this.openRecord(this.id)
 			}
+		},
+		'qvainData.next': {
+			handler(newNext) {
+				const newBool = !!newNext
+				if (this.$store.state.metadata.isOldVersion !== newNext) {
+					this.$store.commit('setMetadata', { isOldVersion: newBool })
+				}
+			},
+			immediate: true,
 		},
 	},
 	beforeRouteLeave(to, from, next) {
