@@ -2,7 +2,7 @@
 <template>
 	<div>
 		<b-alert :show="readonly">
-			You are editing an old version of a dataset and cannot make changes to the files.
+			You are editing an old version of the dataset and cannot make changes to the files.
 		</b-alert>
 
 		<b-dropdown v-if="!readonly" text="Change project" class="my-3">
