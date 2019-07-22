@@ -11,7 +11,6 @@
 			</b-dropdown-item>
 		</b-dropdown>
 
-
 		<b-alert :show="hasFilesFromOtherProject" variant="danger">
 			You may only select files from one project. You may browse other project but adding files is disabled. Remove selected files to change project.
 		</b-alert>

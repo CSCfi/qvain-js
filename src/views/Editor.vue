@@ -126,7 +126,7 @@
 
 		<!-- Modals -->
 		<dataset-json-modal id="dataset-json-modal" />
-		<dataset-overview-modal id="dataset-overview-modal"/>
+		<dataset-overview-modal id="dataset-overview-modal" />
 		<b-modal ref="publishModal" id="publishModal" title="Publish dataset?"
 			ok-title="Publish" cancel-variant="primary" ok-variant="success" @ok="publish">
 			<div class="d-block text-left">
