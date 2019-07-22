@@ -282,6 +282,12 @@ export default {
 			return null
 		},
 		confirmUnsavedChanges(dialogTitle, noButtonTitle, callback) {
+			// if session is lost, user cannot save
+			if (this.$auth.user === null) {
+				callback(true)
+				return
+			}
+
 			this.$bvModal.msgBoxConfirm('If you will select <yes> then all the unsaved changes will be lost. Are you sure?', {
 				title: dialogTitle,
 				size: 'md',
@@ -291,12 +297,18 @@ export default {
 				cancelTitle: noButtonTitle,
 				footerClass: 'p-2',
 				hideHeaderClose: false,
-				centered: true
+				centered: true,
 			})
-			.then(callback)
-			.catch(err => {
-				console.log(err)
-			})
+				.then(callback)
+				.catch(err => {
+					console.log(err)
+				})
+		},
+		async handleLostSession() {
+			// there was a permission error
+			// we should redirect the user to login
+			await this.$auth.logoutDueSessionTimeout()
+			this.$router.push({ name: "home", params: { missingToken: true }})
 		},
 		viewInEtsin() {
 			window.open(`${process.env.VUE_APP_ETSIN_API_URL}/${this.qvainData.identifier}`, '_blank')
@@ -321,10 +333,7 @@ export default {
 				// check if we got an api error for the modal, else show a generic error message
 				console.log("publish error:", e, Object.keys(e))
 				if (e.response && e.response.status == 401) {
-					// there was a permission error
-					// we should redirect the user to login
-					await this.$auth.logoutDueSessionTimeout()
-					this.$router.push({name: "home", params: {missingToken: true}})
+					this.handleLostSession()
 				}
 				if (e.response && e.response.data) {
 					this.publishError = e.response.data
@@ -364,10 +373,7 @@ export default {
 			} catch(error) {
 				this.$root.showAlert("Save failed!", "danger")
 				if (error.response && error.response.status == 401) {
-					// there was a permission error
-					// we should redirect the user to login
-					await this.$auth.logoutDueSessionTimeout()
-					this.$router.push({name: "home", params: {missingToken: true}})
+					this.handleLostSession()
 				}
 			} finally {
 				this.saving = false
@@ -435,10 +441,7 @@ export default {
 				this.qvainData = data
 			} catch (error) {
 				if (error.response && error.response.status == 401) {
-					// there was a permission error
-					// we should redirect the user to login
-					await this.$auth.logoutDueSessionTimeout()
-					this.$router.push({name: "home", params: {missingToken: true}})
+					this.handleLostSession()
 				}
 				console.log(error)
 			} finally {
