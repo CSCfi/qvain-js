@@ -180,7 +180,22 @@ export default {
 		'description': "Location for the dataset (YSO places), e.g. location of observations.",
 		'help': "Start typing the location in order to get the list to choose from.",
 	},
-
+	'/properties/other_identifier/*': {
+		'ignored': ['local_identifier_type'],
+		'order': [ 'notation', 'type', 'provider' ],
+	},
+	'/properties/other_identifier/*/properties/type': {
+		'widget': 'reference-data',
+		'props': {
+			'esIndex': "reference_data",
+			'esDoctype': "identifier_type",
+			'typeahead': false,
+			'tags': false,
+			'async': false,
+			'count': 100,
+			'grouped': false,
+		},
+	},
 	// "producer project"
 	'/properties/is_output_of': {
 		'tab': 'actors',
@@ -895,7 +910,7 @@ export default {
 		'title': "Preferred identifier",
 	},
 	'/properties/other_identifier': {
-		'tab': 'extra',
+		'tab': 'relations',
 		'title': "Other identifier",
 	},
 	'/properties/total_ida_byte_size': {

@@ -50,11 +50,11 @@
 				uiLabel="Use category"
 				:value="single.use_category"
 				:setValue="v => {
-					single.use_category = {
+					$set(single, 'use_category', {
 						in_scheme: v.in_scheme,
 						identifier: v.identifier,
 						pref_label: v.pref_label,
-					}
+					})
 				}"
 				type="multiselect"
 				:customLabel="(item) => item['pref_label'] ?
@@ -73,11 +73,11 @@
 				uiLabel="File Type"
 				:value="single.file_type"
 				:setValue="v => {
-					single.file_type = {
+					$set(single, 'file_type', {
 						in_scheme: v.in_scheme,
 						identifier: v.identifier,
 						pref_label: v.pref_label,
-					}
+					})
 				}"
 				:customLabel="(item) => item['pref_label'] ?
 					item['pref_label']['en'] ||
