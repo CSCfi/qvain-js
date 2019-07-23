@@ -69,8 +69,8 @@
 						</b-col>
 						<b-col>
 							<b-button
-								v-if="!loading && selectedSchema" 
-								id="editor_button_save_top" 
+								v-if="!loading && selectedSchema"
+								id="editor_button_save_top"
 								:variant="isSaveDisabled ? 'outline-secondary' : 'success'"
 								@click="save"
 								:disabled="isSaveDisabled"
@@ -281,28 +281,24 @@ export default {
 			}
 			return null
 		},
-		confirmUnsavedChanges(dialogTitle, noButtonTitle, callback) {
+		async confirmUnsavedChanges(dialogTitle, noButtonTitle, callback) {
 			// if session is lost, user cannot save
 			if (this.$auth.user === null) {
 				callback(true)
-				return
-			}
-
-			this.$bvModal.msgBoxConfirm('If you will select <yes> then all the unsaved changes will be lost. Are you sure?', {
-				title: dialogTitle,
-				size: 'md',
-				buttonSize: 'md',
-				okVariant: 'danger',
-				okTitle: 'Yes',
-				cancelTitle: noButtonTitle,
-				footerClass: 'p-2',
-				hideHeaderClose: false,
-				centered: true,
-			})
-				.then(callback)
-				.catch(err => {
-					console.log(err)
+			} else {
+				const value = await this.$bvModal.msgBoxConfirm('If you will select <yes> then all the unsaved changes will be lost. Are you sure?', {
+					title: dialogTitle,
+					size: 'md',
+					buttonSize: 'md',
+					okVariant: 'danger',
+					okTitle: 'Yes',
+					cancelTitle: noButtonTitle,
+					footerClass: 'p-2',
+					hideHeaderClose: false,
+					centered: true,
 				})
+				callback(value)
+			}
 		},
 		async handleLostSession() {
 			// there was a permission error
