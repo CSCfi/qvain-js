@@ -2,8 +2,15 @@
 <template>
 	<b-card no-body class="my-3 p-0 m-0 border-0">
 		<b-list-group flush>
-			<b-list-group-item class="border-0" v-for="propName in sortedProps" :key="propName">
+			<b-list-group-item
+				v-for="propName in sortedProps"
+				v-show="!isPropHidden(propName)"
+				:key="propName"
+				class="border-0"
+			>
 				<TabSelector
+					v-if="shouldCreateProp(propName)"
+					:key="propName"
 					:schema="schema['properties'][propName]"
 					:required="(schema.required || []).includes(propName)"
 					:path="newPath('properties/' + propName)"
@@ -11,19 +18,13 @@
 					:parent="value"
 					:property="propName"
 					:tab="myTab"
-					:activeTab="activeTab"
+					:active-tab="activeTab"
 					:depth="depth"
-					:key="propName"
-					v-if="shouldCreateProp(propName)"
-					v-show="propName !== '@type'">
-				</TabSelector>
+				/>
 			</b-list-group-item>
 		</b-list-group>
 	</b-card>
 </template>
-
-<style>
-</style>
 
 <script>
 import vSchemaBase from './base.vue'
@@ -39,6 +40,10 @@ export default {
 		}
 	},
 	methods: {
+		isPropHidden(prop) {
+			const ui = this.propUi(prop)
+			return prop === '@type' || !this.shouldCreateProp(prop) || (ui.tab && ui.tab !== this.activeTab) || ui.visible === false
+		},
 		shouldCreateProp(prop) {
 			if (prop === 'is_part_of') {
 				return false
