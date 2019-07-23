@@ -1,7 +1,11 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
 	<div>
-		<b-dropdown text="Change project" class="my-3">
+		<b-alert :show="readonly">
+			You are editing an old version of the dataset and cannot make changes to the files.
+		</b-alert>
+
+		<b-dropdown v-if="!readonly" text="Change project" class="my-3">
 			<b-dropdown-item v-for="proj in projects" :key="proj" @click="updateProject(proj)">
 				Project {{proj}}
 			</b-dropdown-item>
@@ -19,6 +23,7 @@
 			</b-row>
 
 			<Browser
+				v-if="!readonly"
 				:selected="selectedByIdentifiers"
 				:project="selectedProject"
 				:disabled="hasFilesFromOtherProject"
@@ -39,6 +44,7 @@
 						:type="category"
 						:secondary="item.identifier"
 						:icon="icons[category]"
+						:readonly="readonly"
 						@delete="removeFileOrDirectory"/>
 				</div>
 			</b-card>
@@ -124,11 +130,18 @@ export default {
 		},
 	},
 	computed: {
+		readonly() {
+			return this.$store.state.metadata.isOldVersion
+		},
 		projects() {
 			return this.$auth.user.projects || []
 			// return ['project_x', '2001036'] // this is only for development purpose
 		},
 		selectedProject() {
+			if (this.readonly) {
+				return this.project || null
+			}
+
 			const { project: projectIDInRoute } = this.$route.params
 			const usersFirstProject = this.$auth.user.projects[0]
 
