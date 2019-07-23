@@ -313,48 +313,56 @@ export default {
 		'help': "What was the role of the given creator on this dataset.",
 	},
 	'/properties/creator/*/oneOf/*/properties/telephone': {
+		'tab': 'extra',
 		'props': {
 			'tabFormat': false,
 			'wrapped': false,
 		},
 	},
 	'/properties/creator/*/oneOf/*/properties/member_of/properties/telephone': {
+		'tab': 'extra',
 		'props': {
 			'tabFormat': false,
 			'wrapped': false,
 		},
 	},
 	'/properties/contributor/*/oneOf/*/properties/telephone': {
+		'tab': 'extra',
 		'props': {
 			'tabFormat': false,
 			'wrapped': false,
 		},
 	},
 	'/properties/contributor/*/oneOf/*/properties/member_of/properties/telephone': {
+		'tab': 'extra',
 		'props': {
 			'tabFormat': false,
 			'wrapped': false,
 		},
 	},
 	'/properties/rights_holder/*/oneOf/*/properties/telephone': {
+		'tab': 'extra',
 		'props': {
 			'tabFormat': false,
 			'wrapped': false,
 		},
 	},
 	'/properties/rights_holder/*/oneOf/*/properties/member_of/properties/telephone': {
+		'tab': 'extra',
 		'props': {
 			'tabFormat': false,
 			'wrapped': false,
 		},
 	},
 	'/properties/curator/*/oneOf/*/properties/telephone': {
+		'tab': 'extra',
 		'props': {
 			'tabFormat': false,
 			'wrapped': false,
 		},
 	},
 	'/properties/curator/*/oneOf/*/properties/member_of/properties/telephone': {
+		'tab': 'extra',
 		'props': {
 			'tabFormat': false,
 			'wrapped': false,
@@ -570,12 +578,14 @@ export default {
 		'help': "What was the role of the given publisher on this dataset.",
 	},
 	'/properties/publisher/oneOf/*/properties/telephone': {
+		'tab': 'extra',
 		'props': {
 			'tabFormat': false,
 			'wrapped': false,
 		},
 	},
 	'/properties/publisher/oneOf/*/properties/member_of/properties/telephone': {
+		'tab': 'extra',
 		'props': {
 			'tabFormat': false,
 			'wrapped': false,
