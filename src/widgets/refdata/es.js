@@ -56,6 +56,10 @@ export default function esApiClient(index, doctype) {
 		})
 }
 
+const http = axios.create({
+	adapter: throttleAdapterEnhancer(cacheAdapterEnhancer(axios.defaults.adapter)),
+})
+
 export function esApiSearchClient(index, doctype, searchterm, count) {
 	const params = {
 		size: count,
@@ -63,11 +67,6 @@ export function esApiSearchClient(index, doctype, searchterm, count) {
 		filter_path: 'hits.hits._source',
 		q: searchterm,
 	}
-
-	const http = axios.create({
-		headers: { 'Cache-Control': 'no-cache' },
-		adapter: throttleAdapterEnhancer(cacheAdapterEnhancer(axios.defaults.adapter)),
-	})
 
 	return http.get(`${apiUrl}/${index}/${doctype}/_search`, {
 		params,
