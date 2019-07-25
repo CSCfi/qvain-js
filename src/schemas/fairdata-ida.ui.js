@@ -180,7 +180,22 @@ export default {
 		'description': "Location for the dataset (YSO places), e.g. location of observations.",
 		'help': "Start typing the location in order to get the list to choose from.",
 	},
-
+	'/properties/other_identifier/*': {
+		'ignored': ['local_identifier_type'],
+		'order': [ 'notation', 'type', 'provider' ],
+	},
+	'/properties/other_identifier/*/properties/type': {
+		'widget': 'reference-data',
+		'props': {
+			'esIndex': "reference_data",
+			'esDoctype': "identifier_type",
+			'typeahead': false,
+			'tags': false,
+			'async': false,
+			'count': 100,
+			'grouped': false,
+		},
+	},
 	// "producer project"
 	'/properties/is_output_of': {
 		'tab': 'actors',
@@ -298,48 +313,56 @@ export default {
 		'help': "What was the role of the given creator on this dataset.",
 	},
 	'/properties/creator/*/oneOf/*/properties/telephone': {
+		'tab': 'extra',
 		'props': {
 			'tabFormat': false,
 			'wrapped': false,
 		},
 	},
 	'/properties/creator/*/oneOf/*/properties/member_of/properties/telephone': {
+		'tab': 'extra',
 		'props': {
 			'tabFormat': false,
 			'wrapped': false,
 		},
 	},
 	'/properties/contributor/*/oneOf/*/properties/telephone': {
+		'tab': 'extra',
 		'props': {
 			'tabFormat': false,
 			'wrapped': false,
 		},
 	},
 	'/properties/contributor/*/oneOf/*/properties/member_of/properties/telephone': {
+		'tab': 'extra',
 		'props': {
 			'tabFormat': false,
 			'wrapped': false,
 		},
 	},
 	'/properties/rights_holder/*/oneOf/*/properties/telephone': {
+		'tab': 'extra',
 		'props': {
 			'tabFormat': false,
 			'wrapped': false,
 		},
 	},
 	'/properties/rights_holder/*/oneOf/*/properties/member_of/properties/telephone': {
+		'tab': 'extra',
 		'props': {
 			'tabFormat': false,
 			'wrapped': false,
 		},
 	},
 	'/properties/curator/*/oneOf/*/properties/telephone': {
+		'tab': 'extra',
 		'props': {
 			'tabFormat': false,
 			'wrapped': false,
 		},
 	},
 	'/properties/curator/*/oneOf/*/properties/member_of/properties/telephone': {
+		'tab': 'extra',
 		'props': {
 			'tabFormat': false,
 			'wrapped': false,
@@ -555,12 +578,14 @@ export default {
 		'help': "What was the role of the given publisher on this dataset.",
 	},
 	'/properties/publisher/oneOf/*/properties/telephone': {
+		'tab': 'extra',
 		'props': {
 			'tabFormat': false,
 			'wrapped': false,
 		},
 	},
 	'/properties/publisher/oneOf/*/properties/member_of/properties/telephone': {
+		'tab': 'extra',
 		'props': {
 			'tabFormat': false,
 			'wrapped': false,
@@ -895,7 +920,7 @@ export default {
 		'title': "Preferred identifier",
 	},
 	'/properties/other_identifier': {
-		'tab': 'extra',
+		'tab': 'relations',
 		'title': "Other identifier",
 	},
 	'/properties/total_ida_byte_size': {
