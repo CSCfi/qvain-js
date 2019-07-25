@@ -6277,6 +6277,18 @@
 									"format": "uri"
 								}
 							},
+							"anyOf": [
+								{
+									"required": [
+										"identifier"
+									]
+								},
+								{
+									"required": [
+										"license"
+									]
+								}
+							],
 							"additionalProperties": false
 						}
 					},
@@ -6806,6 +6818,18 @@
 										"format": "uri"
 									}
 								},
+								"anyOf": [
+									{
+										"required": [
+											"identifier"
+										]
+									},
+									{
+										"required": [
+											"license"
+										]
+									}
+								],
 								"additionalProperties": false
 							},
 							{

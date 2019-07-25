@@ -21,7 +21,6 @@ function addRequired(obj, value) {
 }
 
 function makeLicenseOneOf(schema) {
-	delete schema.definitions.ResearchDataLicenseDocument.anyOf
 	const license = { ...schema.definitions.RightsStatement.properties.license.items }
 	license.title = "License dropdown"
 	license.required = []
