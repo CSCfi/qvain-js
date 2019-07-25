@@ -120,7 +120,6 @@
         "CatalogRecord":{
             "title":"Catalog Record",
             "type":"object",
-            "minProperties": 1,
             "@id":"http://www.w3.org/ns/dcat#CatalogRecord",
             "description":"A record in a data catalog, describing a single dataset.",
             "properties":{
@@ -193,7 +192,8 @@
                     "type":"array",
                     "items":{
                         "minLength": 1,
-                        "type":"string"
+                        "type":"string",
+                        "minLength": 1
                     }
                 },
                 "preservation_description":{
@@ -281,44 +281,6 @@
             ],
             "additionalProperties": true
         },
-        "Checksum":{
-            "title":"Checksum",
-            "type":"object",
-            "minProperties": 1,
-            "@id":"http://spdx.org/rdf/terms#Checksum",
-            "description":"",
-            "properties":{
-                "algorithm":{
-                    "@id":"http://spdx.org/rdf/terms#algorithm",
-                    "title":"Algorithm",
-                    "description":"Used checksum algortihm",
-                    "enum":[
-                        "MD5",
-                        "SHA-1",
-                        "SHA-224",
-                        "SHA-256",
-                        "SHA-384",
-                        "SHA-512",
-                        "OTHER"
-                    ],
-                    "@type":"http://www.w3.org/2001/XMLSchema#string",
-                    "type":"string"
-                },
-                "checksum_value":{
-                    "@id":"http://spdx.org/rdf/terms#checksumValue",
-                    "title":"Checksum value",
-                    "description":"Value of the checksum. xsd:hexBinary",
-                    "@type":"http://www.w3.org/2001/XMLSchema#hexBinary",
-                    "minLength": 1,
-                    "type":"string"
-                }
-            },
-            "required":[
-                "checksum_value",
-                "algorithm"
-            ],
-            "additionalProperties": false
-        },
         "Concept":{
             "title":"Concept",
             "type":"object",
@@ -366,50 +328,53 @@
             ],
             "additionalProperties": false
         },
-        "DistributionCharacteristics":{
-            "title":"File characteristics",
+        "Directory":{
+            "title":"Directory in IDA",
             "type":"object",
             "minProperties": 1,
-            "@id":"http://www.loc.gov/premis/rdf/v1#ObjectCharasteristics",
-            "description":"Technical properties of files",
+            "@id":"http://www.w3.org/ns/dcat#Distribution",
+            "description":"Directory that links to its contained resources.",
             "properties":{
+                "identifier":{
+                    "@id":"http://purl.org/dc/terms/identifier",
+                    "title":"Identifier",
+                    "description":"Unique identifier for the distribution",
+                    "@type":"@id",
+                    "minLength": 1,
+                    "type":"string",
+                    "format":"uri",
+                    "example":[
+                        ""
+                    ]
+                },
                 "title":{
                     "@id":"http://purl.org/dc/terms/title",
-                    "title":"File Type Name",
-                    "description":"A name of the file type",
+                    "title":"Title",
+                    "description":"A name given to the file.",
                     "@type":"http://www.w3.org/2001/XMLSchema#string",
                     "minLength": 1,
                     "type":"string"
                 },
                 "description":{
                     "@id":"http://purl.org/dc/terms/description",
-                    "title":"File Type Description",
-                    "description":"Description of the file type",
+                    "title":"Description",
+                    "description":"Free-text account of the file.",
                     "@type":"http://www.w3.org/2001/XMLSchema#string",
                     "minLength": 1,
                     "type":"string"
                 },
-                "application_name":{
-                    "@id":"http://www.loc.gov/premis/rdf/v1#hasCreatingApplicationName",
-                    "title":"Application name",
-                    "description":"A designation for the name of the software program that created the object",
-                    "@type":"http://www.w3.org/2001/XMLSchema#string",
-                    "minLength": 1,
-                    "type":"string",
-                    "example":[
-                        "MSWord"
-                    ]
-                },
-                "encoding":{
-                    "@id":"http://schema.org/encoding",
-                    "title":"Text encoding",
-                    "description":"Used text encoding",
-                    "@type":"http://www.w3.org/2001/XMLSchema#string",
-                    "minLength": 1,
-                    "type":"string"
+                "use_category":{
+                    "@id":"http://uri.suomi.fi/datamodel/ns/mrd#usetype",
+                    "title":"Use Category",
+                    "description":"Use category from reference data",
+                    "@type":"@id",
+                    "type":"object",
+                    "$ref":"#/definitions/Concept"
                 }
             },
             "required":[
+                "identifier",
+                "use_category",
                 "title"
             ],
             "additionalProperties": false
@@ -494,7 +459,7 @@
                     "type":"string"
                 }
             },
-            "additionalProperties": false
+            "additionalProperties": true
         },
         "EntityRelation":{
             "title":"Entity relation",
@@ -522,6 +487,65 @@
             "required":[
                 "relation_type",
                 "entity"
+            ],
+            "additionalProperties": false
+        },
+        "File":{
+            "title":"File in IDA",
+            "type":"object",
+            "minProperties": 1,
+            "@id":"http://www.w3.org/ns/dcat#Distribution",
+            "description":"File in IDA",
+            "properties":{
+                "identifier":{
+                    "@id":"http://purl.org/dc/terms/identifier",
+                    "title":"Identifier",
+                    "description":"Unique identifier for the distribution",
+                    "@type":"@id",
+                    "minLength": 1,
+                    "type":"string",
+                    "format":"uri",
+                    "example":[
+                        ""
+                    ]
+                },
+                "title":{
+                    "@id":"http://purl.org/dc/terms/title",
+                    "title":"Title",
+                    "description":"A name given to the file.",
+                    "@type":"http://www.w3.org/2001/XMLSchema#string",
+                    "minLength": 1,
+                    "type":"string"
+                },
+                "description":{
+                    "@id":"http://purl.org/dc/terms/description",
+                    "title":"Description",
+                    "description":"Free-text account of the file.",
+                    "@type":"http://www.w3.org/2001/XMLSchema#string",
+                    "minLength": 1,
+                    "type":"string"
+                },
+                "file_type":{
+                    "@id":"http://purl.org/dc/terms/type",
+                    "title":"File type",
+                    "description":"File type from reference data",
+                    "@type":"@id",
+                    "type":"object",
+                    "$ref":"#/definitions/Concept"
+                },
+                "use_category":{
+                    "@id":"http://uri.suomi.fi/datamodel/ns/mrd#usetype",
+                    "title":"Use category",
+                    "description":"Use type of the resource",
+                    "@type":"@id",
+                    "type":"object",
+                    "$ref":"#/definitions/Concept"
+                }
+            },
+            "required":[
+                "identifier",
+                "use_category",
+                "title"
             ],
             "additionalProperties": false
         },
@@ -617,8 +641,8 @@
             "properties":{
                 "@type":{
                     "type":"string",
-            		"enum":["Organization"]
-            	},
+                    "enum":["Organization"]
+                },
                 "identifier":{
                     "@id":"http://purl.org/dc/terms/identifier",
                     "title":"Identifier",
@@ -734,8 +758,8 @@
             "properties":{
                 "@type":{
                     "type":"string",
-            		"enum":["Person"]
-            	},
+                    "enum":["Person"]
+                },
                 "identifier":{
                     "@id":"http://purl.org/dc/terms/identifier",
                     "title":"Identifier",
@@ -943,7 +967,7 @@
             "title":"Agent",
             "type":"object",
             "@id":"http://xmlns.com/foaf/0.1/Agent",
-			"oneOf":[
+            "oneOf":[
                 {"$ref": "#/definitions/Person"},
                 {"$ref": "#/definitions/Organization"}
             ],
@@ -991,8 +1015,11 @@
                     "format":"uri"
                 }
             },
-            "required":[
-                "identifier"
+            "anyOf":[
+                {"required":
+                  ["identifier"]},
+                {"required":
+                  ["license"]}
             ],
             "additionalProperties": false
         },
@@ -1236,17 +1263,6 @@
                         "$ref":"#/definitions/Concept"
                     }
                 },
-                "remote_resources":{
-                    "@id":"http://www.w3.org/ns/dcat#distribution",
-                    "title":"Remote resources",
-                    "description":"A concrete storage or expression format for the data in the dataset, for example a file, a database or a query interface to the data.",
-                    "@type":"@id",
-                    "type":"array",
-                    "items":{
-                        "type":"object",
-                        "$ref":"#/definitions/WebResource"
-                    }
-                },
                 "access_rights":{
                     "@id":"http://www.w3.org/ns/dcat#accessRights",
                     "title":"Access rights",
@@ -1272,6 +1288,17 @@
                     "@type":"http://www.w3.org/2001/XMLSchema#decimal",
                     "type":"number"
                 },
+                "files":{
+                    "@id":"http://www.w3.org/ns/dcat#distribution",
+                    "title":"List of files",
+                    "description":"Connects a dataset to one or more of files in IDA",
+                    "@type":"@id",
+                    "type":"array",
+                    "items":{
+                        "type":"object",
+                        "$ref":"#/definitions/File"
+                    }
+                },
                 "curator":{
                     "@id":"http://uri.suomi.fi/datamodel/ns/mrd#curator",
                     "title":"Curator",
@@ -1281,6 +1308,17 @@
                     "items":{
                         "type":"object",
                         "$ref":"#/definitions/ResearchAgent"
+                    }
+                },
+                "directories":{
+                    "@id":"http://www.w3.org/ns/dcat#distribution",
+                    "title":"List of directories",
+                    "description":"Connects a dataset to one of its available distributions.",
+                    "@type":"@id",
+                    "type":"array",
+                    "items":{
+                        "type":"object",
+                        "$ref":"#/definitions/Directory"
                     }
                 },
                 "infrastructure":{
@@ -1294,10 +1332,10 @@
                         "$ref":"#/definitions/Concept"
                     }
                 },
-                "total_remote_resources_byte_size":{
-                    "@id":"http://uri.suomi.fi/datamodel/ns/mrd#totalremoteresourcesbytesize",
-                    "title":"Total remote resources byte size",
-                    "description":"Sum of all remote resources distribution byte size. Read only field.",
+                "total_files_byte_size":{
+                    "@id":"http://uri.suomi.fi/datamodel/ns/mrd#totalidabytesize",
+                    "title":"Total ida byte size",
+                    "description":"Byte size sum of all Fairdata managed files. Read only field.",
                     "@type":"http://www.w3.org/2001/XMLSchema#integer",
                     "type":"integer",
                     "readOnly": true
@@ -1487,139 +1525,6 @@
             },
             "required":[
                 "pref_label"
-            ],
-            "additionalProperties": false
-        },
-        "WebResource":{
-            "title":"Remote Web Resource",
-            "type":"object",
-            "minProperties": 1,
-            "@id":"http://www.w3.org/ns/dcat#Distribution",
-            "description":"Represents single available resource in the web.",
-            "properties":{
-                "identifier":{
-                    "@id":"http://purl.org/dc/terms/identifier",
-                    "title":"Identifier",
-                    "description":"Unique identifier for the distribution from file: scheme",
-                    "@type":"@id",
-                    "minLength": 1,
-                    "type":"string",
-                    "format":"uri",
-                    "example":[
-                        "file://etc/data/abc.txt"
-                    ]
-                },
-                "title":{
-                    "@id":"http://purl.org/dc/terms/title",
-                    "title":"Title",
-                    "description":"A name given to the distribution.",
-                    "@type":"http://www.w3.org/2001/XMLSchema#string",
-                    "minLength": 1,
-                    "type":"string"
-                },
-                "description":{
-                    "@id":"http://purl.org/dc/terms/description",
-                    "title":"Description",
-                    "description":"Free-text account of the distribution.",
-                    "@type":"http://www.w3.org/2001/XMLSchema#string",
-                    "minLength": 1,
-                    "type":"string"
-                },
-                "modified":{
-                    "@id":"http://purl.org/dc/terms/modified",
-                    "title":"Date Modified",
-                    "description":"Date on which the resource was changed.",
-                    "@type":"http://www.w3.org/2001/XMLSchema#dateTime",
-                    "minLength": 1,
-                    "type":"string",
-                    "format":"date-time"
-                },
-                "byte_size":{
-                    "@id":"http://www.w3.org/ns/dcat#byteSize",
-                    "title":"Byte size",
-                    "description":"The size of a distribution in bytes.",
-                    "@type":"http://www.w3.org/2001/XMLSchema#integer",
-                    "type":"integer"
-                },
-                "access_url":{
-                    "@id":"http://www.w3.org/ns/dcat#accessURL",
-                    "title":"Access URL",
-                    "description":"Could be any kind of URL that gives access to a distribution of the dataset. E.g. landing page download, feed URL, SPARQL endpoint. Use when your catalog does not have information on which it is or when it is definitely not a download.",
-                    "@type":"@id",
-                    "type":"object",
-                    "$ref":"#/definitions/Document"
-                },
-                "download_url":{
-                    "@id":"http://www.w3.org/ns/dcat#downloadURL",
-                    "title":"Download URL",
-                    "description":"This is a direct link to a downloadable file in a given format. E.g. CSV file or RDF file. The format is described by the distribution's dc:format and/or dcat:mediaType",
-                    "@type":"@id",
-                    "type":"object",
-                    "$ref":"#/definitions/Document"
-                },
-                "checksum":{
-                    "@id":"http://spdx.org/rdf/terms#checksum",
-                    "title":"Checksum",
-                    "description":"Checksum of the manifestation",
-                    "@type":"@id",
-                    "type":"object",
-                    "$ref":"#/definitions/Checksum"
-                },
-                "license":{
-                    "@id":"http://purl.org/dc/terms/license",
-                    "title":"License",
-                    "description":"A legal document giving official permission to do something with the resource.",
-                    "@type":"@id",
-                    "type":"array",
-                    "items":{
-                        "type":"object",
-                        "$ref":"#/definitions/ResearchDataLicenseDocument"
-                    }
-                },
-                "file_type":{
-                    "@id":"http://purl.org/dc/terms/type",
-                    "title":"File type",
-                    "description":"File type from reference data",
-                    "@type":"@id",
-                    "type":"object",
-                    "$ref":"#/definitions/Concept"
-                },
-                "resource_type":{
-                    "@id":"http://uri.suomi.fi/datamodel/ns/mrd#resourcetype",
-                    "title":"Resource type",
-                    "description":"type of the resource",
-                    "@type":"@id",
-                    "type":"object",
-                    "$ref":"#/definitions/Concept"
-                },
-                "use_category":{
-                    "@id":"http://uri.suomi.fi/datamodel/ns/mrd#usetype",
-                    "title":"Use category",
-                    "description":"Use type of the resource",
-                    "@type":"@id",
-                    "type":"object",
-                    "$ref":"#/definitions/Concept"
-                },
-                "has_object_characteristics":{
-                    "@id":"http://www.loc.gov/premis/rdf/v1#hasObjectCharacteristics",
-                    "title":"File charasteristics",
-                    "description":"Fileformat specific charasteristics",
-                    "@type":"@id",
-                    "type":"object",
-                    "$ref":"#/definitions/DistributionCharacteristics"
-                },
-                "mediatype":{
-                    "@id":"http://purl.org/dc/terms/format",
-                    "title":"File format",
-                    "description":"Mediatype as text from https://www.iana.org/assignments/media-types/",
-                    "@type":"http://www.w3.org/2001/XMLSchema#string",
-                    "minLength": 1,
-                    "type":"string"
-                }
-            },
-            "required":[
-                "use_category",
-                "title"
             ],
             "additionalProperties": false
         },

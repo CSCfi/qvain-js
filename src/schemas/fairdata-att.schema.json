@@ -442,7 +442,8 @@
 									}
 								},
 								"required": [
-									"@type"
+									"@type",
+									"name"
 								],
 								"additionalProperties": false
 							},
@@ -991,7 +992,8 @@
 										}
 									},
 									"required": [
-										"@type"
+										"@type",
+										"name"
 									],
 									"additionalProperties": false
 								},
@@ -1310,8 +1312,7 @@
 								}
 							},
 							"required": [
-								"identifier",
-								"name"
+								"identifier"
 							],
 							"additionalProperties": false
 						},
@@ -1500,7 +1501,8 @@
 								}
 							},
 							"required": [
-								"@type"
+								"@type",
+								"name"
 							],
 							"additionalProperties": false
 						},
@@ -1990,7 +1992,8 @@
 											}
 										},
 										"required": [
-											"@type"
+											"@type",
+											"name"
 										],
 										"additionalProperties": false
 									},
@@ -2498,7 +2501,8 @@
 									}
 								},
 								"required": [
-									"@type"
+									"@type",
+									"name"
 								],
 								"additionalProperties": false
 							},
@@ -2989,7 +2993,8 @@
 											}
 										},
 										"required": [
-											"@type"
+											"@type",
+											"name"
 										],
 										"additionalProperties": false
 									},
@@ -3497,7 +3502,8 @@
 									}
 								},
 								"required": [
-									"@type"
+									"@type",
+									"name"
 								],
 								"additionalProperties": false
 							},
@@ -3969,7 +3975,8 @@
 										}
 									},
 									"required": [
-										"@type"
+										"@type",
+										"name"
 									],
 									"additionalProperties": false
 								},
@@ -4406,7 +4413,8 @@
 										}
 									},
 									"required": [
-										"@type"
+										"@type",
+										"name"
 									],
 									"additionalProperties": false
 								},
@@ -4903,7 +4911,8 @@
 											}
 										},
 										"required": [
-											"@type"
+											"@type",
+											"name"
 										],
 										"additionalProperties": false
 									},
@@ -5411,7 +5420,8 @@
 									}
 								},
 								"required": [
-									"@type"
+									"@type",
+									"name"
 								],
 								"additionalProperties": false
 							},
@@ -5872,10 +5882,11 @@
 								"additionalProperties": false
 							}
 						},
+						"additionalProperties": false,
 						"required": [
-							"identifier"
-						],
-						"additionalProperties": false
+							"identifier",
+							"title"
+						]
 					},
 					"relation_type": {
 						"@id": "http://www.w3.org/2004/02/skos/core#Concept",
@@ -6266,9 +6277,6 @@
 									"format": "uri"
 								}
 							},
-							"required": [
-								"identifier"
-							],
 							"additionalProperties": false
 						}
 					},
@@ -6746,8 +6754,9 @@
 						"oneOf": [
 							{
 								"type": "object",
-								"$deref": "#/definitions/ResearchDataLicenseDocument",
 								"title": "License dropdown",
+								"required": [],
+								"$deref": "#/definitions/ResearchDataLicenseDocument",
 								"minProperties": 1,
 								"@id": "http://purl.org/dc/terms/LicenseDocument",
 								"description": "A legal document giving official permission to do something with a Resource.",
@@ -6797,7 +6806,6 @@
 										"format": "uri"
 									}
 								},
-								"required": [],
 								"additionalProperties": false
 							},
 							{
@@ -6815,7 +6823,6 @@
 								},
 								"required": [],
 								"additionalProperties": false
-
 							}
 						]
 					}
@@ -6872,7 +6879,10 @@
 				}
 			},
 			"required": [
-				"access_type"
+				"access_type",
+				"license",
+				"restriction_grounds",
+				"available"
 			],
 			"additionalProperties": false
 		},
@@ -7301,7 +7311,11 @@
 									"additionalProperties": false
 								}
 							},
-							"additionalProperties": false
+							"additionalProperties": false,
+							"required": [
+								"identifier",
+								"title"
+							]
 						}
 					},
 					"was_associated_with": {
@@ -7715,7 +7729,8 @@
 														}
 													},
 													"required": [
-														"@type"
+														"@type",
+														"name"
 													],
 													"additionalProperties": false
 												},
@@ -8223,7 +8238,8 @@
 												}
 											},
 											"required": [
-												"@type"
+												"@type",
+												"name"
 											],
 											"additionalProperties": false
 										},
@@ -8537,7 +8553,10 @@
 						"additionalProperties": false
 					}
 				},
-				"additionalProperties": false
+				"additionalProperties": false,
+				"required": [
+					"title"
+				]
 			}
 		},
 		"value": {
@@ -8958,7 +8977,8 @@
 											}
 										},
 										"required": [
-											"@type"
+											"@type",
+											"name"
 										],
 										"additionalProperties": false
 									},
@@ -9466,7 +9486,8 @@
 									}
 								},
 								"required": [
-									"@type"
+									"@type",
+									"name"
 								],
 								"additionalProperties": false
 							},
