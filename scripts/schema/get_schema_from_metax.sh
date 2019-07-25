@@ -3,6 +3,7 @@
 # -wvh- download latest schemas from metax source code
 #
 # https://github.com/CSCfi/metax-api/tree/test/src/metax_api/api/rest/base/schemas
+#
 
 set -ex
 cd data
