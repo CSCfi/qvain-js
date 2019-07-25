@@ -134,7 +134,7 @@ export default {
 			return this.$store.state.metadata.isOldVersion
 		},
 		projects() {
-			return this.$auth.user.projects || []
+			return (this.$auth.user && this.$auth.user.projects) || []
 			// return ['project_x', '2001036'] // this is only for development purpose
 		},
 		selectedProject() {
@@ -143,7 +143,7 @@ export default {
 			}
 
 			const { project: projectIDInRoute } = this.$route.params
-			const usersFirstProject = this.$auth.user.projects[0]
+			const usersFirstProject = this.projects[0]
 
 			// add current store project before userFirstProject
 			return projectIDInRoute || this.project || usersFirstProject || null

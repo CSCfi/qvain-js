@@ -294,22 +294,30 @@ export default {
 			}
 			return null
 		},
-		confirmUnsavedChanges(dialogTitle, noButtonTitle, callback) {
-			this.$bvModal.msgBoxConfirm('If you will select <yes> then all the unsaved changes will be lost. Are you sure?', {
-				title: dialogTitle,
-				size: 'md',
-				buttonSize: 'md',
-				okVariant: 'danger',
-				okTitle: 'Yes',
-				cancelTitle: noButtonTitle,
-				footerClass: 'p-2',
-				hideHeaderClose: false,
-				centered: true,
-			})
-			.then(callback)
-			.catch(err => {
-				console.log(err)
-			})
+		async confirmUnsavedChanges(dialogTitle, noButtonTitle, callback) {
+			// if session is lost, user cannot save
+			if (this.$auth.user === null) {
+				callback(true)
+			} else {
+				const value = await this.$bvModal.msgBoxConfirm('If you will select <yes> then all the unsaved changes will be lost. Are you sure?', {
+					title: dialogTitle,
+					size: 'md',
+					buttonSize: 'md',
+					okVariant: 'danger',
+					okTitle: 'Yes',
+					cancelTitle: noButtonTitle,
+					footerClass: 'p-2',
+					hideHeaderClose: false,
+					centered: true,
+				})
+				callback(value)
+			}
+		},
+		async handleLostSession() {
+			// there was a permission error
+			// we should redirect the user to login
+			await this.$auth.logoutDueSessionTimeout()
+			this.$router.push({ name: "home", params: { missingToken: true }})
 		},
 		viewInEtsin() {
 			window.open(`${process.env.VUE_APP_ETSIN_API_URL}/${this.qvainData.identifier}`, '_blank')
@@ -334,10 +342,7 @@ export default {
 				// check if we got an api error for the modal, else show a generic error message
 				console.log("publish error:", e, Object.keys(e))
 				if (e.response && e.response.status == 401) {
-					// there was a permission error
-					// we should redirect the user to login
-					await this.$auth.logoutDueSessionTimeout()
-					this.$router.push({name: "home", params: {missingToken: true}})
+					this.handleLostSession()
 				}
 				if (e.response && e.response.data) {
 					this.publishError = e.response.data
@@ -377,10 +382,7 @@ export default {
 			} catch(error) {
 				this.$root.showAlert("Save failed!", "danger")
 				if (error.response && error.response.status == 401) {
-					// there was a permission error
-					// we should redirect the user to login
-					await this.$auth.logoutDueSessionTimeout()
-					this.$router.push({name: "home", params: {missingToken: true}})
+					this.handleLostSession()
 				}
 			} finally {
 				this.saving = false
@@ -448,10 +450,7 @@ export default {
 				this.qvainData = data
 			} catch (error) {
 				if (error.response && error.response.status == 401) {
-					// there was a permission error
-					// we should redirect the user to login
-					await this.$auth.logoutDueSessionTimeout()
-					this.$router.push({name: "home", params: {missingToken: true}})
+					this.handleLostSession()
 				}
 				console.log(error)
 			} finally {
@@ -671,7 +670,6 @@ h1.component-title {
 	margin-bottom: 0;
 	.secondary-text {
 		font-size: 0.5em;
-
 		display:inline-block;
 		//word-wrap: normal;
 		text-overflow: ellipsis;
