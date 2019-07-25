@@ -172,7 +172,6 @@ if (args.length !== 2) {
 	console.log("node compare_schemas.js [-d] schema_from schema_to")
 	console.log("  or to run tests")
 	console.log("node compare_schemas.js -t")
-
 } else {
 	const schemaFrom = require(resolve(args[0]))
 	const schemaTo = require(resolve(args[1]))
