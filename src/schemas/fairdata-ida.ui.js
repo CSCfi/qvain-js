@@ -219,6 +219,7 @@ export default {
 		'help': "Select the funding type.",
 	},
 	'/properties/is_output_of/*/properties/source_organization/*/properties/contributor_type': {
+		'tab': 'extra',
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -265,6 +266,7 @@ export default {
 		'description': 'Please write your name in first_name last_name fashion if possible',
 	},
 	'/properties/creator/*/oneOf/*/properties/contributor_type': {
+		'tab': 'extra',
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -281,6 +283,7 @@ export default {
 		'help': "Select the type of contribution the creator had on the dataset.",
 	},
 	'/properties/creator/*/oneOf/*/properties/member_of/properties/contributor_type': {
+		'tab': 'extra',
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -444,6 +447,7 @@ export default {
 		'help': "What was the role of the given curator on this dataset.",
 	},
 	'/properties/curator/*/oneOf/*/properties/contributor_type': {
+		'tab': 'extra',
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -460,6 +464,7 @@ export default {
 		'help': "Select the type of contribution the given actor had on the dataset.",
 	},
 	'/properties/curator/*/oneOf/*/properties/member_of/properties/contributor_type': {
+		'tab': 'extra',
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -498,6 +503,7 @@ export default {
 		'help': "What was the role of the given rights holder on this dataset.",
 	},
 	'/properties/rights_holder/*/oneOf/*/properties/contributor_type': {
+		'tab': 'extra',
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -514,6 +520,7 @@ export default {
 		'help': "Select the type of contribution the given rights holder had on the dataset.",
 	},
 	'/properties/rights_holder/*/oneOf/*/properties/member_of/properties/contributor_type': {
+		'tab': 'extra',
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -530,6 +537,7 @@ export default {
 		'help': "Select the type of contribution the given rights holder had on the dataset.",
 	},
 	'/properties/publisher/oneOf/*/properties/contributor_type': {
+		'tab': 'extra',
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -546,6 +554,7 @@ export default {
 		'help': "Select the type of contribution the publisher had on the dataset.",
 	},
 	'/properties/publisher/oneOf/*/properties/member_of/properties/contributor_type': {
+		'tab': 'extra',
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -942,5 +951,8 @@ export default {
 	'/properties/version_notes': {
 		'tab': 'extra',
 		'title': "Version notes",
+	},
+	'**/homepage': {
+		'tab': 'extra',
 	},
 }
