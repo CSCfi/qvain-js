@@ -952,4 +952,7 @@ export default {
 		'tab': 'extra',
 		'title': "Version notes",
 	},
+	'**/homepage': {
+		'tab': 'extra',
+	},
 }

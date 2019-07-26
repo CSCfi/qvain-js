@@ -172,8 +172,8 @@ export default new Vuex.Store({
 		},
 		// uiForPath returns the UI overrides for the given path (if any)
 		uiForPath: (state) => (path) => {
-			const searchPathOneOfSensitive = path
-				.split('/')
+			const split = path.split('/')
+			const searchPathOneOfSensitive = split
 				.filter(key => key !== '')
 				.map((key, index, array) => {
 					if (isNaN(key)) {
@@ -185,8 +185,7 @@ export default new Vuex.Store({
 					}
 				}).join('/')
 
-			const searchPathNoNumber = path
-				.split('/')
+			const searchPathNoNumber = split
 				.filter(key => key !== '')
 				.map((key, index, array) => {
 					if (isNaN(key)) {
@@ -196,7 +195,10 @@ export default new Vuex.Store({
 					}
 				}).join('/')
 
-			return state.hints['/' + searchPathOneOfSensitive] || state.hints['/' + searchPathNoNumber] || {}
+			const hints = state.hints['/' + searchPathOneOfSensitive] ||
+				state.hints['/' + searchPathNoNumber] ||
+				state.hints['**/' + split[split.length-1]] || {}
+			return hints
 		},
 		// uiValidKeywordsList returns a static array of valid keywords
 		uiValidKeywordsList: (state) => {
