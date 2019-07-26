@@ -125,8 +125,6 @@
 		<b-alert variant="warning"><font-awesome-icon icon="info"></font-awesome-icon> Publishing: I understand that publishing this dataset:</b-alert>
 
 		<!-- Modals -->
-		<dataset-json-modal id="dataset-json-modal" />
-		<dataset-overview-modal id="dataset-overview-modal" />
 		<b-modal ref="publishModal" id="publishModal" title="Publish dataset?"
 			ok-title="Publish" cancel-variant="primary" ok-variant="success" @ok="publish">
 			<div class="d-block text-left">
@@ -238,8 +236,6 @@
 <script>
 import Bundle from '@/schemas/bundle.js'
 import apiClient from '@/api/client.js'
-import DatasetJsonModal from '@/components/DatasetJsonModal.vue'
-import DatasetOverviewModal from '@/components/DatasetOverviewModal.vue'
 import PublishModal from '@/components/PublishModal.vue'
 import Validator from '../../vendor/validator/src/validate.js'
 import cloneWithPrune from '@/lib/cloneWithPrune.js'
@@ -247,8 +243,6 @@ import cloneWithPrune from '@/lib/cloneWithPrune.js'
 export default {
 	name: "editor",
 	components: {
-		'dataset-json-modal': DatasetJsonModal,
-		'dataset-overview-modal': DatasetOverviewModal,
 		'publish-modal': PublishModal,
 	},
 	props: {
