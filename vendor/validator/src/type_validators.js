@@ -194,7 +194,7 @@ function validateArray(schema, data, path, parent, prop, recurse) {
 
 	// minItems and maxItems
 	// console.warn('Running array validation with min items: ', schema['minItems'], data.length)
-	if (typeof schema['minItems'] === 'number' && data.length < schema['minItems']) this.addError(path, schema, `At least ${ schema['minItems'] === 1 ? 'one' : schema['minItems'] } record${schema['minItems'] > 1 ? '(s)' : ''} are required`)
+	if (typeof schema['minItems'] === 'number' && data.length < schema['minItems']) this.addError(path, schema, `At least ${ schema['minItems'] === 1 ? 'one' : schema['minItems'] } record${schema['minItems'] > 1 ? 's are' : ' is'} required`)
 	if (typeof schema['maxItems'] === 'number' && data.length > schema['maxItems']) this.addError(path, schema, "too many items in array")
 
 	// TODO: optimise (use Set or short-circuit)
