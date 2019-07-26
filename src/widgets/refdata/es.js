@@ -1,6 +1,6 @@
 /* ADD_LICENSE_HEADER */
 import axios from 'axios'
-
+import { cacheAdapterEnhancer, throttleAdapterEnhancer } from 'axios-extensions'
 /*
 
 Reference data fields: code, id, label, type, uri, scheme
@@ -56,6 +56,10 @@ export default function esApiClient(index, doctype) {
 		})
 }
 
+const http = axios.create({
+	adapter: throttleAdapterEnhancer(cacheAdapterEnhancer(axios.defaults.adapter)),
+})
+
 export function esApiSearchClient(index, doctype, searchterm, count) {
 	const params = {
 		size: count,
@@ -64,7 +68,7 @@ export function esApiSearchClient(index, doctype, searchterm, count) {
 		q: searchterm,
 	}
 
-	return axios.get(`${apiUrl}/${index}/${doctype}/_search`, {
+	return http.get(`${apiUrl}/${index}/${doctype}/_search`, {
 		params,
 		timeout: 5000,
 		responseType: 'json',
