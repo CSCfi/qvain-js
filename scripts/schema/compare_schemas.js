@@ -42,7 +42,7 @@ const difftree = (a, b, deep) => {
 					addtree(v[key], path + sep + key)
 				}
 			} else if (v !== undefined) {
-				diffs.push({ path: path, change: "+", val: a })
+				diffs.push({ path: path, change: "+", val: v })
 			}
 		}
 	}
