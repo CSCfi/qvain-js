@@ -73,5 +73,8 @@ export default (idaUi) => {
 			'placeholder': "– choose use category –",
 			'title': "use category",
 		},
+		'/properties/remote_resources/*': {
+			"ignored": ['license'],
+		},
 	}
 }
