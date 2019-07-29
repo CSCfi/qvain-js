@@ -24,7 +24,6 @@ Vue.use(AuthPlugin, {
 	loginUrl: "/api/auth/login",
 	logoutUrl: "/api/sessions/logout",
 	sessionsUrl: "/api/sessions/",
-	cbUrl: "/token",
 })
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
