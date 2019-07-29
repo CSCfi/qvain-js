@@ -2,7 +2,7 @@
 import axios from 'axios'
 import Vue from 'vue'
 
-const StoredSessionName = "session"
+const HaveSessionName = "have_session"
 const LoginErrorName = "login_error"
 
 function User() {
@@ -25,7 +25,7 @@ function UserFromSession(session) {
 function Auth(loginUrl, logoutUrl, sessionsUrl) {
 	// reactive indicator for when session is being loaded from the back-end
 	this.loading = Vue.observable({
-		state: !!this.getStoredSession(), // true if there is a session in sessionStorage
+		state: !!this.getHaveSession(), // true if there is a session in sessionStorage
 	})
 
 	// might be Vue's reactive setter
@@ -111,7 +111,7 @@ Auth.prototype.logout = async function(doNotRedirect) {
 
 	// clear user and stored session
 	this.setUser(null)
-	this.clearStoredSession()
+	this.clearHaveSession()
 	this.clearLoginError()
 	return true
 }
@@ -132,16 +132,16 @@ Auth.prototype.getSession = async function() {
 	}
 }
 
-Auth.prototype.getStoredSession = function() {
-	return sessionStorage.getItem(StoredSessionName)
+Auth.prototype.getHaveSession = function() {
+	return JSON.parse(sessionStorage.getItem(HaveSessionName))
 }
 
-Auth.prototype.setStoredSession = function(session) {
-	return sessionStorage.setItem(StoredSessionName, session)
+Auth.prototype.setHaveSession = function(haveSession) {
+	return sessionStorage.setItem(HaveSessionName, JSON.stringify(haveSession))
 }
 
-Auth.prototype.clearStoredSession = function() {
-	return sessionStorage.removeItem(StoredSessionName)
+Auth.prototype.clearHaveSession = function() {
+	return sessionStorage.removeItem(HaveSessionName)
 }
 
 Auth.prototype.getLoginError = function() {
@@ -163,7 +163,7 @@ Auth.prototype.resumeSession = async function(checkStored) {
 	// for avoiding a backend request when we already know we shouldn't have a session.
 	// The session request will use a session cookie, but we cannot check for its
 	// existence in JavaScript for security reasons.
-	if (checkStored && !this.getStoredSession()) {
+	if (checkStored && !this.getHaveSession()) {
 		this.loading.state = false
 		return false
 	}
@@ -171,9 +171,9 @@ Auth.prototype.resumeSession = async function(checkStored) {
 	const session = await this.getSession()
 	if (session) {
 		this.setUser(UserFromSession(session))
-		this.setStoredSession(session)
+		this.setHaveSession(true)
 	} else {
-		this.clearStoredSession()
+		this.clearHaveSession()
 		this.loading.state = false
 		return false
 	}
