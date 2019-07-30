@@ -16,7 +16,7 @@ function UserFromSession(session) {
 	let user = new User()
 	user.name = session.user.name
 	user.email = session.user.email
-	user.projects = session.user.projects
+	user.projects = session.user.projects || []
 	user.id = session.user.identity
 	user.organisation = session.user.organisation
 	return user
