@@ -187,7 +187,7 @@ export default {
 					// there was a permission error
 					// we should redirect the user to login
 					await this.$auth.logoutDueSessionTimeout()
-					this.$router.push({name: "home", params: {missingToken: true}})
+					this.$router.push({ name: "home", params: { missingSession: true }})
 				} else {
 					throw error;
 				}

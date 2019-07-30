@@ -4,7 +4,7 @@ import Auth from './auth.js'
 // addGlobalGuard adds a hook to Vue router that checks for a boolean `auth` on each route and, if necessary, sends the user to a login page if they are not logged in.
 function addGlobalGuard(router, auth, loginPage) {
 	if (!loginPage) {
-		loginPage = "/login"
+		loginPage = "/"
 	}
 
 	router.beforeEach(async (to, from, next) => {
@@ -34,7 +34,6 @@ function addGlobalGuard(router, auth, loginPage) {
 //   loginUrl: url to login api
 //   logoutUrl: url to logout api
 //   sessionUrl: url to sessions api
-//   cbUrl: url to component that handles token callback
 function plugin(Vue, options) {
 	if (plugin.installed) {
 		return
@@ -52,10 +51,10 @@ function plugin(Vue, options) {
 	}
 
 	const auth = new Auth(options.loginUrl, options.logoutUrl, options.sessionsUrl)
-	auth.resumeSession()
+	auth.resumeSession(true)
 
 	if (options['router']) {
-		addGlobalGuard(options.router, auth, options['cbUrl'])
+		addGlobalGuard(options.router, auth)
 	}
 
 	Object.defineProperty(Vue.prototype, '$auth', {

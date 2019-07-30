@@ -1,76 +1,31 @@
 /* ADD_LICENSE_HEADER */
 import axios from 'axios'
-import {parseJwt, getRandomString} from './jwt.js'
 import Vue from 'vue'
 
-const TokenName = "jwt"
+const HaveSessionName = "have_session"
 const LoginErrorName = "login_error"
 
 function User() {
 	this.id = ""
 	this.name = ""
 	this.email = ""
-	this._jwt = null
 }
 User.prototype.constructor = User
 
-function UserFromToken(token) {
-	let jwt = parseJwt(token)
-
-	if (jwt && jwt['sub']) {
-		let user = new User()
-
-		// Join given_name and family_name if available
-		const nameParts = []
-		if (jwt['given_name']) {
-			nameParts.push(jwt['given_name']);
-		}
-		if (jwt['family_name']) {
-			nameParts.push(jwt['family_name']);
-		}
-		user.name = nameParts.join(" ") || jwt['name'] || ""
-		user.id = jwt['CSCUserName'] || jwt['sub']
-		user.email = jwt['email'] || ""
-		user.expires = jwt['exp'] ? parseUnixTime(jwt.exp) : null
-
-		// Get IDA projects
-		if (jwt['group_names']) {
-			user.projects =
-				filterGroups("fairdata:IDA01:", jwt['group_names']) // old prefix
-				.concat(filterGroups("IDA01:", jwt['group_names'])) // new prefix
-		} else {
-			user.projects = []
-		}
-
-		// SAML/HAKA
-		user.eppn = jwt['eppn'] || null
-		user.organisation = jwt['schacHomeOrganization'] || null
-		user.organisation_type = jwt['schacHomeOrganizationType'] || null
-
-		// cache for debugging purposes
-		user._jwt = jwt
-		return user
-	}
-	return null
-}
-
-// CSC/IDA specific: Get the project number of those projects that are IDA projects
-// fairdata:IDA01:2001036 --> 2001036
-function filterGroups(prefix, groups) {
-	// strip first dot
-	//return groups.filter(grp => grp.startsWith(prefix).map(grp => grp.substring(grp.indexOf(":")+1))
-
-	// strip until last dot
-	//return groups.filter(grp => grp.startsWith(prefix).map(grp => grp.substring(grp.indexOf(":")+1))
-
-	// remove prefix
-	return groups.filter(grp => grp.startsWith(prefix)).map(grp => grp.substring(prefix.length))
+function UserFromSession(session) {
+	let user = new User()
+	user.name = session.user.name
+	user.email = session.user.email
+	user.projects = session.user.projects || []
+	user.id = session.user.identity
+	user.organisation = session.user.organisation
+	return user
 }
 
 function Auth(loginUrl, logoutUrl, sessionsUrl) {
 	// reactive indicator for when session is being loaded from the back-end
 	this.loading = Vue.observable({
-		state: !!this.getToken(), // true if there is a token in sessionStorage
+		state: !!this.getHaveSession(), // true if there is a session in sessionStorage
 	})
 
 	// might be Vue's reactive setter
@@ -98,7 +53,7 @@ function Auth(loginUrl, logoutUrl, sessionsUrl) {
 			if (process.env.NODE_ENV === "development" && process.env.VUE_APP_DEV_TOKEN) {
 				return loginUrl + '?token=' + process.env.VUE_APP_DEV_TOKEN
 			} else {
-				return loginUrl + '?' + getRandomString(8)
+				return loginUrl
 			}
 		},
 	})
@@ -119,18 +74,6 @@ Auth.prototype.constructor = Auth
 
 Auth.prototype.setUser = function(user) {
 	this._user = user
-}
-
-Auth.prototype.login = function(token) {
-	this.setUser(UserFromToken(token))
-
-	if (this.loggedIn) {
-		this.setToken(token)
-		this.clearLoginError()
-		return true
-	}
-	this.clearToken(TokenName)
-	return false
 }
 
 Auth.prototype.logoutDueSessionTimeout = async function() {
@@ -156,9 +99,9 @@ Auth.prototype.logout = async function(doNotRedirect) {
 		return false // logout failed
 	}
 
-	// clear user and stored token
+	// clear user and stored session
 	this.setUser(null)
-	this.clearToken()
+	this.clearHaveSession()
 	this.clearLoginError()
 	return true
 }
@@ -179,16 +122,16 @@ Auth.prototype.getSession = async function() {
 	}
 }
 
-Auth.prototype.getToken = function() {
-	return sessionStorage.getItem(TokenName)
+Auth.prototype.getHaveSession = function() {
+	return JSON.parse(sessionStorage.getItem(HaveSessionName))
 }
 
-Auth.prototype.setToken = function(token) {
-	return sessionStorage.setItem(TokenName, token)
+Auth.prototype.setHaveSession = function(haveSession) {
+	return sessionStorage.setItem(HaveSessionName, JSON.stringify(haveSession))
 }
 
-Auth.prototype.clearToken = function() {
-	return sessionStorage.removeItem(TokenName)
+Auth.prototype.clearHaveSession = function() {
+	return sessionStorage.removeItem(HaveSessionName)
 }
 
 Auth.prototype.getLoginError = function() {
@@ -203,22 +146,32 @@ Auth.prototype.clearLoginError = function() {
 	return sessionStorage.removeItem(LoginErrorName)
 }
 
-Auth.prototype.resumeSession = async function() {
-	// If there is an ID token in sessionStorage, check if we have an
-	// existing session and can login with the token. If not, remove token.
+
+Auth.prototype.loadSession = async function() {
+	// Try to load session from the backend and assign it to the user.
+	this.loading.state = true
 	let success = false
-	const token = this.getToken()
-	if (token) {
-		const session = await this.getSession()
-		if (session) {
-			success = this.login(token)
-		}
-	}
-	if (!success) {
-		this.clearToken(TokenName)
+	const session = await this.getSession()
+	if (session) {
+		this.setUser(UserFromSession(session))
+		this.setHaveSession(true)
+		this.clearLoginError()
+		success = true
+	} else {
+		this.clearHaveSession()
 	}
 	this.loading.state = false
 	return success
+}
+
+Auth.prototype.resumeSession = async function() {
+	// If we might have an existing session, try to load it from the backend.
+	if (!this.getHaveSession()) {
+		this.loading.state = false
+		return false
+	}
+
+	return await this.loadSession()
 }
 
 // waitForResumeSession resolves when resumeSession finishes (loading.state === false)
@@ -240,15 +193,5 @@ Auth.prototype.waitForResumeSession = async function() {
 }
 
 Auth.prototype.defineProperty = Object.defineProperty
-
-// parseUnixTime converts seconds to epoch to a Javascript date object, or null in case of error.
-function parseUnixTime(secs) {
-	const date = new Date(0)
-	date.setUTCSeconds(secs)
-	if (isNaN(date)) {
-		return null
-	}
-	return date
-}
 
 export default Auth

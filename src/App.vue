@@ -7,12 +7,25 @@
 		<navigation />
 		<navigation-sub />
 
+		<b-container
+			v-if="$auth.loading.state"
+			fluid
+			class="loading-session"
+		>
+			<b-row>
+				<b-col>
+					<font-awesome-icon icon="spinner" spin />
+				</b-col>
+			</b-row>
+		</b-container>
+
 		<b-container fluid id="app-body">
 			<router-view></router-view>
 		</b-container>
 		<service-footer />
 	</div>
 </template>
+
 <style scoped>
 	#app {
 		display: flex;
@@ -25,7 +38,13 @@
 		padding-left: 0;
 		padding-right: 0;
 	}
+
+	.loading-session {
+		padding-top: 2em;
+		padding-left: 2em;
+	}
 </style>
+
 <script>
 import Navigation from './navigation.vue'
 import NavigationSub from './navigation-sub.vue'
@@ -38,7 +57,5 @@ export default {
 		NavigationSub,
 		ServiceFooter,
 	},
-	computed: {
-	}
 }
 </script>

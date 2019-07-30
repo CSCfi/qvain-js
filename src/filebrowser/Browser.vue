@@ -174,7 +174,7 @@ export default {
 					// there was a permission error
 					// we should redirect the user to login
 					await this.$auth.logoutDueSessionTimeout()
-					this.$router.push({name: "home", params: {missingToken: true}})
+					this.$router.push({ name: "home", params: { missingSession: true }})
 				}
 				this.error = 'Qvain was not able to open the requested directory. Please retry or navigate to another directory. Refreshing the page will forfeit your data.'
 			}
