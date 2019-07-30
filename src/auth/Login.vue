@@ -4,29 +4,30 @@
 </template>
 
 <script>
+
+
+// After logging in, the backend will redirect the browser to the Login component,
+// which will perform checks on the response, fetch session data and redirect the
+// user to the appropriate page.
 export default {
 	name: "Login",
 	async created() {
-		// User should have a CSC username
-		if (this.$route.query.missingcsc) {
+		if (this.$route.query.missingcsc) { // User should have a CSC username
 			this.handleLoginError("missingcsc")
-			return
-		}
-
-		// User should have home organization
-		if (this.$route.query.missingorg) {
+		} else if (this.$route.query.missingorg) { // User should have a home organization
 			this.handleLoginError("missingorg")
-			return
-		}
-
-		// User should now have an active session, and we can fetch session data from the backend
-		if (this.$auth.loggedIn || await this.$auth.login()) {
-			this.$router.push({ name: 'datasets' })
+		} else if (this.$auth.loggedIn) { // If we already have a session, just redirect the user
+			this.handleLoggedIn()
+		} else if (await this.$auth.loadSession()) { // Fetch session data from the backend
+			this.handleLoggedIn()
 		} else {
 			this.handleLoginError("sessionerror")
 		}
 	},
 	methods: {
+		handleLoggedIn() {
+			this.$router.push({ name: 'datasets' })
+		},
 		handleLoginError(error) {
 			this.$auth.setLoginError(error)
 			this.$auth.setUser(null)

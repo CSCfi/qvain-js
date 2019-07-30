@@ -76,16 +76,6 @@ Auth.prototype.setUser = function(user) {
 	this._user = user
 }
 
-Auth.prototype.login = async function() {
-	this.loading.state = true
-	await this.resumeSession(false) // fetch user session data
-	if (this.loggedIn) {
-		this.clearLoginError()
-		return true
-	}
-	return false
-}
-
 Auth.prototype.logoutDueSessionTimeout = async function() {
 	await this.logout(true)
 }
@@ -156,30 +146,32 @@ Auth.prototype.clearLoginError = function() {
 	return sessionStorage.removeItem(LoginErrorName)
 }
 
-Auth.prototype.resumeSession = async function(checkStored) {
-	// Check the backend if we have session and assign it to the user, if possible.
-	//
-	// If checkStored is true, abort if we don't have a stored session, which is useful
-	// for avoiding a backend request when we already know we shouldn't have a session.
-	// The session request will use a session cookie, but we cannot check for its
-	// existence in JavaScript for security reasons.
-	if (checkStored && !this.getHaveSession()) {
-		this.loading.state = false
-		return false
-	}
 
+Auth.prototype.loadSession = async function() {
+	// Try to load session from the backend and assign it to the user.
+	this.loading.state = true
+	let success = false
 	const session = await this.getSession()
 	if (session) {
 		this.setUser(UserFromSession(session))
 		this.setHaveSession(true)
+		this.clearLoginError()
+		success = true
 	} else {
 		this.clearHaveSession()
+	}
+	this.loading.state = false
+	return success
+}
+
+Auth.prototype.resumeSession = async function() {
+	// If we might have an existing session, try to load it from the backend.
+	if (!this.getHaveSession()) {
 		this.loading.state = false
 		return false
 	}
 
-	this.loading.state = false
-	return true
+	return await this.loadSession()
 }
 
 // waitForResumeSession resolves when resumeSession finishes (loading.state === false)
