@@ -555,19 +555,13 @@ export default {
 		},
 		'qvainData.next': {
 			handler(newNext) {
-				const newBool = !!newNext
-				if (this.$store.state.metadata.isOldVersion !== newBool) {
-					this.$store.commit('setMetadata', { isOldVersion: newBool })
-				}
+				this.$store.commit('setMetadata', { isOldVersion: !!newNext })
 			},
 			immediate: true,
 		},
 		'qvainData.deprecated': {
 			handler(newDeprecated) {
-				const newBool = !!newDeprecated
-				if (this.$store.state.metadata.isDeprecated !== newBool) {
-					this.$store.commit('setMetadata', { isDeprecated: newBool })
-				}
+				this.$store.commit('setMetadata', { isDeprecated: !!newDeprecated })
 			},
 			immediate: true,
 		},
