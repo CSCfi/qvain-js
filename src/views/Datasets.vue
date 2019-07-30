@@ -151,6 +151,7 @@
 					</span>
 					{{ preferredLanguage(row.item.title) }}
 					<b-badge v-if="row.item.next !== null" variant="warning" class="old-version">Old version</b-badge>
+					<b-badge v-if="row.item.deprecated" variant="danger" class="old-version">Deprecated</b-badge>
 				</h5>
 				<p v-if="row.item.description" class="text-muted pointer" @click.stop="editDataset(row.item)">
 					<small>{{ preferredLanguage(row.item.description) }}</small>

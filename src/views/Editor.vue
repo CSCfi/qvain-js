@@ -14,9 +14,14 @@
 						<b-badge
 							v-if="$store.state.metadata.isOldVersion"
 							variant="warning"
-							class="old-version"
 						>
 							Old version
+						</b-badge>
+						<b-badge
+							v-if="$store.state.metadata.isDeprecated"
+							variant="danger"
+						>
+							Deprecated
 						</b-badge>
 						<span class="secondary-text text-muted">
 							<span>
@@ -550,10 +555,13 @@ export default {
 		},
 		'qvainData.next': {
 			handler(newNext) {
-				const newBool = !!newNext
-				if (this.$store.state.metadata.isOldVersion !== newNext) {
-					this.$store.commit('setMetadata', { isOldVersion: newBool })
-				}
+				this.$store.commit('setMetadata', { isOldVersion: !!newNext })
+			},
+			immediate: true,
+		},
+		'qvainData.deprecated': {
+			handler(newDeprecated) {
+				this.$store.commit('setMetadata', { isDeprecated: !!newDeprecated })
 			},
 			immediate: true,
 		},
