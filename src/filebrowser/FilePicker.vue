@@ -2,7 +2,7 @@
 <template>
 	<div>
 		<b-alert :show="readonly">
-			You are editing an old version of the dataset and cannot make changes to the files.
+			You are editing {{ $store.state.metadata.isDeprecated ? "a deprecated" : "an old version of the " }} dataset and cannot make changes to the files.
 		</b-alert>
 
 		<b-dropdown v-if="!readonly" text="Change project" class="my-3">
@@ -131,7 +131,7 @@ export default {
 	},
 	computed: {
 		readonly() {
-			return this.$store.state.metadata.isOldVersion
+			return this.$store.state.metadata.isOldVersion || this.$store.state.metadata.isDeprecated
 		},
 		projects() {
 			return (this.$auth.user && this.$auth.user.projects) || []
