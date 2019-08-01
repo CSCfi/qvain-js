@@ -187,7 +187,11 @@ export default {
 	watch: {
 		state: {
 			deep: true,
-			handler() {
+			handler(newVal, oldVal) {
+				// this guard prevents store update when switching tabs
+				if (newVal === oldVal) {
+					return
+				}
 				this.$store.commit('updateValue', {
 					p: this.$store.state.record,
 					prop: 'files',
