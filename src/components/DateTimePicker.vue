@@ -3,7 +3,7 @@
 	<b-container class="datetimepicker">
 		<b-row>
 			<b-col>
-				<b-form>
+				<b-form @submit.stop.prevent>
 					<b-form-group
 						:label="title"
 						:description="description">
