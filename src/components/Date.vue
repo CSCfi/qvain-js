@@ -41,6 +41,7 @@ export default {
 	data() {
 		return {
 			date: null,
+			initializing: true
 		}
 	},
 	methods: {
@@ -48,11 +49,15 @@ export default {
 			this.date = null
 		},
 	},
-	created() {
+	async created() {
+		this.initializing = true
 		this.date = this.value ? this.value : null
+		await this.$nextTick()
+		this.initializing = false
 	},
 	watch: {
 		date() {
+			if(this.initializing) return;
 			this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: this.date })
 		},
 	},
