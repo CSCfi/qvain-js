@@ -86,7 +86,7 @@ export default {
 	computed: {
 		timeBetweenString() {
 			if (!this.end || !this.start) { return null }
-			return distanceInWords(this.end, this.start)	
+			return distanceInWords(this.end, this.start)
 		},
 		title() {
 			return typeof(this.property)=="number" ? '#' + (this.property + 1) : this.schema.title
@@ -108,10 +108,11 @@ export default {
 			}})
 		},
 	},
-	created() {
+	async created() {
 		this.isInitializing = true
 		this.start = this.value.start_date
 		this.end = this.value.end_date
+		await this.$nextTick()
 		this.isInitializing = false
 	},
 	watch: {
