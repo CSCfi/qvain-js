@@ -116,7 +116,11 @@ export default {
 				timeZoneValue = "-" + timeZoneValue
 			}
 			this.internalValue = dateValue + "T" + timeValue + timeZoneValue
-			if (this.format === "date-time") {
+			const isEmpty = (this.format === 'date' && !this.date) ||
+				(this.format === "time" && !this.time)
+			if (isEmpty) {
+				this.$emit('input', undefined)
+			} else if (this.format === "date-time") {
 				this.$emit('input', this.internalValue)
 			} else if (this.format === "date") {
 				this.$emit('input', this.toExternalDateFormat(this.internalValue))
