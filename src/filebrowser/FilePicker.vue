@@ -84,6 +84,7 @@ export default {
 				files: [],
 			},
 			project: null,
+			initializing: true,
 		}
 	},
 	methods: {
@@ -175,7 +176,7 @@ export default {
 				this.project = project
 			}
 		} catch(e) {
-			console.log('error retriving project', e)
+			console.log('error retrieving project', e)
 			if (e.response && e.response.status == 401) {
 				// there was a permission error
 				// we should redirect the user to login
@@ -183,13 +184,15 @@ export default {
 				this.$router.push({ name: "home", params: { missingSession: true }})
 			}
 		}
+		await this.$nextTick()
+		this.initializing = false
 	},
 	watch: {
 		state: {
 			deep: true,
 			handler(newVal, oldVal) {
 				// this guard prevents store update when switching tabs
-				if (newVal === oldVal) {
+				if (this.initializing) {
 					return
 				}
 				this.$store.commit('updateValue', {
