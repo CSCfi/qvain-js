@@ -211,11 +211,8 @@ export default {
 		},
 		getKey(idx) {
 			if (this.keys[idx] === undefined) {
-				let key = 0
-				for (let i=0; i<this.keys.length; i++) {
-					key = Math.max(this.keys[i] + 1, key)
-				}
-				this.keys[idx] = key
+				// assuming array order doesn't change, the last item will have the largest key
+				this.keys[idx] = (this.keys[this.keys.length-1] || 0) + 1
 			}
 			return "arr-" + this.keys[idx]
 		},
