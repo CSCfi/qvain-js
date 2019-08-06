@@ -780,6 +780,20 @@ export default {
 	'/properties/provenance/*/properties/temporal': {
 		'widget': 'date-range',
 	},
+	'/properties/provenance/*/properties/was_associated_with/*/oneOf/*/properties/telephone': {
+		'tab': 'extra',
+		'props': {
+			'tabFormat': false,
+			'wrapped': false,
+		},
+	},
+	'/properties/provenance/*/properties/was_associated_with/*/oneOf/*/properties/member_of/properties/telephone': {
+		'tab': 'extra',
+		'props': {
+			'tabFormat': false,
+			'wrapped': false,
+		},
+	},
 	'/properties/files': {
 		'tab': 'files',
 		'widget': 'filepicker',
