@@ -14,6 +14,7 @@ export default new Vuex.Store({
 		schema: {},
 		hints: {},
 		metadata: {},
+		deletedItems: { 'files': {}, 'directories': {}}, // files or directories that no longer exist
 		languages: { 'fi':true, 'en':true, 'sv':true },
 		UI_VALID_KEYWORDS: [
 			'widget',
@@ -159,6 +160,9 @@ export default new Vuex.Store({
 			for (const key in payload) {
 				Vue.set(state.datasetsView, key, payload[key])
 			}
+		},
+		setDeletedItem(state, payload) {
+			Vue.set(state.deletedItems[payload.category], payload.identifier, payload.val)
 		},
 	},
 	getters: {
