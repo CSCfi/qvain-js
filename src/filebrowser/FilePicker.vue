@@ -134,14 +134,14 @@ export default {
 
 		async fetchFileAndProjectInfo() {
 			// Iterates over files and directories in the dataset to find out the project
-			// used in the dataset and determine if some of the them have been deleted.
+			// used in the dataset and determine if some of them have been deleted.
 			let project = null
 
 			// get files
 			for (let i=0; i<this.state.files.length; i++) {
 				const identifier = this.state.files[i].identifier
 				try {
-					const { data } = await metaxAPI.get(`/files/${identifier}?removed`) // returns the file even if it is deleted
+					const { data } = await metaxAPI.get(`/files/${identifier}?removed`) // returns the file even if it was deleted
 					if (!project) {
 						project = data.project_identifier
 					}
