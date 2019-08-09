@@ -33,10 +33,9 @@
 					@click="()=>setTab(index)"
 				>
 					<template slot="title">
-						<delete-button @click="deleteLang(key)" />
+						<delete-button @click="confirmDeletelanguage(key)" />
 						{{ languages[key] }}
 					</template>
-
 					<b-form-textarea
 						:id="property + '_textarea-' + key"
 						:ref="'textarea-tab-' + key"
@@ -155,6 +154,18 @@ export default {
 		deleteLang(lang) {
 			this.$delete(this.state, lang)
 		},
+		//Shreyas code here after user clicks ok for deleting starts
+		confirmDeletelanguage(lang) {
+			this.$bvModal.msgBoxConfirm("This will remove all translations for "+this.languages[lang]+" language from all other sections. Are you sure?")
+				.then(value => {
+					//console.log("user clicked :"+value)
+					if(value) {
+						//console.log("Inside deletelanguage call"+lang)
+						this.$store.commit('deleteValue', { p: this.$store.state.languages, prop: lang })
+					}
+				})
+		},
+		//Shreyas code here after user clicks ok for deleting ends
 		updateValue() {
 			this.$store.commit('updateValue', {
 				p: this.parent,
@@ -187,6 +198,11 @@ export default {
 					this.addLanguage(lang)
 				}
 			}
+			for (const lang in this.state) {
+				if (!languages[lang]) {
+					this.deleteLang(lang)
+				}
+			}
 		},
 		setTab(index) {
 			this.tabIndex = index
@@ -208,11 +224,13 @@ export default {
 	watch: {
 		"$store.state.languages": function(languages) {
 			this.populateLanguages(languages)
+			console.log("inside i18nTextArea watch() method")
 		},
 	},
 	created() {
 		this.state = this.value || {}
 		this.populateLanguages(this.$store.state.languages)
+		console.log("inside i18nTextArea created() method")
 	},
 }
 </script>

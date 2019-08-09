@@ -410,6 +410,7 @@ export default {
 			this.$store.commit('loadHints', {})
 			this.$store.commit('loadData', undefined)
 			this.$store.commit('resetMetadata')
+			this.$store.commit('resetLanguages')
 		},
 		cancelReloadDataset: function() {
 			this.reloadDatasetTimer = null
@@ -446,7 +447,29 @@ export default {
 				this.$store.commit('loadHints', this.selectedSchema.ui)
 				this.$store.commit('loadData', Object(data.dataset))
 				this.$store.commit('setMetadata', { id, schemaId: this.selectedSchema.id })
-				this.qvainData = data
+				this.qvainData = data				
+				const languages = {}
+				let Ajv = require('ajv')
+				const ajv = new Ajv({ allErrors: true })				
+				ajv.addKeyword('$deref', {
+					type: 'object',
+					compile: function (sch, parentSchema) {
+						return function (data) {
+							if (sch === "#/definitions/langString") {
+								for (const lang in data) {
+									languages[lang] = true
+								}
+							}
+						}
+					},
+					valid: true,
+					modifying: true,
+					errors: false,
+				})
+				const validate = ajv.compile(this.$store.state.schema)
+				validate(data.dataset)			
+				this.$delete(languages,'und')
+				this.$store.commit("setLanguages",languages)
 			} catch (error) {
 				if (error.response && error.response.status == 401) {
 					this.handleLostSession()
@@ -589,6 +612,7 @@ export default {
 		if (this.id === 'new') {
 			this.clearRecord()
 		} else if (this.id !== 'edit') {
+			this.clearRecord()
 			await this.openRecord(this.id)
 		}
 

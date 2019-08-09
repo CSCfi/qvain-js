@@ -14,7 +14,8 @@ export default new Vuex.Store({
 		schema: {},
 		hints: {},
 		metadata: {},
-		languages: { 'fi':true, 'en':true, 'sv':true },
+		defaultLanguages: { 'fi':true, 'en':true, 'sv':true },
+		languages: {},
 		UI_VALID_KEYWORDS: [
 			'widget',
 			'option',
@@ -154,6 +155,9 @@ export default new Vuex.Store({
 		},
 		setLanguages(state, payload) {
 			state.languages = Object.assign({}, state.languages, payload)
+		},
+		resetLanguages(state) {
+			state.languages = { ...state.defaultLanguages }
 		},
 		updateDatasetsView(state, payload) {
 			for (const key in payload) {
