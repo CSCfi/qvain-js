@@ -244,6 +244,7 @@ import apiClient from '@/api/client.js'
 import PublishModal from '@/components/PublishModal.vue'
 import Validator from '../../vendor/validator/src/validate.js'
 import cloneWithPrune from '@/lib/cloneWithPrune.js'
+import getLanguagesFromDataset from '@/lib/ajv.js'
 
 export default {
 	name: "editor",
@@ -447,29 +448,11 @@ export default {
 				this.$store.commit('loadHints', this.selectedSchema.ui)
 				this.$store.commit('loadData', Object(data.dataset))
 				this.$store.commit('setMetadata', { id, schemaId: this.selectedSchema.id })
-				this.qvainData = data				
-				const languages = {}
-				let Ajv = require('ajv')
-				const ajv = new Ajv({ allErrors: true })				
-				ajv.addKeyword('$deref', {
-					type: 'object',
-					compile: function (sch, parentSchema) {
-						return function (data) {
-							if (sch === "#/definitions/langString") {
-								for (const lang in data) {
-									languages[lang] = true
-								}
-							}
-						}
-					},
-					valid: true,
-					modifying: true,
-					errors: false,
-				})
-				const validate = ajv.compile(this.$store.state.schema)
-				validate(data.dataset)			
+				this.qvainData = data
+				const languages = getLanguagesFromDataset(data.dataset,this.selectedSchema.schema)
 				this.$delete(languages,'und')
 				this.$store.commit("setLanguages",languages)
+
 			} catch (error) {
 				if (error.response && error.response.status == 401) {
 					this.handleLostSession()
