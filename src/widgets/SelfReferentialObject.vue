@@ -11,7 +11,7 @@
 			</p>
 			<div
 				v-for="(org, i) in flattened"
-				:key="getKey(org)"
+				:key="getKey(i)"
 				class="mb-3"
 			>
 				<div class="header-row">
@@ -82,15 +82,16 @@ export default {
 	data: function() {
 		return {
 			opened: true,
-			keyCount: 0,
+			keys: [],
 		}
 	},
 	methods: {
-		getKey(obj) {
-			if (obj["#key"] === undefined) {
-				obj["#key"] = 'org-' + this.keyCount++
+		getKey(idx) {
+			if (this.keys[idx] === undefined) {
+				// assuming array order doesn't change, the last item will have the largest key
+				this.keys[idx] = (this.keys[this.keys.length-1] || 0) + 1
 			}
-			return obj["#key"]
+			return "org-" + this.keys[idx]
 		},
 		flatten(nested) {
 			// Turns a nested structure where each object can have a refField child into
@@ -143,6 +144,7 @@ export default {
 				p: this.value,
 				val: obj,
 			})
+			this.keys.splice(level, 1)
 		},
 		getDescriptionForLevel(level) {
 			return this.levels && this.levels[level] ? ': ' + this.levels[level] : ""

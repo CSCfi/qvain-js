@@ -493,7 +493,7 @@ export default {
 			this.validator.v = this.$store.state.vState
 			this.unsubscribeFunc = this.$store.subscribe((mutation) => {
 				if (mutation.type !== 'initValue') {
-					const data = cloneWithPrune(this.$store.state.record, ["#key"], [])
+					const data = cloneWithPrune(this.$store.state.record, [], [])
 					this.validator.validateData(data)
 				}
 				// the data has been changed after the initial load by the user

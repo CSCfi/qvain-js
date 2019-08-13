@@ -168,7 +168,7 @@ export default new Vuex.Store({
 	getters: {
 		// prunedDataset returns a deep-clone of the dataset discarding empty leaves
 		prunedDataset: (state) => {
-			return cloneWithPrune(state.record, ["#key"], [ "", undefined ])
+			return cloneWithPrune(state.record, [], [ "", undefined ])
 		},
 		// getState returns the validation state for a given path
 		getState: (state) => (path) => {
