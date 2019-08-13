@@ -25,7 +25,7 @@ export default {
 		'help': "An item possibly defined in multiple languages.",
 	},
 	'#/definitions/Person': {
-		'order': [ "name", "email", "telephone", "identifier" ],
+		'order': [ "name", "email", "identifier" ],
 	},
 	'#/definitions/Organization': {
 		'title': "Organisational hierarchy",
@@ -35,7 +35,7 @@ export default {
 			'refField': "is_part_of",
 			'levels': [ "organisation", "faculty or division", "department or unit" ],
 		},
-		'order': [ "name", "email", "telephone", "identifier" ],
+		'order': [ "name", "email", "identifier" ],
 	},
 	'#/definitions/Document': {
 		'visible': false,
@@ -315,62 +315,6 @@ export default {
 		'description': "Role of the creator regarding this dataset.",
 		'help': "What was the role of the given creator on this dataset.",
 	},
-	'/properties/creator/*/oneOf/*/properties/telephone': {
-		'tab': 'extra',
-		'props': {
-			'tabFormat': false,
-			'wrapped': false,
-		},
-	},
-	'/properties/creator/*/oneOf/*/properties/member_of/properties/telephone': {
-		'tab': 'extra',
-		'props': {
-			'tabFormat': false,
-			'wrapped': false,
-		},
-	},
-	'/properties/contributor/*/oneOf/*/properties/telephone': {
-		'tab': 'extra',
-		'props': {
-			'tabFormat': false,
-			'wrapped': false,
-		},
-	},
-	'/properties/contributor/*/oneOf/*/properties/member_of/properties/telephone': {
-		'tab': 'extra',
-		'props': {
-			'tabFormat': false,
-			'wrapped': false,
-		},
-	},
-	'/properties/rights_holder/*/oneOf/*/properties/telephone': {
-		'tab': 'extra',
-		'props': {
-			'tabFormat': false,
-			'wrapped': false,
-		},
-	},
-	'/properties/rights_holder/*/oneOf/*/properties/member_of/properties/telephone': {
-		'tab': 'extra',
-		'props': {
-			'tabFormat': false,
-			'wrapped': false,
-		},
-	},
-	'/properties/curator/*/oneOf/*/properties/telephone': {
-		'tab': 'extra',
-		'props': {
-			'tabFormat': false,
-			'wrapped': false,
-		},
-	},
-	'/properties/curator/*/oneOf/*/properties/member_of/properties/telephone': {
-		'tab': 'extra',
-		'props': {
-			'tabFormat': false,
-			'wrapped': false,
-		},
-	},
 	// missing: distributor
 	'/properties/contributor': {
 		'tab': 'actors',
@@ -585,20 +529,6 @@ export default {
 		'label': "contributor role",
 		'description': "Role of the publisher regarding this dataset.",
 		'help': "What was the role of the given publisher on this dataset.",
-	},
-	'/properties/publisher/oneOf/*/properties/telephone': {
-		'tab': 'extra',
-		'props': {
-			'tabFormat': false,
-			'wrapped': false,
-		},
-	},
-	'/properties/publisher/oneOf/*/properties/member_of/properties/telephone': {
-		'tab': 'extra',
-		'props': {
-			'tabFormat': false,
-			'wrapped': false,
-		},
 	},
 	'/properties/relation': {
 		'tab': 'relations',
@@ -953,6 +883,9 @@ export default {
 		'title': "Version notes",
 	},
 	'**/homepage': {
+		'tab': 'extra',
+	},
+	'**/telephone': {
 		'tab': 'extra',
 	},
 }
