@@ -57,6 +57,15 @@ export default {
 
 			return defaultPrefix
 		},
+		propUi: function(prop) {
+			const ui = this.$store.getters.uiForPath(this.newPath('properties/'+prop))
+
+			// if there was a $ref, use that ref's ui as default and load this path's on top of it
+			if (this.schema['properties'][prop]['$deref']) {
+				return Object.assign({}, this.$store.state.hints[this.schema['properties'][prop]['$deref']], ui)
+			}
+			return ui
+		},
 	},
 	computed: {
 		isVisible() {
@@ -95,11 +104,13 @@ export default {
 			return genid(this.path)
 		},
 		ui: function() {
+			const ui = this.$store.getters.uiForPath(this.path)
+
 			// if there was a $ref, use that ref's ui as default and load this path's on top of it
 			if (this.schema['$deref']) {
-				return Object.assign({}, this.$store.state.hints[this.schema['$deref']], this.$store.getters.uiForPath(this.path))
+				return Object.assign({}, this.$store.state.hints[this.schema['$deref']], ui)
 			}
-			return this.$store.getters.uiForPath(this.path)
+			return ui
 		},
 		uiTab: function() {
 			return this.ui['tab']
