@@ -88,6 +88,7 @@ export default {
 				directories: [],
 				files: [],
 			},
+			initializing: true,
 		}
 	},
 	methods: {
@@ -236,13 +237,15 @@ export default {
 		if (!this.project) {
 			await this.fetchFileAndProjectInfo()
 		}
+		await this.$nextTick()
+		this.initializing = false
 	},
 	watch: {
 		state: {
 			deep: true,
 			handler(newVal, oldVal) {
 				// this guard prevents store update when switching tabs
-				if (newVal === oldVal) {
+				if (this.initializing) {
 					return
 				}
 				this.$store.commit('updateValue', {
