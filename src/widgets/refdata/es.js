@@ -48,17 +48,17 @@ if (!process.env.VUE_APP_ES_API_URL) {
 	console.error("no ElasticSearch api url set; please define VUE_APP_ES_API_URL")
 }
 
+const http = axios.create({
+	adapter: throttleAdapterEnhancer(cacheAdapterEnhancer(axios.defaults.adapter)),
+})
+
 export default function esApiClient(index, doctype) {
-	return axios.get(
+	return http.get(
 		`${apiUrl}/${index}/${doctype}/_search?size=200&pretty=1&filter_path=hits.hits._source`, {
 			timeout: 5000,
 			responseType: 'json',
 		})
 }
-
-const http = axios.create({
-	adapter: throttleAdapterEnhancer(cacheAdapterEnhancer(axios.defaults.adapter)),
-})
 
 export function esApiSearchClient(index, doctype, searchterm, count) {
 	const params = {
