@@ -836,7 +836,7 @@ export default {
 		'widget': 'date',
 	},
 	'/properties/infrastructure': {
-		'tab': 'extra',
+		'tab': 'relations',
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -846,9 +846,10 @@ export default {
 			'async': false,
 			'count': 100,
 			'grouped': false,
+			'wrapped': true,
 		},
-		'placeholder': "– choose infrastructure –",
-		'title': "infrastructure",
+		'title': "Infrastructure",
+		'description': "Services or tools that are used to produce the dataset.",
 	},
 	'/properties/metadata_version_identifier': {
 		'tab': 'extra',
