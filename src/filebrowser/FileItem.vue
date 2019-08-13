@@ -8,6 +8,13 @@
 					<h6 class="mb-0">
 						{{single.title}}
 						<span v-if="secondary" class="text-muted m-0 font-italic">({{secondary}})</span>
+						<b-badge
+							v-if="deleted"
+							variant="danger"
+							class="deleted"
+						>
+							Deleted
+						</b-badge>
 					</h6>
 				</div>
 				<p class="my-2">
@@ -26,7 +33,7 @@
 				</p>
 			</div>
 			<b-btn-group class="ml-auto">
-				<b-btn :disabled="readonly" variant="primary" class="px-3 py-2" v-b-toggle="single.identifier">
+				<b-btn :disabled="readonly || deleted" variant="primary" class="px-3 py-2" v-b-toggle="single.identifier">
 					<font-awesome-icon :icon="icons.faPen"/>
 				</b-btn>
 				<b-btn :disabled="readonly" variant="danger" class="px-3 py-2" @click="$emit('delete', { type, fields: single })">
@@ -113,6 +120,7 @@ export default {
 		"removeItem",
 		"type",
 		"readonly",
+		"deleted",
 	],
 	data() {
 		return {
@@ -141,5 +149,9 @@ export default {
 fieldset.item-field div.form-row legend:after {
 	content: '*';
 	color: red;
+}
+
+.deleted {
+	margin-left: 0.5rem;
 }
 </style>
