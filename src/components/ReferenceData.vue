@@ -27,7 +27,7 @@
 					class="value-select"
 					v-model="selectedOptions"
 					track-by="identifier"
-					:internalSearch="!async"
+					:internalSearch="!async && !disableInternalSearch"
 					:loading="isLoading"
 					:optionsLimit="count"
 					:taggable="tags"
@@ -54,7 +54,7 @@
 					class="value-select"
 					v-model="selectedOptions"
 					track-by="identifier"
-					:internalSearch="!async"
+					:internalSearch="!async && !disableInternalSearch"
 					:loading="isLoading"
 					:optionsLimit="count"
 					:taggable="tags"
@@ -119,14 +119,15 @@ export default {
 		description: { type: String, required: false, default: null },
 		actions: { type: Array, default: ()=>[] },
 		hideResults: { type: Boolean, default: false },
+		disableInternalSearch: { type: Boolean, default: false },
 	},
 	data() {
 		return {
 			responseData: {},
 			selectedOptions: [],
 			languages: [
-				{ id: 'fi', language: 'Finnish' },
 				{ id: 'en', language: 'English' },
+				{ id: 'fi', language: 'Finnish' },
 				{ id: 'sv', language: 'Swedish' },
 			],
 			selectedLang: null,
@@ -249,7 +250,7 @@ export default {
 			this.isLoading = true
 			if (!searchQuery) {
 				if (this.async) {
-					await this.getAllReferenceData()
+					this.responseData = {} // await this.getAllReferenceData()
 				}
 				this.isLoading = false
 				return // prevent empty search after removing characters from input
@@ -272,10 +273,10 @@ export default {
 				this.selectedOptions.splice(index, 1)
 			}
 		},
-		async atSelect(item) {
+		atSelect(item) {
 			if (this.actions.includes(item)) {
 				this.$emit('action', { action: item.action, lastSearch: this.lastSearch })
-				this.selectedOptions = null
+		//		this.selectedOptions = null
 			}
 			if (this.async) {
 				this.responseData = {}
@@ -331,9 +332,11 @@ export default {
 			}
 
 			if (!this.isInitializing) {
+				//console.log(storableOptions)
+				//this.$store.commit('assignValues', { prop: this.value, val: storableOptions })
 				this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: storableOptions })
+				this.$emit("changed")
 			}
-			this.$emit("changed")
 		},
 	},
 }

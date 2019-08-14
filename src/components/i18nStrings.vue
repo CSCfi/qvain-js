@@ -134,7 +134,7 @@ export default {
 	},
 	computed: {
 		hasEmptyValues() {
-			return Object.values(this.state).some(v => v.length == 0)
+			return Object.values(this.state).some(v => v !== undefined && v.length == 0)
 		},
 		validationStatus() {
 			if (this.isValid && this.hasEmptyValues) return 'uncertain'

@@ -14,8 +14,9 @@
 				class="mb-2"
 			>
 				<div class="refrow">
-					<div class="reference-data">
+					<div class="org-title">
 						<ReferenceData
+							v-if="getIsReferenceData(i)"
 							:schema="schema"
 							:path="path"
 							:value="org"
@@ -30,11 +31,22 @@
 							:es-query-extra="getQueryExtraForLevel(i)"
 							:actions="actions"
 							:async="i===0"
-							@changed="updateValue"
-							@action="handleAction"
+							@changed="()=>handleChanged(i)"
+							@action="(action)=>handleAction(i, action)"
 						/>
+						<b-container v-else v-b-toggle="domId + '-accordion-' + i">
+							<div class="multiselect__tags">
+								<span class="multiselect__input">{{ org.name && (org.name.fi || org.name.en) }}
+
+									<font-awesome-icon icon="edit" fixed-width />
+								</span>
+							</div>
+						</b-container>
 					</div>
-					{{ getKey(i)}}
+					<div class="delete-button" :class="{invisible: i < flattened.length-1}">
+						<delete-button @click="remove(i)" :disabled="false" />
+					</div>
+					{{ getKey(i) }}
 					{{ getIsReferenceData(i) }}
 
 					<div class="edit-button">
@@ -42,16 +54,12 @@
 							v-b-toggle="domId + '-accordion-' + i"
 							class="px-2 pointer"
 						>
-							Edit
-							<font-awesome-icon icon="edit" fixed-width class="icon" />
+							DEBUG
 						</span>
-					</div>
-					<div class="delete-button" :class="{invisible: i < flattened.length-1}">
-						<delete-button @click="remove(i)" :disabled="false" />
 					</div>
 				</div>
 
-				<b-collapse :id="domId + '-accordion-' + i" :visible="i==0" accordion="domId + '-accordion'" role="tabpanel">
+				<b-collapse :id="domId + '-accordion-' + i" accordion="domId + '-accordion'" role="tabpanel">
 					<FlatObject
 						:schema="schema"
 						:path="path"
@@ -65,7 +73,7 @@
 				</b-collapse>
 			</div>
 			<div class="add-level">
-				<b-button variant="outline-dark" class="w-100" @click="add()">
+				<b-button variant="outline-dark" class="w-100" :disabled="!canAddNew" @click="add()">
 					<font-awesome-icon icon="plus" fixed-width /> Add another level
 				</b-button>
 			</div>
@@ -98,7 +106,7 @@
 .refrow {
 	display: flex;
 	align-items: center;
-	.reference-data {
+	.org-title {
 		flex-grow: 1;
 		min-height: 40px;
 	}
@@ -138,28 +146,50 @@ export default {
 		return {
 			opened: true,
 			isReferenceData: [],
+			maxKey: 0,
 			keys: [],
-			actions: [{ label:{ "und": "- Add Organization Manually -" }, action: "add_new" }],
+			actions: [{ label:{ "en": "- Add Organization Manually -" }, action: "add_new" }],
 			//flattened: [],
 		//	updatingValue: false,
 		}
 	},
 	methods: {
+		updateMaxKey() {
+			for (let i=0; i<this.keys.length; i++) {
+				if (this.maxKey < this.keys[i]) {
+					this.maxKey = this.keys[i]
+				}
+			}
+		},
+		createNewKey(idx) {
+			this.updateMaxKey()
+			this.maxKey++
+			this.keys[idx] = this.maxKey
+		},
 		getKey(idx) {
 			if (this.keys[idx] === undefined) {
-				// assuming array order doesn't change, the last item will have the largest key
-				this.keys[idx] = (this.keys[this.keys.length-1] || 0) + 1
+				this.createNewKey(idx)
 			}
 			return "org-" + this.keys[idx]
 		},
 		getIsReferenceData(idx) {
 			if (this.isReferenceData[idx] === undefined) {
-				this.isReferenceData[idx] = true
+				this.isReferenceData[idx] = idx === 0 || this.isReferenceData[idx-1]
 			}
 			return this.isReferenceData[idx]
 		},
-		handleAction(action) {
-			console.log(action)
+		handleAction(idx, action) {
+			if (action.action === "add_new") {
+				this.isReferenceData[idx] = false
+				//console.log(this.flattened[idx])
+				console.log("lastSearch:" + action.lastSearch)
+				this.flattened[idx].name.en = action.lastSearch
+			}
+		},
+		async handleChanged(idx) {
+			console.log(this.keys)
+			this.createNewKey(idx)
+			this.updateValue()
 		},
 		flatten(nested) {
 			// Turns a nested structure where each object can have a refField child into
@@ -200,11 +230,9 @@ export default {
 				p: this.value,
 				val: obj,
 			})
+			this.isReferenceData.push(true)
 		},
 		remove(level) {
-			if (this.countLevels <= 1) {
-				return
-			}
 			const arr = [...this.flattened]
 			arr.splice(level, 1)
 			const obj = this.nest(arr)
@@ -216,7 +244,6 @@ export default {
 			this.isReferenceData.splice(level, 1)
 		},
 		updateValue() {
-			console.log("updateValue")
 			this.flattened.x = 0
 			const obj = this.nest(this.flattened)
 			this.$store.commit('replace', {
@@ -242,15 +269,22 @@ export default {
 			return this.levels && this.levels[level] ? ': ' + this.levels[level] : ""
 		},
 	},
+	created() {
+		this.updateMaxKey()
+	},
 	computed: {
+		canAddNew() {
+			const idx = this.lastReferenceData
+			return idx <= 0 || this.flattened[idx].identifier
+		},
 		lastReferenceData() {
+			window.k = this
 			let last = -1
 			for (let i=0; i<this.flattened.length; i++) {
 				if (this.getIsReferenceData(i)) {
 					last = i
 				}
 			}
-			console.log(last)
 			return last
 		},
 		countLevels() {
@@ -264,7 +298,6 @@ export default {
 			return depth + 1
 		},
 		flattened() {
-			console.log(this.flatten(this.value).length)
 			return this.flatten(this.value)
 		},
 	},
