@@ -4,7 +4,11 @@
 		<!-- (tabbed-array component) -->
 
 		<b-card no-body>
-			<b-tabs card v-model="tabIndex">
+			<b-tabs
+				v-model="tabIndex"
+				card
+				no-fade
+			>
 				<b-tab :title="el && tabField && el[tabField] ? el[tabField] : `#${i + 1}`" v-for="(el, i) in value" :key="i">
 					Tab Contents {{i}}<br/>
 					(min: {{ minimum }} / max: {{ maximum || '-' }})<br/>

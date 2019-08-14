@@ -26,6 +26,7 @@
 					:value="tabIndex"
 					class="tab-array-margin"
 					pills
+					no-fade
 					@input="tabShown"
 					@changed="tabsChanged"
 				>
