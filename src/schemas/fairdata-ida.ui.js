@@ -34,6 +34,17 @@ export default {
 		'props': {
 			'refField': "is_part_of",
 			'levels': [ "organisation", "faculty or division", "department or unit" ],
+			'referenceData': {
+				"es-index":'organization_data',
+				"es-doctype":'organization',
+				//"typeahead":true,
+				"tags":false,
+				// "async":true,
+				"count":20,
+				"wrapped":false,
+				"label-name-in-schema":'name',
+				"description":'',
+			},
 		},
 		'order': [ "name", "email", "identifier" ],
 	},

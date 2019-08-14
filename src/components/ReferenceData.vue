@@ -1,24 +1,30 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<record-field :id="property + '_referenceData'" v-if="isVisible" :required="isRequired" :wrapped="wrapped">
+	<record-field
+		v-if="isVisible"
+		:id="property + '_referenceData'"
+		:required="isRequired"
+		:wrapped="wrapped"
+		:header="false"
+	>
 		<title-component slot="title" :title="uiLabel" />
 		<small slot="help" class="text-muted">
-			{{ uiDescription }}
+			{{ description === null ? uiDescription : description }}
 		</small>
 
 		<div slot="input">
-			<div class="input-row__inline">
+			<div class="input-row__inline" :class="{results_hidden: hideResults} ">
 				<Multiselect v-if="showLang"
+					:id="property + '_language-select'"
 					v-model="selectedLang"
 					:options="languages"
-					:id="property + '_language-select'"
 					placeholder="Select language"
 					label="language"
 					class="lang-select"/>
 
 				<Multiselect v-if="optionsShouldBeGrouped"
-					class="value-select"
 					:id="property + '_value-select'"
+					class="value-select"
 					v-model="selectedOptions"
 					track-by="identifier"
 					:internalSearch="!async"
@@ -44,8 +50,8 @@
 				</Multiselect>
 
 				<Multiselect v-else
-					class="value-select"
 					:id="property + '_value-select'"
+					class="value-select"
 					v-model="selectedOptions"
 					track-by="identifier"
 					:internalSearch="!async"
@@ -71,7 +77,7 @@
 			</div>
 			<div :id="property + '_taglist'" v-if="isMultiselect" class="tag__list">
 				<p v-for="(option, index) in Array.from(selectedOptions)" :key="option.identifier" class="tag">
-					{{customLabel(option)}}
+					{{ customLabel(option) }}
 					<span class="remove-button">
 						<DeleteButton @click="removeValue(index)" />
 					</span>
@@ -88,29 +94,31 @@ import DeleteButton from '@/partials/DeleteButton.vue'
 import Multiselect from 'vue-multiselect'
 import RecordField from '@/composites/RecordField.vue'
 import TitleComponent from '@/partials/Title.vue'
-import InfoIcon from '@/partials/InfoIcon.vue'
 
 export default {
 	name: 'reference-data',
-	extends: vSchemaBase,
 	components: {
 		Multiselect,
 		DeleteButton,
 		RecordField,
 		TitleComponent,
-		InfoIcon,
 	},
+	extends: vSchemaBase,
 	props: {
 		esIndex: { type: String, required: true },
 		esDoctype: { type: String, required: true },
+		esQueryExtra: { type: String, default: "" },
 		async: { type: Boolean, required: true },
 		count: { type: Number, default: 10000 },
-		typeahead: { type: Boolean, dafault: false },
+		typeahead: { type: Boolean, default: false },
 		tags: { type: Boolean, default: false },
 		showLang: { type: Boolean, default: false },
 		wrapped: { type: Boolean, default: false },
 		labelNameInSchema: { type: String, default: 'pref_label' },
 		grouped: { type: Boolean, required: false },
+		description: { type: String, required: false, default: null },
+		actions: { type: Array, default: ()=>[] },
+		hideResults: { type: Boolean, default: false },
 	},
 	data() {
 		return {
@@ -124,6 +132,7 @@ export default {
 			selectedLang: null,
 			isLoading: false,
 			isInitializing: true,
+			lastSearch: "",
 		}
 	},
 	computed: {
@@ -143,11 +152,16 @@ export default {
 			return this.responseData.hits && this.responseData.hits.hits
 		},
 		optionItems() {
-			const items = this.responseHasResults ? this.responseData.hits.hits : []
-			return items
+			let items = this.responseHasResults ? this.responseData.hits.hits : []
+			items = items
 				.filter(this.acceptableOption)
 				.map(es => es._source)
 				.map(this.mapToInternalKeys)
+
+			if (!this.disabled) {
+				items.unshift(...this.actions)
+			}
+			return items
 		},
 		parentItems() {
 			return this.optionItems.filter(item => item.hasChildren)
@@ -159,13 +173,12 @@ export default {
 			return this.grouped && this.parentItems.length > 0
 		},
 		options() {
-			// empty case
-			if (!this.responseHasResults) {
+			if (this.hideResults) {
 				return []
 			}
 
 			// case with children
-			if (this.optionsShouldBeGrouped) {
+			if (this.responseHasResults && this.optionsShouldBeGrouped) {
 				return this.parentItems.map(parent => {
 					const children = this.childrenItems.filter(child => parent.children.includes(child.id))
 					return { ...parent, children }
@@ -189,7 +202,19 @@ export default {
 				return option
 			}
 
-			return option.label ? option.label[this.currentLanguage] || option.label['und'] : null
+			if (!option.label) {
+				return null
+			}
+			const label = option.label[this.currentLanguage]
+			if (!label) {
+				for (let i=0; i<this.languages.length; i++) {
+					const lang = this.languages[i].id
+					if (option.label[lang]) {
+						return option.label[lang]
+					}
+				}
+			}
+			return label || option.label['und'] || null
 		},
 		acceptableOption(es) {
 			const FILTER_FIELD = 'internal_code'
@@ -208,22 +233,23 @@ export default {
 		},
 		async getAllReferenceData() {
 			this.isLoading = true
-			const res = await esApiSearchClient(this.esIndex, this.esDoctype, undefined, this.count)
+			const res = await esApiSearchClient(this.esIndex, this.esDoctype, "*" + this.esQueryExtra, this.count)
 			this.responseData = res.data
 			this.isLoading = false
 		},
 		async searchReferenceData(searchQuery) {
 			this.isLoading = true
-			const res = await esApiSearchClient(this.esIndex, this.esDoctype, searchQuery, this.count)
+			const res = await esApiSearchClient(this.esIndex, this.esDoctype, searchQuery + this.esQueryExtra, this.count)
 			this.responseData = res.data
 			this.isLoading = false
 		},
 		// TODO: if the es server is under too much stress debounce could be implemented
 		async search(searchQuery) {
+			this.lastSearch = searchQuery
 			this.isLoading = true
 			if (!searchQuery) {
 				if (this.async) {
-					this.responseData = {}
+					await this.getAllReferenceData()
 				}
 				this.isLoading = false
 				return // prevent empty search after removing characters from input
@@ -232,7 +258,7 @@ export default {
 			if (this.async) {
 				// remove special characters, see for list: http://lucene.apache.org/core/3_4_0/queryparsersyntax.html
 				searchQuery = searchQuery.replace(/(\+|-|&&|\|\||!|\(|\)|{|}|\[|\]|\^|"|~|\*|\?|:|\\)/g,"")
-				const q = this.selectedLang ?
+				let q = this.selectedLang ?
 					`label.${this.selectedLang.id}:${searchQuery}*`:
 					`${searchQuery}*`
 				this.searchReferenceData(q)
@@ -246,7 +272,11 @@ export default {
 				this.selectedOptions.splice(index, 1)
 			}
 		},
-		atSelect() {
+		async atSelect(item) {
+			if (this.actions.includes(item)) {
+				this.$emit('action', { action: item.action, lastSearch: this.lastSearch })
+				this.selectedOptions = null
+			}
 			if (this.async) {
 				this.responseData = {}
 			}
@@ -303,6 +333,7 @@ export default {
 			if (!this.isInitializing) {
 				this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: storableOptions })
 			}
+			this.$emit("changed")
 		},
 	},
 }
@@ -312,7 +343,6 @@ export default {
 	width: 100%;
 	display: inline-flex;
 	flex-wrap: wrap;
-	margin-bottom: 5px;
 
 	.lang-select {
 		width: 140px;
@@ -365,6 +395,10 @@ export default {
 </style>
 
 <style lang="scss">
+.results_hidden .multiselect__select {
+	display: none;
+}
+
 .multiselect__option--highlight,
 .multiselect__option--highlight:after,
 .multiselect__tag {

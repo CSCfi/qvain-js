@@ -1,34 +1,61 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
 	<wrapper :wrapped="false" :style="listItemStyle(depth)">
-		<h3 @click="opened = !opened" class="margin-left" :aria-controls="domId + '-props'" :aria-expanded="opened ? 'true' : 'false'">
-			<font-awesome-icon v-if="!opened" :icon="expandArrow" class="text-dark"/> {{ uiTitle }}
-		</h3>
-		<b-collapse :id="domId + '-props'" v-model="opened">
+		<h3>{{ uiTitle }}</h3>
+		<div>
 			<p class="ml-4 card-text text-muted" v-if="uiDescription">
 				<sup><font-awesome-icon icon="quote-left" class="text-muted" /></sup>
 				{{ uiDescription }}
 			</p>
+
 			<div
 				v-for="(org, i) in flattened"
 				:key="getKey(i)"
-				class="mb-3"
+				class="mb-2"
 			>
-				<div class="header-row">
-					<b-btn href="#" v-b-toggle="domId + '-accordion-' + i" style="text-align: left;">
-						<font-awesome-icon class="when-opened" icon="angle-down" fixed-width />
-						<font-awesome-icon class="when-closed" icon="angle-right" fixed-width />
-						Level {{ i + 1 }}{{ getDescriptionForLevel(i) }}
-						<DeleteButton v-if="i > 0" @click="remove(i)"/>
-					</b-btn>
+				<div class="refrow">
+					<div class="reference-data">
+						<ReferenceData
+							:schema="schema"
+							:path="path"
+							:value="org"
+							:parent="flattened"
+							:property="i"
+							:tab="myTab"
+							:active-tab="activeTab"
+							:depth="depth"
+							:typeahead="i===lastReferenceData"
+							:hide-results="i!==lastReferenceData"
+							v-bind="ui.props.referenceData"
+							:es-query-extra="getQueryExtraForLevel(i)"
+							:actions="actions"
+							:async="i===0"
+							@changed="updateValue"
+							@action="handleAction"
+						/>
+					</div>
+					{{ getKey(i)}}
+					{{ getIsReferenceData(i) }}
+
+					<div class="edit-button">
+						<span
+							v-b-toggle="domId + '-accordion-' + i"
+							class="px-2 pointer"
+						>
+							Edit
+							<font-awesome-icon icon="edit" fixed-width class="icon" />
+						</span>
+					</div>
+					<div class="delete-button" :class="{invisible: i < flattened.length-1}">
+						<delete-button @click="remove(i)" :disabled="false" />
+					</div>
 				</div>
 
-				<b-collapse :id="domId + '-accordion-' + i" :visible="opened" :accordion="domId + '-accordion'" role="tabpanel">
+				<b-collapse :id="domId + '-accordion-' + i" :visible="i==0" accordion="domId + '-accordion'" role="tabpanel">
 					<FlatObject
-						:key="getKey(org)"
 						:schema="schema"
 						:path="path"
-						:parent="i < countLevels - 1 ? flattened[i + 1] : value"
+						:parent="getParentForLevel(i)"
 						:value="org"
 						:property="i ? refField : property"
 						:tab="myTab"
@@ -37,11 +64,13 @@
 					/>
 				</b-collapse>
 			</div>
-			<div class="header-row">
-				<b-button class="m-3" variant="outline-dark" @click="add()"><font-awesome-icon icon="plus" fixed-width /> Add another level</b-button>
+			<div class="add-level">
+				<b-button variant="outline-dark" class="w-100" @click="add()">
+					<font-awesome-icon icon="plus" fixed-width /> Add another level
+				</b-button>
 			</div>
-			</b-collapse>
-		</wrapper>
+		</div>
+	</wrapper>
 </template>
 
 <style lang="scss" scoped>
@@ -57,6 +86,30 @@
 	margin-left: 1.5em;
 	margin-right: 1.5em;
 }
+
+.add-level {
+	margin-left: 15px;
+}
+
+.invisible {
+	visibility: hidden;
+}
+
+.refrow {
+	display: flex;
+	align-items: center;
+	.reference-data {
+		flex-grow: 1;
+		min-height: 40px;
+	}
+	.edit-button {
+		display: flex;
+		flex-wrap: nowrap;
+		* {
+			border-radius: 4px;
+		}
+	}
+}
 </style>
 
 <script>
@@ -64,6 +117,7 @@ import SchemaBase from './base.vue'
 import Wrapper from '@/components/Wrapper.vue'
 import DeleteButton from '@/partials/DeleteButton.vue'
 import BorderColorMixin from '../mixins/border-color-mixin.js'
+import ReferenceData from '../components/ReferenceData.vue'
 
 export default {
 	extends: SchemaBase,
@@ -74,6 +128,7 @@ export default {
 	components: {
 		Wrapper,
 		DeleteButton,
+		ReferenceData,
 	},
 	props: {
 		'refField': String,
@@ -82,7 +137,11 @@ export default {
 	data: function() {
 		return {
 			opened: true,
+			isReferenceData: [],
 			keys: [],
+			actions: [{ label:{ "und": "- Add Organization Manually -" }, action: "add_new" }],
+			//flattened: [],
+		//	updatingValue: false,
 		}
 	},
 	methods: {
@@ -92,6 +151,15 @@ export default {
 				this.keys[idx] = (this.keys[this.keys.length-1] || 0) + 1
 			}
 			return "org-" + this.keys[idx]
+		},
+		getIsReferenceData(idx) {
+			if (this.isReferenceData[idx] === undefined) {
+				this.isReferenceData[idx] = true
+			}
+			return this.isReferenceData[idx]
+		},
+		handleAction(action) {
+			console.log(action)
 		},
 		flatten(nested) {
 			// Turns a nested structure where each object can have a refField child into
@@ -145,12 +213,46 @@ export default {
 				val: obj,
 			})
 			this.keys.splice(level, 1)
+			this.isReferenceData.splice(level, 1)
+		},
+		updateValue() {
+			console.log("updateValue")
+			this.flattened.x = 0
+			const obj = this.nest(this.flattened)
+			this.$store.commit('replace', {
+				p: this.value,
+				val: obj,
+			})
+		},
+		getParentForLevel(level) {
+			return level < this.countLevels - 1 ? this.flattened[level + 1] : this.value
+		},
+		getQueryExtraForLevel(level) {
+			const codeUrl = "http://uri.suomi.fi/codelist/fairdata/organization/code/"
+			if (level === 0) {
+				return ` AND parent_id:""`
+			} else if (this.flattened[level-1].identifier && this.flattened[level-1].identifier.startsWith(codeUrl)) {
+				const code = this.flattened[level-1].identifier.slice(codeUrl.length)
+				return ` AND parent_id:"organization_${code}"`
+			} else {
+				return ""
+			}
 		},
 		getDescriptionForLevel(level) {
 			return this.levels && this.levels[level] ? ': ' + this.levels[level] : ""
 		},
 	},
 	computed: {
+		lastReferenceData() {
+			let last = -1
+			for (let i=0; i<this.flattened.length; i++) {
+				if (this.getIsReferenceData(i)) {
+					last = i
+				}
+			}
+			console.log(last)
+			return last
+		},
 		countLevels() {
 			if (!this.value) { return -1 }
 			let recurse = this.value
@@ -162,6 +264,7 @@ export default {
 			return depth + 1
 		},
 		flattened() {
+			console.log(this.flatten(this.value).length)
 			return this.flatten(this.value)
 		},
 	},
