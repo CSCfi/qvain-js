@@ -13,7 +13,7 @@
 		</small>
 
 		<div slot="input">
-			<div class="input-row__inline" :class="{results_hidden: hideResults} ">
+			<div class="input-row__inline">
 				<Multiselect v-if="showLang"
 					:id="property + '_language-select'"
 					v-model="selectedLang"
@@ -40,9 +40,15 @@
 					:placeholder="placeholder"
 					group-values="children"
 					:group-label="labelNameInSchema"
+					:disabled="disabled"
 					@search-change="search">
 					<div slot="noResult">No elements found. Consider changing the search query. You may have to type at least 3 letters.</div>
-					<div v-bind:class="{ option__child: !option.$groupLabel, option__parent: option.$groupLabel }" slot="option" slot-scope="{ option }" v-if="grouped">
+					<div
+						v-if="grouped"
+						slot="option"
+						slot-scope="{ option }"
+						:class="{ option__child: !option.$groupLabel, option__parent: option.$groupLabel }"
+					>
 						{{ option.$groupLabel || customLabel(option) }}
 					</div>
 					<div slot="noOptions"></div>
@@ -67,6 +73,7 @@
 					:customLabel="customLabel"
 					:placeholder="placeholder"
 					@select="atSelect"
+					:disabled="disabled"
 					@search-change="search">
 					<div slot="noOptions"></div>
 					<div slot="noResult">No elements found. Consider changing the search query. You may have to type at least 3 letters.</div>
@@ -118,8 +125,8 @@ export default {
 		grouped: { type: Boolean, required: false },
 		description: { type: String, required: false, default: null },
 		actions: { type: Array, default: ()=>[] },
-		hideResults: { type: Boolean, default: false },
 		disableInternalSearch: { type: Boolean, default: false },
+		disabled: { type: Boolean, default: false },
 	},
 	data() {
 		return {
@@ -159,9 +166,7 @@ export default {
 				.map(es => es._source)
 				.map(this.mapToInternalKeys)
 
-			if (!this.disabled) {
-				items.unshift(...this.actions)
-			}
+			items.unshift(...this.actions)
 			return items
 		},
 		parentItems() {
@@ -174,10 +179,6 @@ export default {
 			return this.grouped && this.parentItems.length > 0
 		},
 		options() {
-			if (this.hideResults) {
-				return []
-			}
-
 			// case with children
 			if (this.responseHasResults && this.optionsShouldBeGrouped) {
 				return this.parentItems.map(parent => {
@@ -218,6 +219,19 @@ export default {
 			return label || option.label['und'] || null
 		},
 		acceptableOption(es) {
+			if (this.disableInternalSearch) {
+				let found = false
+				const searchLower = this.lastSearch.toLowerCase()
+				for (const lang in es._source.label) {
+					if (es._source.label[lang].toLowerCase().includes(searchLower)) {
+						found = true
+						break
+					}
+				}
+				if (!found) {
+					return false
+				}
+			}
 			const FILTER_FIELD = 'internal_code'
 			const hasURI = (es._source && es._source.uri)
 			return hasURI || es._source[FILTER_FIELD]
@@ -276,7 +290,6 @@ export default {
 		atSelect(item) {
 			if (this.actions.includes(item)) {
 				this.$emit('action', { action: item.action, lastSearch: this.lastSearch })
-		//		this.selectedOptions = null
 			}
 			if (this.async) {
 				this.responseData = {}
@@ -312,6 +325,14 @@ export default {
 	},
 	watch: {
 		selectedOptions() {
+			// prevent actions from being stored as selected options
+			if (this.isMultiselect && this.selectedOptions) {
+				this.selectedOptions = this.selectedOptions.filter(option => !this.actions.includes(option))
+			}
+			if (!this.isMultiselect && this.actions.includes(this.selectedOptions)) {
+				this.selectedOptions = null
+			}
+
 			const selectedValueIsSet = this.selectedOptions !== null && typeof this.selectedOptions !== 'undefined'
 			const mapToStore = option => {
 				if (typeof option === 'undefined') {
@@ -332,8 +353,6 @@ export default {
 			}
 
 			if (!this.isInitializing) {
-				//console.log(storableOptions)
-				//this.$store.commit('assignValues', { prop: this.value, val: storableOptions })
 				this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: storableOptions })
 				this.$emit("changed")
 			}
@@ -398,10 +417,6 @@ export default {
 </style>
 
 <style lang="scss">
-.results_hidden .multiselect__select {
-	display: none;
-}
-
 .multiselect__option--highlight,
 .multiselect__option--highlight:after,
 .multiselect__tag {
@@ -429,7 +444,6 @@ export default {
 .multiselect__option--selected.multiselect__option--highlight:after {
 	background: $danger;
 }
-
 
 .multiselect__single,
 .multiselect__placeholder,

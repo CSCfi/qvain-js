@@ -14,9 +14,15 @@
 				class="mb-2"
 			>
 				<div class="refrow">
-					<div class="org-title">
+					<div class="org-label">
+						{{ new Array(i*4+1).join("&nbsp;&nbsp;") }}
+					</div>
+
+					<div
+						v-if="getIsReferenceData(i)"
+						class="org-title"
+					>
 						<ReferenceData
-							v-if="getIsReferenceData(i)"
 							:schema="schema"
 							:path="path"
 							:value="org"
@@ -25,41 +31,44 @@
 							:tab="myTab"
 							:active-tab="activeTab"
 							:depth="depth"
-							:typeahead="i===lastReferenceData"
-							:hide-results="i!==lastReferenceData"
+							:typeahead="true"
+							:disabled="i!==lastReferenceData"
 							v-bind="ui.props.referenceData"
 							:es-query-extra="getQueryExtraForLevel(i)"
 							:actions="actions"
 							:async="i===0"
+							:disable-internal-search="true"
 							@changed="()=>handleChanged(i)"
 							@action="(action)=>handleAction(i, action)"
 						/>
-						<b-container v-else v-b-toggle="domId + '-accordion-' + i">
-							<div class="multiselect__tags">
-								<span class="multiselect__input">{{ org.name && (org.name.fi || org.name.en) }}
+					</div>
 
-									<font-awesome-icon icon="edit" fixed-width />
+					<div
+						v-else
+						class="org-title pointer"
+					>
+						<b-container v-b-toggle="domId + '-accordion-' + i">
+							<div class="multiselect__tags">
+								<span class="multiselect__input">
+									<font-awesome-icon icon="edit" fixed-width />&nbsp;
+									<span v-if="getOrgName(org)">{{ getOrgName(org) }}</span>
+									<span v-else class="placeholder">{{ getDescriptionForLevel(i) }}</span>
 								</span>
 							</div>
 						</b-container>
 					</div>
+
 					<div class="delete-button" :class="{invisible: i < flattened.length-1}">
 						<delete-button @click="remove(i)" :disabled="false" />
 					</div>
-					{{ getKey(i) }}
-					{{ getIsReferenceData(i) }}
-
-					<div class="edit-button">
-						<span
-							v-b-toggle="domId + '-accordion-' + i"
-							class="px-2 pointer"
-						>
-							DEBUG
-						</span>
-					</div>
 				</div>
 
-				<b-collapse :id="domId + '-accordion-' + i" accordion="domId + '-accordion'" role="tabpanel">
+				<b-collapse
+					v-if="!getIsReferenceData(i)"
+					:id="domId + '-accordion-' + i"
+					accordion="domId + '-accordion'"
+					role="tabpanel"
+				>
 					<FlatObject
 						:schema="schema"
 						:path="path"
@@ -67,7 +76,7 @@
 						:value="org"
 						:property="i ? refField : property"
 						:tab="myTab"
-						:activeTab="activeTab"
+						:active-tab="activeTab"
 						:depth="depth"
 					/>
 				</b-collapse>
@@ -110,6 +119,9 @@
 		flex-grow: 1;
 		min-height: 40px;
 	}
+	.placeholder {
+		color: #aaa;
+	}
 	.edit-button {
 		display: flex;
 		flex-wrap: nowrap;
@@ -119,6 +131,13 @@
 	}
 }
 </style>
+
+<style lang="scss">
+.org-title .multiselect--disabled {
+	opacity: 1;
+}
+</style>
+
 
 <script>
 import SchemaBase from './base.vue'
@@ -146,49 +165,103 @@ export default {
 		return {
 			opened: true,
 			isReferenceData: [],
-			maxKey: 0,
 			keys: [],
-			actions: [{ label:{ "en": "- Add Organization Manually -" }, action: "add_new" }],
-			//flattened: [],
-		//	updatingValue: false,
+			actions: [{ label:{ "en": "- Add Organization Manually -" }, action: "set_manual" }],
 		}
 	},
 	methods: {
-		updateMaxKey() {
-			for (let i=0; i<this.keys.length; i++) {
-				if (this.maxKey < this.keys[i]) {
-					this.maxKey = this.keys[i]
-				}
-			}
+		getOrgName(org) {
+			return org.name && (org.name.fi || org.name.en) || ""
 		},
-		createNewKey(idx) {
-			this.updateMaxKey()
-			this.maxKey++
-			this.keys[idx] = this.maxKey
-		},
-		getKey(idx) {
+		getKey(idx, min) {
 			if (this.keys[idx] === undefined) {
-				this.createNewKey(idx)
+				this.$set(this.keys, idx, Math.max(min || 0, ...this.keys) + 1)
 			}
 			return "org-" + this.keys[idx]
 		},
 		getIsReferenceData(idx) {
 			if (this.isReferenceData[idx] === undefined) {
-				this.isReferenceData[idx] = idx === 0 || this.isReferenceData[idx-1]
+				const previousIsReferenceData = idx === 0 || this.isReferenceData[idx-1]
+				this.$set(this.isReferenceData, idx, previousIsReferenceData
+					&& (!!this.flattened[idx].identifier || !this.hasValues(this.isReferenceData[idx])))
 			}
 			return this.isReferenceData[idx]
 		},
-		handleAction(idx, action) {
-			if (action.action === "add_new") {
-				this.isReferenceData[idx] = false
-				//console.log(this.flattened[idx])
-				console.log("lastSearch:" + action.lastSearch)
+		hasValues: function(data) {
+			function recurse(schema, data) {
+				if (!data) {
+					return false
+				}
+				if (schema.type === 'object') {
+					for (const prop in schema.properties) {
+						if (prop != "@type") {
+							if (recurse(schema.properties[prop], data[prop])) {
+								return true
+							}
+						}
+					}
+					return false
+				}
+
+				return true
+			}
+			return recurse(this.schema, data)
+		},
+
+		vivicate: function(data) {
+			// Ensures the organization has all the fields from the schema so
+			// - FlatObject doesn't fail because of missing fields
+			// - Objects from ReferenceData get the correct @type
+			// If data is set, it is modified in-place.
+			if (data === undefined) data = {}
+
+			const recurse = (schema, data) => {
+				let val
+
+				// read const
+				if (data === undefined && schema.enum && schema.enum.length === 1) {
+					return schema.enum[0]
+				}
+
+				switch (schema['type']) {
+				case 'object':
+					if (!data) {
+						val = {}
+					} else {
+						val = data
+					}
+					for (const prop in schema.properties) {
+						if (prop === "is_part_of") {
+							continue
+						}
+						this.$set(val, prop, recurse(schema.properties[prop], val[prop]))
+					}
+					break
+				case 'array':
+					val = data || []
+					break
+				case 'null':
+					val = data || null
+					break
+				default:
+					val = data || undefined
+				}
+				return val
+			}
+			return recurse(this.schema, data)
+		},
+
+		async handleAction(idx, action) {
+			if (action.action === "set_manual") {
+				this.$set(this.isReferenceData, idx, false)
+				this.vivicate(this.flattened[idx])
 				this.flattened[idx].name.en = action.lastSearch
+				await this.$nextTick() // wait for the new manual org to be created
+				this.$root.$emit('bv::toggle::collapse', this.domId + '-accordion-' + idx)
 			}
 		},
 		async handleChanged(idx) {
-			console.log(this.keys)
-			this.createNewKey(idx)
+			this.vivicate(this.flattened[idx])
 			this.updateValue()
 		},
 		flatten(nested) {
@@ -223,14 +296,21 @@ export default {
 			return root
 		},
 		add() {
+			const isReference = this.lastReferenceData === this.flattened.length-1
+
 			const arr = [...this.flattened]
-			arr.push({})
+			arr.push(this.vivicate())
 			const obj = this.nest(arr)
 			this.$store.commit('replace', {
 				p: this.value,
 				val: obj,
 			})
-			this.isReferenceData.push(true)
+			if (isReference) {
+				this.isReferenceData.push(true)
+			} else {
+				this.isReferenceData.push(false)
+				this.$root.$emit('bv::toggle::collapse', this.domId + '-accordion-' + this.flattened.length-1)
+			}
 		},
 		remove(level) {
 			const arr = [...this.flattened]
@@ -240,11 +320,13 @@ export default {
 				p: this.value,
 				val: obj,
 			})
-			this.keys.splice(level, 1)
 			this.isReferenceData.splice(level, 1)
+			const oldKey = this.keys.splice(level, 1)[0]
+			if (arr.length === 0) {
+				this.$set(this.keys, 0, oldKey+1)
+			}
 		},
 		updateValue() {
-			this.flattened.x = 0
 			const obj = this.nest(this.flattened)
 			this.$store.commit('replace', {
 				p: this.value,
@@ -266,16 +348,16 @@ export default {
 			}
 		},
 		getDescriptionForLevel(level) {
-			return this.levels && this.levels[level] ? ': ' + this.levels[level] : ""
+			return this.levels && this.levels[level] ? this.levels[level] : ""
 		},
-	},
-	created() {
-		this.updateMaxKey()
 	},
 	computed: {
 		canAddNew() {
-			const idx = this.lastReferenceData
-			return idx <= 0 || this.flattened[idx].identifier
+			if (this.lastReferenceData === this.flattened.length - 1) {
+				return this.lastReferenceData < 0 || this.flattened[this.lastReferenceData].identifier
+			} else {
+				return true
+			}
 		},
 		lastReferenceData() {
 			window.k = this
