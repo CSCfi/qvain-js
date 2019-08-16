@@ -181,13 +181,13 @@ export default {
 		},
 		getIsReferenceData(idx) {
 			if (this.isReferenceData[idx] === undefined) {
-				const previousIsReferenceData = idx === 0 || this.isReferenceData[idx-1]
+				const previousIsReferenceData = idx === 0 || (this.isReferenceData[idx-1] && this.flattened[idx-1].identifier)
 				this.$set(this.isReferenceData, idx, previousIsReferenceData
-					&& (!!this.flattened[idx].identifier || !this.hasValues(this.isReferenceData[idx])))
+					&& (!!this.flattened[idx].identifier || !this.hasValues(this.flattened[idx])))
 			}
 			return this.isReferenceData[idx]
 		},
-		hasValues: function(data) {
+		hasValues(data) {
 			function recurse(schema, data) {
 				if (!data) {
 					return false
@@ -207,18 +207,17 @@ export default {
 			}
 			return recurse(this.schema, data)
 		},
-
-		vivicate: function(data) {
+		initializeFields(data) {
 			// Ensures the organization has all the fields from the schema so
 			// - FlatObject doesn't fail because of missing fields
 			// - Objects from ReferenceData get the correct @type
-			// If data is set, it is modified in-place.
+			// If data is set, it is modified in-place and existing values are kept.
 			if (data === undefined) data = {}
 
 			const recurse = (schema, data) => {
 				let val
 
-				// read const
+				// read const from schema
 				if (data === undefined && schema.enum && schema.enum.length === 1) {
 					return schema.enum[0]
 				}
@@ -254,14 +253,14 @@ export default {
 		async handleAction(idx, action) {
 			if (action.action === "set_manual") {
 				this.$set(this.isReferenceData, idx, false)
-				this.vivicate(this.flattened[idx])
+				this.initializeFields(this.flattened[idx])
 				this.flattened[idx].name.en = action.lastSearch
 				await this.$nextTick() // wait for the new manual org to be created
 				this.$root.$emit('bv::toggle::collapse', this.domId + '-accordion-' + idx)
 			}
 		},
 		async handleChanged(idx) {
-			this.vivicate(this.flattened[idx])
+			this.initializeFields(this.flattened[idx])
 			this.updateValue()
 		},
 		flatten(nested) {
@@ -295,11 +294,11 @@ export default {
 			this.$delete(obj, this.refField) // remove child from the deepest object
 			return root
 		},
-		add() {
+		async add() {
 			const isReference = this.lastReferenceData === this.flattened.length-1
 
 			const arr = [...this.flattened]
-			arr.push(this.vivicate())
+			arr.push(this.initializeFields())
 			const obj = this.nest(arr)
 			this.$store.commit('replace', {
 				p: this.value,
@@ -309,7 +308,8 @@ export default {
 				this.isReferenceData.push(true)
 			} else {
 				this.isReferenceData.push(false)
-				this.$root.$emit('bv::toggle::collapse', this.domId + '-accordion-' + this.flattened.length-1)
+				await this.$nextTick()
+				this.$root.$emit('bv::toggle::collapse', this.domId + '-accordion-' + (this.flattened.length-1))
 			}
 		},
 		remove(level) {
