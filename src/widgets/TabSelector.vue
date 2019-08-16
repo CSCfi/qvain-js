@@ -32,9 +32,8 @@
 				:tab="myTab"
 				:activeTab="activeTab"
 				:depth="depth"
-				v-on="$listeners">
-			</skip>
-			{{ (schema.required || []).includes(property) }}
+				v-on="$listeners"
+			/>
 		</keep-alive>
 	</div>
 </template>
@@ -173,6 +172,10 @@ export default {
 			}
 
 			const val = getDefaultValue() || this.emptyValue()
+
+			if (val === undefined && this.property in this.parent) {
+				return // property already exists, avoid redundant commit
+			}
 			this.$store.commit('initValue', { p: this.parent, prop: this.property, val })
 		},
 	},
