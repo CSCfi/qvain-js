@@ -1,6 +1,6 @@
 <!-- ADD_LICENSE_HEADER -->
-<template>
-	<div v-bind:class="{ wrapper: wrapped, error: error }">
+<template functional>
+	<div v-bind:class="{ wrapper: props.wrapped, error: props.error }">
 		<slot></slot>
 	</div>
 </template>
@@ -25,4 +25,3 @@ export default {
 	border-right: solid 5px red;
 }
 </style>
-
