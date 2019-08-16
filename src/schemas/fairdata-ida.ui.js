@@ -37,7 +37,7 @@ export default {
 			'referenceData': {
 				"es-index":'organization_data',
 				"es-doctype":'organization',
-				//"typeahead":true,
+				"typeahead":true,
 				"tags":false,
 				// "async":true,
 				"count": 200,

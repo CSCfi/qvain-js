@@ -31,7 +31,6 @@
 							:tab="myTab"
 							:active-tab="activeTab"
 							:depth="depth"
-							:typeahead="true"
 							:disabled="i!==lastReferenceData"
 							v-bind="ui.props.referenceData"
 							:es-query-extra="getQueryExtraForLevel(i)"
