@@ -1,4 +1,6 @@
+
 var assert = require('assert');
+import Vue from 'vue'
 import Validator from "../src/validate.js"
 // without babel: var Validator = require('../build/validate.js').default
 
@@ -14,7 +16,7 @@ describe("string", function() {
 	var schema = {
 		'type': "string"
 	}
-	var validator = new Validator(schema)
+	var validator = new Validator(Vue, schema)
 	describe("good", function() {
 		it("should accept a regular string", function() {
 			assert.ok(validator.validateData("jack"))
@@ -41,7 +43,7 @@ describe("number", function() {
 		 "exclusiveMaximum": true,
 		 "multipleOf": 5,
 	}
-	var validator = new Validator(schema)
+	var validator = new Validator(Vue, schema)
 	describe("good", function() {
 		it("should accept a positive number", function() {
 			assert.ok(validator.validateData(10))
@@ -64,7 +66,7 @@ describe("number", function() {
 })
 
 describe("null", function() {
-	var validator = new Validator({
+	var validator = new Validator(Vue, {
 		"type": "null"
 	})
 	describe("good", function() {
@@ -86,7 +88,7 @@ describe("null", function() {
 })
 
 describe("required", function() {
-	var validator = new Validator({
+	var validator = new Validator(Vue, {
 		"type": "object",
 		"properties": {
 			"name":      { "type": "string" },
@@ -126,7 +128,7 @@ describe("required", function() {
 })
 
 describe("numProps", function() {
-	var validator = new Validator({
+	var validator = new Validator(Vue, {
 		"type": "object",
 		"properties": {
 			"prop1": {},
@@ -161,7 +163,7 @@ describe("numProps", function() {
 })
 
 describe("dependency props", function() {
-	var validator = new Validator({
+	var validator = new Validator(Vue, {
 		"type": "object",
 
 		"properties": {
@@ -214,7 +216,7 @@ describe("dependency props", function() {
 })
 
 describe("dependency props (bidirectional)", function() {
-	var validator = new Validator({
+	var validator = new Validator(Vue, {
 		"type": "object",
 
 		"properties": {
@@ -256,7 +258,7 @@ describe("dependency props (bidirectional)", function() {
 })
 
 describe("dependency props (schema)", function() {
-	var validator = new Validator({
+	var validator = new Validator(Vue, {
 		"type": "object",
 
 		"properties": {
@@ -308,7 +310,7 @@ describe("dependency props (schema)", function() {
 })
 
 describe("array", function() {
-	var validator = new Validator({
+	var validator = new Validator(Vue, {
 		"type": "array"
 	})
 	describe("good", function() {
@@ -329,7 +331,7 @@ describe("array", function() {
 })
 
 describe("array validation: list", function() {
-	var validator = new Validator({
+	var validator = new Validator(Vue, {
 		"type": "array",
 		"items": {
 			"type": "number"
@@ -351,7 +353,7 @@ describe("array validation: list", function() {
 })
 
 describe("array validation: tuple", function() {
-	var validator = new Validator({
+	var validator = new Validator(Vue, {
 		"type": "array",
 		"items": [
 			{ "type": "number" },
@@ -383,7 +385,7 @@ describe("array validation: tuple", function() {
 })
 
 describe("array validation: tuple; no additional items", function() {
-	var validator = new Validator({
+	var validator = new Validator(Vue, {
 		"type": "array",
 		"items": [
 			{ "type": "number" },
@@ -410,7 +412,7 @@ describe("array validation: tuple; no additional items", function() {
 })
 
 describe("array validation: tuple; additional items of string type", function() {
-	var validator = new Validator({
+	var validator = new Validator(Vue, {
 		"type": "array",
 		"items": [
 			{ "type": "number" },
@@ -446,7 +448,7 @@ describe("array validation: tuple; additional items of string type", function() 
 })
 
 describe("array validation: unique", function() {
-	var validator = new Validator({
+	var validator = new Validator(Vue, {
 		"type": "array",
 		"uniqueItems": true,
 	})
@@ -466,7 +468,7 @@ describe("array validation: unique", function() {
 })
 
 describe("enum", function() {
-	var validator = new Validator({
+	var validator = new Validator(Vue, {
 		"enum": ["red", "amber", "green", null, 42]
 	})
 	describe("good", function() {
@@ -488,7 +490,7 @@ describe("enum", function() {
 })
 
 describe("array validation: tuple + enum", function() {
-	var validator = new Validator({
+	var validator = new Validator(Vue, {
 		"type": "array",
 		"items": [
 			{
@@ -529,7 +531,7 @@ describe("array validation: tuple + enum", function() {
 })
 
 describe("array validation: tuple + enum + no additional items", function() {
-	var validator = new Validator({
+	var validator = new Validator(Vue, {
 		"type": "array",
 		"items": [
 			{
@@ -565,7 +567,7 @@ describe("array validation: tuple + enum + no additional items", function() {
 })
 
 describe("simple ref", function() {
-	var validator = new Validator({
+	var validator = new Validator(Vue, {
 		"$schema": "http://json-schema.org/draft-04/schema#",
 
 		"definitions": {
@@ -623,7 +625,7 @@ describe("simple ref", function() {
 })
 
 describe("non-existing ref", function() {
-	var validator = new Validator({
+	var validator = new Validator(Vue, {
 		"type": "object",
 
 		"properties": {
@@ -645,7 +647,7 @@ describe("non-existing ref", function() {
 })
 
 describe("anyOf", function() {
-	var validator = new Validator({
+	var validator = new Validator(Vue, {
 		"anyOf": [
 			{ "type": "string", "maxLength": 5 },
 			{ "type": "number", "minimum": 0 }
@@ -673,7 +675,7 @@ describe("anyOf", function() {
 })
 
 describe("oneOf", function() {
-	var validator = new Validator({
+	var validator = new Validator(Vue, {
 		"oneOf": [
 			{ "type": "string", "maxLength": 5 },
 			{ "type": "string", "maxLength": 10 },
@@ -699,7 +701,7 @@ describe("oneOf", function() {
 })
 
 describe("allOf", function() {
-	var validator = new Validator({
+	var validator = new Validator(Vue, {
 		"allOf": [
 			{ "type": "string", "maxLength": 5 },
 			{ "type": "string", "maxLength": 10 },
@@ -722,7 +724,7 @@ describe("allOf", function() {
 })
 
 describe("combiner with ref", function() {
-	var validator = new Validator({
+	var validator = new Validator(Vue, {
 		"$schema": "http://json-schema.org/draft-04/schema#",
 
 		"definitions": {
@@ -786,4 +788,3 @@ describe("combiner with ref", function() {
 		})
 	})
 })
-
