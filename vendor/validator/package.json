@@ -16,13 +16,13 @@
     "deep-equal": "^1.0.1",
     "deepmerge": "^2.1.0",
     "json-deep-copy": "^1.0.2",
-    "json-pointer": "^0.6.0",
-    "vue": "^2.5.16"
+    "json-pointer": "^0.6.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
-    "mocha": "^5.2.0"
+    "mocha": "^5.2.0",
+    "vue": "^2.6.10"
   },
   "babel": {
     "presets": [

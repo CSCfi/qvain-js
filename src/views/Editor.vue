@@ -244,6 +244,7 @@ import apiClient from '@/api/client.js'
 import PublishModal from '@/components/PublishModal.vue'
 import Validator from '../../vendor/validator/src/validate.js'
 import cloneWithPrune from '@/lib/cloneWithPrune.js'
+import Vue from 'vue'
 
 export default {
 	name: "editor",
@@ -484,8 +485,9 @@ export default {
 			}
 		},
 		startValidator() {
-			this.unsubscribeFunc && this.unsubscribeFunc();
+			this.unsubscribeFunc && this.unsubscribeFunc()
 			this.validator = new Validator(
+				Vue,
 				this.$store.state.schema,
 				this.$store.state.record,
 				{ 'allowUndefined': true },
