@@ -152,7 +152,7 @@ export default {
 		},
 		currentLanguage() {
 			const selectedLanguage = this.selectedLang ? this.selectedLang.id : null
-			return selectedLanguage || this.$root.language || 'en'
+			return selectedLanguage || this.$store.state.languagePriority[0]
 		},
 		isMultiselect() {
 			return this.schema.type === 'array'
@@ -210,12 +210,7 @@ export default {
 			}
 			const label = option.label[this.currentLanguage]
 			if (!label) {
-				for (let i=0; i<this.languages.length; i++) {
-					const lang = this.languages[i].id
-					if (option.label[lang]) {
-						return option.label[lang]
-					}
-				}
+				return this.$store.getters.getStringFromMultiLanguage(option.label)
 			}
 			return label || option.label['und'] || null
 		},
@@ -328,7 +323,10 @@ export default {
 		selectedOptions() {
 			// prevent actions from being stored as selected options
 			if (this.isMultiselect && this.selectedOptions) {
-				this.selectedOptions = this.selectedOptions.filter(option => !this.actions.includes(option))
+				const filteredOptions = this.selectedOptions.filter(option => !this.actions.includes(option))
+				if (filteredOptions.length !== this.selectedOptions.length) {
+					this.selectedOptions = filteredOptions
+				}
 			}
 			if (!this.isMultiselect && this.actions.includes(this.selectedOptions)) {
 				this.selectedOptions = null

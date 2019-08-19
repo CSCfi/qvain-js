@@ -175,7 +175,7 @@ export default {
 	},
 	methods: {
 		getOrgName(org) {
-			return org.name && (org.name.fi || org.name.en) || ""
+			return this.$store.getters.getStringFromMultiLanguage(org.name)
 		},
 		getKey(idx, min) {
 			if (this.keys[idx] === undefined) {
@@ -263,7 +263,7 @@ export default {
 			if (action.action === "set_manual") {
 				this.$set(this.isReferenceData, idx, false)
 				this.initializeFields(this.flattened[idx])
-				this.$set(this.flattened[idx].name, "fi", action.lastSearch)
+				this.$set(this.flattened[idx].name, this.$store.state.languagePriority[0], action.lastSearch)
 				await this.$nextTick() // wait for the new manual org to be created
 				this.$root.$emit('bv::toggle::collapse', this.domId + '-accordion-' + idx)
 			}

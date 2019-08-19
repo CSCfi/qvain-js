@@ -555,7 +555,7 @@ export default {
 			} else if (typeof langObj !== "object" || langObj === null) {
 				return "–"
 			}
-			return langObj[this.$root.language] || langObj['en'] || langObj['fi'] || langObj['se'] || langObj[Object.keys(langObj)[0]] || ""
+			return this.$store.getters.getStringFromMultiLanguage(langObj) || ""
 		},
 		filter(item) {
 			return this.filterState(item) && this.filterTitles(item)

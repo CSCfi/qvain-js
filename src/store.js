@@ -16,6 +16,7 @@ export default new Vuex.Store({
 		metadata: {},
 		deletedItems: { 'files': {}, 'directories': {}}, // files or directories that no longer exist
 		languages: { 'fi':true, 'en':true, 'sv':true },
+		languagePriority: [ 'en', 'fi', 'sv' ], // order in which multilanguage elements are searched when single value is needed
 		UI_VALID_KEYWORDS: [
 			'widget',
 			'option',
@@ -231,13 +232,19 @@ export default new Vuex.Store({
 			// _.get(object, path, [defaultValue])
 			return getDotted(state.record, path)
 		},
-		// getTitle returns the English title or the first one defined
-		getTitle: (state) => {
-			return state.record && state.record.title && (state.record.title['en'] || state.record.title[Object.keys(state.record.title)[0]] || null)
+		// getTitle returns the title
+		getTitle: (state, getters) => {
+			return getters.getStringFromMultiLanguage(state.record.title)
 		},
-		// getTitleWithLanguage returns the title for the given language or the first defined
-		getTitleWithLanguage: (state) => (lang) => {
-			return state.record && state.record.title && (state.record.title[lang] || state.record.title[Object.keys(state.record.title)[0]] || null)
-		},
+		// getStringFromMultiLanguage returns a single string from multilang object based on languagePriority
+		getStringFromMultiLanguage: (state) => (multi) => {
+			for (let i=0; i<state.languagePriority.length; i++) {
+				const lang = state.languagePriority[i]
+				if (multi[lang]) {
+					return multi[lang]
+				}
+			}
+			return Object.values(multi)[0] || null
+		}
 	},
 })

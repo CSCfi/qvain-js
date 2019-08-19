@@ -47,9 +47,7 @@ export default {
 				while (obj.is_part_of) {
 					obj = obj.is_part_of
 				}
-				if (obj && obj.name && (obj.name['fi'] || obj.name['en'])) {
-					return obj.name['fi'] || obj.name['en']
-				}
+				this.$store.getters.getStringFromMultiLanguage(obj.name)
 			}
 			if (objectType === 'Organization') {
 				return defaultPrefix+`(Organization)`
@@ -119,9 +117,9 @@ export default {
 			return typeof this.uiTab === 'number' ? this.uiTab : this.tab
 		},
 		uiTitle: function() {
-			var title = this.ui['title'] || this.schema['title'] || this.property
-			if (!title || title === ' ') return null;
-			return title;
+			const title = this.ui['title'] || this.schema['title'] || this.property
+			if (!title || title === ' ') return null
+			return title
 		},
 		uiDescription: function() {
 			return this.ui['description'] || this.schema['description']
