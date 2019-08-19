@@ -234,6 +234,9 @@ export default new Vuex.Store({
 		},
 		// getTitle returns the title
 		getTitle: (state, getters) => {
+			if (!state.record) {
+				return ""
+			}
 			return getters.getStringFromMultiLanguage(state.record.title)
 		},
 		// getStringFromMultiLanguage returns a single string from multilang object based on languagePriority
