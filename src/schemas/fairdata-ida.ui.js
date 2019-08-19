@@ -28,12 +28,12 @@ export default {
 		'order': [ "name", "email", "identifier" ],
 	},
 	'#/definitions/Organization': {
-		'title': "Organisational hierarchy",
-		'description': "Hierarchical structure of the organisation. Here you can provide an organisation's or a company's information. You need to provide at least one name, but if desired, you can provide multiple organisational divisions for faculties or departments.",
+		'title': "Organizational hierarchy",
+		'description': "Hierarchical structure of the organization. Here you can provide an organization's or a company's information. You need to provide at least one name, but if desired, you can provide multiple organizational divisions for faculties or departments.",
 		'widget': 'Organization',
 		'props': {
 			'refField': "is_part_of",
-			'levels': [ "Organisation", "Faculty or Division", "Department or Unit" ],
+			'levels': [ "Organization", "Faculty or Division", "Department or Unit" ],
 			'referenceData': {
 				"es-index": 'organization_data',
 				"es-doctype": 'organization',

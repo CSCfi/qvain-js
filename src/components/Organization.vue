@@ -170,7 +170,7 @@ export default {
 			opened: true,
 			isReferenceData: [],
 			keys: [],
-			actions: [{ label:{ "en": "- Add Organisation Manually -" }, action: "set_manual" }],
+			actions: [{ label:{ "en": "- Add Organization Manually -" }, action: "set_manual" }],
 		}
 	},
 	methods: {
