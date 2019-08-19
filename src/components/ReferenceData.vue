@@ -37,7 +37,7 @@
 					:showNoResults="false"
 					:showNoOptions="false"
 					:customLabel="customLabel"
-					:placeholder="placeholder"
+					:placeholder="getPlaceholder"
 					group-values="children"
 					:group-label="labelNameInSchema"
 					:disabled="disabled"
