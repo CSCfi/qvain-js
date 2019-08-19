@@ -139,7 +139,7 @@
 
 
 <script>
-import SchemaBase from './base.vue'
+import SchemaBase from '@/widgets/base.vue'
 import Wrapper from '@/components/Wrapper.vue'
 import DeleteButton from '@/partials/DeleteButton.vue'
 import BorderColorMixin from '../mixins/border-color-mixin.js'
@@ -148,16 +148,16 @@ import ReferenceData from '../components/ReferenceData.vue'
 const referenceIdentifierPrefix = "http://uri.suomi.fi/codelist/fairdata/organization/code/"
 
 export default {
-	extends: SchemaBase,
-	name: 'SelfReferentialObject',
-	description: "self-referential object",
-	schematype: 'object',
-	mixins: [BorderColorMixin],
+	name: 'Organization',
 	components: {
 		Wrapper,
 		DeleteButton,
 		ReferenceData,
 	},
+	extends: SchemaBase,
+	description: "organization",
+	schematype: 'object',
+	mixins: [BorderColorMixin],
 	props: {
 		'refField': String,
 		'levels': Array,

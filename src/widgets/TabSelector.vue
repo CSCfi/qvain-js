@@ -61,7 +61,7 @@ import TabbedArray from './TabbedArray.vue'
 import AutoComplete from './refdata/autocomplete.vue'
 import FilePicker from '../filebrowser/FilePicker.vue'
 import Skip from './skip.js'
-import SelfReferentialObject from './SelfReferentialObject.vue'
+import Organization from '../components/Organization.vue'
 import FlatObject from './FlatObject.vue'
 import ReferenceData from '../components/ReferenceData.vue'
 import DateRange from '../components/DateRange.vue'
@@ -247,7 +247,7 @@ export default {
 		'autocomplete': AutoComplete,
 		'filepicker': FilePicker,
 		'skip': Skip,
-		SelfReferentialObject,
+		Organization,
 		FlatObject,
 		'date-range': DateRange,
 		'date': Date,

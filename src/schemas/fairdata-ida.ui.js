@@ -30,7 +30,7 @@ export default {
 	'#/definitions/Organization': {
 		'title': "Organisational hierarchy",
 		'description': "Hierarchical structure of the organisation. Here you can provide an organisation's or a company's information. You need to provide at least one name, but if desired, you can provide multiple organisational divisions for faculties or departments.",
-		'widget': 'SelfReferentialObject',
+		'widget': 'Organization',
 		'props': {
 			'refField': "is_part_of",
 			'levels': [ "Organisation", "Faculty or Division", "Department or Unit" ],
