@@ -35,7 +35,6 @@
 							v-bind="ui.props.referenceData"
 							:es-query-extra="getQueryExtraForLevel(i)"
 							:actions="actions"
-							:async="i===0"
 							:disable-internal-search="true"
 							@changed="()=>handleChanged(i)"
 							@action="(action)=>handleAction(i, action)"
