@@ -17,6 +17,10 @@ import store from './store.js'
 import FilesStore from './vuex/files.js'
 import AuthPlugin from './auth/plugin.js'
 
+if (process.env.NODE_ENV === "development") {
+	Vue.config.performance = true    // enable User Timing API for better profiling
+	Vue.config.productionTip = false // disable console warning that developer mode is being used
+}
 Vue.use(BootstrapVue)
 
 Vue.use(AuthPlugin, {
@@ -33,28 +37,6 @@ Vue.component('font-awesome-layers-text', FontAwesomeLayersText)
 library.add(fas)
 
 store.registerModule('files', FilesStore)
-
-// get configuration from environment
-function getConfig() {
-	return {
-		// Metax Dataset API endpoint
-		MetaxApiUrl: process.env['VUE_APP_METAX_API_URL'],
-		// Elastic Search API endpoint
-		EsApiUrl: process.env['VUE_APP_ES_API_URL'],
-		// Etsin Dataset API endpoint
-		EtsinApiUrl: process.env['VUE_APP_ETSIN_API_URL'],
-		// Qvain (js) version
-		Version: process.env['VUE_APP_VERSION'],
-		// Qvain (js) commit hash
-		CommitHash: process.env['VUE_APP_COMMIT_HASH'],
-		// application execution environment (testing, stable, production)
-		Environment: process.env['VUE_APP_ENVIRONMENT'],
-		// node environment
-		NodeEnv: process.env['NODE_ENV'],
-		// development login token
-		DevToken: process.env['DEV_TOKEN'],
-	}
-}
 
 // create and mount the root instance
 // eslint-disable-next-line no-unused-vars
@@ -95,11 +77,6 @@ const app = new Vue({
 			this.showAlert("language set to: " + val)
 		},
 	},
-	created() {
-		// set configuration on root component
-		this.$config = getConfig()
-	},
-
 	mounted() {
 		// load Matomo script, add a PageView
 		if (process.env['VUE_APP_MATOMO_SITE_ID']) {
