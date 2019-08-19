@@ -1,7 +1,10 @@
 <!-- ADD_LICENSE_HEADER -->
 <template functional>
-	<div v-bind:class="{ wrapper: props.wrapped, error: props.error }">
-		<slot></slot>
+	<div
+		:class="{ wrapper: props.wrapped, error: props.error, [data.staticClass || '']: true }"
+		:style="data.style || ''"
+	>
+		<slot />
 	</div>
 </template>
 <script>
