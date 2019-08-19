@@ -38,6 +38,11 @@
 				{{ data.item.type !== 'files' ? '' : data.item.identifier }}
 			</template>
 
+			<template
+				slot="file_count" slot-scope="data" >
+				{{ data.item.type === 'files' ? '' : data.item.directory.file_count }}
+			</template>
+
 			<template slot="actions" slot-scope="data">
 				<b-btn variant="primary" v-if="data.item.type === 'files'" size="sm" @click.stop="data.toggleDetails" class="mr-2">{{ data.detailsShowing ? 'Hide' : 'Show'}} PAS metadata</b-btn>
 			</template>
@@ -109,6 +114,11 @@ export default {
 				},
 				{
 					key: 'identifier',
+					sortable: true,
+					tdClass: 'align-middle word-break-all',
+				},
+				{
+					key: 'file_count',
 					sortable: true,
 					tdClass: 'align-middle word-break-all',
 				},
