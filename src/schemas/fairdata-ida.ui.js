@@ -32,8 +32,8 @@ export default {
 		'description': "Hierarchical structure of the organization. Here you can provide an organization's or a company's information. You need to provide at least one name, but if desired, you can provide multiple organizational divisions for faculties or departments.",
 		'widget': 'Organization',
 		'props': {
+			'extraFields': ['contributor_type'],
 			'refField': "is_part_of",
-			'levels': [ "Organization", "Faculty or Division", "Department or Unit" ],
 			'referenceData': {
 				"es-index": 'organization_data',
 				"es-doctype": 'organization',

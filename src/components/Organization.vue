@@ -78,13 +78,36 @@
 						:tab="myTab"
 						:active-tab="activeTab"
 						:depth="depth"
+						:skipped="extraFields"
 					/>
 				</b-collapse>
 			</div>
 			<div class="add-level">
-				<b-button variant="outline-dark" class="w-100" :disabled="!canAddNew" @click="add()">
+				<b-button
+					variant="outline-dark"
+					class="mb-2 w-100"
+					:disabled="!canAddNew"
+					@click="add()"
+				>
 					<font-awesome-icon icon="plus" fixed-width /> Add another level
 				</b-button>
+			</div>
+			<div
+				v-for="propName in extraFields"
+				:key="propName"
+			>
+				<TabSelector
+					:key="propName"
+					:schema="schema['properties'][propName]"
+					:required="(schema.required || []).includes(propName)"
+					:path="newPath('properties/' + propName)"
+					:value="value[propName]"
+					:parent="flattened[flattened.length-1]"
+					:property="propName"
+					:tab="myTab"
+					:active-tab="activeTab"
+					:depth="depth"
+				/>
 			</div>
 		</div>
 	</wrapper>
@@ -162,8 +185,20 @@ export default {
 	schematype: 'object',
 	mixins: [BorderColorMixin],
 	props: {
-		'refField': String,
-		'levels': Array,
+		'refField': {
+			type: String,
+			required: true,
+		},
+		'levels': {
+			type: Array,
+			required: false,
+			default: () => [ "Organization", "Faculty or Division", "Department or Unit" ],
+		},
+		'extraFields': { // show these fields only once per hierarchy, not for each level
+			type: Array,
+			required: false,
+			default: () => [],
+		},
 	},
 	data: function() {
 		return {
@@ -360,7 +395,7 @@ export default {
 			return this.levels && this.levels[level] ? this.levels[level] : ""
 		},
 		getPlaceholderForLevel(level) {
-			return "Type to search for " + this.getDescriptionForLevel(level)
+			return "Select " + this.getDescriptionForLevel(level)
 		},
 	},
 	computed: {

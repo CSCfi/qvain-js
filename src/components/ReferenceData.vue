@@ -392,6 +392,7 @@ export default {
 
 .tag__list {
 	margin: -2px;
+	margin-top: 2px;
 	display: inline-flex;
 	flex-wrap: wrap;
 
