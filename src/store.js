@@ -241,6 +241,9 @@ export default new Vuex.Store({
 		},
 		// getStringFromMultiLanguage returns a single string from multilang object based on languagePriority
 		getStringFromMultiLanguage: (state) => (multi) => {
+			if (!multi) {
+				return null
+			}
 			for (let i=0; i<state.languagePriority.length; i++) {
 				const lang = state.languagePriority[i]
 				if (multi[lang]) {
