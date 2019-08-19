@@ -9,7 +9,7 @@
 	>
 		<title-component slot="title" :title="uiLabel" />
 		<small slot="help" class="text-muted">
-			{{ description === null ? uiDescription : description }}
+			{{ uiDescription }}
 		</small>
 
 		<div slot="input">
@@ -71,7 +71,7 @@
 					:options="options"
 					:showNoResults="false"
 					:customLabel="customLabel"
-					:placeholder="placeholder"
+					:placeholder="getPlaceholder"
 					@select="atSelect"
 					:disabled="disabled"
 					@search-change="search">
@@ -123,7 +123,7 @@ export default {
 		wrapped: { type: Boolean, default: false },
 		labelNameInSchema: { type: String, default: 'pref_label' },
 		grouped: { type: Boolean, required: false },
-		description: { type: String, required: false, default: null },
+		placeholder: { type: String, required: false, default: null },
 		actions: { type: Array, default: ()=>[] },
 		disableInternalSearch: { type: Boolean, default: false },
 		disabled: { type: Boolean, default: false },
@@ -145,10 +145,10 @@ export default {
 		}
 	},
 	computed: {
-		placeholder() {
-			return this.async ?
+		getPlaceholder() {
+			return this.placeholder || (this.async ?
 				'Type to search for available options' :
-				'Select option'
+				'Select option')
 		},
 		currentLanguage() {
 			const selectedLanguage = this.selectedLang ? this.selectedLang.id : null

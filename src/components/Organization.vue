@@ -34,6 +34,7 @@
 							:disabled="i!==flattened.length-1"
 							v-bind="ui.props.referenceData"
 							:es-query-extra="getQueryExtraForLevel(i)"
+							:placeholder="getPlaceholderForLevel(i)"
 							:actions="actions"
 							:disable-internal-search="true"
 							@changed="()=>handleChanged(i)"
@@ -166,7 +167,7 @@ export default {
 			opened: true,
 			isReferenceData: [],
 			keys: [],
-			actions: [{ label:{ "en": "- Add Organization Manually -" }, action: "set_manual" }],
+			actions: [{ label:{ "en": "- Add Organisation Manually -" }, action: "set_manual" }],
 		}
 	},
 	methods: {
@@ -354,6 +355,9 @@ export default {
 		},
 		getDescriptionForLevel(level) {
 			return this.levels && this.levels[level] ? this.levels[level] : ""
+		},
+		getPlaceholderForLevel(level) {
+			return "Type to search for " + this.getDescriptionForLevel(level)
 		},
 	},
 	computed: {
