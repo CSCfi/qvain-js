@@ -133,8 +133,8 @@ export default {
 			responseData: {},
 			selectedOptions: [],
 			languages: [
-				{ id: 'en', language: 'English' },
 				{ id: 'fi', language: 'Finnish' },
+				{ id: 'en', language: 'English' },
 				{ id: 'sv', language: 'Swedish' },
 			],
 			selectedLang: null,

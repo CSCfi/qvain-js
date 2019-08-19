@@ -260,7 +260,7 @@ export default {
 			if (action.action === "set_manual") {
 				this.$set(this.isReferenceData, idx, false)
 				this.initializeFields(this.flattened[idx])
-				this.flattened[idx].name.en = action.lastSearch
+				this.$set(this.flattened[idx].name, "fi", action.lastSearch)
 				await this.$nextTick() // wait for the new manual org to be created
 				this.$root.$emit('bv::toggle::collapse', this.domId + '-accordion-' + idx)
 			}
