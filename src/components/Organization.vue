@@ -46,10 +46,11 @@
 						v-else
 						class="org-title pointer"
 					>
-						<b-container v-b-toggle="domId + '-accordion-' + i">
+						<b-container class="toggle-org" v-b-toggle="domId + '-accordion-' + i">
 							<div class="multiselect__tags">
 								<span class="multiselect__input">
-									<font-awesome-icon icon="edit" fixed-width />&nbsp;
+
+									<font-awesome-icon class="edit-icon" icon="edit" fixed-width />&nbsp;
 									<span v-if="getOrgName(org)">{{ getOrgName(org) }}</span>
 									<span v-else class="placeholder">{{ getDescriptionForLevel(i) }}</span>
 								</span>
@@ -93,9 +94,11 @@
 .margin-left {
 	margin-left: 20px;
 }
-.collapsed > .when-opened,
-:not(.collapsed) > .when-closed {
-  display: none;
+.toggle-org:not(.collapsed) {
+	.multiselect__tags, .multiselect__input {
+		background-color: #6c757d;
+		color: #ffffff;
+	}
 }
 
 .header-row {
