@@ -31,7 +31,7 @@
 							:tab="myTab"
 							:active-tab="activeTab"
 							:depth="depth"
-							:disabled="i!==lastReferenceData"
+							:disabled="i!==flattened.length-1"
 							v-bind="ui.props.referenceData"
 							:es-query-extra="getQueryExtraForLevel(i)"
 							:actions="actions"
@@ -145,6 +145,8 @@ import DeleteButton from '@/partials/DeleteButton.vue'
 import BorderColorMixin from '../mixins/border-color-mixin.js'
 import ReferenceData from '../components/ReferenceData.vue'
 
+const referenceIdentifierPrefix = "http://uri.suomi.fi/codelist/fairdata/organization/code/"
+
 export default {
 	extends: SchemaBase,
 	name: 'SelfReferentialObject',
@@ -179,10 +181,15 @@ export default {
 			return "org-" + this.keys[idx]
 		},
 		getIsReferenceData(idx) {
+			// Initialize organization as a ReferenceData organization if
+			// - all the previous levels use ReferenceData and
+			//   - identifier matches referenceIdentifierPrefix, or
+			//   - all fields for the organization are empty
 			if (this.isReferenceData[idx] === undefined) {
-				const previousIsReferenceData = idx === 0 || (this.isReferenceData[idx-1] && this.flattened[idx-1].identifier)
-				this.$set(this.isReferenceData, idx, previousIsReferenceData
-					&& (!!this.flattened[idx].identifier || !this.hasValues(this.flattened[idx])))
+				const previousIsReferenceData = idx === 0 || this.getIsReferenceData(idx-1)
+				this.$set(this.isReferenceData, idx, !!(previousIsReferenceData
+					&& ((this.flattened[idx].identifier && this.flattened[idx].identifier.startsWith(referenceIdentifierPrefix))
+					|| !this.hasValues(this.flattened[idx]))))
 			}
 			return this.isReferenceData[idx]
 		},
@@ -336,11 +343,11 @@ export default {
 			return level < this.countLevels - 1 ? this.flattened[level + 1] : this.value
 		},
 		getQueryExtraForLevel(level) {
-			const codeUrl = "http://uri.suomi.fi/codelist/fairdata/organization/code/"
+			const last = this.flattened[level-1]
 			if (level === 0) {
 				return ` AND parent_id:""`
-			} else if (this.flattened[level-1].identifier && this.flattened[level-1].identifier.startsWith(codeUrl)) {
-				const code = this.flattened[level-1].identifier.slice(codeUrl.length)
+			} else if (last.identifier && last.identifier.startsWith(referenceIdentifierPrefix)) {
+				const code = last.identifier.slice(referenceIdentifierPrefix.length)
 				return ` AND parent_id:"organization_${code}"`
 			} else {
 				return ""
