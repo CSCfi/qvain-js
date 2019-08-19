@@ -43,8 +43,7 @@ export default {
 				"count": 200,
 				"wrapped":false,
 				"label-name-in-schema":'name',
-				"description":'',
-
+				"header": false,
 			},
 		},
 		'order': [ "name", "email", "identifier" ],

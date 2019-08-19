@@ -5,7 +5,7 @@
 		:id="property + '_referenceData'"
 		:required="isRequired"
 		:wrapped="wrapped"
-		:header="false"
+		:header="header"
 	>
 		<title-component slot="title" :title="uiLabel" />
 		<small slot="help" class="text-muted">
@@ -127,6 +127,7 @@ export default {
 		actions: { type: Array, default: ()=>[] },
 		disableInternalSearch: { type: Boolean, default: false },
 		disabled: { type: Boolean, default: false },
+		header: { type: Boolean, default: true },
 	},
 	data() {
 		return {
