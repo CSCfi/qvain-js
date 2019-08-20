@@ -247,12 +247,12 @@ export default {
 		},
 		hasValues(data) {
 			function recurse(schema, data) {
-				if (!data) {
+				if (!data || data.length === 0) {
 					return false
 				}
 				if (schema.type === 'object') {
 					for (const prop in schema.properties) {
-						if (prop != "@type") {
+						if (prop !== "@type") {
 							if (recurse(schema.properties[prop], data[prop])) {
 								return true
 							}
