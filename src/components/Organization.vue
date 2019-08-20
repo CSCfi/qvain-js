@@ -217,6 +217,11 @@ export default {
 			actions: [{ label:{ "en": "- Add Organization Manually -" }, action: "set_manual" }],
 		}
 	},
+	created() {
+		for (let i=0; i<this.flattened.length; i++) {
+			this.initializeFields(this.flattened[i])
+		}
+	},
 	methods: {
 		getOrgName(org) {
 			return this.$store.getters.getStringFromMultiLanguage(org.name)
