@@ -388,17 +388,18 @@ export default {
 			}
 
 			arr.splice(level, 1)
+			this.isReferenceData.splice(level, 1)
+			const oldKey = this.keys.splice(level, 1)[0]
+			if (arr.length === 0) { // make sure there is at least one organization in the hierarchy
+				this.$set(this.keys, 0, oldKey+1)
+				arr.push(this.initializeFields())
+			}
 
 			const obj = this.nest(arr)
 			this.$store.commit('replace', {
 				p: this.value,
 				val: obj,
 			})
-			this.isReferenceData.splice(level, 1)
-			const oldKey = this.keys.splice(level, 1)[0]
-			if (arr.length === 0) {
-				this.$set(this.keys, 0, oldKey+1)
-			}
 		},
 		updateValue() {
 			const obj = this.nest(this.flattened)
