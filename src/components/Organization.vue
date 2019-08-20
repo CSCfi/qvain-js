@@ -232,16 +232,21 @@ export default {
 			}
 			return "org-" + this.keys[idx]
 		},
+		hasReferenceIdentifier(org) {
+			return !!(org.identifier && org.identifier.startsWith(referenceIdentifierPrefix))
+		},
 		getIsReferenceData(idx) {
 			// Initialize organization as a ReferenceData organization if
 			// - all the previous levels use ReferenceData and
 			//   - identifier matches referenceIdentifierPrefix, or
-			//   - all fields for the organization are empty
+			//   - all fields for the organization are empty and this is the last organization level
 			if (this.isReferenceData[idx] === undefined) {
-				const previousIsReferenceData = idx === 0 || this.getIsReferenceData(idx-1)
-				this.$set(this.isReferenceData, idx, !!(previousIsReferenceData
-					&& ((this.flattened[idx].identifier && this.flattened[idx].identifier.startsWith(referenceIdentifierPrefix))
-					|| !this.hasValues(this.flattened[idx]))))
+				const current = this.flattened[idx]
+				const maybe = idx === 0 || this.getIsReferenceData(idx-1)
+				const is = maybe
+					&& (this.hasReferenceIdentifier(current)
+					|| (!this.hasValues(current) && idx === this.flattened.length-1))
+				this.$set(this.isReferenceData, idx, !!is)
 			}
 			return this.isReferenceData[idx]
 		},
