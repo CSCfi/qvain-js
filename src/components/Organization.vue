@@ -443,7 +443,6 @@ export default {
 			}
 		},
 		lastReferenceData() {
-			window.k = this
 			let last = -1
 			for (let i=0; i<this.flattened.length; i++) {
 				if (this.getIsReferenceData(i)) {
