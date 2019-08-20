@@ -128,6 +128,7 @@ export default {
 		disableInternalSearch: { type: Boolean, default: false },
 		disabled: { type: Boolean, default: false },
 		header: { type: Boolean, default: true },
+		preservedFields: { type: Array, default: () => [] },
 	},
 	data() {
 		return {
@@ -352,6 +353,12 @@ export default {
 			}
 
 			if (!this.isInitializing) {
+				if (!this.isMultiselect && this.storableOptions !== '') {
+					// keep existing preservedFields on update
+					this.preservedFields.forEach(field => {
+						storableOptions[field] = this.parent[this.property][field]
+					})
+				}
 				this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: storableOptions })
 				this.$emit("changed")
 			}

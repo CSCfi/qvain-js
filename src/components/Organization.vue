@@ -37,6 +37,7 @@
 							:placeholder="getPlaceholderForLevel(i)"
 							:actions="actions"
 							:disable-internal-search="true"
+							:preserved-fields="hoistedFields"
 							@changed="()=>handleChanged(i)"
 							@action="(action)=>handleAction(i, action)"
 						/>
@@ -66,7 +67,7 @@
 				<b-collapse
 					v-if="!getIsReferenceData(i)"
 					:id="domId + '-accordion-' + i"
-					accordion="domId + '-accordion'"
+					:accordion="domId + '-accordion'"
 					role="tabpanel"
 				>
 					<FlatObject
@@ -78,7 +79,7 @@
 						:tab="myTab"
 						:active-tab="activeTab"
 						:depth="depth"
-						:skipped="extraFields"
+						:skipped="hoistedFields"
 					/>
 				</b-collapse>
 			</div>
@@ -93,15 +94,15 @@
 				</b-button>
 			</div>
 			<div
-				v-for="propName in extraFields"
-				:key="propName"
+				v-for="propName in hoistedFields"
+				:key="getKey(flattened.length-1) + '-' + propName"
 			>
 				<TabSelector
 					:key="propName"
 					:schema="schema['properties'][propName]"
 					:required="(schema.required || []).includes(propName)"
 					:path="newPath('properties/' + propName)"
-					:value="value[propName]"
+					:value="flattened[flattened.length-1][propName]"
 					:parent="flattened[flattened.length-1]"
 					:property="propName"
 					:tab="myTab"
@@ -194,7 +195,7 @@ export default {
 			required: false,
 			default: () => [ "Organization", "Faculty or Division", "Department or Unit" ],
 		},
-		'extraFields': { // show these fields only once per hierarchy, not for each level
+		'hoistedFields': { // instead of showing these fields for each level, show only once per hierarchy
 			type: Array,
 			required: false,
 			default: () => [],
@@ -342,7 +343,13 @@ export default {
 			const isReference = this.lastReferenceData === this.flattened.length-1
 
 			const arr = [...this.flattened]
-			arr.push(this.initializeFields())
+			const created = this.initializeFields()
+			this.hoistedFields.forEach((field) => {
+				// move field value to the new level by swapping
+				[ created[field], arr[arr.length-1][field] ] = [ arr[arr.length-1][field], created[field] ]
+			})
+			arr.push(created)
+
 			const obj = this.nest(arr)
 			this.$store.commit('replace', {
 				p: this.value,
@@ -358,7 +365,14 @@ export default {
 		},
 		remove(level) {
 			const arr = [...this.flattened]
+
+			if (level > 0) {
+				this.hoistedFields.forEach((field) => {
+					arr[level-1][field] = Array.from(new Set([...arr[level-1][field], ...arr[level][field] ]))
+				})
+			}
 			arr.splice(level, 1)
+
 			const obj = this.nest(arr)
 			this.$store.commit('replace', {
 				p: this.value,
