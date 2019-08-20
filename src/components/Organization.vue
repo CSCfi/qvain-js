@@ -19,7 +19,7 @@
 			>
 				<div class="refrow">
 					<div class="org-label">
-						{{ new Array(i*4+1).join("&nbsp;&nbsp;") }}
+						{{ "&nbsp;".repeat(i*8) }}
 					</div>
 
 					<div
