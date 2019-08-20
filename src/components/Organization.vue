@@ -300,7 +300,7 @@ export default {
 				this.$set(this.isReferenceData, idx, false)
 				this.initializeFields(this.flattened[idx])
 				this.$set(this.flattened[idx].name, this.$store.state.languagePriority[0], action.lastSearch)
-				await this.$nextTick() // wait for the new manual org to be created
+				await this.$nextTick() // wait for the new dom elements to be created
 				this.$root.$emit('bv::toggle::collapse', this.domId + '-accordion-' + idx)
 			}
 		},
@@ -344,8 +344,9 @@ export default {
 
 			const arr = [...this.flattened]
 			const created = this.initializeFields()
+
+			// move hoistedFields value to the new level by swapping
 			this.hoistedFields.forEach((field) => {
-				// move field value to the new level by swapping
 				[ created[field], arr[arr.length-1][field] ] = [ arr[arr.length-1][field], created[field] ]
 			})
 			arr.push(created)
@@ -367,10 +368,12 @@ export default {
 			const arr = [...this.flattened]
 
 			if (level > 0) {
+				// before removing, merge hoistedFields with the level below
 				this.hoistedFields.forEach((field) => {
-					arr[level-1][field] = Array.from(new Set([...arr[level-1][field], ...arr[level][field] ]))
+					arr[level-1][field] = Array.from(new Set([ ...(arr[level-1][field] || []), ...(arr[level][field] || []) ]))
 				})
 			}
+
 			arr.splice(level, 1)
 
 			const obj = this.nest(arr)

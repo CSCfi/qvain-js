@@ -47,7 +47,10 @@ export default {
 				while (obj.is_part_of) {
 					obj = obj.is_part_of
 				}
-				this.$store.getters.getStringFromMultiLanguage(obj.name)
+				const title = this.$store.getters.getStringFromMultiLanguage(obj.name)
+				if (title) {
+					return title
+				}
 			}
 			if (objectType === 'Organization') {
 				return defaultPrefix+`(Organization)`
