@@ -261,7 +261,7 @@ export default {
 			this.isLoading = true
 			if (!searchQuery) {
 				if (this.async) {
-					this.responseData = {} // await this.getAllReferenceData()
+					this.responseData = {}
 				}
 				this.isLoading = false
 				return // prevent empty search after removing characters from input
@@ -270,7 +270,7 @@ export default {
 			if (this.async) {
 				// remove special characters, see for list: http://lucene.apache.org/core/3_4_0/queryparsersyntax.html
 				searchQuery = searchQuery.replace(/(\+|-|&&|\|\||!|\(|\)|{|}|\[|\]|\^|"|~|\*|\?|:|\\)/g,"")
-				let q = this.selectedLang ?
+				const q = this.selectedLang ?
 					`label.${this.selectedLang.id}:${searchQuery}*`:
 					`${searchQuery}*`
 				this.searchReferenceData(q)
