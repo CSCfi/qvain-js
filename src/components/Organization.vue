@@ -1,7 +1,11 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
 	<wrapper :wrapped="false" :style="listItemStyle(depth)">
-		<h3>{{ uiTitle }}</h3>
+		<h3>{{ uiTitle }}
+			<span v-if="schema.required" class="require-badge">
+				<b-badge variant="danger">REQUIRED</b-badge>
+			</span>
+		</h3>
 		<div>
 			<p class="ml-4 card-text text-muted" v-if="uiDescription">
 				<sup><font-awesome-icon icon="quote-left" class="text-muted" /></sup>
@@ -50,7 +54,6 @@
 						<b-container class="toggle-org" v-b-toggle="domId + '-accordion-' + i">
 							<div class="multiselect__tags">
 								<span class="multiselect__input">
-
 									<font-awesome-icon class="edit-icon" icon="edit" fixed-width />&nbsp;
 									<span v-if="getOrgName(org)">{{ getOrgName(org) }}</span>
 									<span v-else class="placeholder">{{ getDescriptionForLevel(i) }}</span>
@@ -156,6 +159,11 @@
 		}
 	}
 }
+
+.require-badge {
+	font-size: 12pt;
+}
+
 </style>
 
 <style lang="scss">
