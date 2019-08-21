@@ -49,6 +49,10 @@
 		<!-- alerts -->
 		<b-alert variant="danger" :show="!!error" dismissible @dismissed="error = null">{{ error }}</b-alert>
 
+		<b-alert :show="otherError" variant="danger">
+			There was an unspecified error loading the dataset. Please contact servicedesk(at)csc.fi.
+		</b-alert>
+
 		<div class="pagination-controls">
 			<b-pagination
 				size="sm"
@@ -446,6 +450,9 @@ export default {
 		PreservationState,
 		DatasetVersionsModal,
 		'publish-modal': PublishModal,
+	},
+	props: {
+		otherError: Boolean,
 	},
 	data() {
 		return {

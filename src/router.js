@@ -16,7 +16,7 @@ Vue.use(VueRouter)
 const routes = [
 	{ path: '/', name: "home", component: Welcome, props: true },
 	{ path: '/login', component: Login, props: false },
-	{ path: '/datasets', name: "datasets", component: Datasets, props: false, meta: { auth: true }},
+	{ path: '/datasets', name: "datasets", component: Datasets, props: true, meta: { auth: true }},
 	{ path: '/config', component: Config, props: false },
 	{ path: '/userinfo', component: UserInfo, props: false, meta: { auth: true }},
 	{ path: '/dataset/:id', name: "editor", component: Editor, props: true, meta: { auth: true }, children: [
