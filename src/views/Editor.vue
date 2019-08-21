@@ -320,7 +320,7 @@ export default {
 			await this.$auth.logoutDueSessionTimeout()
 			this.$router.push({ name: "home", params: { missingSession: true }})
 		},
-		async handleOtherError() {
+		handleOtherError() {
 			this.otherError=true
 			this.$router.push({ name:"datasets", params: { otherError: true }})
 		},
