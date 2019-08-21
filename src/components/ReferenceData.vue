@@ -255,7 +255,6 @@ export default {
 			this.responseData = res.data
 			this.isLoading = false
 		},
-		// TODO: if the es server is under too much stress debounce could be implemented
 		async search(searchQuery) {
 			this.lastSearch = searchQuery
 			this.isLoading = true

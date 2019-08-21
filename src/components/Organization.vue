@@ -35,7 +35,7 @@
 							:tab="myTab"
 							:active-tab="activeTab"
 							:depth="depth"
-							:disabled="i!==flattened.length-1"
+							:disabled="i!==lastLevel"
 							v-bind="ui.props.referenceData"
 							:es-query-extra="getQueryExtraForLevel(i)"
 							:placeholder="getPlaceholderForLevel(i)"
@@ -62,8 +62,8 @@
 						</b-container>
 					</div>
 
-					<div class="delete-button" :class="{invisible: i < flattened.length-1}">
-						<delete-button @click="remove(i)" :disabled="false" />
+					<div class="delete-button" :class="{invisible: i < lastLevel}">
+						<delete-button @click="remove(i)" />
 					</div>
 				</div>
 
@@ -98,15 +98,15 @@
 			</div>
 			<div
 				v-for="propName in hoistedFields"
-				:key="getKey(flattened.length-1) + '-' + propName"
+				:key="getKey(lastLevel) + '-' + propName"
 			>
 				<TabSelector
 					:key="propName"
 					:schema="schema['properties'][propName]"
 					:required="(schema.required || []).includes(propName)"
 					:path="newPath('properties/' + propName)"
-					:value="flattened[flattened.length-1][propName]"
-					:parent="flattened[flattened.length-1]"
+					:value="flattened[lastLevel][propName]"
+					:parent="flattened[lastLevel]"
 					:property="propName"
 					:tab="myTab"
 					:active-tab="activeTab"
@@ -245,7 +245,7 @@ export default {
 				const maybe = idx === 0 || this.getIsReferenceData(idx-1)
 				const is = maybe
 					&& (this.hasReferenceIdentifier(current)
-					|| (!this.hasValues(current) && idx === this.flattened.length-1))
+					|| (!this.hasValues(current) && idx === this.lastLevel))
 				this.$set(this.isReferenceData, idx, !!is)
 			}
 			return this.isReferenceData[idx]
@@ -358,7 +358,7 @@ export default {
 			return root
 		},
 		async add() {
-			const isReference = this.lastReferenceData === this.flattened.length-1
+			const isReference = this.lastReferenceData === this.lastLevel
 
 			const arr = [...this.flattened]
 			const created = this.initializeFields()
@@ -379,7 +379,7 @@ export default {
 			} else {
 				this.isReferenceData.push(false)
 				await this.$nextTick()
-				this.$root.$emit('bv::toggle::collapse', this.domId + '-accordion-' + (this.flattened.length-1))
+				this.$root.$emit('bv::toggle::collapse', this.domId + '-accordion-' + this.lastLevel)
 			}
 		},
 		remove(level) {
@@ -436,7 +436,7 @@ export default {
 	},
 	computed: {
 		canAddNew() {
-			if (this.lastReferenceData === this.flattened.length - 1) {
+			if (this.lastReferenceData === this.lastLevel) {
 				return this.lastReferenceData < 0 || this.flattened[this.lastReferenceData].identifier
 			} else {
 				return true
@@ -463,6 +463,9 @@ export default {
 		},
 		flattened() {
 			return this.flatten(this.value)
+		},
+		lastLevel() {
+			return this.flattened.length - 1
 		},
 	},
 }
