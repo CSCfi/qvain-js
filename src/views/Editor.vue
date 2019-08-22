@@ -291,6 +291,7 @@ export default {
 			qvainData: null,
 			reloadDatasetCounter: 0,
 			reloadDatasetTimer: null,
+			otherError: false,
 			openRecordCounter: 0,
 		}
 	},
@@ -331,6 +332,10 @@ export default {
 			// we should redirect the user to login
 			await this.$auth.logoutDueSessionTimeout()
 			this.$router.push({ name: "home", params: { missingSession: true }})
+		},
+		handleOtherError() {
+			this.otherError=true
+			this.$router.push({ name:"datasets", params: { otherError: true }})
 		},
 		viewInEtsin() {
 			window.open(`${process.env.VUE_APP_ETSIN_API_URL}/${this.qvainData.identifier}`, '_blank')
@@ -465,6 +470,9 @@ export default {
 				if (error.response && error.response.status == 401) {
 					this.handleLostSession()
 				}
+				else {
+					this.handleOtherError()
+				}
 				console.log(error)
 			} finally {
 				this.loading = false
@@ -483,6 +491,9 @@ export default {
 			}
 		},
 		checkTab() {
+			if(this.otherError) {
+				return
+			}
 			// if tab is unset or invalid (not in tabs list), try to read tab from store or use the first tab
 			const tabUris = this.tabs.map(tab=>tab.uri)
 			if (!this.$route.params.tab || !tabUris.includes(this.$route.params.tab)) {
