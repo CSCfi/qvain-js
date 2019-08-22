@@ -44,10 +44,5 @@ export default {
 			return !!(this.extError && this.extError["research_dataset"])
 		},
 	},
-	watch: {
-		error(n, o) {
-			console.log(`publish error changed from ${o} to ${n}`)
-		},
-	},
 }
 </script>

@@ -34,7 +34,6 @@
 				:depth="depth"
 				v-on="$listeners">
 			</skip>
-			{{ (schema.required || []).includes(property) }}
 		</keep-alive>
 	</div>
 </template>
