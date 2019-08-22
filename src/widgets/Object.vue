@@ -52,7 +52,7 @@ export default {
 	methods: {
 		isPropHidden(prop) {
 			const ui = this.propUi(prop)
-			return !this.shouldCreateProp || (ui.tab && ui.tab !== this.activeTab) || ui.visible === false
+			return !this.shouldCreateProp(prop) || (ui.tab && ui.tab !== this.activeTab) || ui.visible === false
 		},
 		shouldCreateProp(prop) {
 			if (prop === '@type') return false

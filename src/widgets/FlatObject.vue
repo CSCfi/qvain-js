@@ -31,10 +31,16 @@ import vSchemaBase from './base.vue'
 import keysWithOrder from '@/lib/keysWithOrder.js'
 
 export default {
-	extends: vSchemaBase,
 	name: 'FlatObject',
+	extends: vSchemaBase,
 	description: "object without title",
 	schematype: 'object',
+	props: {
+		skipped: {
+			type: Array,
+			default: () => [],
+		},
+	},
 	data: function() {
 		return {
 		}
@@ -42,7 +48,7 @@ export default {
 	methods: {
 		isPropHidden(prop) {
 			const ui = this.propUi(prop)
-			return prop === '@type' || !this.shouldCreateProp(prop) || (ui.tab && ui.tab !== this.activeTab) || ui.visible === false
+			return prop === '@type' || !this.shouldCreateProp(prop) || (ui.tab && ui.tab !== this.activeTab) || ui.visible === false || this.skipped.includes(prop)
 		},
 		shouldCreateProp(prop) {
 			if (prop === 'is_part_of') {

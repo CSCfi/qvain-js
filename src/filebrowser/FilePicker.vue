@@ -2,7 +2,7 @@
 <template>
 	<div>
 		<b-alert :show="readonly">
-			You are editing {{ $store.state.metadata.isDeprecated ? "a deprecated" : "an old version of the " }} dataset and cannot make changes to the files.
+			You are editing an old version of the dataset and cannot make changes to the files.
 		</b-alert>
 
 		<b-alert :show="!readonly && hasDeletedItems">
@@ -195,7 +195,7 @@ export default {
 			},
 		},
 		readonly() {
-			return this.$store.state.metadata.isOldVersion || this.$store.state.metadata.isDeprecated
+			return this.$store.state.metadata.isOldVersion
 		},
 		hasDeletedItems() {
 			for (const category in this.state) {
