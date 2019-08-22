@@ -8,8 +8,14 @@
 		</header>
 		<section>
 			<b-list-group flush>
-				<b-list-group-item v-show="propName !== '@type'" v-for="propName in sortedProps" :key="propName" class="border-0">
+				<b-list-group-item
+					v-for="propName in sortedProps"
+					v-show="!isPropHidden(propName)"
+					:key="propName"
+					class="border-0"
+				>
 					<TabSelector
+						:key="propName"
 						:required="(schema.required || []).includes(propName)"
 						:schema="schema['properties'][propName]"
 						:path="newPath('properties/' + propName)"
@@ -17,9 +23,9 @@
 						:parent="value"
 						:property="propName"
 						:tab="myTab"
-						:activeTab="activeTab"
+						:active-tab="activeTab"
 						:depth="depth"
-						:key="propName" />
+					/>
 				</b-list-group-item>
 			</b-list-group>
 		</section>
@@ -32,9 +38,9 @@ import keysWithOrder from '@/lib/keysWithOrder.js'
 import BorderColorMixin from '../mixins/border-color-mixin.js'
 
 export default {
+	name: 'SchemaObject',
 	extends: vSchemaBase,
 	mixins: [BorderColorMixin],
-	name: 'SchemaObject',
 	description: "generic object",
 	schematype: 'object',
 	data() {
@@ -44,6 +50,10 @@ export default {
 		}
 	},
 	methods: {
+		isPropHidden(prop) {
+			const ui = this.propUi(prop)
+			return !this.shouldCreateProp(prop) || (ui.tab && ui.tab !== this.activeTab) || ui.visible === false
+		},
 		shouldCreateProp(prop) {
 			if (prop === '@type') return false
 			if (this.isPostponedProp(prop) || this.isIgnoredProp(prop)) return false

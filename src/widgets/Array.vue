@@ -12,16 +12,12 @@
 			<b-badge variant="danger" :key="error" v-for="error in errors">{{ error }}</b-badge>
 		</div>
 		<div slot="input">
-			<!--
-				There is not easy way to force v-for to not use inplace update strategy. In this case it is mandatory to make deleting item show correctly.
-				This could be code smell but at the moment the best solution is just to patch this. See https://github.com/xianshenglu/blog/issues/47 for reference.
-			-->
-			<b-container v-if="forceArrayUpdateHack && tabFormat">
+			<b-container v-if="tabFormat">
 				<b-btn
 					class="add-button col"
 					variant="light"
 					type="button"
-					:disabled="value.length >= this.maximum"
+					:disabled="value.length >= maximum"
 					@click="doPlus()">
 					<font-awesome-icon icon="plus" fixed-width />
 				</b-btn>
@@ -30,12 +26,13 @@
 					:value="tabIndex"
 					class="tab-array-margin"
 					pills
+					no-fade
 					@input="tabShown"
 					@changed="tabsChanged"
 				>
 					<b-tab
 						v-for="(child, index) in value"
-						:key="index"
+						:key="getKey(index)"
 						style="{margin-top: 5px}"
 						title-link-class="tab-field-link"
 						@click="()=>setTab(index)"
@@ -53,17 +50,24 @@
 							:parent="parent[property]"
 							:property="index"
 							:tab="myTab"
-							:activeTab="activeTab"
+							:active-tab="activeTab"
 							:depth="depth"
 							@delete="deleteElement"
-							:key="'array-' + index" />
+						/>
 					</b-tab>
-
 				</b-tabs>
 			</b-container>
 
-			<b-list-group class="item-list" v-else-if="forceArrayUpdateHack && !tabFormat" flush>
-				<b-list-group-item class="list-item" v-for="(child, index) in value" :key="index">
+			<b-list-group
+				v-else-if="!tabFormat"
+				class="item-list"
+				flush
+			>
+				<b-list-group-item
+					v-for="(child, index) in value"
+					:key="getKey(index)"
+					class="list-item"
+				>
 					<TabSelector
 						:id="property + '_array_' + index + '_tab-selector'"
 						style="flex-grow: 1"
@@ -73,10 +77,10 @@
 						:parent="parent[property]"
 						:property="index"
 						:tab="myTab"
-						:activeTab="activeTab"
+						:active-tab="activeTab"
 						:depth="depth"
 						@delete="deleteElement"
-						:key="'array-' + index" />
+					/>
 					<delete-button class="array-delete-button" v-if="showDelete" @click="deleteElement(index)" />
 				</b-list-group-item>
 				<b-list-group-item>
@@ -145,7 +149,7 @@ export default {
 			maximum: 0,
 			tabIndex: 0,
 			targetTabIndex: null,
-			forceArrayUpdateHack: true,
+			keys: [],
 		}
 	},
 	methods: {
@@ -173,10 +177,7 @@ export default {
 					property: this.property,
 					index,
 				})
-				this.forceArrayUpdateHack = !this.forceArrayUpdateHack
-				this.$nextTick(() => {
-					this.forceArrayUpdateHack = !this.forceArrayUpdateHack
-				})
+				this.keys.splice(index, 1)
 			}
 		},
 		schemaForChild: function(index) {
@@ -208,6 +209,13 @@ export default {
 				await this.$nextTick()
 				this.tabIndex = this.targetTabIndex
 			}
+		},
+		getKey(idx) {
+			if (this.keys[idx] === undefined) {
+				// assuming array order doesn't change, the last item will have the largest key
+				this.keys[idx] = (this.keys[this.keys.length-1] || 0) + 1
+			}
+			return "arr-" + this.keys[idx]
 		},
 	},
 	computed: {

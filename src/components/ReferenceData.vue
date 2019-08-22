@@ -1,27 +1,33 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<record-field :id="property + '_referenceData'" v-if="isVisible" :required="isRequired" :wrapped="wrapped">
+	<record-field
+		v-if="isVisible"
+		:id="property + '_referenceData'"
+		:required="isRequired"
+		:wrapped="wrapped"
+		:header="header"
+	>
 		<title-component slot="title" :title="uiLabel" />
 		<small slot="help" class="text-muted">
-			{{ uiDescription }}
+			{{ uiDescription }}
 		</small>
 
 		<div slot="input">
 			<div class="input-row__inline">
 				<Multiselect v-if="showLang"
+					:id="property + '_language-select'"
 					v-model="selectedLang"
 					:options="languages"
-					:id="property + '_language-select'"
 					placeholder="Select language"
 					label="language"
 					class="lang-select"/>
 
 				<Multiselect v-if="optionsShouldBeGrouped"
-					class="value-select"
 					:id="property + '_value-select'"
+					class="value-select"
 					v-model="selectedOptions"
 					track-by="identifier"
-					:internalSearch="!async"
+					:internalSearch="!async && !disableInternalSearch"
 					:loading="isLoading"
 					:optionsLimit="count"
 					:taggable="tags"
@@ -31,12 +37,18 @@
 					:showNoResults="false"
 					:showNoOptions="false"
 					:customLabel="customLabel"
-					:placeholder="placeholder"
+					:placeholder="getPlaceholder"
 					group-values="children"
 					:group-label="labelNameInSchema"
+					:disabled="disabled"
 					@search-change="search">
 					<div slot="noResult">No elements found. Consider changing the search query. You may have to type at least 3 letters.</div>
-					<div v-bind:class="{ option__child: !option.$groupLabel, option__parent: option.$groupLabel }" slot="option" slot-scope="{ option }" v-if="grouped">
+					<div
+						v-if="grouped"
+						slot="option"
+						slot-scope="{ option }"
+						:class="{ option__child: !option.$groupLabel, option__parent: option.$groupLabel }"
+					>
 						{{ option.$groupLabel || customLabel(option) }}
 					</div>
 					<div slot="noOptions"></div>
@@ -44,11 +56,11 @@
 				</Multiselect>
 
 				<Multiselect v-else
-					class="value-select"
 					:id="property + '_value-select'"
+					class="value-select"
 					v-model="selectedOptions"
 					track-by="identifier"
-					:internalSearch="!async"
+					:internalSearch="!async && !disableInternalSearch"
 					:loading="isLoading"
 					:optionsLimit="count"
 					:taggable="tags"
@@ -59,19 +71,20 @@
 					:options="options"
 					:showNoResults="false"
 					:customLabel="customLabel"
-					:placeholder="placeholder"
+					:placeholder="getPlaceholder"
 					@select="atSelect"
+					:disabled="disabled"
 					@search-change="search">
 					<div slot="noOptions"></div>
 					<div slot="noResult">No elements found. Consider changing the search query. You may have to type at least 3 letters.</div>
 					<div slot="selection" slot-scope="{ values, search, isOpen }">
-						<span class="multiselect__single" v-if="values.length &amp;&amp; !isOpen">{{ placeholder }}</span>
+						<span class="multiselect__single" v-if="values.length &amp;&amp; !isOpen">{{ getPlaceholder }}</span>
 					</div>
 				</Multiselect>
 			</div>
 			<div :id="property + '_taglist'" v-if="isMultiselect" class="tag__list">
 				<p v-for="(option, index) in Array.from(selectedOptions)" :key="option.identifier" class="tag">
-					{{customLabel(option)}}
+					{{ customLabel(option) }}
 					<span class="remove-button">
 						<DeleteButton @click="removeValue(index)" />
 					</span>
@@ -88,29 +101,34 @@ import DeleteButton from '@/partials/DeleteButton.vue'
 import Multiselect from 'vue-multiselect'
 import RecordField from '@/composites/RecordField.vue'
 import TitleComponent from '@/partials/Title.vue'
-import InfoIcon from '@/partials/InfoIcon.vue'
 
 export default {
 	name: 'reference-data',
-	extends: vSchemaBase,
 	components: {
 		Multiselect,
 		DeleteButton,
 		RecordField,
 		TitleComponent,
-		InfoIcon,
 	},
+	extends: vSchemaBase,
 	props: {
 		esIndex: { type: String, required: true },
 		esDoctype: { type: String, required: true },
+		esQueryExtra: { type: String, default: "" },
 		async: { type: Boolean, required: true },
 		count: { type: Number, default: 10000 },
-		typeahead: { type: Boolean, dafault: false },
+		typeahead: { type: Boolean, default: false },
 		tags: { type: Boolean, default: false },
 		showLang: { type: Boolean, default: false },
 		wrapped: { type: Boolean, default: false },
 		labelNameInSchema: { type: String, default: 'pref_label' },
 		grouped: { type: Boolean, required: false },
+		placeholder: { type: String, required: false, default: null },
+		actions: { type: Array, default: ()=>[] },
+		disableInternalSearch: { type: Boolean, default: false },
+		disabled: { type: Boolean, default: false },
+		header: { type: Boolean, default: true },
+		preservedFields: { type: Array, default: () => [] },
 	},
 	data() {
 		return {
@@ -124,17 +142,18 @@ export default {
 			selectedLang: null,
 			isLoading: false,
 			isInitializing: true,
+			lastSearch: "",
 		}
 	},
 	computed: {
-		placeholder() {
-			return this.async ?
+		getPlaceholder() {
+			return this.placeholder || (this.async ?
 				'Type to search for available options' :
-				'Select option'
+				'Select option')
 		},
 		currentLanguage() {
 			const selectedLanguage = this.selectedLang ? this.selectedLang.id : null
-			return selectedLanguage || this.$root.language || 'en'
+			return selectedLanguage || this.$store.state.languagePriority[0]
 		},
 		isMultiselect() {
 			return this.schema.type === 'array'
@@ -143,11 +162,14 @@ export default {
 			return this.responseData.hits && this.responseData.hits.hits
 		},
 		optionItems() {
-			const items = this.responseHasResults ? this.responseData.hits.hits : []
-			return items
+			let items = this.responseHasResults ? this.responseData.hits.hits : []
+			items = items
 				.filter(this.acceptableOption)
 				.map(es => es._source)
 				.map(this.mapToInternalKeys)
+
+			items.unshift(...this.actions)
+			return items
 		},
 		parentItems() {
 			return this.optionItems.filter(item => item.hasChildren)
@@ -159,13 +181,8 @@ export default {
 			return this.grouped && this.parentItems.length > 0
 		},
 		options() {
-			// empty case
-			if (!this.responseHasResults) {
-				return []
-			}
-
 			// case with children
-			if (this.optionsShouldBeGrouped) {
+			if (this.responseHasResults && this.optionsShouldBeGrouped) {
 				return this.parentItems.map(parent => {
 					const children = this.childrenItems.filter(child => parent.children.includes(child.id))
 					return { ...parent, children }
@@ -189,9 +206,29 @@ export default {
 				return option
 			}
 
-			return option.label ? option.label[this.currentLanguage] || option.label['und'] : null
+			if (!option.label) {
+				return null
+			}
+			const label = option.label[this.currentLanguage]
+			if (!label) {
+				return this.$store.getters.getStringFromMultiLanguage(option.label)
+			}
+			return label || option.label['und'] || null
 		},
 		acceptableOption(es) {
+			if (this.disableInternalSearch) {
+				let found = false
+				const searchLower = this.lastSearch.toLowerCase()
+				for (const lang in es._source.label) {
+					if (es._source.label[lang].toLowerCase().includes(searchLower)) {
+						found = true
+						break
+					}
+				}
+				if (!found) {
+					return false
+				}
+			}
 			const FILTER_FIELD = 'internal_code'
 			const hasURI = (es._source && es._source.uri)
 			return hasURI || es._source[FILTER_FIELD]
@@ -208,18 +245,18 @@ export default {
 		},
 		async getAllReferenceData() {
 			this.isLoading = true
-			const res = await esApiSearchClient(this.esIndex, this.esDoctype, undefined, this.count)
+			const res = await esApiSearchClient(this.esIndex, this.esDoctype, "*" + this.esQueryExtra, this.count)
 			this.responseData = res.data
 			this.isLoading = false
 		},
 		async searchReferenceData(searchQuery) {
 			this.isLoading = true
-			const res = await esApiSearchClient(this.esIndex, this.esDoctype, searchQuery, this.count)
+			const res = await esApiSearchClient(this.esIndex, this.esDoctype, searchQuery + this.esQueryExtra, this.count)
 			this.responseData = res.data
 			this.isLoading = false
 		},
-		// TODO: if the es server is under too much stress debounce could be implemented
 		async search(searchQuery) {
+			this.lastSearch = searchQuery
 			this.isLoading = true
 			if (!searchQuery) {
 				if (this.async) {
@@ -246,7 +283,10 @@ export default {
 				this.selectedOptions.splice(index, 1)
 			}
 		},
-		atSelect() {
+		atSelect(item) {
+			if (this.actions.includes(item)) {
+				this.$emit('action', { action: item.action, lastSearch: this.lastSearch })
+			}
 			if (this.async) {
 				this.responseData = {}
 			}
@@ -281,6 +321,17 @@ export default {
 	},
 	watch: {
 		selectedOptions() {
+			// prevent actions from being stored as selected options
+			if (this.isMultiselect && this.selectedOptions) {
+				const filteredOptions = this.selectedOptions.filter(option => !this.actions.includes(option))
+				if (filteredOptions.length !== this.selectedOptions.length) {
+					this.selectedOptions = filteredOptions
+				}
+			}
+			if (!this.isMultiselect && this.actions.includes(this.selectedOptions)) {
+				this.selectedOptions = null
+			}
+
 			const selectedValueIsSet = this.selectedOptions !== null && typeof this.selectedOptions !== 'undefined'
 			const mapToStore = option => {
 				if (typeof option === 'undefined') {
@@ -301,7 +352,14 @@ export default {
 			}
 
 			if (!this.isInitializing) {
+				if (!this.isMultiselect && this.storableOptions !== '') {
+					// keep existing preservedFields on update
+					this.preservedFields.forEach(field => {
+						storableOptions[field] = this.parent[this.property][field]
+					})
+				}
 				this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: storableOptions })
+				this.$emit("changed")
 			}
 		},
 	},
@@ -312,7 +370,6 @@ export default {
 	width: 100%;
 	display: inline-flex;
 	flex-wrap: wrap;
-	margin-bottom: 5px;
 
 	.lang-select {
 		width: 140px;
@@ -341,6 +398,7 @@ export default {
 
 .tag__list {
 	margin: -2px;
+	margin-top: 2px;
 	display: inline-flex;
 	flex-wrap: wrap;
 
@@ -392,7 +450,6 @@ export default {
 .multiselect__option--selected.multiselect__option--highlight:after {
 	background: $danger;
 }
-
 
 .multiselect__single,
 .multiselect__placeholder,

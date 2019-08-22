@@ -1,7 +1,10 @@
 <!-- ADD_LICENSE_HEADER -->
-<template>
-	<div v-bind:class="{ wrapper: wrapped, error: error }">
-		<slot></slot>
+<template functional>
+	<div
+		:class="{ wrapper: props.wrapped, error: props.error, [data.staticClass || '']: true }"
+		:style="data.style || ''"
+	>
+		<slot />
 	</div>
 </template>
 <script>
@@ -25,4 +28,3 @@ export default {
 	border-right: solid 5px red;
 }
 </style>
-
