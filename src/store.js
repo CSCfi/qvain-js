@@ -15,8 +15,9 @@ export default new Vuex.Store({
 		hints: {},
 		metadata: {},
 		deletedItems: { 'files': {}, 'directories': {}}, // files or directories that no longer exist
-		languages: { 'fi':true, 'en':true, 'sv':true },
-		languagePriority: [ 'en', 'fi', 'sv' ], // order in which multilanguage elements are searched when single value is needed
+		defaultLanguages: { 'fi':true, 'en':true, 'sv':true },
+		languages: {},
+    languagePriority: [ 'en', 'fi', 'sv' ], // order in which multilanguage elements are searched when single value is needed
 		UI_VALID_KEYWORDS: [
 			'widget',
 			'option',
@@ -156,6 +157,9 @@ export default new Vuex.Store({
 		},
 		setLanguages(state, payload) {
 			state.languages = Object.assign({}, state.languages, payload)
+		},
+		resetLanguages(state) {
+			state.languages = { ...state.defaultLanguages }
 		},
 		updateDatasetsView(state, payload) {
 			for (const key in payload) {

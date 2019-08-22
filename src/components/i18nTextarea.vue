@@ -34,10 +34,9 @@
 					@click="()=>setTab(index)"
 				>
 					<template slot="title">
-						<delete-button @click="deleteLang(key)" />
+						<delete-button @click="confirmDeletelanguage(key)" />
 						{{ languages[key] }}
 					</template>
-
 					<b-form-textarea
 						:id="property + '_textarea-' + key"
 						:ref="'textarea-tab-' + key"
@@ -155,6 +154,14 @@ export default {
 		},
 		deleteLang(lang) {
 			this.$delete(this.state, lang)
+		},		
+		confirmDeletelanguage(lang) {
+			this.$bvModal.msgBoxConfirm("This will remove all translations for "+this.languages[lang]+" language from all other sections. Are you sure?")
+				.then(value => {
+					if(value) {
+						this.$store.commit('deleteValue', { p: this.$store.state.languages, prop: lang })
+					}
+				})
 		},
 		updateValue() {
 			this.$store.commit('updateValue', {
@@ -188,6 +195,11 @@ export default {
 					this.addLanguage(lang)
 				}
 			}
+			for (const lang in this.state) {
+				if (!languages[lang]) {
+					this.deleteLang(lang)
+				}
+			}
 		},
 		setTab(index) {
 			this.tabIndex = index
@@ -213,7 +225,7 @@ export default {
 	},
 	created() {
 		this.state = this.value || {}
-		this.populateLanguages(this.$store.state.languages)
+		this.populateLanguages(this.$store.state.languages)		
 	},
 }
 </script>
