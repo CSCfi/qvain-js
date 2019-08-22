@@ -166,7 +166,16 @@
 				</b-col>
 
 				<b-col v-if="selectedSchema">
-					<router-view></router-view>
+					<tab-selector
+						:key="openRecordCounter"
+						:schema="$store.state.schema"
+						path=""
+						:parent="$store.state"
+						property="record"
+						:value="$store.state.record"
+						:active-tab="$route.params.tab"
+						:depth="0"
+					/>
 				</b-col>
 
 				<b-col v-else-if="loading">
@@ -245,11 +254,13 @@ import PublishModal from '@/components/PublishModal.vue'
 import Validator from '../../vendor/validator/src/validate.js'
 import cloneWithPrune from '@/lib/cloneWithPrune.js'
 import Vue from 'vue'
+import TabSelector from '@/widgets/TabSelector.vue'
 
 export default {
 	name: "editor",
 	components: {
 		'publish-modal': PublishModal,
+		'tab-selector': TabSelector,
 	},
 	props: {
 		id: {
@@ -279,6 +290,7 @@ export default {
 			qvainData: null,
 			reloadDatasetCounter: 0,
 			reloadDatasetTimer: null,
+			openRecordCounter: 0,
 		}
 	},
 	methods: {
@@ -333,8 +345,7 @@ export default {
 				if (isExisting) {
 					const currentId = this.$store.state.metadata.id
 					const response = await apiClient.post("/datasets/" + currentId + "/publish", {})
-					const { data } = await apiClient.get(`/datasets/${currentId}`)
-					this.qvainData = data
+					this.openRecord(currentId)
 				} else {
 					this.$root.showAlert("Please save your dataset first", "danger")
 				}
@@ -368,13 +379,10 @@ export default {
 				if (isExisting) {
 					payload.id = currentId
 					await apiClient.put("/datasets/" + currentId, payload)
-					const { data } = await apiClient.get(`/datasets/${currentId}`)
-					this.qvainData = data
+					this.openRecord(currentId)
 				} else {
 					const { data: { id }} = await apiClient.post("/datasets/", payload)
-					const { data } = await apiClient.get(`/datasets/${id}`)
-					this.qvainData = data
-
+					this.openRecord(id)
 					this.$store.commit('setMetadata', { id })
 					this.$router.replace({ name: 'tab', params: { id: id, tab: this.$route.params.tab }})
 				}
@@ -420,7 +428,6 @@ export default {
 			if (this.isDataChanged) {
 				this.confirmUnsavedChanges("Do you want to reload the dataset?", "No, I do not want to.", value => {
 					if (value) {
-						this.clearRecord()
 						this.openRecord(this.id)
 						this.reloadDatasetCounter = 0
 					}
@@ -431,7 +438,6 @@ export default {
 				this.reloadDatasetCounter += 1
 				this.reloadDatasetTimer = setTimeout(this.cancelReloadDataset, 2000)
 			} else {
-				this.clearRecord()
 				this.openRecord(this.id)
 				this.reloadDatasetCounter = 0
 			}
@@ -448,6 +454,7 @@ export default {
 				this.$store.commit('loadData', Object(data.dataset))
 				this.$store.commit('setMetadata', { id, schemaId: this.selectedSchema.id })
 				this.qvainData = data
+				this.openRecordCounter++
 			} catch (error) {
 				if (error.response && error.response.status == 401) {
 					this.handleLostSession()
@@ -551,7 +558,6 @@ export default {
 			if (this.id === 'new') {
 				this.clearRecord()
 			} else if (this.id !== 'edit' && this.$store.state.metadata.id !== this.id) {
-				this.clearRecord()
 				await this.openRecord(this.id)
 			}
 		},
