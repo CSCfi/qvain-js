@@ -21,10 +21,11 @@
 						:label-for="property + '_' + lang + '_input'">
 
 					<span slot="label">
-						<DeleteButton slot="label" @click="deleteLanguage(lang)"/>
+						<DeleteButton slot="label"
+							@click="confirmDeletelanguage(lang)"
+						/>
 						{{ languages[lang] }}
 					</span>
-
 					<b-input-group>
 						<b-form-input
 							:id="property + '_' + lang + '_input'"
@@ -112,7 +113,15 @@ export default {
 		addLanguage(lang) {
 			if (!lang || lang in this.state) return
 			this.$set(this.state, lang, '')
-			this.$store.commit('setLanguages', {[lang]:true})
+			this.$store.commit('setLanguages', { [lang]:true })
+		},
+		confirmDeletelanguage(lang) {
+			this.$bvModal.msgBoxConfirm("This will remove all translations for "+this.languages[lang]+" language from all other sections. Are you sure?")
+				.then(value => {
+					if(value) {
+						this.$store.commit('deleteValue', { p: this.$store.state.languages, prop: lang })
+					}
+				})
 		},
 		deleteLanguage(lang) {
 			this.$delete(this.state, lang)
@@ -128,6 +137,12 @@ export default {
 			for (const lang in languages) {
 				if (languages[lang]) {
 					this.addLanguage(lang)
+				}
+
+			}
+			for (const lang in this.state) {
+				if (!languages[lang]) {
+					this.deleteLanguage(lang)
 				}
 			}
 		},
@@ -152,11 +167,11 @@ export default {
 			},
 			deep: true,
 		},
-		"$store.state.languages": function(languages) {
+		"$store.state.languages": function(languages) {			
 			this.populateLanguages(languages)
 		},
 	},
-	created() {
+	created() {	
 		this.state = this.value
 		this.populateLanguages(this.$store.state.languages)
 	},
