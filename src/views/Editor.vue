@@ -535,12 +535,7 @@ export default {
 			return Object.keys(Bundle)
 		},
 		title() {
-			// get English title or first defined
-			// TODO: make generic?
 			return this.$store.getters.getTitle
-
-			// alternatively, get app language title or first defined
-			//return this.$store.getters.getTitleWithLanguage(this.$root.language || 'en')
 		},
 	},
 	watch: {
