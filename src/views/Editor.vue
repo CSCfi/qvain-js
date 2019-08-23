@@ -74,16 +74,16 @@
 								:variant="reloadDatasetCounter > 0 ? 'danger' : 'secondary'"
 								block
 								@click="reloadDataset">
-								<font-awesome-icon :icon="loading ? 'spinner' : 'undo'" :spin="loading" />
+								<font-awesome-icon :icon="reloading ? 'spinner' : 'undo'" :spin="reloading" />
 								&nbsp;
-								<span v-if="!loading">
+								<span v-if="!reloading">
 									{{ reloadDatasetTitle }}
 								</span>
 							</b-button>
 						</b-col>
 						<b-col>
 							<b-button
-								v-if="!loading && selectedSchema"
+								v-if="selectedSchema"
 								id="editor_button_save_top"
 								:variant="isSaveDisabled ? 'outline-secondary' : 'success'"
 								@click="save"
@@ -97,7 +97,7 @@
 						</b-col>
 						<b-col>
 							<b-button
-								v-if="!loading && selectedSchema"
+								v-if="selectedSchema"
 								id="editor_button_publish_top"
 								:variant="isPublishDisabled ? 'outline-secondary' : 'primary'"
 								v-b-modal.publishModal
@@ -109,7 +109,7 @@
 								Publish
 							</b-button>
 						</b-col>
-						<b-col v-if="!loading && isPublished">
+						<b-col v-if="isPublished">
 							<b-button
 								id="editor_button_etsin_top"
 								variant="info"
@@ -284,6 +284,7 @@ export default {
 			rateLimited: false,
 			showPublishConfirmation: false,
 			inDev: true,
+			reloading: false,
 			saving: false,
 			publishing: false,
 			isDataChanged: false,
@@ -350,7 +351,7 @@ export default {
 				if (isExisting) {
 					const currentId = this.$store.state.metadata.id
 					const response = await apiClient.post("/datasets/" + currentId + "/publish", {})
-					this.openRecord(currentId)
+					await this.openRecord(currentId)
 				} else {
 					this.$root.showAlert("Please save your dataset first", "danger")
 				}
@@ -384,10 +385,10 @@ export default {
 				if (isExisting) {
 					payload.id = currentId
 					await apiClient.put("/datasets/" + currentId, payload)
-					this.openRecord(currentId)
+					await this.openRecord(currentId)
 				} else {
 					const { data: { id }} = await apiClient.post("/datasets/", payload)
-					this.openRecord(id)
+					await this.openRecord(id)
 					this.$store.commit('setMetadata', { id })
 					this.$router.replace({ name: 'tab', params: { id: id, tab: this.$route.params.tab }})
 				}
@@ -425,16 +426,18 @@ export default {
 			this.$store.commit('loadData', undefined)
 			this.$store.commit('resetMetadata')
 		},
-		cancelReloadDataset: function() {
+		cancelReloadDataset() {
 			this.reloadDatasetTimer = null
 			this.reloadDatasetCounter = 0
 		},
-		reloadDataset: function() {
+		async reloadDataset() {
 			if (this.isDataChanged) {
-				this.confirmUnsavedChanges("Do you want to reload the dataset?", "No, I do not want to.", value => {
+				this.confirmUnsavedChanges("Do you want to reload the dataset?", "No, I do not want to.", async value => {
 					if (value) {
-						this.openRecord(this.id)
+						this.reloading = true
+						await this.openRecord(this.id)
 						this.reloadDatasetCounter = 0
+						this.reloading = false
 					}
 				})
 				return
@@ -443,8 +446,10 @@ export default {
 				this.reloadDatasetCounter += 1
 				this.reloadDatasetTimer = setTimeout(this.cancelReloadDataset, 2000)
 			} else {
-				this.openRecord(this.id)
+				this.reloading = true
+				await this.openRecord(this.id)
 				this.reloadDatasetCounter = 0
+				this.reloading = false
 			}
 		},
 		async openRecord(id) {
