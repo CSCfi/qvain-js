@@ -253,7 +253,6 @@ import apiClient from '@/api/client.js'
 import PublishModal from '@/components/PublishModal.vue'
 import Validator from '../../vendor/validator/src/validate.js'
 import cloneWithPrune from '@/lib/cloneWithPrune.js'
-import getLanguagesFromDataset from '@/lib/ajv.js'
 import Vue from 'vue'
 import TabSelector from '@/widgets/TabSelector.vue'
 
@@ -426,7 +425,6 @@ export default {
 			this.$store.commit('loadHints', {})
 			this.$store.commit('loadData', undefined)
 			this.$store.commit('resetMetadata')
-			this.$store.commit('resetLanguages')
 		},
 		cancelReloadDataset() {
 			this.reloadDatasetTimer = null
@@ -466,10 +464,6 @@ export default {
 				this.$store.commit('loadData', Object(data.dataset))
 				this.$store.commit('setMetadata', { id, schemaId: this.selectedSchema.id })
 				this.qvainData = data
-				const languages = getLanguagesFromDataset(data.dataset,this.selectedSchema.schema)
-				this.$delete(languages,'und')
-				this.$store.commit("setLanguages",languages)
-
 				this.openRecordCounter++
 			} catch (error) {
 				if (error.response && error.response.status == 401) {
@@ -614,7 +608,6 @@ export default {
 		if (this.id === 'new') {
 			this.clearRecord()
 		} else if (this.id !== 'edit') {
-			this.clearRecord()
 			await this.openRecord(this.id)
 		}
 
