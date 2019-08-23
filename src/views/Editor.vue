@@ -572,16 +572,14 @@ export default {
 				await this.openRecord(this.id)
 			}
 		},
-		'qvainData.next': {
-			handler(newNext) {
-				this.$store.commit('setMetadata', { isOldVersion: !!newNext })
+		'qvainData': {
+			handler(qvainData) {
+				this.$store.commit('setMetadata', {
+					isOldVersion: !!qvainData.next,
+					isDeprecated: !!qvainData.deprecated,
+				})
 			},
-			immediate: true,
-		},
-		'qvainData.deprecated': {
-			handler(newDeprecated) {
-				this.$store.commit('setMetadata', { isDeprecated: !!newDeprecated })
-			},
+			deep: true,
 			immediate: true,
 		},
 	},
