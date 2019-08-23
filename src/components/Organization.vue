@@ -42,6 +42,7 @@
 							:actions="actions"
 							:disable-internal-search="true"
 							:preserved-fields="hoistedFields"
+							:allowEmpty="false"
 							@changed="()=>handleChanged(i)"
 							@action="(action)=>handleAction(i, action)"
 						/>
