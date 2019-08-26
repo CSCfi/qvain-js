@@ -256,10 +256,11 @@ export default {
 				if (!data || data.length === 0) {
 					return false
 				}
-				if (schema.type === 'object') {
-					for (const prop in schema.properties) {
+				if (schema && schema.type === 'object') {
+					const properties = schema.properties || {}
+					for (const prop in data) {
 						if (prop !== "@type") {
-							if (recurse(schema.properties[prop], data[prop])) {
+							if (recurse(properties[prop], data[prop])) {
 								return true
 							}
 						}
