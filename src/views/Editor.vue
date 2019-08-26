@@ -4,7 +4,7 @@
 		<b-navbar sticky toggleable="sm" variant="light">
 			<b-container>
 				<b-row no-gutters>
-					<h4 class="component-title" v-if="!!selectedSchema">
+					<h4 class="component-title" v-if="!!selectedCatalog">
 						<span v-if="title">
 							{{ title }}
 						</span>
@@ -23,10 +23,14 @@
 						>
 							Deprecated
 						</b-badge>
+						<b-badge
+							v-if="$store.state.metadata.isReadOnly"
+							variant="info"
+						>
+							Read only
+						</b-badge>
 						<span class="secondary-text text-muted">
-							<span>
-								{{ selectedSchema.title }}
-							</span>
+							<span>{{ selectedCatalog.title }}</span>
 						</span>
 						<span
 							v-if="qvainData"
@@ -83,7 +87,7 @@
 						</b-col>
 						<b-col>
 							<b-button
-								v-if="selectedSchema"
+								v-if="selectedCatalog"
 								id="editor_button_save_top"
 								:variant="isSaveDisabled ? 'outline-secondary' : 'success'"
 								@click="save"
@@ -97,7 +101,7 @@
 						</b-col>
 						<b-col>
 							<b-button
-								v-if="selectedSchema"
+								v-if="selectedCatalog"
 								id="editor_button_publish_top"
 								:variant="isPublishDisabled ? 'outline-secondary' : 'primary'"
 								v-b-modal.publishModal
@@ -149,7 +153,7 @@
 
 		<b-container>
 			<b-row no-gutters>
-				<b-col md="3" v-if="!!selectedSchema">
+				<b-col md="3" v-if="!!selectedCatalog">
 					<b-nav class="sticky-top editor-index-navigation" vertical>
 						<b-nav-item v-for="(tab, index) in tabs" :key="tab.uri" :to="`/dataset/${id}/${tab.uri}`">
 							<b-row>
@@ -165,7 +169,7 @@
 					</b-nav>
 				</b-col>
 
-				<b-col v-if="selectedSchema">
+				<b-col v-if="selectedCatalog">
 					<tab-selector
 						:key="openRecordCounter"
 						:schema="$store.state.schema"
@@ -205,24 +209,30 @@
 						</b-row>
 						<b-row class="mb-3">
 							<b-col>
-								<b-card-group deck v-model="selectedSchema" :key="index"
-										:title="bundle"
-										v-for="(bundle, index) in bundles">
-										<b-card
-											:id="id"
-											:title="val.title"
-											v-for="(val, id) in getSchemas(bundle)"
-											:key="id">
-											<b-card-text>
-												{{ val.description }}
-											</b-card-text>
-											<b-button
-												slot="footer"
-												@click="selectedSchema = val; selectSchema()"
-												variant="primary">
-												{{ val.name }}
-											</b-button>
-										</b-card>
+								<b-card-group
+									v-for="(bundle, index) in bundles"
+									:key="index"
+									v-model="selectedCatalog"
+									deck
+									:title="bundle"
+								>
+									<b-card
+										v-for="(val, id) in getCatalogOptions(bundle)"
+										:id="id"
+										:key="id"
+										:title="val.title"
+									>
+										<b-card-text>
+											{{ val.description }}
+										</b-card-text>
+										<b-button
+											slot="footer"
+											variant="primary"
+											@click="selectCatalog(val)"
+										>
+											{{ val.name }}
+										</b-button>
+									</b-card>
 								</b-card-group>
 							</b-col>
 						</b-row>
@@ -274,7 +284,7 @@ export default {
 	},
 	data() {
 		return {
-			selectedSchema: null,
+			selectedCatalog: null,
 			doLive: true,
 			unsubscribeFunc: null,
 			validator: null,
@@ -296,17 +306,24 @@ export default {
 		}
 	},
 	methods: {
-		getSchemas(bundle) {
-			return Bundle[bundle]
+		getCatalogOptions(bundle) {
+			const options = Object.entries(Bundle[bundle]).filter(([ key, val ]) => !val.hidden) // !val.hiddfen
+			return Object.fromEntries(options)
 		},
-		getSchemaForId(schemaId) {
+		getCatalogForId(catalogId) {
 			for (const bundle in Bundle) {
-				const schema = Object.values(Bundle[bundle]).find(schema=>schema.id==schemaId)
-				if (schema) {
-					return schema
+				const catalog = Object.values(Bundle[bundle]).find(catalog=>catalog.id==catalogId)
+				if (catalog) {
+					return catalog
 				}
 			}
 			return null
+		},
+		getCatalogForData(data) {
+			if (data.preservation_state > 0) {
+				return this.getCatalogForId("urn:nbn:fi:att:data-catalog-pas")
+			}
+			return this.getCatalogForId(data.data_catalog)
 		},
 		async confirmUnsavedChanges(dialogTitle, noButtonTitle, callback) {
 			// if session is lost, user cannot save
@@ -379,7 +396,7 @@ export default {
 			try {
 				const currentId = this.$store.state.metadata.id
 				const dataset = this.$store.getters.prunedDataset
-				const payload = { dataset, type: 2, schema: this.selectedSchema.id }
+				const payload = { dataset, type: 2, schema: this.$store.state.metadata.schemaId }
 
 				const isExisting = (currentId && currentId !== 'new')
 				if (isExisting) {
@@ -412,19 +429,18 @@ export default {
 			})
 		},
 		initDataset() {
-			if (this.selectedSchema !== null) {
-				this.$store.commit('loadSchema', this.selectedSchema.schema)
-				this.$store.commit('loadHints', this.selectedSchema.ui)
+			if (this.selectedCatalog !== null) {
+				this.$store.commit('loadSchema', this.selectedCatalog.schema)
+				this.$store.commit('loadHints', this.selectedCatalog.ui)
 			}
 		},
 		clearRecord() {
 			this.isDataChanged = false
 			this.qvainData = null
-			this.selectedSchema = null
+			this.selectedCatalog = null
 			this.$store.commit('loadSchema', {})
 			this.$store.commit('loadHints', {})
 			this.$store.commit('loadData', undefined)
-			this.$store.commit('resetState')
 			this.$store.commit('resetMetadata')
 		},
 		cancelReloadDataset() {
@@ -459,12 +475,18 @@ export default {
 			try {
 				const { data } = await apiClient.get(`/datasets/${id}`)
 				this.$store.commit('resetMetadata')
-				this.selectedSchema = this.getSchemaForId(data.schema)
-				this.$store.commit('loadSchema', this.selectedSchema.schema)
-				this.$store.commit('loadHints', this.selectedSchema.ui)
+				this.selectedCatalog = this.getCatalogForData(data)
+				this.$store.commit('loadSchema', this.selectedCatalog.schema)
+				this.$store.commit('loadHints', this.selectedCatalog.ui)
 				this.$store.commit('loadData', Object(data.dataset))
-				this.$store.commit('resetState')
-				this.$store.commit('setMetadata', { id, schemaId: this.selectedSchema.id })
+				this.$store.commit('setMetadata',
+					{
+						id,
+						schemaId: this.selectedCatalog.schemaId,
+						catalog: this.selectedCatalog.id,
+						originalCatalog: data.data_catalog,
+					}
+				)
 				this.qvainData = data
 				this.openRecordCounter++
 			} catch (error) {
@@ -479,11 +501,16 @@ export default {
 				this.loading = false
 			}
 		},
-		selectSchema() {
-			if (this.selectedSchema !== null) {
-				this.$store.commit('loadSchema', this.selectedSchema.schema)
-				this.$store.commit('loadHints', this.selectedSchema.ui)
-				this.$store.commit('setMetadata', { schemaId: this.selectedSchema.id })
+		selectCatalog(catalog) {
+			console.log("select")
+			this.selectedCatalog = catalog
+			if (this.selectedCatalog !== null) {
+				this.$store.commit('loadSchema', this.selectedCatalog.schema)
+				this.$store.commit('loadHints', this.selectedCatalog.ui)
+				this.$store.commit('setMetadata', {
+					schemaId: this.selectedCatalog.schemaId,
+					catalog: this.selectedCatalog.id,
+				})
 
 				this.startValidator()
 				this.checkTab()
@@ -579,6 +606,7 @@ export default {
 				this.$store.commit('setMetadata', {
 					isOldVersion: !!(qvainData && qvainData.next),
 					isDeprecated: !!(qvainData && qvainData.deprecated),
+					isReadOnly: !!(qvainData && qvainData.preservation_state >= 80),
 				})
 			},
 			deep: true,
@@ -612,11 +640,11 @@ export default {
 		}
 
 		// if schema is not set, try to read schema from store
-		if (!this.selectedSchema && this.$store.state.metadata.schemaId) {
-			this.selectedSchema = this.getSchemaForId(this.$store.state.metadata.schemaId)
+		if (!this.selectedCatalog && this.$store.state.metadata.catalog) {
+			this.selectedCatalog = this.getCatalogForId(this.$store.state.metadata.catalog)
 		}
 
-		if (this.selectedSchema) {
+		if (this.selectedCatalog) {
 			this.startValidator()
 		}
 

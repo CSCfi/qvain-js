@@ -209,7 +209,7 @@ $fd-primary-white: #ffffff;
 
 	.cell.highlight-end.selected, .cell.highlight-start.selected, .selected {
 		background-color: $fd-primary !important;
-		color: $fd-primary-white !important;	
+		color: $fd-primary-white !important;
 	}
 
 	.cell.weekend:not(.highlighted) {

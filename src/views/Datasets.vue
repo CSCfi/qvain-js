@@ -154,8 +154,14 @@
 						<font-awesome-icon icon="circle" class="text-success" v-else />
 					</span>
 					{{ preferredLanguage(row.item.title) }}
-					<b-badge v-if="row.item.next !== null" variant="warning" class="old-version">Old version</b-badge>
-					<b-badge v-if="row.item.deprecated" variant="danger" class="old-version">Deprecated</b-badge>
+					<b-badge v-if="row.item.next !== null" variant="warning" >Old version</b-badge>
+					<b-badge v-if="row.item.deprecated" variant="danger" >Deprecated</b-badge>
+					<b-badge
+						v-if="row.item.preservation_state > 0 || row.item.data_catalog=='urn:nbn:fi:att:data-catalog-pas'"
+						variant="info"
+					>
+						PAS
+					</b-badge>
 				</h5>
 				<p v-if="row.item.description" class="text-muted pointer" @click.stop="editDataset(row.item)">
 					<small>{{ preferredLanguage(row.item.description) }}</small>

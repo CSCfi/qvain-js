@@ -3,10 +3,12 @@ import FairdataIdaSchema from './fairdata-ida.schema.json'
 import FairdataAttSchema from './fairdata-att.schema.json'
 import FairdataIdaUi from './fairdata-ida.ui.js'
 import fairdataAttUiDiff from './fairdata-att.ui.diff.js'
+import fairdataPasUiDiff from './fairdata-pas.ui.diff.js'
 import jsonPointer from 'json-pointer'
 
 
 const FairdataAttUi = fairdataAttUiDiff(FairdataIdaUi)
+const FairdataPasUi = fairdataPasUiDiff(FairdataIdaUi)
 
 
 // Qvain backend knows these schemas as:
@@ -36,33 +38,44 @@ function clone(dataset) {
 	})
 }
 
+
+const ida = {
+	schema: FairdataIdaSchema,
+	ui: FairdataIdaUi,
+	title: "IDA",
+	name: "Select IDA files", // "Fairdata (IDA)",
+	description: "You want to select files from IDA.",
+	schemaId: "metax-ida",
+	id: "urn:nbn:fi:att:data-catalog-ida",
+	family: 2,
+	cloneFunc: clone,
+}
+
+const att = {
+	schema: FairdataAttSchema,
+	ui: FairdataAttUi,
+	title: "Remote Resources",
+	name: "Link Remote resources", // "Fairdata (ATT)",
+	description: "You want to link files from remote location.",
+	schemaId: "metax-att",
+	id: "urn:nbn:fi:att:data-catalog-att",
+	family: 2,
+	cloneFunc: clone,
+}
+
+const pas = {
+	schema: FairdataIdaSchema,
+	ui: FairdataPasUi,
+	title: "PAS",
+	name: "PAS dataset",
+	description: "PAS dataset.",
+	schemaId: "metax-ida",
+	id: "urn:nbn:fi:att:data-catalog-pas",
+	family: 2,
+	cloneFunc: clone,
+	hidden: true,
+}
+
 export default {
-	ida: {
-		schema: FairdataIdaSchema,
-		ui: FairdataIdaUi,
-		title: "IDA",
-		name: "Select IDA files", // "Fairdata (IDA)",
-		description: "You want to select files from IDA.",
-		id: "metax-ida",
-		family: 2,
-		cloneFunc: clone,
-	},
-	/*'ida-old': {
-		schema: FairdataIdaOldSchema,
-		ui: FairdataIdaUi,
-		name: "Fairdata (IDA/old)",
-		id: "metax-ida",
-		family: 2,
-		cloneFunc: clone,
-	},*/
-	att: {
-		schema: FairdataAttSchema,
-		ui: FairdataAttUi,
-		title: "Remote Resources",
-		name: "Link Remote resources", // "Fairdata (ATT)",
-		description: "You want to link files from remote location.",
-		id: "metax-att",
-		family: 2,
-		cloneFunc: clone,
-	},
+	ida, att, pas,
 }
