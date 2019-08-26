@@ -41,7 +41,10 @@
 					group-values="children"
 					:group-label="labelNameInSchema"
 					:disabled="disabled"
-					@search-change="search">
+					:allowEmpty="allowEmpty"
+					:deselectLabel="allowEmpty ? 'Press enter to remove' : 'Selected'"
+					@search-change="search"
+				>
 					<div slot="noResult">No elements found. Consider changing the search query. You may have to type at least 3 letters.</div>
 					<div
 						v-if="grouped"
@@ -74,6 +77,8 @@
 					:placeholder="getPlaceholder"
 					@select="atSelect"
 					:disabled="disabled"
+					:allowEmpty="allowEmpty"
+					:deselectLabel="allowEmpty ? 'Press enter to remove' : 'Selected'"
 					@search-change="search">
 					<div slot="noOptions"></div>
 					<div slot="noResult">No elements found. Consider changing the search query. You may have to type at least 3 letters.</div>
@@ -129,6 +134,7 @@ export default {
 		disabled: { type: Boolean, default: false },
 		header: { type: Boolean, default: true },
 		preservedFields: { type: Array, default: () => [] },
+		allowEmpty: { type: Boolean, default: true },
 	},
 	data() {
 		return {
