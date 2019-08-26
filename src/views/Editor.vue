@@ -575,8 +575,8 @@ export default {
 		'qvainData': {
 			handler(qvainData) {
 				this.$store.commit('setMetadata', {
-					isOldVersion: !!qvainData.next,
-					isDeprecated: !!qvainData.deprecated,
+					isOldVersion: !!(qvainData && qvainData.next),
+					isDeprecated: !!(qvainData && qvainData.deprecated),
 				})
 			},
 			deep: true,
