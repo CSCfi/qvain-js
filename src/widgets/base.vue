@@ -156,7 +156,9 @@ export default {
 		}
 	},
 	created() {
-		this.$store.commit('initStateFor', this.path)
+		if (!this.$store.state.vState[this.path]) {
+			this.$store.commit('initStateFor', this.path)
+		}
 	},
 }
 </script>
