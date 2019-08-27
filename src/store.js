@@ -94,7 +94,7 @@ export default new Vuex.Store({
 		updateValue(state, payload) {
 			Vue.set(payload.p, payload.prop, payload.val)
 			Vue.nextTick(() => {
-				if (payload.val === '') { // Note: for objects we may not want to remove the key?
+				if (payload.val === '' && Array.isArray(payload.p)) { // don't remove key for objects
 					Vue.delete(payload.p, payload.prop)
 				}
 			})
