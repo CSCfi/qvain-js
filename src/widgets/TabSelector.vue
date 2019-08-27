@@ -60,7 +60,6 @@ import SchemaOneOf from './oneOf.vue'
 import SchemaEnum from './Enum.vue'
 import i18nString from '@/components/i18nStrings.vue'
 import i18nTextarea from '@/components/i18nTextarea.vue'
-import TabbedArray from './TabbedArray.vue'
 import AutoComplete from './refdata/autocomplete.vue'
 import FilePicker from '../filebrowser/FilePicker.vue'
 import Skip from './skip.js'
@@ -246,7 +245,6 @@ export default {
 		'reference-data': ReferenceData,
 		'i18n-string': i18nString,
 		'i18n-textarea': i18nTextarea,
-		'tabbed-array': TabbedArray,
 		'autocomplete': AutoComplete,
 		'filepicker': FilePicker,
 		'skip': Skip,

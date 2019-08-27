@@ -34,7 +34,7 @@
 						:key="getKey(index)"
 						style="{margin-top: 5px}"
 						title-link-class="tab-field-link"
-						@click="()=>setTab(index)"
+						@click="setTab(index)"
 					>
 						<template slot="title">
 							{{ tabTitle(index) }}

@@ -9,28 +9,28 @@
 				<b-btn
 					class="dataset-filter__button"
 					:pressed="datasetsView.showState === 'all'"
-					@click="()=>setShowState('all')"
+					@click="setShowState('all')"
 					:variant="datasetsView.showState === 'all' ? 'secondary' : 'outline-secondary'">
 					All
 				</b-btn>
 				<b-btn
 					class="dataset-filter__button"
 					:pressed="datasetsView.showState === 'draft'"
-					@click="()=>setShowState('draft')"
+					@click="setShowState('draft')"
 					:variant="datasetsView.showState === 'all' || datasetsView.showState === 'draft' ? 'success' : 'outline-secondary'">
 					Draft
 				</b-btn>
 				<b-btn
 					class="dataset-filter__button"
 					:pressed="datasetsView.showState === 'published'"
-					@click="()=>setShowState('published')"
+					@click="setShowState('published')"
 					:variant="datasetsView.showState === 'all' || datasetsView.showState === 'published' ? 'primary' : 'outline-secondary'">
 					Published
 				</b-btn>
 				<b-btn
 					class="dataset-filter__button"
 					:pressed="datasetsView.showState === 'unpublishedchanges'"
-					@click="()=>setShowState('unpublishedchanges')"
+					@click="setShowState('unpublishedchanges')"
 					:variant="datasetsView.showState === 'all' || datasetsView.showState === 'unpublishedchanges' ? 'warning' : 'outline-secondary'">
 					Unpublished Changes
 				</b-btn>
@@ -74,7 +74,7 @@
 			<b-button-group size="sm">
 				<b-btn
 					:pressed="datasetsView.perPage === 0"
-					@click="() => setPerPage(0)"
+					@click="setPerPage(0)"
 				>
 					show all
 				</b-btn>
@@ -83,7 +83,7 @@
 					:key="option"
 					:pressed="datasetsView.perPage === option"
 					class="btn"
-					@click="() => setPerPage(option)"
+					@click="setPerPage(option)"
 				>{{ option }}
 				</b-btn>
 			</b-button-group>
@@ -243,7 +243,7 @@
 			<b-button-group size="sm">
 				<b-btn
 					:pressed="datasetsView.perPage === 0"
-					@click="() => setPerPage(0)"
+					@click="setPerPage(0)"
 				>
 					show all
 				</b-btn>
@@ -252,7 +252,7 @@
 					:key="option"
 					:pressed="datasetsView.perPage === option"
 					class="btn"
-					@click="() => setPerPage(option)"
+					@click="setPerPage(option)"
 				>{{ option }}
 				</b-btn>
 			</b-button-group>

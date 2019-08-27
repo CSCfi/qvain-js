@@ -31,7 +31,7 @@
 				<b-tab
 					v-for="(key, index) in languageKeys"
 					:key="key"
-					@click="()=>setTab(index)"
+					@click="setTab(index)"
 				>
 					<template slot="title">
 						<delete-button

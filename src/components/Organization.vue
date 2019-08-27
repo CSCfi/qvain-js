@@ -43,8 +43,8 @@
 							:disable-internal-search="true"
 							:preserved-fields="hoistedFields"
 							:allow-empty="false"
-							@changed="()=>handleChanged(i)"
-							@action="(action)=>handleAction(i, action)"
+							@changed="handleChanged(i)"
+							@action="(action) => handleAction(i, action)"
 						/>
 					</div>
 
@@ -318,7 +318,6 @@ export default {
 			}
 			return recurse(this.schema, data)
 		},
-
 		async handleAction(idx, action) {
 			if (action.action === "set_manual") {
 				this.$set(this.isReferenceData, idx, false)
