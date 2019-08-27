@@ -17,13 +17,26 @@
 		<!-- TABLE -->
 		<b-table :fields="fields" :items="filesAndDirectoriesForCWD" show-empty empty-text="No files in this directory" striped hover class="mb-0">
 			<template slot="selection" slot-scope="data">
-				<b-form-checkbox v-if="!disabled" class="m-0" :checked="selected.includes(data.item.identifier)" @change="e => togglePick(e, data)" />
+				<b-form-checkbox
+					v-if="!disabled"
+					class="m-0"
+					:checked="selected.includes(data.item.identifier)"
+					:disabled="onlyMetadata || readOnly"
+					@change="e => togglePick(e, data)"
+				/>
 			</template>
 
 			<template slot="type" slot-scope="data">
-				<b-btn v-if="data.item.type !== 'files'" size="sm" @click.stop="goTo(data.item.path)" variant="link" class="m-0 p-0 float-right">
+				<b-btn
+					v-if="data.item.type !== 'files'"
+					size="sm"
+					variant="link"
+					class="m-0 p-0 float-right"
+					@click.stop="goTo(data.item.path)"
+				>
 					<font-awesome-icon :icon="icon.faFolder" size="2x" />
 				</b-btn>
+				<div v-else />
 			</template>
 
 			<template slot="name" slot-scope="data">
@@ -44,14 +57,23 @@
 			</template>
 
 			<template slot="actions" slot-scope="data">
-				<b-btn variant="primary" v-if="data.item.type === 'files'" size="sm" @click.stop="data.toggleDetails" class="mr-2">{{ data.detailsShowing ? 'Hide' : 'Show'}} PAS metadata</b-btn>
+				<b-btn
+					v-if="data.item.type === 'files'"
+					variant="primary"
+					size="sm"
+					class="mr-2"
+					@click.stop="data.toggleDetails"
+				>{{ data.detailsShowing ? 'Hide' : 'Show'}} PAS metadata</b-btn>
 			</template>
 
 			<template slot="row-details" slot-scope="data">
-				<PASMetadata v-if="data.item.type === 'files'"
+				<PASMetadata
+					v-if="data.item.type === 'files'"
 					:identifier="data.item.identifier"
 					:file="data.item.file"
-					@saved="updatePasMetadata" />
+					:read-only="readOnly"
+					@saved="updatePasMetadata"
+				/>
 				<!--<PASMetadata v-else :identifier="data.item.identifier" :folder="data.item" />-->
 			</template>
 		</b-table>
@@ -84,7 +106,7 @@ const formatBytes = (bytes, decimals) => {
 
 export default {
 	name: 'browser',
-	props: ['project', 'selected', 'disabled'],
+	props: ['project', 'selected', 'disabled', 'onlyMetadata', 'readOnly'],
 	components: {
 		Breadcrumbs,
 		FontAwesomeIcon,

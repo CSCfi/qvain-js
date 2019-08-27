@@ -9,9 +9,10 @@
 		<b-row slot="input">
 			<b-col>
 				<datepicker
+					v-model="date"
 					:format="schema.format"
-					v-model="date">
-				</datepicker>
+					:disabled="readOnly"
+				/>
 			</b-col>
 		</b-row>
 	</record-field>

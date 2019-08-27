@@ -1,21 +1,25 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
 	<div>
-		<b-alert :show="readonly">
-			You are editing an old version of the dataset and cannot make changes to the files.
+		<b-alert v-if="!readOnly && !!onlyMetadataReason">
+			You are editing {{ onlyMetadataReason }} dataset and cannot add or remove files.
 		</b-alert>
 
-		<b-alert :show="!readonly && hasDeletedItems">
+		<b-alert v-if="!readOnly && !onlyMetadataReason && hasDeletedItems">
 			Some of the files in your dataset have been deleted. You need to remove the deleted files before the dataset can be published.
 		</b-alert>
 
-		<b-dropdown v-if="!readonly" text="Change project" class="my-3">
+		<b-dropdown
+			v-if="!readOnly && !onlyMetadataReason"
+			text="Change project"
+			class="my-3"
+		>
 			<b-dropdown-item v-for="proj in projects" :key="proj" @click="updateProject(proj)">
 				Project {{ proj }}
 			</b-dropdown-item>
 		</b-dropdown>
 
-		<b-alert :show="hasFilesFromOtherProject" variant="danger">
+		<b-alert v-if="hasFilesFromOtherProject" variant="danger">
 			You may only select files from one project. You may browse other project but adding files is disabled. Remove selected files to change project.
 		</b-alert>
 
@@ -27,10 +31,11 @@
 			</b-row>
 
 			<Browser
-				v-if="!readonly"
 				:selected="selectedByIdentifiers"
 				:project="selectedProject"
 				:disabled="hasFilesFromOtherProject"
+				:only-metadata="!!onlyMetadataReason"
+				:read-only="readOnly"
 				@select="addFileOrDirectory"
 				@remove="removeFileOrDirectory" />
 		</div>
@@ -48,7 +53,7 @@
 						:type="category"
 						:secondary="item.identifier"
 						:icon="icons[category]"
-						:readonly="readonly"
+						:read-only="readOnly || isOld"
 						:deleted="$store.state.deletedItems[category][item.identifier] === true"
 						@delete="removeFileOrDirectory"/>
 				</div>
@@ -76,6 +81,11 @@ export default {
 	components: {
 		Browser,
 		FileItem,
+	},
+	props: {
+		'readOnly': {
+			type: Boolean,
+		},
 	},
 	data() {
 		return {
@@ -194,8 +204,20 @@ export default {
 				this.$store.commit('setMetadata', { project })
 			},
 		},
-		readonly() {
+		isOld() {
 			return this.$store.state.metadata.isOldVersion
+		},
+		isPas() {
+			return this.$store.state.metadata.isPas
+		},
+		onlyMetadataReason() {
+			if (this.isPas) {
+				return "a PAS"
+			}
+			if (this.isOld) {
+				return "an old version of the"
+			}
+			return ""
 		},
 		hasDeletedItems() {
 			for (const category in this.state) {
@@ -213,7 +235,7 @@ export default {
 			// return ['project_x', '2001036'] // this is only for development purpose
 		},
 		selectedProject() {
-			if (this.readonly) {
+			if (this.readOnly) {
 				return this.project || null
 			}
 

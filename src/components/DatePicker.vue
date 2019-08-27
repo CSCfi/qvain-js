@@ -9,7 +9,9 @@
 			@input="validate"
 			@change="submitChange"
 			placeholder="dd.MM.yyyy"
-			class="form-control" />
+			class="form-control"
+			:disabled="disabled"
+		/>
 	</div>
 </template>
 
@@ -38,6 +40,7 @@ export default {
 	props: {
 		format: String,
 		value: String,
+		disabled: Boolean,
 	},
 	data() {
 		return {

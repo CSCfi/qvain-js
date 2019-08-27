@@ -10,19 +10,22 @@
 						<datepicker
 							v-if="format === 'date-time' || format === 'date'"
 							:format="format"
-							v-model="date">
-						</datepicker>
+							v-model="date"
+							:disabled="disabled"
+						/>
 						<timepicker
 							v-if="format === 'date-time' || format === 'time'"
 							:format="format"
-							v-model="time">
-						</timepicker>
+							v-model="time"
+							:disabled="disabled"
+						/>
 						<timezonepicker
 							v-if="format === 'date-time' || format === 'time'"
 							:format="format"
 							:timezonedate="date"
-							v-model="timezone">
-						</timezonepicker>
+							v-model="timezone"
+							:disabled="disabled"
+						/>
 					</b-form-group>
 				</b-form>
 			</b-col>
@@ -70,6 +73,7 @@ export default {
 		value: String,
 		title: String,
 		description: String,
+		disabled: Boolean,
 	},
 	data() {
 		return {

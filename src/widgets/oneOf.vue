@@ -7,7 +7,9 @@
 					v-for="(sub, i) in schema['oneOf']"
 					:key="'oneOfSel' + i"
 					variant="primary"
-					@click="setChosen(i)">
+					:disabled="readOnly"
+					@click="setChosen(i)"
+				>
 					{{ sub['title'] || '#'+i }}
 				</b-button>
 			</b-button-group>
@@ -23,6 +25,7 @@
 			:tab="myTab"
 			:active-tab="activeTab"
 			:depth="depth"
+			:read-only="readOnly"
 		/>
 	</wrapper>
 
@@ -51,6 +54,7 @@
 						v-for="(sub, i) in schema['oneOf']"
 						:key="'oneOfSel' + i"
 						variant="primary"
+						:disabled="readOnly"
 						@click="setChosen(i)"
 					>
 						{{ sub['title'] || '#'+i }}
@@ -88,6 +92,7 @@
 				:tab="myTab"
 				:active-tab="activeTab"
 				:depth="depth"
+				:read-only="readOnly"
 			/>
 		</div>
 	</record-field>

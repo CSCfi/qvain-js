@@ -17,7 +17,9 @@
 				:tab="myTab"
 				:activeTab="activeTab"
 				:depth="newdepth"
-				v-on="$listeners">
+				:read-only="readOnly"
+				v-on="$listeners"
+			>
 				<p>{{ dataType }}</p>
 			</component>
 			<skip v-else
@@ -32,6 +34,7 @@
 				:tab="myTab"
 				:activeTab="activeTab"
 				:depth="depth"
+				:read-only="readOnly"
 				v-on="$listeners"
 			/>
 		</keep-alive>
@@ -73,7 +76,7 @@ export default {
 	name: 'TabSelector',
 	description: "internal dispatch wrapper",
 	widgettype: 'any',
-	props: ['schema', 'value', 'path', 'parent', 'property', 'tab', 'activeTab', 'depth', 'required', 'defaultValue'],
+	props: ['schema', 'value', 'path', 'parent', 'property', 'tab', 'activeTab', 'depth', 'required', 'defaultValue', 'readOnly'],
 	data: function() {
 		return {
 			dataType: null,

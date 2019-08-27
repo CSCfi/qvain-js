@@ -35,14 +35,14 @@
 							:tab="myTab"
 							:active-tab="activeTab"
 							:depth="depth"
-							:disabled="i!==lastLevel"
+							:read-only="i!==lastLevel || readOnly"
 							v-bind="ui.props.referenceData"
 							:es-query-extra="getQueryExtraForLevel(i)"
 							:placeholder="getPlaceholderForLevel(i)"
 							:actions="actions"
 							:disable-internal-search="true"
 							:preserved-fields="hoistedFields"
-							:allowEmpty="false"
+							:allow-empty="false"
 							@changed="()=>handleChanged(i)"
 							@action="(action)=>handleAction(i, action)"
 						/>
@@ -63,8 +63,11 @@
 						</b-container>
 					</div>
 
-					<div class="delete-button" :class="{invisible: i < lastLevel}">
-						<delete-button @click="remove(i)" />
+					<div :class="{invisible: i < lastLevel}">
+						<delete-button
+							:disabled="readOnly"
+							@click="remove(i)"
+						/>
 					</div>
 				</div>
 
@@ -84,6 +87,7 @@
 						:active-tab="activeTab"
 						:depth="depth"
 						:skipped="hoistedFields"
+						:read-only="readOnly"
 					/>
 				</b-collapse>
 			</div>
@@ -91,7 +95,7 @@
 				<b-button
 					variant="outline-dark"
 					class="mb-2 w-100"
-					:disabled="!canAddNew"
+					:disabled="!canAddNew || readOnly"
 					@click="add()"
 				>
 					<font-awesome-icon icon="plus" fixed-width /> Add another level

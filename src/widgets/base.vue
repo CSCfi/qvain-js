@@ -26,7 +26,7 @@ import genid from '@/lib/genid.js'
 export default {
 	name: 'schema-base',
 	description: "base widget that all ui widgets inherit from",
-	props: ['schema', 'value', 'valtype', 'parent', 'property', 'path', 'tab', 'activeTab', 'depth', 'hasTypeError', 'required'],
+	props: ['schema', 'value', 'valtype', 'parent', 'property', 'path', 'tab', 'activeTab', 'depth', 'hasTypeError', 'required', 'readOnly'],
 	methods: {
 		newPath: function(prop) {
 			return this.path + '/' + prop

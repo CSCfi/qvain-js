@@ -77,7 +77,9 @@
 								id="editor_refresh_dataset"
 								:variant="reloadDatasetCounter > 0 ? 'danger' : 'secondary'"
 								block
-								@click="reloadDataset">
+								:disabled="this.$store.state.metadata.isReadOnly"
+								@click="reloadDataset"
+							>
 								<font-awesome-icon :icon="reloading ? 'spinner' : 'undo'" :spin="reloading" />
 								&nbsp;
 								<span v-if="!reloading">
@@ -179,6 +181,7 @@
 						:value="$store.state.record"
 						:active-tab="$route.params.tab"
 						:depth="0"
+						:read-only="$store.state.metadata.isReadOnly"
 					/>
 				</b-col>
 
@@ -321,7 +324,7 @@ export default {
 		},
 		getCatalogForData(data) {
 			if (data.preservation_state > 0) {
-				return this.getCatalogForId("urn:nbn:fi:att:data-catalog-pas")
+				return Bundle.fairdata.pas
 			}
 			return this.getCatalogForId(data.data_catalog)
 		},
@@ -562,7 +565,9 @@ export default {
 			return this.reloadDatasetCounter == 0 ? "Undo All Changes" : "Are you sure?"
 		},
 		isPublishDisabled() {
-			return this.loading || this.rateLimited || this.$store.state.metadata.id == null || (this.qvainData && this.qvainData.published && this.qvainData.synced >= this.qvainData.modified) || this.isDataChanged || this.saving || this.publishing
+			return this.loading || this.rateLimited || this.$store.state.metadata.id == null
+				|| (this.qvainData && this.qvainData.published && this.qvainData.synced >= this.qvainData.modified)
+				|| this.isDataChanged || this.saving || this.publishing  || this.$store.state.metadata.isReadOnly
 		},
 		isPublished() {
 			return this.qvainData && this.qvainData.published
@@ -572,6 +577,7 @@ export default {
 		},
 		isSaveDisabled() {
 			return this.loading || this.rateLimited || this.isDataChanged == false || this.saving || this.publishing
+				|| this.$store.state.metadata.isReadOnly
 		},
 		tabs() {
 			return (this.$store.state.hints.tabs || []).filter(tab => tab.uri)
@@ -607,6 +613,7 @@ export default {
 					isOldVersion: !!(qvainData && qvainData.next),
 					isDeprecated: !!(qvainData && qvainData.deprecated),
 					isReadOnly: !!(qvainData && qvainData.preservation_state >= 80),
+					isPas: !!(qvainData && (qvainData.data_catalog === "urn:nbn:fi:att:data-catalog-pas" || qvainData.preservation_state > 0)),
 				})
 			},
 			deep: true,
@@ -720,7 +727,6 @@ h1.component-title {
 	.secondary-text {
 		font-size: 0.5em;
 		display:inline-block;
-		//word-wrap: normal;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}

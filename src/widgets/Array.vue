@@ -17,11 +17,10 @@
 					class="add-button col"
 					variant="light"
 					type="button"
-					:disabled="value.length >= maximum"
+					:disabled="value.length >= maximum || readOnly"
 					@click="doPlus()">
 					<font-awesome-icon icon="plus" fixed-width />
 				</b-btn>
-
 				<b-tabs
 					:value="tabIndex"
 					class="tab-array-margin"
@@ -39,7 +38,10 @@
 					>
 						<template slot="title">
 							{{ tabTitle(index) }}
-							<delete-button @click="deleteElement(index)" />
+							<delete-button
+								:disabled="readOnly"
+								@click="deleteElement(index)"
+							/>
 						</template>
 
 						<TabSelector
@@ -52,6 +54,7 @@
 							:tab="myTab"
 							:active-tab="activeTab"
 							:depth="depth"
+							:read-only="readOnly"
 							@delete="deleteElement"
 						/>
 					</b-tab>
@@ -79,12 +82,27 @@
 						:tab="myTab"
 						:active-tab="activeTab"
 						:depth="depth"
+						:read-only="readOnly"
 						@delete="deleteElement"
 					/>
-					<delete-button class="array-delete-button" v-if="showDelete" @click="deleteElement(index)" />
+					<delete-button
+						v-if="showDelete"
+						:disabled="readOnly"
+						class="array-delete-button"
+						@click="deleteElement(index)"
+					/>
 				</b-list-group-item>
 				<b-list-group-item>
-					<b-btn :id="property + '_array_button_add'" class="col" variant="light" type="button" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
+					<b-btn
+						:id="property + '_array_button_add'"
+						class="col"
+						variant="light"
+						type="button"
+						:disabled="value.length >= maximum || readOnly"
+						@click="doPlus()"
+					>
+						<font-awesome-icon icon="plus" fixed-width />
+					</b-btn>
 				</b-list-group-item>
 			</b-list-group>
 		</div>

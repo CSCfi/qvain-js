@@ -20,6 +20,7 @@
 					:tab="myTab"
 					:active-tab="activeTab"
 					:depth="depth"
+					:read-only="readOnly"
 				/>
 			</b-list-group-item>
 		</b-list-group>
