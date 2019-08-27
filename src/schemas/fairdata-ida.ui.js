@@ -196,6 +196,7 @@ export default {
 		'order': [ 'notation', 'type', 'provider' ],
 	},
 	'/properties/other_identifier/*/properties/type': {
+		'description': 'The type of the identifier.',
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -873,6 +874,12 @@ export default {
 	'/properties/other_identifier': {
 		'tab': 'relations',
 		'title': "Other identifier",
+	},
+	'/properties/other_identifier/*/properties/provider': {
+		'title': 'Provider',
+	},
+	'/properties/other_identifier/*/properties/provider/properties/contributor_type': {
+		'tab': 'extra',
 	},
 	'/properties/total_ida_byte_size': {
 		'tab': 'extra',
