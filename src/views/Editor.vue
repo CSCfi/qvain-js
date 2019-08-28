@@ -424,6 +424,7 @@ export default {
 			this.$store.commit('loadSchema', {})
 			this.$store.commit('loadHints', {})
 			this.$store.commit('loadData', undefined)
+			this.$store.commit('resetState')
 			this.$store.commit('resetMetadata')
 		},
 		cancelReloadDataset() {
@@ -462,6 +463,7 @@ export default {
 				this.$store.commit('loadSchema', this.selectedSchema.schema)
 				this.$store.commit('loadHints', this.selectedSchema.ui)
 				this.$store.commit('loadData', Object(data.dataset))
+				this.$store.commit('resetState')
 				this.$store.commit('setMetadata', { id, schemaId: this.selectedSchema.id })
 				this.qvainData = data
 				this.openRecordCounter++
