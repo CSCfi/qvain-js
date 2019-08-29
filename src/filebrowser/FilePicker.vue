@@ -82,7 +82,7 @@ import axios from 'axios'
 
 const metaxAPI = axios.create({
 	baseURL: process.env.VUE_APP_METAX_FILEAPI_URL || '/api/proxy',
-	timeout: 3000,
+	timeout: 5000,
 	responseType: 'json',
 })
 
