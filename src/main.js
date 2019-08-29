@@ -9,8 +9,7 @@ import './assets/css/qvain.scss'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fortawesome/vue-fontawesome'
-//import { faUser, faInfo, faMinus, faPlus, faAngleRight, faTimes, faQuoteLeft, faExclamationTriangle, faSync, faQuestionCircle, faDatabase, faPen, faTrash, faHistory, faClock, faCloudUploadAlt, faCircleNotch, faList, faListAlt, faUndo, faExternalLinkAlt, faEllipsisV } from '@fortawesome/free-solid-svg-icons'
-import { fas } from '@fortawesome/free-solid-svg-icons'
+import * as fas from '@fortawesome/free-solid-svg-icons'
 
 import router from './router.js'
 import store from './store.js'
@@ -33,8 +32,13 @@ Vue.use(AuthPlugin, {
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.component('font-awesome-layers', FontAwesomeLayers)
 Vue.component('font-awesome-layers-text', FontAwesomeLayersText)
-//library.add(faUser, faInfo, faMinus, faPlus, faTimes, faAngleRight, faQuoteLeft, faExclamationTriangle, faSync, faQuestionCircle, faDatabase, faPen, faTrash, faHistory, faClock, faCloudUploadAlt, faCircleNotch, faList, faListAlt, faUndo, faExternalLinkAlt, faEllipsisV)
-library.add(fas)
+library.add(fas.faUser, fas.faInfo, fas.faMinus, fas.faPlus, fas.faTimes,
+	fas.faAngleRight, fas.faQuoteLeft, fas.faExclamationTriangle, fas.faSync, fas.faQuestionCircle,
+	fas.faDatabase, fas.faPen, fas.faTrash, fas.faHistory, fas.faClock, fas.faCloudUploadAlt,
+	fas.faCircleNotch, fas.faList, fas.faListAlt, fas.faUndo, fas.faExternalLinkAlt, fas.faEllipsisV,
+	fas.faSave, fas.faCircle, fas.faSpinner, fas.faSignOutAlt, fas.faTable, fas.faUpload,
+	fas.faExclamation, fas.faEdit, fas.faChevronLeft, fas.faChevronRight, fas.faChevronDown,
+	fas.faBackward)
 
 store.registerModule('files', FilesStore)
 
