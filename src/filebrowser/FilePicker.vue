@@ -45,7 +45,6 @@
 				:project="selectedProject"
 				:disabled="hasFilesFromOtherProject"
 				:edit-only-metadata="editOnlyMetadata"
-				:read-only="readOnly"
 				@select="addFileOrDirectory"
 				@remove="removeFileOrDirectory" />
 		</div>
