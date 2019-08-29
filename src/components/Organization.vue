@@ -2,7 +2,7 @@
 <template>
 	<wrapper :wrapped="false" :style="listItemStyle(depth)">
 		<h3>{{ uiTitle }}
-			<span v-if="schema.required" class="require-badge">
+			<span v-if="isRequired || inArray" class="require-badge">
 				<b-badge variant="danger">REQUIRED</b-badge>
 			</span>
 		</h3>
