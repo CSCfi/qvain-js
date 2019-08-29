@@ -1,10 +1,9 @@
 /* ADD_LICENSE_HEADER */
 import Vue from 'vue'
 import App from './App.vue'
-//import Vuex from 'vuex'
+
 import BootstrapVue from 'bootstrap-vue'
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+
 import './assets/css/qvain.scss'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
