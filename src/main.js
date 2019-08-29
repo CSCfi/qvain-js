@@ -36,7 +36,7 @@ library.add(fas.faUser, fas.faInfo, fas.faMinus, fas.faPlus, fas.faTimes,
 	fas.faAngleRight, fas.faQuoteLeft, fas.faExclamationTriangle, fas.faSync, fas.faQuestionCircle,
 	fas.faDatabase, fas.faPen, fas.faTrash, fas.faHistory, fas.faClock, fas.faCloudUploadAlt,
 	fas.faCircleNotch, fas.faList, fas.faListAlt, fas.faUndo, fas.faExternalLinkAlt, fas.faEllipsisV,
-	fas.faSave, fas.faCircle, fas.faSpinner, fas.faSignOutAlt, fas.faTable, fas.faUpload,
+	fas.faSave, fas.faCircle, fas.faSpinner, fas.faSignInAlt, fas.faSignOutAlt, fas.faTable, fas.faUpload,
 	fas.faExclamation, fas.faEdit, fas.faChevronLeft, fas.faChevronRight, fas.faChevronDown,
 	fas.faBackward)
 
