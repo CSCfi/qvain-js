@@ -210,6 +210,12 @@ export default {
 				this.error = 'Qvain was not able to open the requested directory. Please retry or navigate to another directory. Refreshing the page will forfeit your data.'
 			}
 		},
+		clearDirectory() {
+			this.directory = {
+				directories: [],
+				files: [],
+			}
+		},
 		togglePick(state, data) {
 			const description = data.item.file_characteristics ?
 				data.item.file_characteristics.description : ''
@@ -300,6 +306,7 @@ export default {
 		project: {
 			immediate: true,
 			handler() {
+				this.clearDirectory()
 				if (this.project) {
 					this.openDirectory()
 				}
