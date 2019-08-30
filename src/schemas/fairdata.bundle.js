@@ -63,6 +63,9 @@ const att = {
 	cloneFunc: clone,
 }
 
+// A dataset is considered a PAS dataset if it has preservation_state > 0 or is in the PAS catalog.
+// If a dataset in some other catalog (e.g. IDA) has preservation_state > 0, it will use the PAS catalog
+// internally in the Editor, but will be saved with the original catalog.
 const pas = {
 	schema: FairdataIdaSchema,
 	ui: FairdataPasUi,
@@ -73,7 +76,7 @@ const pas = {
 	id: "urn:nbn:fi:att:data-catalog-pas",
 	family: 2,
 	cloneFunc: clone,
-	hidden: true,
+	hidden: true, // PAS datasets cannot be created in Qvain
 }
 
 export default {
