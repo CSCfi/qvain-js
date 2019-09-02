@@ -1,4 +1,17 @@
-<!-- ADD_LICENSE_HEADER -->
+<!--
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
+	Kauhia <Kauhia@users.noreply.github.com>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+-->
 <template>
 	<b-card :id="testing_id + '_card'" class="cursor-reset bg-light">
 		<h4>File metadata for PAS</h4>
