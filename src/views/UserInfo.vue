@@ -18,17 +18,17 @@ All Rights Reserved.
 
 		<b-form v-if="$auth.user" id="form-userinfo">
 			<b-form-group
-				id="organisation"
+				id="organization"
 				label-cols-sm="4"
 				label-cols-lg="3"
-				label="Organisation"
-				label-for="input-organisation">
+				label="Organization"
+				label-for="input-organization">
 				<b-form-input
-					id="input-organisation"
+					id="input-organization"
 					v-model="$auth.user.organisation"
 					disabled
 					>
-				</b-form-input>				
+				</b-form-input>
 			</b-form-group>
 
 			<b-form-group
@@ -42,7 +42,7 @@ All Rights Reserved.
 					v-model="$auth.user.name"
 					disabled
 					>
-				</b-form-input>				
+				</b-form-input>
 			</b-form-group>
 			<b-form-group
 				id="email"
@@ -55,7 +55,7 @@ All Rights Reserved.
 					v-model="$auth.user.email"
 					disabled
 					>
-				</b-form-input>				
+				</b-form-input>
 			</b-form-group>
 			<b-form-group
 				id="projects"
@@ -68,11 +68,11 @@ All Rights Reserved.
 						v-for="project in $auth.user.projects"
 						:key="project"
 						:value="project">{{ project }}</b-badge>
-					
+
 					<b-badge v-if="$auth.user.projects.length === 0">(no projects)</b-badge>
 				</div>
-		
-			</b-form-group>	
+
+			</b-form-group>
 		</b-form>
 		<div v-else>
 			<b-alert variant="secondary" show><p class="font-italic">You are not logged in.</p></b-alert>

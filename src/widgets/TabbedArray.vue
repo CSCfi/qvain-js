@@ -4,6 +4,7 @@ This file is part of Qvain -project.
 Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
 
 License: GPLv3
 
@@ -16,7 +17,11 @@ All Rights Reserved.
 		<!-- (tabbed-array component) -->
 
 		<b-card no-body>
-			<b-tabs card v-model="tabIndex">
+			<b-tabs
+				v-model="tabIndex"
+				card
+				no-fade
+			>
 				<b-tab :title="el && tabField && el[tabField] ? el[tabField] : `#${i + 1}`" v-for="(el, i) in value" :key="i">
 					Tab Contents {{i}}<br/>
 					(min: {{ minimum }} / max: {{ maximum || '-' }})<br/>

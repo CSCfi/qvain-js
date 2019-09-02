@@ -4,9 +4,8 @@ This file is part of Qvain -project.
 Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
-	Aaron Hakala <aaron.hakala@metropolia.fi>
-	Eemeli Kouhia <eemeli.kouhia@gofore.com>
 	Jori Niemi <3295718+tahme@users.noreply.github.com>
+	Aaron Hakala <aaron.hakala@metropolia.fi>
 	Shreyas Deshpande <shreyas.deshpande@csc.fi>
 
 License: GPLv3
@@ -17,22 +16,24 @@ All Rights Reserved.
 */
 import Vue from 'vue'
 import App from './App.vue'
-//import Vuex from 'vuex'
+
 import BootstrapVue from 'bootstrap-vue'
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+
 import './assets/css/qvain.scss'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fortawesome/vue-fontawesome'
-//import { faUser, faInfo, faMinus, faPlus, faAngleRight, faTimes, faQuoteLeft, faExclamationTriangle, faSync, faQuestionCircle, faDatabase, faPen, faTrash, faHistory, faClock, faCloudUploadAlt, faCircleNotch, faList, faListAlt, faUndo, faExternalLinkAlt, faEllipsisV } from '@fortawesome/free-solid-svg-icons'
-import { fas } from '@fortawesome/free-solid-svg-icons'
+import * as fas from '@fortawesome/free-solid-svg-icons'
 
 import router from './router.js'
 import store from './store.js'
 import FilesStore from './vuex/files.js'
 import AuthPlugin from './auth/plugin.js'
 
+if (process.env.NODE_ENV === "development") {
+	Vue.config.performance = true    // enable User Timing API for better profiling
+	Vue.config.productionTip = false // disable console warning that developer mode is being used
+}
 Vue.use(BootstrapVue)
 
 Vue.use(AuthPlugin, {
@@ -40,38 +41,20 @@ Vue.use(AuthPlugin, {
 	loginUrl: "/api/auth/login",
 	logoutUrl: "/api/sessions/logout",
 	sessionsUrl: "/api/sessions/",
-	cbUrl: "/token",
 })
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.component('font-awesome-layers', FontAwesomeLayers)
 Vue.component('font-awesome-layers-text', FontAwesomeLayersText)
-//library.add(faUser, faInfo, faMinus, faPlus, faTimes, faAngleRight, faQuoteLeft, faExclamationTriangle, faSync, faQuestionCircle, faDatabase, faPen, faTrash, faHistory, faClock, faCloudUploadAlt, faCircleNotch, faList, faListAlt, faUndo, faExternalLinkAlt, faEllipsisV)
-library.add(fas)
+library.add(fas.faUser, fas.faInfo, fas.faMinus, fas.faPlus, fas.faTimes,
+	fas.faAngleRight, fas.faQuoteLeft, fas.faExclamationTriangle, fas.faSync, fas.faQuestionCircle,
+	fas.faDatabase, fas.faPen, fas.faTrash, fas.faHistory, fas.faClock, fas.faCloudUploadAlt,
+	fas.faCircleNotch, fas.faList, fas.faListAlt, fas.faUndo, fas.faExternalLinkAlt, fas.faEllipsisV,
+	fas.faSave, fas.faCircle, fas.faSpinner, fas.faSignInAlt, fas.faSignOutAlt, fas.faTable, fas.faUpload,
+	fas.faExclamation, fas.faEdit, fas.faChevronLeft, fas.faChevronRight, fas.faChevronDown,
+	fas.faBackward)
 
 store.registerModule('files', FilesStore)
-
-// get configuration from environment
-function getConfig() {
-	return {
-		// Metax Dataset API endpoint
-		MetaxApiUrl: process.env['VUE_APP_METAX_API_URL'],
-		// Elastic Search API endpoint
-		EsApiUrl: process.env['VUE_APP_ES_API_URL'],
-		// Etsin Dataset API endpoint
-		EtsinApiUrl: process.env['VUE_APP_ETSIN_API_URL'],
-		// Qvain (js) version
-		Version: process.env['VUE_APP_VERSION'],
-		// Qvain (js) commit hash
-		CommitHash: process.env['VUE_APP_COMMIT_HASH'],
-		// application execution environment (testing, stable, production)
-		Environment: process.env['VUE_APP_ENVIRONMENT'],
-		// node environment
-		NodeEnv: process.env['NODE_ENV'],
-		// development login token
-		DevToken: process.env['DEV_TOKEN'],
-	}
-}
 
 // create and mount the root instance
 // eslint-disable-next-line no-unused-vars
@@ -112,11 +95,6 @@ const app = new Vue({
 			this.showAlert("language set to: " + val)
 		},
 	},
-	created() {
-		// set configuration on root component
-		this.$config = getConfig()
-	},
-
 	mounted() {
 		// load Matomo script, add a PageView
 		if (process.env['VUE_APP_MATOMO_SITE_ID']) {

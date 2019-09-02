@@ -5,8 +5,9 @@ Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
 	Jori Niemi <3295718+tahme@users.noreply.github.com>
-	Kauhia <Kauhia@users.noreply.github.com>
+	Shreyas Deshpande <31839853+ShreyasDeshpande@users.noreply.github.com>
 	Eemeli Kouhia <eemeli.kouhia@gofore.com>
+	Kauhia <Kauhia@users.noreply.github.com>
 
 License: GPLv3
 
@@ -40,17 +41,28 @@ export default {
 		'help': "An item possibly defined in multiple languages.",
 	},
 	'#/definitions/Person': {
-		'order': [ "name", "email", "telephone", "identifier" ],
+		'order': [ "name", "email", "identifier" ],
 	},
 	'#/definitions/Organization': {
-		'title': "Organisational hierarchy",
-		'description': "Hierarchical structure of the organisation. Here you can provide an organisation's or a company's information. You need to provide at least one name, but if desired, you can provide multiple organisational divisions for faculties or departments.",
-		'widget': 'SelfReferentialObject',
+		'title': "Organizational hierarchy",
+		'description': "Hierarchical structure of the organization. Here you can provide an organization's or a company's information. You need to provide at least one name, but if desired, you can provide multiple organizational divisions for faculties or departments.",
+		'widget': 'Organization',
 		'props': {
+			'hoistedFields': ['contributor_type'],
 			'refField': "is_part_of",
-			'levels': [ "organisation", "faculty or division", "department or unit" ],
+			'referenceData': {
+				"es-index": 'organization_data',
+				"es-doctype": 'organization',
+				"typeahead": true,
+				"tags": false,
+				"async": false,
+				"count": 200,
+				"wrapped": false,
+				"label-name-in-schema": 'name',
+				"header": false,
+			},
 		},
-		'order': [ "name", "email", "telephone", "identifier" ],
+		'order': [ "name", "email", "identifier" ],
 	},
 	'#/definitions/Document': {
 		'visible': false,
@@ -195,7 +207,23 @@ export default {
 		'description': "Location for the dataset (YSO places), e.g. location of observations.",
 		'help': "Start typing the location in order to get the list to choose from.",
 	},
-
+	'/properties/other_identifier/*': {
+		'ignored': ['local_identifier_type'],
+		'order': [ 'notation', 'type', 'provider' ],
+	},
+	'/properties/other_identifier/*/properties/type': {
+		'description': 'The type of the identifier.',
+		'widget': 'reference-data',
+		'props': {
+			'esIndex': "reference_data",
+			'esDoctype': "identifier_type",
+			'typeahead': false,
+			'tags': false,
+			'async': false,
+			'count': 100,
+			'grouped': false,
+		},
+	},
 	// "producer project"
 	'/properties/is_output_of': {
 		'tab': 'actors',
@@ -219,6 +247,7 @@ export default {
 		'help': "Select the funding type.",
 	},
 	'/properties/is_output_of/*/properties/source_organization/*/properties/contributor_type': {
+		'tab': 'extra',
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -265,6 +294,7 @@ export default {
 		'description': 'Please write your name in first_name last_name fashion if possible',
 	},
 	'/properties/creator/*/oneOf/*/properties/contributor_type': {
+		'tab': 'extra',
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -281,6 +311,7 @@ export default {
 		'help': "Select the type of contribution the creator had on the dataset.",
 	},
 	'/properties/creator/*/oneOf/*/properties/member_of/properties/contributor_type': {
+		'tab': 'extra',
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -311,54 +342,6 @@ export default {
 		'label': "contributor role",
 		'description': "Role of the creator regarding this dataset.",
 		'help': "What was the role of the given creator on this dataset.",
-	},
-	'/properties/creator/*/oneOf/*/properties/telephone': {
-		'props': {
-			'tabFormat': false,
-			'wrapped': false,
-		},
-	},
-	'/properties/creator/*/oneOf/*/properties/member_of/properties/telephone': {
-		'props': {
-			'tabFormat': false,
-			'wrapped': false,
-		},
-	},
-	'/properties/contributor/*/oneOf/*/properties/telephone': {
-		'props': {
-			'tabFormat': false,
-			'wrapped': false,
-		},
-	},
-	'/properties/contributor/*/oneOf/*/properties/member_of/properties/telephone': {
-		'props': {
-			'tabFormat': false,
-			'wrapped': false,
-		},
-	},
-	'/properties/rights_holder/*/oneOf/*/properties/telephone': {
-		'props': {
-			'tabFormat': false,
-			'wrapped': false,
-		},
-	},
-	'/properties/rights_holder/*/oneOf/*/properties/member_of/properties/telephone': {
-		'props': {
-			'tabFormat': false,
-			'wrapped': false,
-		},
-	},
-	'/properties/curator/*/oneOf/*/properties/telephone': {
-		'props': {
-			'tabFormat': false,
-			'wrapped': false,
-		},
-	},
-	'/properties/curator/*/oneOf/*/properties/member_of/properties/telephone': {
-		'props': {
-			'tabFormat': false,
-			'wrapped': false,
-		},
 	},
 	// missing: distributor
 	'/properties/contributor': {
@@ -436,6 +419,7 @@ export default {
 		'help': "What was the role of the given curator on this dataset.",
 	},
 	'/properties/curator/*/oneOf/*/properties/contributor_type': {
+		'tab': 'extra',
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -452,6 +436,7 @@ export default {
 		'help': "Select the type of contribution the given actor had on the dataset.",
 	},
 	'/properties/curator/*/oneOf/*/properties/member_of/properties/contributor_type': {
+		'tab': 'extra',
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -490,6 +475,7 @@ export default {
 		'help': "What was the role of the given rights holder on this dataset.",
 	},
 	'/properties/rights_holder/*/oneOf/*/properties/contributor_type': {
+		'tab': 'extra',
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -506,6 +492,7 @@ export default {
 		'help': "Select the type of contribution the given rights holder had on the dataset.",
 	},
 	'/properties/rights_holder/*/oneOf/*/properties/member_of/properties/contributor_type': {
+		'tab': 'extra',
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -522,6 +509,7 @@ export default {
 		'help': "Select the type of contribution the given rights holder had on the dataset.",
 	},
 	'/properties/publisher/oneOf/*/properties/contributor_type': {
+		'tab': 'extra',
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -538,6 +526,7 @@ export default {
 		'help': "Select the type of contribution the publisher had on the dataset.",
 	},
 	'/properties/publisher/oneOf/*/properties/member_of/properties/contributor_type': {
+		'tab': 'extra',
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -568,18 +557,6 @@ export default {
 		'label': "contributor role",
 		'description': "Role of the publisher regarding this dataset.",
 		'help': "What was the role of the given publisher on this dataset.",
-	},
-	'/properties/publisher/oneOf/*/properties/telephone': {
-		'props': {
-			'tabFormat': false,
-			'wrapped': false,
-		},
-	},
-	'/properties/publisher/oneOf/*/properties/member_of/properties/telephone': {
-		'props': {
-			'tabFormat': false,
-			'wrapped': false,
-		},
 	},
 	'/properties/relation': {
 		'tab': 'relations',
@@ -887,7 +864,7 @@ export default {
 		'widget': 'date',
 	},
 	'/properties/infrastructure': {
-		'tab': 'extra',
+		'tab': 'relations',
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -897,9 +874,10 @@ export default {
 			'async': false,
 			'count': 100,
 			'grouped': false,
+			'wrapped': true,
 		},
-		'placeholder': "– choose infrastructure –",
-		'title': "infrastructure",
+		'title': "Infrastructure",
+		'description': "Services or tools that are used to produce the dataset.",
 	},
 	'/properties/metadata_version_identifier': {
 		'tab': 'extra',
@@ -910,8 +888,14 @@ export default {
 		'title': "Preferred identifier",
 	},
 	'/properties/other_identifier': {
-		'tab': 'extra',
+		'tab': 'relations',
 		'title': "Other identifier",
+	},
+	'/properties/other_identifier/*/properties/provider': {
+		'title': 'Provider',
+	},
+	'/properties/other_identifier/*/properties/provider/properties/contributor_type': {
+		'tab': 'extra',
 	},
 	'/properties/total_ida_byte_size': {
 		'tab': 'extra',
@@ -932,5 +916,11 @@ export default {
 	'/properties/version_notes': {
 		'tab': 'extra',
 		'title': "Version notes",
+	},
+	'**/homepage': {
+		'tab': 'extra',
+	},
+	'**/telephone': {
+		'tab': 'extra',
 	},
 }

@@ -6,13 +6,12 @@ import { checkValid, addError, addHelp, resetErrors, setValid } from './validity
 import { default as deepcopy } from 'json-deep-copy'
 import { default as jsonPointer } from 'json-pointer'
 import { foreachSchema } from './walk.js'
-import vue from 'vue'
 
 import { validateNumber, validateString, validateBoolean, validateNull, validateObject, validateArray, validateEnum } from './type_validators.js'
 import { validateAnyOf, validateAllOf, validateOneOf, validateNot } from './combiners.js'
 
 
-function Validator(schema, data, options) {
+function Validator(vue, schema, data, options) {
 	if (!(this instanceof Validator)) throw new Error("Validator: call constructor with new")
 
 	if (!options) {
@@ -23,11 +22,12 @@ function Validator(schema, data, options) {
 	this.schemaCount = -5
 	this.schemaPass = 0
 	this.schemaFail = 0
+	this.$vue = vue
 
 	this.origSchema = deepcopy(schema)
-	vue.set(this, 'schema', schema)
+	this.$vue.set(this, 'schema', schema)
 	this.data = data
-	vue.set(this, 'v', {})
+	this.$vue.set(this, 'v', {})
 
 	if (options.createFunc) {
 		this.createState = options.createFunc
@@ -110,7 +110,7 @@ Validator.prototype.validateSchema = function(schema, data, path, parent, prop) 
 	if (path in this.v) {
 		this.v[path].e.splice(0, this.v[path].e.length)
 	} else {
-		vue.set(this.v, path, {
+		this.$vue.set(this.v, path, {
 			v: false,
 			e: [],
 		})

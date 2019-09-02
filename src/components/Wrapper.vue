@@ -3,6 +3,7 @@ This file is part of Qvain -project.
 
 Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
 	Eemeli Kouhia <eemeli.kouhia@gofore.com>
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
 
@@ -12,9 +13,12 @@ See LICENSE file for more information.
 Copyright (C) 2019 Ministry of Culture and Education, Finland.
 All Rights Reserved.
 -->
-<template>
-	<div v-bind:class="{ wrapper: wrapped, error: error }">
-		<slot></slot>
+<template functional>
+	<div
+		:class="{ wrapper: props.wrapped, error: props.error, [data.staticClass || '']: true }"
+		:style="data.style || ''"
+	>
+		<slot />
 	</div>
 </template>
 <script>
@@ -38,4 +42,3 @@ export default {
 	border-right: solid 5px red;
 }
 </style>
-

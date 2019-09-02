@@ -5,6 +5,7 @@ Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
 	Eemeli Kouhia <eemeli.kouhia@gofore.com>
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Kauhia <Kauhia@users.noreply.github.com>
 
 License: GPLv3
 
@@ -99,7 +100,7 @@ export default {
 	computed: {
 		timeBetweenString() {
 			if (!this.end || !this.start) { return null }
-			return distanceInWords(this.end, this.start)	
+			return distanceInWords(this.end, this.start)
 		},
 		title() {
 			return typeof(this.property)=="number" ? '#' + (this.property + 1) : this.schema.title
@@ -121,10 +122,11 @@ export default {
 			}})
 		},
 	},
-	created() {
+	async created() {
 		this.isInitializing = true
 		this.start = this.value.start_date
 		this.end = this.value.end_date
+		await this.$nextTick()
 		this.isInitializing = false
 	},
 	watch: {
