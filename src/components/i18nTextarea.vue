@@ -38,6 +38,7 @@ All Rights Reserved.
 				vertical
 				pills
 				justified
+				no-fade
 				nav-wrapper-class="col-3"
 				@input="tabShown"
 				@changed="tabsChanged"

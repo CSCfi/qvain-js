@@ -6,6 +6,7 @@ Author(s):
 	Eemeli Kouhia <eemeli.kouhia@gofore.com>
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
 	Jori Niemi <3295718+tahme@users.noreply.github.com>
+	Kauhia <Kauhia@users.noreply.github.com>
 
 License: GPLv3
 
@@ -22,6 +23,13 @@ All Rights Reserved.
 					<h6 class="mb-0">
 						{{single.title}}
 						<span v-if="secondary" class="text-muted m-0 font-italic">({{secondary}})</span>
+						<b-badge
+							v-if="deleted"
+							variant="danger"
+							class="deleted"
+						>
+							Deleted
+						</b-badge>
 					</h6>
 				</div>
 				<p class="my-2">
@@ -40,10 +48,10 @@ All Rights Reserved.
 				</p>
 			</div>
 			<b-btn-group class="ml-auto">
-				<b-btn variant="primary" class="px-3 py-2" v-b-toggle="single.identifier">
+				<b-btn :disabled="readonly || deleted" variant="primary" class="px-3 py-2" v-b-toggle="single.identifier">
 					<font-awesome-icon :icon="icons.faPen"/>
 				</b-btn>
-				<b-btn variant="danger" class="px-3 py-2" @click="$emit('delete', { type, fields: single })">
+				<b-btn :disabled="readonly" variant="danger" class="px-3 py-2" @click="$emit('delete', { type, fields: single })">
 					<font-awesome-icon :icon="icons.faTrash"/>
 				</b-btn>
 			</b-btn-group>
@@ -64,11 +72,11 @@ All Rights Reserved.
 				uiLabel="Use category"
 				:value="single.use_category"
 				:setValue="v => {
-					single.use_category = {
+					$set(single, 'use_category', {
 						in_scheme: v.in_scheme,
 						identifier: v.identifier,
 						pref_label: v.pref_label,
-					}
+					})
 				}"
 				type="multiselect"
 				:customLabel="(item) => item['pref_label'] ?
@@ -87,11 +95,11 @@ All Rights Reserved.
 				uiLabel="File Type"
 				:value="single.file_type"
 				:setValue="v => {
-					single.file_type = {
+					$set(single, 'file_type', {
 						in_scheme: v.in_scheme,
 						identifier: v.identifier,
 						pref_label: v.pref_label,
-					}
+					})
 				}"
 				:customLabel="(item) => item['pref_label'] ?
 					item['pref_label']['en'] ||
@@ -126,6 +134,8 @@ export default {
 		"single",
 		"removeItem",
 		"type",
+		"readonly",
+		"deleted",
 	],
 	data() {
 		return {
@@ -154,5 +164,9 @@ export default {
 fieldset.item-field div.form-row legend:after {
 	content: '*';
 	color: red;
+}
+
+.deleted {
+	margin-left: 0.5rem;
 }
 </style>

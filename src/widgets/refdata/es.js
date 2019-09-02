@@ -4,6 +4,8 @@ This file is part of Qvain -project.
 Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Kauhia <Kauhia@users.noreply.github.com>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
 	Eemeli Kouhia <eemeli.kouhia@gofore.com>
 
 License: GPLv3
@@ -13,7 +15,7 @@ Copyright (C) 2019 Ministry of Culture and Education, Finland.
 All Rights Reserved.
 */
 import axios from 'axios'
-
+import { cacheAdapterEnhancer, throttleAdapterEnhancer } from 'axios-extensions'
 /*
 
 Reference data fields: code, id, label, type, uri, scheme
@@ -61,8 +63,12 @@ if (!process.env.VUE_APP_ES_API_URL) {
 	console.error("no ElasticSearch api url set; please define VUE_APP_ES_API_URL")
 }
 
+const http = axios.create({
+	adapter: throttleAdapterEnhancer(cacheAdapterEnhancer(axios.defaults.adapter)),
+})
+
 export default function esApiClient(index, doctype) {
-	return axios.get(
+	return http.get(
 		`${apiUrl}/${index}/${doctype}/_search?size=200&pretty=1&filter_path=hits.hits._source`, {
 			timeout: 5000,
 			responseType: 'json',
@@ -77,7 +83,7 @@ export function esApiSearchClient(index, doctype, searchterm, count) {
 		q: searchterm,
 	}
 
-	return axios.get(`${apiUrl}/${index}/${doctype}/_search`, {
+	return http.get(`${apiUrl}/${index}/${doctype}/_search`, {
 		params,
 		timeout: 5000,
 		responseType: 'json',

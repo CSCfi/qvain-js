@@ -50,5 +50,8 @@ export default function cloneWithPrune(src, keys, values) {
 		}
 	}
 
+	if ('@type' in dest && Object.keys(dest).length === 1) {
+		dest = {}
+	}
 	return dest
 }

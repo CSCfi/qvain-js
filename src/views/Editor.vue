@@ -4,8 +4,9 @@ This file is part of Qvain -project.
 Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
-	Eemeli Kouhia <eemeli.kouhia@gofore.com>
 	Jori Niemi <3295718+tahme@users.noreply.github.com>
+	Eemeli Kouhia <eemeli.kouhia@gofore.com>
+	Shreyas Deshpande <31839853+ShreyasDeshpande@users.noreply.github.com>
 	Kauhia <Kauhia@users.noreply.github.com>
 
 License: GPLv3
@@ -26,12 +27,27 @@ All Rights Reserved.
 						<span v-else>
 							(no title)
 						</span>
+						<b-badge
+							v-if="$store.state.metadata.isOldVersion"
+							variant="warning"
+						>
+							Old version
+						</b-badge>
+						<b-badge
+							v-if="$store.state.metadata.isDeprecated"
+							variant="danger"
+						>
+							Deprecated
+						</b-badge>
 						<span class="secondary-text text-muted">
-							<span >
-								{{ selectedSchema.title }}
+							<span>
+								{{ selectedSchema.title }}
 							</span>
 						</span>
-						<span class="secondary-text text-muted" v-if="qvainData">
+						<span
+							v-if="qvainData"
+							class="secondary-text text-muted"
+						>
 							<span v-if="qvainData && qvainData.published && !isPublishedAndUpdateAvailable">
 								<font-awesome-icon icon="circle" class="fa-sm text-primary" />
 								&nbsp;
@@ -59,7 +75,6 @@ All Rights Reserved.
 								&nbsp;<span>Unsaved draft</span>
 							</span>
 						</span>
-
 					</h4>
 				</b-row>
 				<b-navbar-toggle target="nav-collapse" class="navbar-toggler ml-auto"></b-navbar-toggle>
@@ -75,17 +90,17 @@ All Rights Reserved.
 								:variant="reloadDatasetCounter > 0 ? 'danger' : 'secondary'"
 								block
 								@click="reloadDataset">
-								<font-awesome-icon :icon="loading ? 'spinner' : 'undo'" :spin="loading" />
+								<font-awesome-icon :icon="reloading ? 'spinner' : 'undo'" :spin="reloading" />
 								&nbsp;
-								<span v-if="!loading">
+								<span v-if="!reloading">
 									{{ reloadDatasetTitle }}
 								</span>
 							</b-button>
 						</b-col>
 						<b-col>
 							<b-button
-								v-if="!loading && selectedSchema" 
-								id="editor_button_save_top" 
+								v-if="selectedSchema"
+								id="editor_button_save_top"
 								:variant="isSaveDisabled ? 'outline-secondary' : 'success'"
 								@click="save"
 								:disabled="isSaveDisabled"
@@ -98,7 +113,7 @@ All Rights Reserved.
 						</b-col>
 						<b-col>
 							<b-button
-								v-if="!loading && selectedSchema"
+								v-if="selectedSchema"
 								id="editor_button_publish_top"
 								:variant="isPublishDisabled ? 'outline-secondary' : 'primary'"
 								v-b-modal.publishModal
@@ -110,7 +125,7 @@ All Rights Reserved.
 								Publish
 							</b-button>
 						</b-col>
-						<b-col v-if="!loading && isPublished">
+						<b-col v-if="isPublished">
 							<b-button
 								id="editor_button_etsin_top"
 								variant="info"
@@ -131,8 +146,6 @@ All Rights Reserved.
 		<b-alert variant="warning"><font-awesome-icon icon="info"></font-awesome-icon> Publishing: I understand that publishing this dataset:</b-alert>
 
 		<!-- Modals -->
-		<dataset-json-modal id="dataset-json-modal"></dataset-json-modal>
-		<dataset-overview-modal id="dataset-overview-modal"></dataset-overview-modal>
 		<b-modal ref="publishModal" id="publishModal" title="Publish dataset?"
 			ok-title="Publish" cancel-variant="primary" ok-variant="success" @ok="publish">
 			<div class="d-block text-left">
@@ -143,7 +156,12 @@ All Rights Reserved.
 				</ul>
 			</div>
 		</b-modal>
-		<publish-modal ref="publishErrorModal" id="publishErrorModal" :error="publishError" @hidden="publishError = null"></publish-modal>
+		<publish-modal
+			id="publishErrorModal"
+			ref="publishErrorModal"
+			:error="publishError"
+			@hidden="publishError = null"
+		/>
 
 		<b-container>
 			<b-row no-gutters>
@@ -164,7 +182,16 @@ All Rights Reserved.
 				</b-col>
 
 				<b-col v-if="selectedSchema">
-					<router-view></router-view>
+					<tab-selector
+						:key="openRecordCounter"
+						:schema="$store.state.schema"
+						path=""
+						:parent="$store.state"
+						property="record"
+						:value="$store.state.record"
+						:active-tab="$route.params.tab"
+						:depth="0"
+					/>
 				</b-col>
 
 				<b-col v-else-if="loading">
@@ -233,25 +260,23 @@ All Rights Reserved.
 				</b-col>
 			</b-row>
 		</b-container>
-
 	</b-container>
 </template>
 
 <script>
 import Bundle from '@/schemas/bundle.js'
 import apiClient from '@/api/client.js'
-import DatasetJsonModal from '@/components/DatasetJsonModal.vue'
-import DatasetOverviewModal from '@/components/DatasetOverviewModal.vue'
 import PublishModal from '@/components/PublishModal.vue'
 import Validator from '../../vendor/validator/src/validate.js'
 import cloneWithPrune from '@/lib/cloneWithPrune.js'
+import Vue from 'vue'
+import TabSelector from '@/widgets/TabSelector.vue'
 
 export default {
 	name: "editor",
 	components: {
-		'dataset-json-modal': DatasetJsonModal,
-		'dataset-overview-modal': DatasetOverviewModal,
 		'publish-modal': PublishModal,
+		'tab-selector': TabSelector,
 	},
 	props: {
 		id: {
@@ -275,12 +300,15 @@ export default {
 			rateLimited: false,
 			showPublishConfirmation: false,
 			inDev: true,
+			reloading: false,
 			saving: false,
 			publishing: false,
 			isDataChanged: false,
 			qvainData: null,
 			reloadDatasetCounter: 0,
 			reloadDatasetTimer: null,
+			otherError: false,
+			openRecordCounter: 0,
 		}
 	},
 	methods: {
@@ -296,22 +324,34 @@ export default {
 			}
 			return null
 		},
-		confirmUnsavedChanges(dialogTitle, noButtonTitle, callback) {
-			this.$bvModal.msgBoxConfirm('If you will select <yes> then all the unsaved changes will be lost. Are you sure?', {
-				title: dialogTitle,
-				size: 'md',
-				buttonSize: 'md',
-				okVariant: 'danger',
-				okTitle: 'Yes',
-				cancelTitle: noButtonTitle,
-				footerClass: 'p-2',
-				hideHeaderClose: false,
-				centered: true
-			})
-			.then(callback)
-			.catch(err => {
-				console.log(err)
-			})
+		async confirmUnsavedChanges(dialogTitle, noButtonTitle, callback) {
+			// if session is lost, user cannot save
+			if (this.$auth.user === null) {
+				callback(true)
+			} else {
+				const value = await this.$bvModal.msgBoxConfirm('If you will select <yes> then all the unsaved changes will be lost. Are you sure?', {
+					title: dialogTitle,
+					size: 'md',
+					buttonSize: 'md',
+					okVariant: 'danger',
+					okTitle: 'Yes',
+					cancelTitle: noButtonTitle,
+					footerClass: 'p-2',
+					hideHeaderClose: false,
+					centered: true,
+				})
+				callback(value)
+			}
+		},
+		async handleLostSession() {
+			// there was a permission error
+			// we should redirect the user to login
+			await this.$auth.logoutDueSessionTimeout()
+			this.$router.push({ name: "home", params: { missingSession: true }})
+		},
+		handleOtherError() {
+			this.otherError=true
+			this.$router.push({ name:"datasets", params: { otherError: true }})
 		},
 		viewInEtsin() {
 			window.open(`${process.env.VUE_APP_ETSIN_API_URL}/${this.qvainData.identifier}`, '_blank')
@@ -327,8 +367,7 @@ export default {
 				if (isExisting) {
 					const currentId = this.$store.state.metadata.id
 					const response = await apiClient.post("/datasets/" + currentId + "/publish", {})
-					const { data } = await apiClient.get(`/datasets/${currentId}`)
-					this.qvainData = data
+					await this.openRecord(currentId)
 				} else {
 					this.$root.showAlert("Please save your dataset first", "danger")
 				}
@@ -336,10 +375,7 @@ export default {
 				// check if we got an api error for the modal, else show a generic error message
 				console.log("publish error:", e, Object.keys(e))
 				if (e.response && e.response.status == 401) {
-					// there was a permission error
-					// we should redirect the user to login
-					await this.$auth.logoutDueSessionTimeout()
-					this.$router.push({name: "home", params: {missingToken: true}})
+					this.handleLostSession()
 				}
 				if (e.response && e.response.data) {
 					this.publishError = e.response.data
@@ -365,13 +401,10 @@ export default {
 				if (isExisting) {
 					payload.id = currentId
 					await apiClient.put("/datasets/" + currentId, payload)
-					const { data } = await apiClient.get(`/datasets/${currentId}`)
-					this.qvainData = data
+					await this.openRecord(currentId)
 				} else {
 					const { data: { id }} = await apiClient.post("/datasets/", payload)
-					const { data } = await apiClient.get(`/datasets/${id}`)
-					this.qvainData = data
-
+					await this.openRecord(id)
 					this.$store.commit('setMetadata', { id })
 					this.$router.replace({ name: 'tab', params: { id: id, tab: this.$route.params.tab }})
 				}
@@ -379,10 +412,7 @@ export default {
 			} catch(error) {
 				this.$root.showAlert("Save failed!", "danger")
 				if (error.response && error.response.status == 401) {
-					// there was a permission error
-					// we should redirect the user to login
-					await this.$auth.logoutDueSessionTimeout()
-					this.$router.push({name: "home", params: {missingToken: true}})
+					this.handleLostSession()
 				}
 			} finally {
 				this.saving = false
@@ -410,19 +440,21 @@ export default {
 			this.$store.commit('loadSchema', {})
 			this.$store.commit('loadHints', {})
 			this.$store.commit('loadData', undefined)
+			this.$store.commit('resetState')
 			this.$store.commit('resetMetadata')
 		},
-		cancelReloadDataset: function() {
+		cancelReloadDataset() {
 			this.reloadDatasetTimer = null
 			this.reloadDatasetCounter = 0
 		},
-		reloadDataset: function() {
+		async reloadDataset() {
 			if (this.isDataChanged) {
-				this.confirmUnsavedChanges("Do you want to reload the dataset?", "No, I do not want to.", value => {
+				this.confirmUnsavedChanges("Do you want to reload the dataset?", "No, I do not want to.", async value => {
 					if (value) {
-						this.clearRecord()
-						this.openRecord(this.id)
+						this.reloading = true
+						await this.openRecord(this.id)
 						this.reloadDatasetCounter = 0
+						this.reloading = false
 					}
 				})
 				return
@@ -431,9 +463,10 @@ export default {
 				this.reloadDatasetCounter += 1
 				this.reloadDatasetTimer = setTimeout(this.cancelReloadDataset, 2000)
 			} else {
-				this.clearRecord()
-				this.openRecord(this.id)
+				this.reloading = true
+				await this.openRecord(this.id)
 				this.reloadDatasetCounter = 0
+				this.reloading = false
 			}
 		},
 		async openRecord(id) {
@@ -446,14 +479,16 @@ export default {
 				this.$store.commit('loadSchema', this.selectedSchema.schema)
 				this.$store.commit('loadHints', this.selectedSchema.ui)
 				this.$store.commit('loadData', Object(data.dataset))
+				this.$store.commit('resetState')
 				this.$store.commit('setMetadata', { id, schemaId: this.selectedSchema.id })
 				this.qvainData = data
+				this.openRecordCounter++
 			} catch (error) {
 				if (error.response && error.response.status == 401) {
-					// there was a permission error
-					// we should redirect the user to login
-					await this.$auth.logoutDueSessionTimeout()
-					this.$router.push({name: "home", params: {missingToken: true}})
+					this.handleLostSession()
+				}
+				else {
+					this.handleOtherError()
 				}
 				console.log(error)
 			} finally {
@@ -473,6 +508,9 @@ export default {
 			}
 		},
 		checkTab() {
+			if(this.otherError) {
+				return
+			}
 			// if tab is unset or invalid (not in tabs list), try to read tab from store or use the first tab
 			const tabUris = this.tabs.map(tab=>tab.uri)
 			if (!this.$route.params.tab || !tabUris.includes(this.$route.params.tab)) {
@@ -488,8 +526,9 @@ export default {
 			}
 		},
 		startValidator() {
-			this.unsubscribeFunc && this.unsubscribeFunc();
+			this.unsubscribeFunc && this.unsubscribeFunc()
 			this.validator = new Validator(
+				Vue,
 				this.$store.state.schema,
 				this.$store.state.record,
 				{ 'allowUndefined': true },
@@ -497,9 +536,9 @@ export default {
 			this.validator.v = this.$store.state.vState
 			this.unsubscribeFunc = this.$store.subscribe((mutation) => {
 				if (mutation.type !== 'initValue') {
-					const data = cloneWithPrune(this.$store.state.record, ["#key"], [])					
+					const data = cloneWithPrune(this.$store.state.record, [], [])
 					this.validator.validateData(data)
-				}					
+				}
 				// the data has been changed after the initial load by the user
 				if (mutation.type === 'updateValue' || mutation.type === 'deleteArrayValue' || mutation.type === 'replace') {
 					this.isDataChanged = true
@@ -530,12 +569,7 @@ export default {
 			return Object.keys(Bundle)
 		},
 		title() {
-			// get English title or first defined
-			// TODO: make generic?
 			return this.$store.getters.getTitle
-
-			// alternatively, get app language title or first defined
-			//return this.$store.getters.getTitleWithLanguage(this.$root.language || 'en')
 		},
 	},
 	watch: {
@@ -553,14 +587,23 @@ export default {
 			if (this.id === 'new') {
 				this.clearRecord()
 			} else if (this.id !== 'edit' && this.$store.state.metadata.id !== this.id) {
-				this.clearRecord()
 				await this.openRecord(this.id)
 			}
+		},
+		'qvainData': {
+			handler(qvainData) {
+				this.$store.commit('setMetadata', {
+					isOldVersion: !!(qvainData && qvainData.next),
+					isDeprecated: !!(qvainData && qvainData.deprecated),
+				})
+			},
+			deep: true,
+			immediate: true,
 		},
 	},
 	beforeRouteLeave(to, from, next) {
 		if (!this.isDataChanged) {
-			next();
+			next()
 			return
 		}
 		this.confirmUnsavedChanges("Leave the editor?", "No, I want to stay.", (value) => {
@@ -664,7 +707,6 @@ h1.component-title {
 	margin-bottom: 0;
 	.secondary-text {
 		font-size: 0.5em;
-		
 		display:inline-block;
 		//word-wrap: normal;
 		text-overflow: ellipsis;

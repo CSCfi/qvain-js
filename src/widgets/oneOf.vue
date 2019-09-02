@@ -77,6 +77,7 @@ All Rights Reserved.
 				v-if="chosen !== null"
 				class="conditional-wrapper single"
 				pills
+				no-fade
 			>
 				<b-tab
 					v-for="(child, index) in [value]"

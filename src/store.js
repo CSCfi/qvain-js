@@ -5,8 +5,8 @@ Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
 	Kauhia <Kauhia@users.noreply.github.com>
-	Shreyas Deshpande <31839853+ShreyasDeshpande@users.noreply.github.com>
 	Jori Niemi <3295718+tahme@users.noreply.github.com>
+	Shreyas Deshpande <31839853+ShreyasDeshpande@users.noreply.github.com>
 	Aaron Hakala <aaron.hakala@metropolia.fi>
 	Eemeli Kouhia <eemeli.kouhia@gofore.com>
 
@@ -31,7 +31,9 @@ export default new Vuex.Store({
 		schema: {},
 		hints: {},
 		metadata: {},
+		deletedItems: { 'files': {}, 'directories': {}}, // files or directories that no longer exist
 		languages: { 'fi':true, 'en':true, 'sv':true },
+		languagePriority: [ 'en', 'fi', 'sv' ], // order in which multilanguage elements are searched when single value is needed
 		UI_VALID_KEYWORDS: [
 			'widget',
 			'option',
@@ -109,7 +111,7 @@ export default new Vuex.Store({
 		updateValue(state, payload) {
 			Vue.set(payload.p, payload.prop, payload.val)
 			Vue.nextTick(() => {
-				if (payload.val === '') { // Note: for objects we may not want to remove the key?
+				if (payload.val === '' && Array.isArray(payload.p)) { // don't remove key for objects
 					Vue.delete(payload.p, payload.prop)
 				}
 			})
@@ -177,11 +179,14 @@ export default new Vuex.Store({
 				Vue.set(state.datasetsView, key, payload[key])
 			}
 		},
+		setDeletedItem(state, payload) {
+			Vue.set(state.deletedItems[payload.category], payload.identifier, payload.val)
+		},
 	},
 	getters: {
 		// prunedDataset returns a deep-clone of the dataset discarding empty leaves
 		prunedDataset: (state) => {
-			return cloneWithPrune(state.record, ["#key"], [ "", undefined ])
+			return cloneWithPrune(state.record, [], [ "", undefined ])
 		},
 		// getState returns the validation state for a given path
 		getState: (state) => (path) => {
@@ -189,8 +194,8 @@ export default new Vuex.Store({
 		},
 		// uiForPath returns the UI overrides for the given path (if any)
 		uiForPath: (state) => (path) => {
-			const searchPathOneOfSensitive = path
-				.split('/')
+			const split = path.split('/')
+			const searchPathOneOfSensitive = split
 				.filter(key => key !== '')
 				.map((key, index, array) => {
 					if (isNaN(key)) {
@@ -202,8 +207,7 @@ export default new Vuex.Store({
 					}
 				}).join('/')
 
-			const searchPathNoNumber = path
-				.split('/')
+			const searchPathNoNumber = split
 				.filter(key => key !== '')
 				.map((key, index, array) => {
 					if (isNaN(key)) {
@@ -213,7 +217,10 @@ export default new Vuex.Store({
 					}
 				}).join('/')
 
-			return state.hints['/' + searchPathOneOfSensitive] || state.hints['/' + searchPathNoNumber] || {}
+			const hints = state.hints['/' + searchPathOneOfSensitive] ||
+				state.hints['/' + searchPathNoNumber] ||
+				state.hints['**/' + split[split.length-1]] || {}
+			return hints
 		},
 		// uiValidKeywordsList returns a static array of valid keywords
 		uiValidKeywordsList: (state) => {
@@ -242,13 +249,25 @@ export default new Vuex.Store({
 			// _.get(object, path, [defaultValue])
 			return getDotted(state.record, path)
 		},
-		// getTitle returns the English title or the first one defined
-		getTitle: (state) => {
-			return state.record && state.record.title && (state.record.title['en'] || state.record.title[Object.keys(state.record.title)[0]] || null)
+		// getTitle returns the title
+		getTitle: (state, getters) => {
+			if (!state.record) {
+				return ""
+			}
+			return getters.getStringFromMultiLanguage(state.record.title)
 		},
-		// getTitleWithLanguage returns the title for the given language or the first defined
-		getTitleWithLanguage: (state) => (lang) => {
-			return state.record && state.record.title && (state.record.title[lang] || state.record.title[Object.keys(state.record.title)[0]] || null)
-		},
+		// getStringFromMultiLanguage returns a single string from multilang object based on languagePriority
+		getStringFromMultiLanguage: (state) => (multi) => {
+			if (!multi) {
+				return null
+			}
+			for (let i=0; i<state.languagePriority.length; i++) {
+				const lang = state.languagePriority[i]
+				if (multi[lang]) {
+					return multi[lang]
+				}
+			}
+			return Object.values(multi)[0] || null
+		}
 	},
 })

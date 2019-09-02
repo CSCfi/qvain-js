@@ -4,6 +4,7 @@ This file is part of Qvain -project.
 Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
 	Jori Niemi <3295718+tahme@users.noreply.github.com>
+	Kauhia <Kauhia@users.noreply.github.com>
 
 License: GPLv3
 
@@ -84,6 +85,9 @@ export default (idaUi) => {
 			},
 			'placeholder': "– choose use category –",
 			'title': "use category",
+		},
+		'/properties/remote_resources/*': {
+			"ignored": ['license'],
 		},
 	}
 }

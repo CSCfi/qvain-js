@@ -253,8 +253,7 @@
 									}
 								},
 								"required": [
-									"identifier",
-									"name"
+									"identifier"
 								],
 								"additionalProperties": false
 							},
@@ -364,8 +363,7 @@
 											}
 										},
 										"required": [
-											"identifier",
-											"name"
+											"identifier"
 										],
 										"additionalProperties": false
 									},
@@ -444,7 +442,8 @@
 									}
 								},
 								"required": [
-									"@type"
+									"@type",
+									"name"
 								],
 								"additionalProperties": false
 							},
@@ -804,8 +803,7 @@
 										}
 									},
 									"required": [
-										"identifier",
-										"name"
+										"identifier"
 									],
 									"additionalProperties": false
 								},
@@ -1314,8 +1312,7 @@
 								}
 							},
 							"required": [
-								"identifier",
-								"name"
+								"identifier"
 							],
 							"additionalProperties": false
 						},
@@ -5885,10 +5882,11 @@
 								"additionalProperties": false
 							}
 						},
+						"additionalProperties": false,
 						"required": [
-							"identifier"
-						],
-						"additionalProperties": false
+							"identifier",
+							"title"
+						]
 					},
 					"relation_type": {
 						"@id": "http://www.w3.org/2004/02/skos/core#Concept",
@@ -6043,6 +6041,15 @@
 						"minLength": 1,
 						"type": "string"
 					}
+				},
+				"available": {
+					"@id": "http://purl.org/dc/terms/available",
+					"title": "Date Available",
+					"description": "Date (often a range) that the resource became or will become available.",
+					"@type": "http://www.w3.org/2001/XMLSchema#date",
+					"minLength": 1,
+					"type": "string",
+					"format": "date"
 				},
 				"access_type": {
 					"@id": "http://www.w3.org/2004/02/skos/core#Concept",
@@ -6238,13 +6245,15 @@
 					"title": "License",
 					"description": "A legal document giving official permission to do something with the resource.",
 					"@type": "@id",
+					"minItems": 0,
 					"type": "array",
 					"items": {
 						"oneOf": [
 							{
 								"type": "object",
-								"$deref": "#/definitions/ResearchDataLicenseDocument",
 								"title": "License dropdown",
+								"required": [],
+								"$deref": "#/definitions/ResearchDataLicenseDocument",
 								"minProperties": 1,
 								"@id": "http://purl.org/dc/terms/LicenseDocument",
 								"description": "A legal document giving official permission to do something with a Resource.",
@@ -6294,7 +6303,18 @@
 										"format": "uri"
 									}
 								},
-								"required": [],
+								"anyOf": [
+									{
+										"required": [
+											"identifier"
+										]
+									},
+									{
+										"required": [
+											"license"
+										]
+									}
+								],
 								"additionalProperties": false
 							},
 							{
@@ -6312,11 +6332,9 @@
 								},
 								"required": [],
 								"additionalProperties": false
-
 							}
 						]
-					},
-					"minItems": 0
+					}
 				},
 				"access_url": {
 					"@id": "http://xmlns.com/foaf/0.1/Document",
@@ -6367,15 +6385,6 @@
 						"identifier"
 					],
 					"additionalProperties": false
-				},
-				"available": {
-					"@id": "http://purl.org/dc/terms/available",
-					"title": "Date Available",
-					"description": "Date (often a range) that the resource became or will become available.",
-					"@type": "http://www.w3.org/2001/XMLSchema#date",
-					"minLength": 1,
-					"type": "string",
-					"format": "date"
 				}
 			},
 			"required": [
@@ -6811,7 +6820,11 @@
 									"additionalProperties": false
 								}
 							},
-							"additionalProperties": false
+							"additionalProperties": false,
+							"required": [
+								"identifier",
+								"title"
+							]
 						}
 					},
 					"was_associated_with": {
@@ -8049,7 +8062,10 @@
 						"additionalProperties": false
 					}
 				},
-				"additionalProperties": false
+				"additionalProperties": false,
+				"required": [
+					"title"
+				]
 			}
 		},
 		"value": {

@@ -6,6 +6,8 @@ Author(s):
 	Eemeli Kouhia <eemeli.kouhia@gofore.com>
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
 	Jori Niemi <3295718+tahme@users.noreply.github.com>
+	Shreyas Deshpande <31839853+ShreyasDeshpande@users.noreply.github.com>
+	Kauhia <Kauhia@users.noreply.github.com>
 
 License: GPLv3
 
@@ -22,6 +24,7 @@ All Rights Reserved.
 				<b-btn @click="openDirectory">Retry</b-btn>
 			</div>
 		</b-alert>
+
 		<!-- BREADCRUMBS AND TOOLBAR -->
 		<b-button-toolbar key-nav aria-label="File browser toolbar" class="d-flex align-items-center">
 			<Breadcrumbs :breadcrumbs="breadcrumbs" :click="goTo" class="mr-auto" homePath="/" />
@@ -44,12 +47,27 @@ All Rights Reserved.
 				<span v-else>{{data.item.name}}</span>
 			</template>
 
+			<template
+				slot="identifier"
+				slot-scope="data"
+			>
+				{{ data.item.type !== 'files' ? '' : data.item.identifier }}
+			</template>
+
+			<template
+				slot="file_count" slot-scope="data" >
+				{{ data.item.type === 'files' ? '' : data.item.directory.file_count }}
+			</template>
+
 			<template slot="actions" slot-scope="data">
 				<b-btn variant="primary" v-if="data.item.type === 'files'" size="sm" @click.stop="data.toggleDetails" class="mr-2">{{ data.detailsShowing ? 'Hide' : 'Show'}} PAS metadata</b-btn>
 			</template>
 
 			<template slot="row-details" slot-scope="data">
-				<PASMetadata v-if="data.item.type === 'files'" :identifier="data.item.identifier" :file="data.item.file" />
+				<PASMetadata v-if="data.item.type === 'files'"
+					:identifier="data.item.identifier"
+					:file="data.item.file"
+					@saved="updatePasMetadata" />
 				<!--<PASMetadata v-else :identifier="data.item.identifier" :folder="data.item" />-->
 			</template>
 		</b-table>
@@ -116,6 +134,11 @@ export default {
 					tdClass: 'align-middle word-break-all',
 				},
 				{
+					key: 'file_count',
+					sortable: true,
+					tdClass: 'align-middle word-break-all',
+				},
+				{
 					key: 'date_modified',
 					sortable: true,
 					formatter: value => {
@@ -148,6 +171,14 @@ export default {
 		}
 	},
 	methods: {
+		updatePasMetadata(savedData) {
+			// Expects only files since it has no way of knowing the type, and atm only file metadata can be edited
+			const editedFile = this.directory.files.find(file => file.identifier === savedData.identifier)
+			if (editedFile) {
+				// purposefully merge to editedFile so that reactivity works
+				Object.assign(editedFile, savedData)
+			}
+		},
 		goTo(path) {
 			this.$router.push({
 				name: 'files',
@@ -165,14 +196,19 @@ export default {
 				})
 				this.directory = data
 			} catch (error) {
-				console.log(error)
 				if (error.response && error.response.status == 401) {
 					// there was a permission error
 					// we should redirect the user to login
 					await this.$auth.logoutDueSessionTimeout()
-					this.$router.push({name: "home", params: {missingToken: true}})
+					this.$router.push({ name: "home", params: { missingSession: true }})
 				}
 				this.error = 'Qvain was not able to open the requested directory. Please retry or navigate to another directory. Refreshing the page will forfeit your data.'
+			}
+		},
+		clearDirectory() {
+			this.directory = {
+				directories: [],
+				files: [],
 			}
 		},
 		togglePick(state, data) {
@@ -265,6 +301,7 @@ export default {
 		project: {
 			immediate: true,
 			handler() {
+				this.clearDirectory()
 				if (this.project) {
 					this.openDirectory()
 				}

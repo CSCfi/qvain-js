@@ -3,6 +3,7 @@ This file is part of Qvain -project.
 
 Author(s):
 	Juhapekka Piiroinen <juhapekka.piiroinen@csc.fi>
+	Kauhia <Kauhia@users.noreply.github.com>
 
 License: GPLv3
 
@@ -14,7 +15,7 @@ All Rights Reserved.
 	<b-container class="datetimepicker">
 		<b-row>
 			<b-col>
-				<b-form>
+				<b-form @submit.stop.prevent>
 					<b-form-group
 						:label="title"
 						:description="description">
@@ -127,7 +128,11 @@ export default {
 				timeZoneValue = "-" + timeZoneValue
 			}
 			this.internalValue = dateValue + "T" + timeValue + timeZoneValue
-			if (this.format === "date-time") {
+			const isEmpty = (this.format === 'date' && !this.date) ||
+				(this.format === "time" && !this.time)
+			if (isEmpty) {
+				this.$emit('input', undefined)
+			} else if (this.format === "date-time") {
 				this.$emit('input', this.internalValue)
 			} else if (this.format === "date") {
 				this.$emit('input', this.toExternalDateFormat(this.internalValue))

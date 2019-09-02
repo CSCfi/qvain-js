@@ -5,6 +5,7 @@ Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
 	Eemeli Kouhia <eemeli.kouhia@gofore.com>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
 
 License: GPLv3
 
@@ -29,7 +30,7 @@ export default {
 	'tabbed-array': require('./TabbedArray.vue').default,
 	'autocomplete': require('./refdata/autocomplete.vue').default,
 	'filepicker': require('../filebrowser/FilePicker.vue').default,
-	'SelfReferentialObject': require('./SelfReferentialObject.vue').default,
+	'Organization': require('../components/Organization.vue').default,
 	'FlatObject': require('./FlatObject.vue').default,
 	'date-range': require('../components/DateRange.vue').default,
 	'date': require('../components/Date.vue').default,

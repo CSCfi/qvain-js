@@ -6,6 +6,7 @@ Author(s):
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
 	Eemeli Kouhia <eemeli.kouhia@gofore.com>
 	Jori Niemi <3295718+tahme@users.noreply.github.com>
+	Shreyas Deshpande <31839853+ShreyasDeshpande@users.noreply.github.com>
 
 License: GPLv3
 
@@ -62,6 +63,10 @@ All Rights Reserved.
 
 		<!-- alerts -->
 		<b-alert variant="danger" :show="!!error" dismissible @dismissed="error = null">{{ error }}</b-alert>
+
+		<b-alert :show="otherError" variant="danger">
+			There was an unspecified error loading the dataset. Please contact servicedesk(at)csc.fi.
+		</b-alert>
 
 		<div class="pagination-controls">
 			<b-pagination
@@ -165,6 +170,7 @@ All Rights Reserved.
 					</span>
 					{{ preferredLanguage(row.item.title) }}
 					<b-badge v-if="row.item.next !== null" variant="warning" class="old-version">Old version</b-badge>
+					<b-badge v-if="row.item.deprecated" variant="danger" class="old-version">Deprecated</b-badge>
 				</h5>
 				<p v-if="row.item.description" class="text-muted pointer" @click.stop="editDataset(row.item)">
 					<small>{{ preferredLanguage(row.item.description) }}</small>
@@ -460,6 +466,9 @@ export default {
 		DatasetVersionsModal,
 		'publish-modal': PublishModal,
 	},
+	props: {
+		otherError: Boolean,
+	},
 	data() {
 		return {
 			activeInModal: null,
@@ -495,7 +504,7 @@ export default {
 					// there was a permission error
 					// we should redirect the user to login
 					await this.$auth.logoutDueSessionTimeout()
-					this.$router.push({name: "home", params: {missingToken: true}})
+					this.$router.push({ name: "home", params: { missingSession: true }})
 				}
 				this.error = getApiError(e)
 				this.setDatasetList([])
@@ -546,7 +555,7 @@ export default {
 					// there was a permission error
 					// we should redirect the user to login
 					await this.$auth.logoutDueSessionTimeout()
-					this.$router.push({name: "home", params: {missingToken: true}})
+					this.$router.push({ name: "home", params: { missingSession: true }})
 				}
 				this.error = getApiError(e)
 			} finally {
@@ -568,7 +577,7 @@ export default {
 			} else if (typeof langObj !== "object" || langObj === null) {
 				return "–"
 			}
-			return langObj[this.$root.language] || langObj['en'] || langObj['fi'] || langObj['se'] || langObj[Object.keys(langObj)[0]] || ""
+			return this.$store.getters.getStringFromMultiLanguage(langObj) || ""
 		},
 		filter(item) {
 			return this.filterState(item) && this.filterTitles(item)

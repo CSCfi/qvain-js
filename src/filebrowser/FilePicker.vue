@@ -4,8 +4,9 @@ This file is part of Qvain -project.
 Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
 	Eemeli Kouhia <eemeli.kouhia@gofore.com>
-	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
 	Jori Niemi <3295718+tahme@users.noreply.github.com>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Kauhia <Kauhia@users.noreply.github.com>
 
 License: GPLv3
 
@@ -15,9 +16,17 @@ All Rights Reserved.
 -->
 <template>
 	<div>
-		<b-dropdown text="Change project" class="my-3">
+		<b-alert :show="readonly">
+			You are editing an old version of the dataset and cannot make changes to the files.
+		</b-alert>
+
+		<b-alert :show="!readonly && hasDeletedItems">
+			Some of the files in your dataset have been deleted. You need to remove the deleted files before the dataset can be published.
+		</b-alert>
+
+		<b-dropdown v-if="!readonly" text="Change project" class="my-3">
 			<b-dropdown-item v-for="proj in projects" :key="proj" @click="updateProject(proj)">
-				Project {{proj}}
+				Project {{ proj }}
 			</b-dropdown-item>
 		</b-dropdown>
 
@@ -33,6 +42,7 @@ All Rights Reserved.
 			</b-row>
 
 			<Browser
+				v-if="!readonly"
 				:selected="selectedByIdentifiers"
 				:project="selectedProject"
 				:disabled="hasFilesFromOtherProject"
@@ -53,6 +63,8 @@ All Rights Reserved.
 						:type="category"
 						:secondary="item.identifier"
 						:icon="icons[category]"
+						:readonly="readonly"
+						:deleted="$store.state.deletedItems[category][item.identifier] === true"
 						@delete="removeFileOrDirectory"/>
 				</div>
 			</b-card>
@@ -91,7 +103,7 @@ export default {
 				directories: [],
 				files: [],
 			},
-			project: null,
+			initializing: true,
 		}
 	},
 	methods: {
@@ -102,8 +114,8 @@ export default {
 				"pref_label": {
 					"fi": "Tulosaineisto",
 					"en": "Outcome material",
-					"und": "Tulosaineisto"
-				}
+					"und": "Tulosaineisto",
+				},
 			}
 
 			if (type === 'files') {
@@ -127,7 +139,6 @@ export default {
 			}
 		},
 
-
 		updateProject(project) {
 			this.$router.push({ name: 'files', params: { project } })
 		},
@@ -136,22 +147,100 @@ export default {
 			this.state.files = this.$store.state.record.files || []
 			this.state.directories = this.$store.state.record.directories || []
 		},
+
+		async fetchFileAndProjectInfo() {
+			// Iterates over files and directories in the dataset to find out the project
+			// used in the dataset and determine if some of them have been deleted.
+			let project = null
+
+			// get files
+			for (let i=0; i<this.state.files.length; i++) {
+				const identifier = this.state.files[i].identifier
+				try {
+					const { data } = await metaxAPI.get(`/files/${identifier}?removed`) // returns the file even if it was deleted
+					if (!project) {
+						project = data.project_identifier
+					}
+					if (data.removed) {
+						this.$store.commit('setDeletedItem', { category: 'files', identifier, val: true })
+					}
+				} catch(e) {
+					if (e.response && e.response.status == 404) {
+						this.$store.commit('setDeletedItem', { category: 'files', identifier, val: true })
+					} else if (e.response && e.response.status == 401) {
+						// there was a permission error
+						// we should redirect the user to login
+						await this.$auth.logoutDueSessionTimeout()
+						this.$router.push({ name: "home", params: { missingSession: true }})
+					}
+				}
+			}
+
+			// get directories
+			for (let i=0; i<this.state.directories.length; i++) {
+				const identifier = this.state.directories[i].identifier
+				try {
+					const { data } = await metaxAPI.get(`/directories/${identifier}/files`)
+					if (!project) {
+						project = (data.directories && data.directories[0] && data.directories[0].project_identifier) ||
+							(data.files && data.files[0] && data.files[0].project_identifier) || null
+					}
+				} catch(e) {
+					if (e.response && e.response.status == 404) {
+						this.$store.commit('setDeletedItem', { category: 'directories', identifier, val: true })
+					} else if (e.response && e.response.status == 401) {
+						// there was a permission error
+						// we should redirect the user to login
+						await this.$auth.logoutDueSessionTimeout()
+						this.$router.push({ name: "home", params: { missingSession: true }})
+					}
+				}
+			}
+
+			this.project = project
+		}
 	},
 	computed: {
+		project: {
+			get() {
+				return this.$store.state.metadata.project
+			},
+			set(project) {
+				this.$store.commit('setMetadata', { project })
+			},
+		},
+		readonly() {
+			return this.$store.state.metadata.isOldVersion
+		},
+		hasDeletedItems() {
+			for (const category in this.state) {
+				for (const idx in this.state[category]) {
+					const identifier = this.state[category][idx].identifier
+					if (this.$store.state.deletedItems[category][identifier] === true) {
+						return true
+					}
+				}
+			}
+			return false
+		},
 		projects() {
-			return this.$auth.user.projects || []
+			return (this.$auth.user && this.$auth.user.projects) || []
 			// return ['project_x', '2001036'] // this is only for development purpose
 		},
 		selectedProject() {
+			if (this.readonly) {
+				return this.project || null
+			}
+
 			const { project: projectIDInRoute } = this.$route.params
-			const usersFirstProject = this.$auth.user.projects[0]
+			const usersFirstProject = this.projects[0]
 
 			// add current store project before userFirstProject
 			return projectIDInRoute || this.project || usersFirstProject || null
 		},
 		selectedByIdentifiers() {
 			const { directories, files } = this.state
-			return [...directories, ...files].map(item => item.identifier)
+			return [ ...directories, ...files ].map(item => item.identifier)
 		},
 		hasFilesFromOtherProject() {
 			return this.project && this.project !== this.selectedProject
@@ -159,36 +248,21 @@ export default {
 	},
 	async created() {
 		this.loadFilesAndFoldersFromStore()
-		// deny adding files outside current project of selected files
-		try {
-			if (this.state.files.length > 0) {
-				const identifier = this.state.files[0].identifier
-				const { data } = await metaxAPI.get(`/files/${identifier}`)
-				const project = data.project_identifier
 
-				this.project = project
-			} else if (this.state.directories.length > 0) {
-				const identifier = this.state.directories[0].identifier
-				const { data } = await metaxAPI.get(`/directories/${identifier}/files`)
-				const project = (data.directories && data.directories[0] && data.directories[0].project_identifier) ||
-					(data.files && data.files[0] && data.files[0].project_identifier) || null
-
-				this.project = project
-			}
-		} catch(e) {
-			console.log('error retriving project', e)
-			if (e.response && e.response.status == 401) {
-				// there was a permission error
-				// we should redirect the user to login
-				await this.$auth.logoutDueSessionTimeout()
-				this.$router.push({name: "home", params: {missingToken: true}})
-			}
+		if (!this.project) {
+			await this.fetchFileAndProjectInfo()
 		}
+		await this.$nextTick()
+		this.initializing = false
 	},
 	watch: {
 		state: {
 			deep: true,
-			handler() {
+			handler(newVal, oldVal) {
+				// this guard prevents store update when switching tabs
+				if (this.initializing) {
+					return
+				}
 				this.$store.commit('updateValue', {
 					p: this.$store.state.record,
 					prop: 'files',

@@ -4,6 +4,7 @@ This file is part of Qvain -project.
 Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
 	Jori Niemi <3295718+tahme@users.noreply.github.com>
+	Kauhia <Kauhia@users.noreply.github.com>
 
 License: GPLv3
 
@@ -191,6 +192,7 @@ export default {
 				} else {
 					this.saveResult = 'success';
 					this.dataFromServer = success[0].object; // set ui values based on save result
+					this.$emit('saved', this.dataFromServer)
 				}
 			} catch (error) {
 				this.saveResult = 'failed';
@@ -198,7 +200,7 @@ export default {
 					// there was a permission error
 					// we should redirect the user to login
 					await this.$auth.logoutDueSessionTimeout()
-					this.$router.push({name: "home", params: {missingToken: true}})
+					this.$router.push({ name: "home", params: { missingSession: true }})
 				} else {
 					throw error;
 				}
