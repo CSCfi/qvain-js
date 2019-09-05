@@ -261,7 +261,6 @@ import Validator from '../../vendor/validator/src/validate.js'
 import cloneWithPrune from '@/lib/cloneWithPrune.js'
 import Vue from 'vue'
 import TabSelector from '@/widgets/TabSelector.vue'
-import { timeout } from 'q';
 
 export default {
 	name: "editor",
