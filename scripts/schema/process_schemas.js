@@ -23,7 +23,7 @@ function addRequired(obj, value) {
 function makeLicenseOneOf(schema) {
 	const license = { ...schema.definitions.RightsStatement.properties.license.items }
 	license.title = "License dropdown"
-	license.required = []
+	license.required = ["identifier"]
 	const freeLicense = {
 		"type": "object",
 		"title": "Free form License URL",
@@ -37,7 +37,7 @@ function makeLicenseOneOf(schema) {
 				"type": "string",
 			},
 		},
-		"required": [],
+		"required": ["license"],
 		"additionalProperties": false,
 	}
 	schema.definitions.RightsStatement.properties.license.items = {

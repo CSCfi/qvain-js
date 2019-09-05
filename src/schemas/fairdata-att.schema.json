@@ -6767,7 +6767,9 @@
 							{
 								"type": "object",
 								"title": "License dropdown",
-								"required": [],
+								"required": [
+									"identifier"
+								],
 								"$deref": "#/definitions/ResearchDataLicenseDocument",
 								"minProperties": 1,
 								"@id": "http://purl.org/dc/terms/LicenseDocument",
@@ -6845,7 +6847,9 @@
 										"type": "string"
 									}
 								},
-								"required": [],
+								"required": [
+									"license"
+								],
 								"additionalProperties": false
 							}
 						]
