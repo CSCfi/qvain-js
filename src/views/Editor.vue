@@ -65,7 +65,7 @@
 			</b-container>
 
 			<b-collapse id="nav-collapse" is-nav>
-				<b-container>
+				<b-container v-if="!timeoutError && !otherError">
 					<b-row>
 						<b-col md="3">
 							<b-button
@@ -146,8 +146,14 @@
 			:error="publishError"
 			@hidden="publishError = null"
 		/>
+		<b-alert :show="otherError" variant="danger">
+			{{ errorMessage }}. Please contact servicedesk(at)csc.fi.
+		</b-alert>
+		<b-alert :show="timeoutError" variant="danger">
+			{{ errorMessage }}
+		</b-alert>
 
-		<b-container>
+		<b-container v-if="!timeoutError && !otherError">
 			<b-row no-gutters>
 				<b-col md="3" v-if="!!selectedSchema">
 					<b-nav class="sticky-top editor-index-navigation" vertical>
@@ -255,6 +261,7 @@ import Validator from '../../vendor/validator/src/validate.js'
 import cloneWithPrune from '@/lib/cloneWithPrune.js'
 import Vue from 'vue'
 import TabSelector from '@/widgets/TabSelector.vue'
+import { timeout } from 'q';
 
 export default {
 	name: "editor",
@@ -292,7 +299,9 @@ export default {
 			reloadDatasetCounter: 0,
 			reloadDatasetTimer: null,
 			otherError: false,
+			timeoutError:false,
 			openRecordCounter: 0,
+			errorMessage:null,
 		}
 	},
 	methods: {
@@ -333,10 +342,6 @@ export default {
 			await this.$auth.logoutDueSessionTimeout()
 			this.$router.push({ name: "home", params: { missingSession: true }})
 		},
-		handleOtherError() {
-			this.otherError=true
-			this.$router.push({ name:"datasets", params: { otherError: true }})
-		},
 		viewInEtsin() {
 			window.open(`${process.env.VUE_APP_ETSIN_API_URL}/${this.qvainData.identifier}`, '_blank')
 		},
@@ -361,6 +366,9 @@ export default {
 				if (e.response && e.response.status == 401) {
 					this.handleLostSession()
 				}
+				if(e.code ==='ECONNABORTED') {
+					this.errorMessage = this.getError(e," While Publishing dataset: ",this.$store.state.metadata.id)
+				}
 				if (e.response && e.response.data) {
 					this.publishError = e.response.data
 					this.$root.$emit('bv::show::modal', 'publishErrorModal', this.$refs['dataset-publish-button'])
@@ -372,6 +380,7 @@ export default {
 			}
 		},
 		save: async function saveCallback() {
+			let errorMethod = null
 			if (this.saving) {
 				return
 			}
@@ -380,13 +389,14 @@ export default {
 				const currentId = this.$store.state.metadata.id
 				const dataset = this.$store.getters.prunedDataset
 				const payload = { dataset, type: 2, schema: this.selectedSchema.id }
-
 				const isExisting = (currentId && currentId !== 'new')
 				if (isExisting) {
+					errorMethod = " While updating dataset "
 					payload.id = currentId
 					await apiClient.put("/datasets/" + currentId, payload)
 					await this.openRecord(currentId)
 				} else {
+					errorMethod = " While saving dataset "
 					const { data: { id }} = await apiClient.post("/datasets/", payload)
 					await this.openRecord(id)
 					this.$store.commit('setMetadata', { id })
@@ -397,6 +407,9 @@ export default {
 				this.$root.showAlert("Save failed!", "danger")
 				if (error.response && error.response.status == 401) {
 					this.handleLostSession()
+				}
+				else {
+					this.errorMessage = this.getError(error,errorMethod,this.$store.state.metadata.id)
 				}
 			} finally {
 				this.saving = false
@@ -472,9 +485,9 @@ export default {
 					this.handleLostSession()
 				}
 				else {
-					this.handleOtherError()
+					this.errorMessage = this.getError(error," while opening dataset ",id)
 				}
-				console.log(error)
+				console.log("Error occured "+error +" for dataset id :"+id)
 			} finally {
 				this.loading = false
 			}
@@ -492,9 +505,6 @@ export default {
 			}
 		},
 		checkTab() {
-			if(this.otherError) {
-				return
-			}
 			// if tab is unset or invalid (not in tabs list), try to read tab from store or use the first tab
 			const tabUris = this.tabs.map(tab=>tab.uri)
 			if (!this.$route.params.tab || !tabUris.includes(this.$route.params.tab)) {
@@ -528,6 +538,28 @@ export default {
 					this.isDataChanged = true
 				}
 			})
+		},
+		getError(error,apiCall,datasetId) {
+			let errorText = "Error "
+			errorText+=apiCall
+			errorText+=datasetId
+			if (error.response) {
+				this.otherError = true
+				errorText += " [" + error.response.status + "]"
+				if (error.response.data && error.response.data.msg) {
+					errorText += ": " + error.response.data.msg
+				}
+				if(error.response.data.error_id) {
+					errorText+=" Error id = "+error.response.data.error_id+" "
+				}
+			} else if (error.code  && error.code === 'ECONNABORTED') {
+				this.timeoutError = true
+				errorText += ": " + "Request is taking too long "
+			}else if (error.message) {
+				this.otherError = true
+				errorText += ": " + error.message.toLowerCase()
+			}
+			return errorText
 		},
 	},
 	computed: {

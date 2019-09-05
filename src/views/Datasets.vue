@@ -49,9 +49,6 @@
 		<!-- alerts -->
 		<b-alert variant="danger" :show="!!error" dismissible @dismissed="error = null">{{ error }}</b-alert>
 
-		<b-alert :show="otherError" variant="danger">
-			There was an unspecified error loading the dataset. Please contact servicedesk(at)csc.fi.
-		</b-alert>
 
 		<div class="pagination-controls">
 			<b-pagination
@@ -431,17 +428,24 @@ const fields = [
 	},
 ]
 
-function getApiError(error) {
-	let apiError = "API Error"
+function getApiError(error,apiCall,datasetId) {
+	let errorText = "Error "
+	errorText+=apiCall
+	errorText+=datasetId
 	if (error.response) {
-		apiError += " [" + error.response.status + "]"
+		errorText += " [" + error.response.status + "]"
 		if (error.response.data && error.response.data.msg) {
-			apiError += ": " + error.response.data.msg
+			errorText += ": " + error.response.data.msg
 		}
-	} else if (error.message) {
-		apiError += ": " + error.message.toLowerCase()
+		if(error.response.data.error_id) {
+			errorText+=" Error id = "+error.response.data.error_id+" Please contact servicedesk(at)csc.fi. "
+		}
+	} else if (error.code  && error.code === 'ECONNABORTED') {
+		errorText += ": " + "Request is taking too long "
+	}else if (error.message) {
+		errorText += ": " + error.message.toLowerCase()
 	}
-	return apiError
+	return errorText
 }
 
 export default {
@@ -450,9 +454,6 @@ export default {
 		PreservationState,
 		DatasetVersionsModal,
 		'publish-modal': PublishModal,
-	},
-	props: {
-		otherError: Boolean,
 	},
 	data() {
 		return {
@@ -491,7 +492,7 @@ export default {
 					await this.$auth.logoutDueSessionTimeout()
 					this.$router.push({ name: "home", params: { missingSession: true }})
 				}
-				this.error = getApiError(e)
+				this.error = getApiError(e,"While fetching datasets ","")
 				this.setDatasetList([])
 			} finally {
 				this.isBusy = false
@@ -519,7 +520,7 @@ export default {
 					console.log("Show modal error")
 					this.$root.$emit('bv::show::modal', 'publishErrorModal')
 				} else {
-					this.error = getApiError(e)
+					this.error = getApiError(e,"While publishing dataset ",this.itemToBePublished.id)
 				}
 			} finally {
 				this.publishing = false
@@ -542,7 +543,7 @@ export default {
 					await this.$auth.logoutDueSessionTimeout()
 					this.$router.push({ name: "home", params: { missingSession: true }})
 				}
-				this.error = getApiError(e)
+				this.error = getApiError(e,"While deleting dataset ",this.itemToBeDeleted.id)
 			} finally {
 				this.isBusy = false
 				this.deleting = false
