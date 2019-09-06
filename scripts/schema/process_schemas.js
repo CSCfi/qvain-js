@@ -35,6 +35,7 @@ function makeLicenseOneOf(schema) {
 				"@type": "http://www.w3.org/2001/XMLSchema#anyURI",
 				"minLength": 1,
 				"type": "string",
+				"format": "uri",
 			},
 		},
 		"required": ["license"],
