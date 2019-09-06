@@ -811,7 +811,7 @@ export default {
 	},
 	'/properties/access_rights/properties/license/*': {
 		props: {
-			oneOfFunc: value => {
+			choiceFunc: value => {
 				if (value && value.identifier) {
 					return 0
 				}
@@ -822,7 +822,7 @@ export default {
 			},
 		},
 	},
-	'/properties/access_rights/properties/license/*/oneOf/0': {
+	'/properties/access_rights/properties/license/*/anyOf/0': {
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -839,7 +839,7 @@ export default {
 		'description': "A license agreement signifies what a user is allowed to do with the data.",
 		'help': "Select a license agreement for your dataset.",
 	},
-	'/properties/access_rights/properties/license/*/oneOf/1': {
+	'/properties/access_rights/properties/license/*/anyOf/1': {
 		'title': ' ',
 	},
 	'/properties/modified': {

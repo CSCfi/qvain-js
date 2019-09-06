@@ -6248,7 +6248,7 @@
 					"minItems": 0,
 					"type": "array",
 					"items": {
-						"oneOf": [
+						"anyOf": [
 							{
 								"type": "object",
 								"title": "License dropdown",
@@ -6335,7 +6335,7 @@
 								"required": [
 									"license"
 								],
-								"additionalProperties": false
+								"additionalProperties": true
 							}
 						]
 					}

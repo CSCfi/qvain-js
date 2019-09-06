@@ -38,10 +38,10 @@ function makeLicenseOneOf(schema) {
 			},
 		},
 		"required": ["license"],
-		"additionalProperties": false,
+		"additionalProperties": true,
 	}
 	schema.definitions.RightsStatement.properties.license.items = {
-		"oneOf": [ license,	freeLicense ],
+		"anyOf": [ license,	freeLicense ],
 	}
 }
 
