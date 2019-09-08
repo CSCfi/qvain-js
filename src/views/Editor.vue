@@ -479,6 +479,7 @@ export default {
 				this.$store.commit('setMetadata', { id, schemaId: this.selectedSchema.id })
 				this.qvainData = data
 				this.openRecordCounter++
+				this.startValidator()
 			} catch (error) {
 				if (error.response && error.response.status == 401) {
 					this.handleLostSession()
