@@ -429,21 +429,19 @@ const fields = [
 ]
 
 function getApiError(error,apiCall,datasetId) {
-	let errorText = "Error "
-	errorText+=apiCall
-	errorText+=datasetId
+	let errorText=[ "Error", apiCall, datasetId ].join(" ")
 	if (error.response) {
-		errorText += " [" + error.response.status + "]"
+		errorText += [ " [" , error.response.status + "]" ].join(" ")
 		if (error.response.data && error.response.data.msg) {
-			errorText += ": " + error.response.data.msg
+			errorText += [ " :" ,error.response.data.msg ].join(" ")
 		}
 		if(error.response.data.error_id) {
-			errorText+=" Error id = "+error.response.data.error_id+" Please contact servicedesk(at)csc.fi. "
+			errorText+=[" Error id =",error.response.data.error_id,"Please contact servicedesk(at)csc.fi." ].join(" ")
 		}
 	} else if (error.code  && error.code === 'ECONNABORTED') {
-		errorText += ": " + "Request is taking too long "
+		errorText += [ " :","Request is taking too long" ].join(" ")
 	}else if (error.message) {
-		errorText += ": " + error.message.toLowerCase()
+		errorText += [ " :",error.message.toLowerCase() ].join(" ")
 	}
 	return errorText
 }
@@ -492,7 +490,7 @@ export default {
 					await this.$auth.logoutDueSessionTimeout()
 					this.$router.push({ name: "home", params: { missingSession: true }})
 				}
-				this.error = getApiError(e,"While fetching datasets ","")
+				this.error = getApiError(e,"While fetching datasets","")
 				this.setDatasetList([])
 			} finally {
 				this.isBusy = false
@@ -520,7 +518,7 @@ export default {
 					console.log("Show modal error")
 					this.$root.$emit('bv::show::modal', 'publishErrorModal')
 				} else {
-					this.error = getApiError(e,"While publishing dataset ",this.itemToBePublished.id)
+					this.error = getApiError(e,"While publishing dataset",this.itemToBePublished.id)
 				}
 			} finally {
 				this.publishing = false
@@ -543,7 +541,7 @@ export default {
 					await this.$auth.logoutDueSessionTimeout()
 					this.$router.push({ name: "home", params: { missingSession: true }})
 				}
-				this.error = getApiError(e,"While deleting dataset ",this.itemToBeDeleted.id)
+				this.error = getApiError(e,"While deleting dataset",this.itemToBeDeleted.id)
 			} finally {
 				this.isBusy = false
 				this.deleting = false
