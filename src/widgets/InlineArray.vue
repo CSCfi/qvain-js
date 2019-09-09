@@ -108,9 +108,9 @@ export default {
 	},
 	created() {
 		if (this.value == undefined) {
-			console.log("array: undefined value for path", this.path)
+			console.warn("array: undefined value for path", this.path)
 		}
-		console.log("inline-array: typeof", this.path, typeof this.value, 'items' in this.schema)
+		//console.log("inline-array: typeof", this.path, typeof this.value, 'items' in this.schema)
 		return this.init()
 	},
 	methods: {
@@ -129,7 +129,7 @@ export default {
 					prop: this.property,
 					val: undefined,
 				})
-				console.log('didPlus, length now:', this.value.length)
+				//console.log('didPlus, length now:', this.value.length)
 				return true
 			} else {
 				this.showWarning("You've added the maximum allowed amount.")
@@ -137,11 +137,11 @@ export default {
 			return false
 		},
 		deleteElement: function(index) {
-			console.log('schema-array: request to delete element with index', index, 'value:', this.value[index])
+			//console.log('schema-array: request to delete element with index', index, 'value:', this.value[index])
 			if (index >= 0 && index < this.value.length) {
 				this.value.splice(index, 1)
 			} else {
-				console.log('deleteElement: attempt to remove non-existing element at index', index)
+				console.warn('deleteElement: attempt to remove non-existing element at index', index)
 			}
 		},
 		schemaForChild: function(index) {

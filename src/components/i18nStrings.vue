@@ -13,7 +13,7 @@
 			slot="help"
 			class="text-muted"
 		>
-			{{ uiDescription }}
+			{{ uiDescription }}
 		</small>
 		<div slot="header-right">
 			<ValidationStatus :status="validationStatus" />
@@ -109,7 +109,6 @@ import DeleteButton from '@/partials/DeleteButton.vue'
 import ValidationStatus from '@/partials/ValidationStatus.vue'
 import RecordField from '@/composites/RecordField.vue'
 import TitleComponent from '@/partials/Title.vue'
-import InfoIcon from '@/partials/InfoIcon.vue'
 
 export default {
 	name: 'I18nString',
@@ -119,7 +118,6 @@ export default {
 		ValidationStatus,
 		RecordField,
 		TitleComponent,
-		InfoIcon,
 	},
 	extends: vSchemaBase,
 	description: 'a string with support for multiple languages',

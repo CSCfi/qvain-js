@@ -11,10 +11,16 @@
 		>
 			<dl class="row card-text">
 				<template v-for="(val, key) in getVueKeys()">
-					<dt class="col-sm-2 text-monospace">
+					<dt
+						:key="key"
+						class="col-sm-2 text-monospace"
+					>
 						<code>{{ key }}</code>
 					</dt>
-					<dd class="col-sm-10 text-monospace">
+					<dd
+						:key="val"
+						class="col-sm-10 text-monospace"
+					>
 						<code>{{ val || "–" }}</code>
 					</dd>
 				</template>

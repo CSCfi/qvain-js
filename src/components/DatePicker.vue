@@ -38,8 +38,8 @@ export default {
 		event: 'input',
 	},
 	props: {
-		format: String,
-		value: String,
+		format: String(""),
+		value: String(""),
 		disabled: Boolean,
 	},
 	data() {
@@ -47,7 +47,7 @@ export default {
 			internalValue: null,
 			initialValue: null,
 			isInitializing: true,
-			inputRegexp: /^[\d\.]+$/,
+			inputRegexp: /^[\d.]+$/,
 			dateRegexp: /^((([1-9]|0[1-9]|[12]\d|3[01])\.([1-9]|0[1-9]|1[0-2])(\.[12]\d{3})?)|([1-9]|0[1-9]|[12]\d|3[01]))$/,
 		}
 	},
@@ -75,10 +75,10 @@ export default {
 			} else if (this.dateRegexp.test(newValue)) {
 				let dateStructure = newValue.split(".")
 				const parts = dateStructure.length
-				for(var i=0; i<dateStructure.length; i++) {
+				for(let i=0; i<dateStructure.length; i++) {
 					dateStructure[i] = dateStructure[i].padStart(2, '0')
 				}
-				for (var i=0; i<3-parts; i++) {
+				for (let i=0; i<3-parts; i++) {
 					dateStructure.push("00")
 				}
 				// ensure that the month is not empty

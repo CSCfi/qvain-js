@@ -140,10 +140,8 @@ export default {
 	},
 	methods: {
 		show: function(item, index, button) {
-			console.log("modal called for item:", item, index, button, typeof item)
 		},
 		reset: function() {
-			console.log("reset called")
 			this.versions = []
 			this.error = null
 		},

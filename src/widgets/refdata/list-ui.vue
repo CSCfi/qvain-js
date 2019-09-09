@@ -228,9 +228,8 @@ export default {
 					}
 				})
 				.catch(error => {
-					console.log(error)
+					console.error(error)
 					this.error = 'error calling ElasticSearch API'
-					console.log(Object.keys(error))
 					if (error.response && error.response.status) {
 						this.error += ': ' + error.response.status + (error.response.statusText ? '(' + error.response.statusText + ')' : '')
 					}

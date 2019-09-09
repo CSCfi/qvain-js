@@ -539,7 +539,7 @@ export default {
 				}
 			} catch (e) {
 				// check if we got an api error for the modal, else show a generic error message
-				console.log("publish error:", e, Object.keys(e))
+				console.error("publish error:", e, Object.keys(e))
 				if (e.response && e.response.status == 401) {
 					this.handleLostSession()
 				}
@@ -662,7 +662,7 @@ export default {
 				else {
 					this.handleOtherError()
 				}
-				console.log(error)
+				console.error(error)
 			} finally {
 				this.loading = false
 			}

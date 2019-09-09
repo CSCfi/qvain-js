@@ -166,7 +166,7 @@ export default {
 			} else if (this.format === "time") {
 				this.$emit('input', this.toExternalTimeFormat(this.internalValue))
 			} else {
-				console.log("Unhandled data format (" + this.format + ") for DateTimePicker")
+				console.error("Unhandled data format (" + this.format + ") for DateTimePicker")
 			}
 		},
 	},

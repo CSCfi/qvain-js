@@ -68,10 +68,10 @@ export default {
 			} else if (this.timeRegexp.test(newValue)) {
 				let hours = newValue.split(":")
 				const parts = hours.length
-				for(var i=0; i<hours.length; i++) {
+				for(let i=0; i<hours.length; i++) {
 					hours[i] = hours[i].padStart(2, '0')
 				}
-				for (var i=0; i<3-parts; i++) {
+				for (let i=0; i<3-parts; i++) {
 					hours.push("00")
 				}
 				newValue = hours.join(":")

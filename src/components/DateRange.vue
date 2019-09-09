@@ -109,6 +109,7 @@ export default {
 			if (endDate < startDate) {
 				return true
 			}
+			return false
 		},
 	},
 	watch: {

@@ -68,12 +68,12 @@ const app = new Vue({
 		// load Matomo script, add a PageView
 		if (process.env['VUE_APP_MATOMO_SITE_ID']) {
 			window._paq = []
-			_paq.push(['trackPageView'])
-			_paq.push(['enableLinkTracking']);
+			window._paq.push(['trackPageView'])
+			window._paq.push(['enableLinkTracking']);
 			(function() {
 				let u= "//matomo.rahtiapp.fi/"
-				_paq.push([ 'setTrackerUrl', u +'piwik.php' ])
-				_paq.push([ 'setSiteId', process.env['VUE_APP_MATOMO_SITE_ID'] ])
+				window._paq.push([ 'setTrackerUrl', u +'piwik.php' ])
+				window._paq.push([ 'setSiteId', process.env['VUE_APP_MATOMO_SITE_ID'] ])
 				let d=document,
 					g=d.createElement('script'),
 					s=d.getElementsByTagName('script')[0]

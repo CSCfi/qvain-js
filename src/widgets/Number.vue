@@ -9,7 +9,7 @@
 			slot="help"
 			class="text-muted"
 		>
-			{{ uiDescription }}
+			{{ uiDescription }}
 			{{ makeLabel }}
 		</small>
 
@@ -35,7 +35,6 @@
 </template>
 
 <script>
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faMinus } from '@fortawesome/free-solid-svg-icons'
 import vSchemaBase from './base.vue'
 import RecordField from '@/composites/RecordField.vue'
@@ -49,7 +48,6 @@ function toNumber(val) {
 export default {
 	name: 'SchemaNumber',
 	components: {
-		FontAwesomeIcon,
 		RecordField,
 		TitleComponent,
 	},
@@ -79,7 +77,7 @@ export default {
 		},
 	},
 	methods: {
-		deleteMe: function(event) {
+		deleteMe: function() {
 			this.$parent.$emit('delete', this.property)
 		},
 		updateValue: function(e) {

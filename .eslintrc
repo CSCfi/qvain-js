@@ -15,6 +15,7 @@
     "semi-spacing": ["warn", { "before": false, "after": true }],
     "no-unexpected-multiline": "warn",
     "no-var": "warn",
+    "no-console": ["error", { "allow": ["warn", "error"] }],
     "array-bracket-spacing": ["error", "always", {
       "singleValue": false,
       "objectsInArrays": false,

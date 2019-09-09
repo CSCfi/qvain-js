@@ -246,7 +246,7 @@ export default {
 			this.apiBusy = true
 			this.apiState = null
 			let vm = this
-			console.log('calling api for', term, 'in language', this.searchLanguage)
+			//console.log('calling api for', term, 'in language', this.searchLanguage)
 			esApiSearchClient(
 				this.esIndex,
 				this.esDoctype,
@@ -265,7 +265,7 @@ export default {
 					}
 				})
 				.catch(error => {
-					console.log(error)
+					console.error(error)
 					vm.apiError = 'error calling ElasticSearch API'
 					vm.apiState = false
 					vm.apiResults = []

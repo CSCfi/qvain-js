@@ -31,8 +31,6 @@
 <script>
 import Datepicker from '@/components/DateTimePicker.vue'
 import SchemaBase from '@/widgets/base.vue'
-import DeleteButton from '@/partials/DeleteButton.vue'
-import InfoIcon from '@/partials/InfoIcon.vue'
 import RecordField from '@/composites/RecordField.vue'
 import TitleComponent from '@/partials/Title.vue'
 
@@ -40,8 +38,6 @@ export default {
 	name: 'Date',
 	components: {
 		Datepicker,
-		DeleteButton,
-		InfoIcon,
 		RecordField,
 		TitleComponent,
 	},

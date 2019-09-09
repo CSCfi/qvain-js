@@ -79,7 +79,7 @@ const combine = (state, data, dir) => {
 			_showDetails: false,
 		}))
 	}
-	console.log('files and folders', [ ...parsedFolders, ...parsedFiles ])
+	//console.log('files and folders', [ ...parsedFolders, ...parsedFiles ])
 	return [ ...parsedFolders, ...parsedFiles ]
 }
 
@@ -127,7 +127,7 @@ export default {
 			state.pickedItems = 0
 		},
 		updateProject(state, project) {
-			console.log('update project', project)
+			//console.log('update project', project)
 			Vue.set(state, 'project', project)
 		},
 		addNames(state, items) {
@@ -140,7 +140,7 @@ export default {
 			// TODO: should not push data to allDirs if it is already there
 			state.allDirs.files.push(...data.files)
 			state.allDirs.directories.push(...data.directories)
-			console.log('save results', data)
+			//console.log('save results', data)
 			// We only add data on the first time they are fetched
 			// We don't want to overwrite the modified data
 			if (!state.projects[state.project]) {
@@ -206,7 +206,7 @@ export default {
 				process(single)
 			})
 
-			console.log('rootState', rootState)
+			//console.log('rootState', rootState)
 			if (recordFiles.length > 0) {
 				commit('pushMultiple', { p: rootState.record, prop: 'files', val: recordFiles }, { root: true })
 			}
@@ -220,7 +220,7 @@ export default {
 		removeItem({ commit, state, rootState }, { identifier, type, path, project }) {
 			commit('removeName', identifier)
 			commit('removeValue', { p: rootState.record, prop: type === 'file' ? 'files' : 'directories', val: identifier }, { root: true })
-			console.log('projects,path', state.projects[project], path)
+			//console.log('projects,path', state.projects[project], path)
 			state.projects[project][path].find(single => {
 				if (single.identifier === identifier) {
 					single.picked = false

@@ -683,7 +683,6 @@ export default {
 			} catch (e) {
 				if (e.response && e.response.data) {
 					this.publishError = e.response.data
-					console.log("Show modal error")
 					this.$root.$emit('bv::show::modal', 'publishErrorModal')
 				} else {
 					this.error = getApiError(e)
@@ -716,7 +715,6 @@ export default {
 			}
 		},
 		view(extid) {
-			console.log("opening:", `{process.env.VUE_APP_ETSIN_API_URL}/{extid}`)
 			window.open(`${process.env.VUE_APP_ETSIN_API_URL}/${extid}`, '_blank')
 		},
 		friendlyDate: distanceInWordsToNow,

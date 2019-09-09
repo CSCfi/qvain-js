@@ -34,7 +34,7 @@
 					v-if="makeLabel !== uiLabel"
 					slot="label"
 				>
-					{{ makeLabel }}
+					{{ makeLabel }}
 					<delete-button
 						v-if="inArray"
 						slot="label"
@@ -123,7 +123,7 @@ export default {
 		},
 	},
 	methods: {
-		deleteMe(event) {
+		deleteMe() {
 			this.$parent.$emit('delete', this.property)
 		},
 		deleteIfEmpty() {
