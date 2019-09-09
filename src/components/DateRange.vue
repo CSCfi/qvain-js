@@ -7,7 +7,11 @@
 			<div class="col-sm-2">
 				<p>
 					{{ title }}
-					<delete-button v-if="inArray" @click="$emit('delete', property)"/>
+					<delete-button
+						v-if="inArray"
+						:disabled="readOnly"
+						@click="$emit('delete', property)"
+					/>
 				</p>
 				<b-badge v-if="timeBetweenString">
 					{{ timeBetweenString }}
@@ -21,17 +25,19 @@
 			</div>
 			<div class="col">
 				<datetimepicker
+					v-model="start"
 					:title="'From'"
 					:format="schema.properties.start_date.format"
-					v-model="start">
-				</datetimepicker>
+					:disabled="readOnly"
+				/>
 			</div>
 			<div class="col">
 				<datetimepicker
+					v-model="end"
 					:title="'To'"
 					:format="schema.properties.end_date.format"
-					v-model="end">
-				</datetimepicker>
+					:disabled="readOnly"
+				/>
 			</div>
 		</div>
 	</div>

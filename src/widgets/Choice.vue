@@ -23,6 +23,7 @@
 			:tab="myTab"
 			:active-tab="activeTab"
 			:depth="depth"
+			:read-only="readOnly"
 		/>
 	</wrapper>
 

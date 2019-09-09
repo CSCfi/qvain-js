@@ -8,10 +8,12 @@
 		</div>
 		<input
 			:value="timeString"
+			placeholder="hh:mm:ss"
+			class="form-control"
+			:disabled="disabled"
 			@input="validate"
 			@change="submitChange"
-			placeholder="hh:mm:ss"
-			class="form-control" />
+		>
 	</div>
 </template>
 
@@ -20,11 +22,12 @@ export default {
 	name: 'timepicker',
 	model: {
 		prop: 'value',
-		event: 'input'
+		event: 'input',
 	},
 	props: {
 		format: String,
 		value: String,
+		disabled: Boolean,
 	},
 	data() {
 		return {

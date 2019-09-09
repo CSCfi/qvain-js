@@ -31,10 +31,13 @@
 				<b-tab
 					v-for="(key, index) in languageKeys"
 					:key="key"
-					@click="()=>setTab(index)"
+					@click="setTab(index)"
 				>
 					<template slot="title">
-						<delete-button @click="deleteLang(key)" />
+						<delete-button
+							:disabled="readOnly"
+							@click="deleteLang(key)"
+						/>
 						{{ languages[key] }}
 					</template>
 
@@ -45,6 +48,7 @@
 						rows="6"
 						:placeholder="'Start typing in ' + languages[key]"
 						:value="state[key]"
+						:disabled="readOnly"
 						@input="v => changeText(key, v)"
 					/>
 				</b-tab>
@@ -55,13 +59,16 @@
 					</p>
 				</div>
 			</b-tabs>
-			<div class="row">
+			<div
+				v-if="!readOnly"
+				class="row"
+			>
 				<language-select
-					class="col lang-select-tab"
-					ref="langSelect"
 					:id="property + '_language-select'"
-					@change="userRequestedNewLanguage">
-				</language-select>
+					ref="langSelect"
+					class="col lang-select-tab"
+					@change="userRequestedNewLanguage"
+				/>
 			</div>
 
 		</div>
