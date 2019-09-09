@@ -58,6 +58,7 @@ import SchemaAnyOf from './anyOf.vue'
 import SchemaAllOf from './allOf.vue'
 import SchemaOneOf from './oneOf.vue'
 import SchemaEnum from './Enum.vue'
+import SchemaChoice from './Choice.vue'
 import i18nString from '@/components/i18nStrings.vue'
 import i18nTextarea from '@/components/i18nTextarea.vue'
 import AutoComplete from './refdata/autocomplete.vue'
@@ -242,6 +243,7 @@ export default {
 		'schema-allof': SchemaAllOf,
 		'schema-oneof': SchemaOneOf,
 		'schema-enum': SchemaEnum,
+		'schema-choice': SchemaChoice,
 		'reference-data': ReferenceData,
 		'i18n-string': i18nString,
 		'i18n-textarea': i18nTextarea,
