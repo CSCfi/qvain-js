@@ -54,7 +54,7 @@
 				<b-btn
 					type="button"
 					variant="light"
-					:disabled="value.length >= this.maximum"
+					:disabled="value.length >= maximum"
 					@click="doPlus()"
 				>
 					<font-awesome-icon

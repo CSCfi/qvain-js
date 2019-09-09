@@ -44,8 +44,8 @@
 				/>
 				<b-input-group-append>
 					<b-dropdown
-						v-if="this.languages.length > 1"
-						:text="this.searchLanguage.toUpperCase()"
+						v-if="languages.length > 1"
+						:text="searchLanguage.toUpperCase()"
 						@hidden="onInput"
 					>
 						<b-dropdown-item
