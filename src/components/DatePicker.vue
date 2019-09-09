@@ -6,10 +6,11 @@
 		</div>
 		<input
 			:value="dateString"
+			placeholder="dd.MM.yyyy"
+			class="form-control"
 			@input="validate"
 			@change="submitChange"
-			placeholder="dd.MM.yyyy"
-			class="form-control" />
+		>
 	</div>
 </template>
 
@@ -30,10 +31,10 @@
 
 <script>
 export default {
-	name: 'datepicker',
+	name: 'Datepicker',
 	model: {
 		prop: 'value',
-		event: 'input'
+		event: 'input',
 	},
 	props: {
 		format: String,
@@ -44,16 +45,22 @@ export default {
 			internalValue: null,
 			initialValue: null,
 			isInitializing: true,
-			inputRegexp: /^[\d\.]+$/,
-			dateRegexp: /^((([1-9]|0[1-9]|[12]\d|3[01])\.([1-9]|0[1-9]|1[0-2])(\.[12]\d{3})?)|([1-9]|0[1-9]|[12]\d|3[01]))$/
+			inputRegexp: /^[\d.]+$/,
+			dateRegexp: /^((([1-9]|0[1-9]|[12]\d|3[01])\.([1-9]|0[1-9]|1[0-2])(\.[12]\d{3})?)|([1-9]|0[1-9]|[12]\d|3[01]))$/,
 		}
 	},
 	computed: {
 		dateString: {
 			get() {
 				return this.internalValue
-			}
+			},
 		},
+	},
+	created() {
+		this.isInitializing = true
+		this.internalValue = this.fromExternalFormat(this.value)
+		this.initialValue = this.fromExternalFormat(this.value)
+		this.isInitializing = false
 	},
 	methods: {
 		submitChange(event) {
@@ -66,10 +73,10 @@ export default {
 			} else if (this.dateRegexp.test(newValue)) {
 				let dateStructure = newValue.split(".")
 				const parts = dateStructure.length
-				for(var i=0; i<dateStructure.length; i++) {
+				for(let i=0; i<dateStructure.length; i++) {
 					dateStructure[i] = dateStructure[i].padStart(2, '0')
 				}
-				for (var i=0; i<3-parts; i++) {
+				for (let j=0; j<3-parts; j++) {
 					dateStructure.push("00")
 				}
 				// ensure that the month is not empty
@@ -92,12 +99,12 @@ export default {
 		},
 		toExternalFormat(internalFormat) {
 			if (!internalFormat) { return internalFormat }
-			const [day, month, year] = internalFormat.split(".")
+			const [ day, month, year ] = internalFormat.split(".")
 			return year + "-" + month + "-" + day
 		},
 		fromExternalFormat(externalFormat) {
 			if (!externalFormat) { return externalFormat }
-			const [year, month, day] = externalFormat.split("-")
+			const [ year, month, day ] = externalFormat.split("-")
 			return day + "." + month + "." + year
 		},
 		validate(event) {
@@ -108,15 +115,9 @@ export default {
 				this.initialValue = this.internalValue
 			} else if (!this.inputRegexp.test(newValue) && newValue !== '') {
 				this.internalValue = this.initialValue
-				this.$forceUpdate();
+				this.$forceUpdate()
 			}
 		},
 	},
-	created() {
-		this.isInitializing = true
-		this.internalValue = this.fromExternalFormat(this.value)
-		this.initialValue = this.fromExternalFormat(this.value)
-		this.isInitializing = false
-	}
 }
 </script>

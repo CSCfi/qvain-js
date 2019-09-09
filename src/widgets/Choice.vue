@@ -1,13 +1,21 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<wrapper v-if="!single" :id="property + '_' + choiceProp" :wrapped="typeof wrapped === 'undefined' ? !inArray : wrapped">
-		<div v-if="chosen === null" class="conditional-wrapper">
+	<wrapper
+		v-if="!single"
+		:id="property + '_' + choiceProp"
+		:wrapped="typeof wrapped === 'undefined' ? !inArray : wrapped"
+	>
+		<div
+			v-if="chosen === null"
+			class="conditional-wrapper"
+		>
 			<b-button-group>
 				<b-button
 					v-for="(sub, i) in schemaForSelf"
 					:key="'sel' + i"
 					variant="primary"
-					@click="setChosen(i)">
+					@click="setChosen(i)"
+				>
 					{{ sub['title'] || '#'+i }}
 				</b-button>
 			</b-button-group>
@@ -158,23 +166,6 @@ export default {
 			chosen: null,
 		}
 	},
-	methods: {
-		setChosen(i) {
-			// don't reset the data if the same option is selected again as the watcher won't trigger
-			if (this.chosen === i) return
-
-			// throw away data on type switch to avoid collisions and irrelevant stray fields
-			this.$store.commit('updateValue', {
-				p: this.parent,
-				prop: this.property,
-				val: undefined,
-			})
-			this.chosen = i
-		},
-		deleteChosen() {
-			this.setChosen(null)
-		},
-	},
 	computed: {
 		tabTitle() {
 			if (this.chosen === null || !this.value) {
@@ -210,8 +201,25 @@ export default {
 			handler() {
 				if (typeof this.currentType === 'undefined' || this.currentType === null) return
 				let index = isNaN(this.currentType) ? this.possibleTypes.indexOf(this.currentType) : this.currentType
-				this.chosen = index >= 0 ? index : null;
+				this.chosen = index >= 0 ? index : null
 			},
+		},
+	},
+	methods: {
+		setChosen(i) {
+			// don't reset the data if the same option is selected again as the watcher won't trigger
+			if (this.chosen === i) return
+
+			// throw away data on type switch to avoid collisions and irrelevant stray fields
+			this.$store.commit('updateValue', {
+				p: this.parent,
+				prop: this.property,
+				val: undefined,
+			})
+			this.chosen = i
+		},
+		deleteChosen() {
+			this.setChosen(null)
 		},
 	},
 }

@@ -9,20 +9,33 @@
 			Some of the files in your dataset have been deleted. You need to remove the deleted files before the dataset can be published.
 		</b-alert>
 
-		<b-dropdown v-if="!readonly" text="Change project" class="my-3">
-			<b-dropdown-item v-for="proj in projects" :key="proj" @click="updateProject(proj)">
+		<b-dropdown
+			v-if="!readonly"
+			text="Change project"
+			class="my-3"
+		>
+			<b-dropdown-item
+				v-for="proj in projects"
+				:key="proj"
+				@click="updateProject(proj)"
+			>
 				Project {{ proj }}
 			</b-dropdown-item>
 		</b-dropdown>
 
-		<b-alert :show="hasFilesFromOtherProject" variant="danger">
+		<b-alert
+			:show="hasFilesFromOtherProject"
+			variant="danger"
+		>
 			You may only select files from one project. You may browse other project but adding files is disabled. Remove selected files to change project.
 		</b-alert>
 
 		<div v-if="selectedProject">
 			<b-row no-gutters>
 				<b-col class="bg-primary py-3 px-4 d-flex justify-content-between">
-					<h1 class="text-white">Project {{ selectedProject }}</h1>
+					<h1 class="text-white">
+						Project {{ selectedProject }}
+					</h1>
 				</b-col>
 			</b-row>
 
@@ -32,17 +45,30 @@
 				:project="selectedProject"
 				:disabled="hasFilesFromOtherProject"
 				@select="addFileOrDirectory"
-				@remove="removeFileOrDirectory" />
+				@remove="removeFileOrDirectory"
+			/>
 		</div>
 
 		<div class="my-2">
 			<div class="px-2 py-2 d-flex justify-content-between">
 				<h3>Selected items</h3>
 			</div>
-			<b-card v-if="state.directories.length === 0 && state.files.length === 0" class="text-center bg-light">No files added</b-card>
-			<b-card v-else no-body>
-				<div v-for="category in Object.keys(state)" :key="category">
-					<FileItem v-for="item in state[category]"
+			<b-card
+				v-if="state.directories.length === 0 && state.files.length === 0"
+				class="text-center bg-light"
+			>
+				No files added
+			</b-card>
+			<b-card
+				v-else
+				no-body
+			>
+				<div
+					v-for="category in Object.keys(state)"
+					:key="category"
+				>
+					<FileItem
+						v-for="item in state[category]"
 						:key="item.identifier"
 						:single="item"
 						:type="category"
@@ -50,7 +76,8 @@
 						:icon="icons[category]"
 						:readonly="readonly"
 						:deleted="$store.state.deletedItems[category][item.identifier] === true"
-						@delete="removeFileOrDirectory"/>
+						@delete="removeFileOrDirectory"
+					/>
 				</div>
 			</b-card>
 		</div>
@@ -72,7 +99,7 @@ const metaxAPI = axios.create({
 })
 
 export default {
-	name: 'filepicker',
+	name: 'Filepicker',
 	components: {
 		Browser,
 		FileItem,
@@ -90,6 +117,82 @@ export default {
 			},
 			initializing: true,
 		}
+	},
+	computed: {
+		project: {
+			get() {
+				return this.$store.state.metadata.project
+			},
+			set(project) {
+				this.$store.commit('setMetadata', { project })
+			},
+		},
+		readonly() {
+			return this.$store.state.metadata.isOldVersion
+		},
+		hasDeletedItems() {
+			for (const category in this.state) {
+				for (const idx in this.state[category]) {
+					const identifier = this.state[category][idx].identifier
+					if (this.$store.state.deletedItems[category][identifier] === true) {
+						return true
+					}
+				}
+			}
+			return false
+		},
+		projects() {
+			return (this.$auth.user && this.$auth.user.projects) || []
+			// return ['project_x', '2001036'] // this is only for development purpose
+		},
+		selectedProject() {
+			if (this.readonly) {
+				return this.project || null
+			}
+
+			const { project: projectIDInRoute } = this.$route.params
+			const usersFirstProject = this.projects[0]
+
+			// add current store project before userFirstProject
+			return projectIDInRoute || this.project || usersFirstProject || null
+		},
+		selectedByIdentifiers() {
+			const { directories, files } = this.state
+			return [ ...directories, ...files ].map(item => item.identifier)
+		},
+		hasFilesFromOtherProject() {
+			return this.project && this.project !== this.selectedProject
+		},
+	},
+	watch: {
+		state: {
+			deep: true,
+			handler(newVal, oldVal) {
+				// this guard prevents store update when switching tabs
+				if (this.initializing) {
+					return
+				}
+				this.$store.commit('updateValue', {
+					p: this.$store.state.record,
+					prop: 'files',
+					val: this.state.files,
+				})
+				this.$store.commit('updateValue', {
+					p: this.$store.state.record,
+					prop: 'directories',
+					val: this.state.directories,
+				})
+			},
+		},
+	},
+	async created() {
+		this.loadFilesAndFoldersFromStore()
+
+		if (!this.project) {
+			await this.fetchFileAndProjectInfo()
+		}
+		await this.$nextTick()
+		this.initializing = false
 	},
 	methods: {
 		addFileOrDirectory({ type, fields }) {
@@ -125,7 +228,7 @@ export default {
 		},
 
 		updateProject(project) {
-			this.$router.push({ name: 'files', params: { project } })
+			this.$router.push({ name: 'files', params: { project }})
 		},
 
 		loadFilesAndFoldersFromStore() {
@@ -183,82 +286,6 @@ export default {
 			}
 
 			this.project = project
-		}
-	},
-	computed: {
-		project: {
-			get() {
-				return this.$store.state.metadata.project
-			},
-			set(project) {
-				this.$store.commit('setMetadata', { project })
-			},
-		},
-		readonly() {
-			return this.$store.state.metadata.isOldVersion
-		},
-		hasDeletedItems() {
-			for (const category in this.state) {
-				for (const idx in this.state[category]) {
-					const identifier = this.state[category][idx].identifier
-					if (this.$store.state.deletedItems[category][identifier] === true) {
-						return true
-					}
-				}
-			}
-			return false
-		},
-		projects() {
-			return (this.$auth.user && this.$auth.user.projects) || []
-			// return ['project_x', '2001036'] // this is only for development purpose
-		},
-		selectedProject() {
-			if (this.readonly) {
-				return this.project || null
-			}
-
-			const { project: projectIDInRoute } = this.$route.params
-			const usersFirstProject = this.projects[0]
-
-			// add current store project before userFirstProject
-			return projectIDInRoute || this.project || usersFirstProject || null
-		},
-		selectedByIdentifiers() {
-			const { directories, files } = this.state
-			return [ ...directories, ...files ].map(item => item.identifier)
-		},
-		hasFilesFromOtherProject() {
-			return this.project && this.project !== this.selectedProject
-		},
-	},
-	async created() {
-		this.loadFilesAndFoldersFromStore()
-
-		if (!this.project) {
-			await this.fetchFileAndProjectInfo()
-		}
-		await this.$nextTick()
-		this.initializing = false
-	},
-	watch: {
-		state: {
-			deep: true,
-			handler(newVal, oldVal) {
-				// this guard prevents store update when switching tabs
-				if (this.initializing) {
-					return
-				}
-				this.$store.commit('updateValue', {
-					p: this.$store.state.record,
-					prop: 'files',
-					val: this.state.files,
-				})
-				this.$store.commit('updateValue', {
-					p: this.$store.state.record,
-					prop: 'directories',
-					val: this.state.directories,
-				})
-			},
 		},
 	},
 }

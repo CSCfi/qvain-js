@@ -8,19 +8,20 @@
 		</div>
 		<input
 			:value="timeString"
+			placeholder="hh:mm:ss"
+			class="form-control"
 			@input="validate"
 			@change="submitChange"
-			placeholder="hh:mm:ss"
-			class="form-control" />
+		>
 	</div>
 </template>
 
 <script>
 export default {
-	name: 'timepicker',
+	name: 'Timepicker',
 	model: {
 		prop: 'value',
-		event: 'input'
+		event: 'input',
 	},
 	props: {
 		format: String,
@@ -32,7 +33,7 @@ export default {
 			initialValue: null,
 			isInitializing: true,
 			inputRegexp: /^[\d:]+$/,
-			timeRegexp: /^((0[0-9]|1\d|2[0-3]|[0-9])|((0[0-9]|1\d|2[0-3]|[0-9]):){1}(([0-5][0-9]|[0-9]):?){1,2})$/
+			timeRegexp: /^((0[0-9]|1\d|2[0-3]|[0-9])|((0[0-9]|1\d|2[0-3]|[0-9]):){1}(([0-5][0-9]|[0-9]):?){1,2})$/,
 		}
 	},
 	computed: {
@@ -45,8 +46,14 @@ export default {
 				if (this.timeRegexp.test(newValue)) {
 					this.internalValue = newValue
 				}
-			}
+			},
 		},
+	},
+	created() {
+		this.isInitializing = true
+		this.internalValue = this.value
+		this.initialValue = this.value
+		this.isInitializing = false
 	},
 	methods: {
 		submitChange(event) {
@@ -59,10 +66,10 @@ export default {
 			} else if (this.timeRegexp.test(newValue)) {
 				let hours = newValue.split(":")
 				const parts = hours.length
-				for(var i=0; i<hours.length; i++) {
+				for(let i=0; i<hours.length; i++) {
 					hours[i] = hours[i].padStart(2, '0')
 				}
-				for (var i=0; i<3-parts; i++) {
+				for (let j=0; j<3-parts; j++) {
 					hours.push("00")
 				}
 				newValue = hours.join(":")
@@ -82,15 +89,9 @@ export default {
 				this.initialValue = this.internalValue
 			} else if (!this.inputRegexp.test(newValue) && newValue !== '') {
 				this.internalValue = this.initialValue
-				this.$forceUpdate();
+				this.$forceUpdate()
 			}
 		},
 	},
-	created() {
-		this.isInitializing = true
-		this.internalValue = this.value
-		this.initialValue = this.value
-		this.isInitializing = false
-	}
 }
 </script>

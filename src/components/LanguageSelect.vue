@@ -1,12 +1,32 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
 	<b-input-group class="language_select">
-		<b-input-group-text class="height" slot="prepend">
-			<font-awesome-icon icon="plus" fixed-width class="text-dark" />
+		<b-input-group-text
+			slot="prepend"
+			class="height"
+		>
+			<font-awesome-icon
+				icon="plus"
+				fixed-width
+				class="text-dark"
+			/>
 		</b-input-group-text>
-		<b-form-select class="select" v-model="state" :options="languages" v-bind="$attrs" v-on="$listeners" @change="reset">
+		<b-form-select
+			v-model="state"
+			class="select"
+			:options="languages"
+			v-bind="$attrs"
+			v-on="$listeners"
+			@change="reset"
+		>
 			<template slot="first">
-				<option :value="undefined" disabled class="text-muted">{{ placeholder }}</option>
+				<option
+					:value="undefined"
+					disabled
+					class="text-muted"
+				>
+					{{ placeholder }}
+				</option>
 			</template>
 		</b-form-select>
 	</b-input-group>
@@ -30,7 +50,7 @@
 import langCodes2 from '@/data/iso639-1.json'
 
 export default {
-	name: 'language-select',
+	name: 'LanguageSelect',
 	props: {
 		value: String,
 		placeholder: {
@@ -47,7 +67,7 @@ export default {
 	methods: {
 		reset() {
 			this.state = undefined
-		}
-	}
+		},
+	},
 }
 </script>

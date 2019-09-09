@@ -7,45 +7,56 @@
 		:wrapped="wrapped"
 		:header="header"
 	>
-		<title-component slot="title" :title="uiLabel" />
-		<small slot="help" class="text-muted">
+		<title-component
+			slot="title"
+			:title="uiLabel"
+		/>
+		<small
+			slot="help"
+			class="text-muted"
+		>
 			{{ uiDescription }}
 		</small>
 
 		<div slot="input">
 			<div class="input-row__inline">
-				<Multiselect v-if="showLang"
+				<Multiselect
+					v-if="showLang"
 					:id="property + '_language-select'"
 					v-model="selectedLang"
 					:options="languages"
 					placeholder="Select language"
 					label="language"
-					class="lang-select"/>
+					class="lang-select"
+				/>
 
-				<Multiselect v-if="optionsShouldBeGrouped"
+				<Multiselect
+					v-if="optionsShouldBeGrouped"
 					:id="property + '_value-select'"
-					class="value-select"
 					v-model="selectedOptions"
+					class="value-select"
 					track-by="identifier"
-					:internalSearch="!async && !disableInternalSearch"
+					:internal-search="!async && !disableInternalSearch"
 					:loading="isLoading"
-					:optionsLimit="count"
+					:options-limit="count"
 					:taggable="tags"
 					:searchable="typeahead"
 					:multiple="isMultiselect"
 					:options="options"
-					:showNoResults="false"
-					:showNoOptions="false"
-					:customLabel="customLabel"
+					:show-no-results="false"
+					:show-no-options="false"
+					:custom-label="customLabel"
 					:placeholder="getPlaceholder"
 					group-values="children"
 					:group-label="labelNameInSchema"
 					:disabled="disabled"
-					:allowEmpty="allowEmpty"
-					:deselectLabel="allowEmpty ? 'Press enter to remove' : 'Selected'"
+					:allow-empty="allowEmpty"
+					:deselect-label="allowEmpty ? 'Press enter to remove' : 'Selected'"
 					@search-change="search"
 				>
-					<div slot="noResult">No elements found. Consider changing the search query. You may have to type at least 3 letters.</div>
+					<div slot="noResult">
+						No elements found. Consider changing the search query. You may have to type at least 3 letters.
+					</div>
 					<div
 						v-if="grouped"
 						slot="option"
@@ -54,41 +65,64 @@
 					>
 						{{ option.$groupLabel || customLabel(option) }}
 					</div>
-					<div slot="noOptions"></div>
-					<div v-if="selectedOptions.length > 0" slot="selection">{{placeholder}}</div>
+					<div slot="noOptions" />
+					<div
+						v-if="selectedOptions.length > 0"
+						slot="selection"
+					>
+						{{ placeholder }}
+					</div>
 				</Multiselect>
 
-				<Multiselect v-else
+				<Multiselect
+					v-else
 					:id="property + '_value-select'"
-					class="value-select"
 					v-model="selectedOptions"
+					class="value-select"
 					track-by="identifier"
-					:internalSearch="!async && !disableInternalSearch"
+					:internal-search="!async && !disableInternalSearch"
 					:loading="isLoading"
-					:optionsLimit="count"
+					:options-limit="count"
 					:taggable="tags"
 					:searchable="typeahead"
-					:showNoOptions="false"
+					:show-no-options="false"
 					:multiple="isMultiselect"
-					:clearOnSelect="false"
+					:clear-on-select="false"
 					:options="options"
-					:showNoResults="false"
-					:customLabel="customLabel"
+					:show-no-results="false"
+					:custom-label="customLabel"
 					:placeholder="getPlaceholder"
-					@select="atSelect"
 					:disabled="disabled"
-					:allowEmpty="allowEmpty"
-					:deselectLabel="allowEmpty ? 'Press enter to remove' : 'Selected'"
-					@search-change="search">
-					<div slot="noOptions"></div>
-					<div slot="noResult">No elements found. Consider changing the search query. You may have to type at least 3 letters.</div>
-					<div slot="selection" slot-scope="{ values, search, isOpen }">
-						<span class="multiselect__single" v-if="values.length &amp;&amp; !isOpen">{{ getPlaceholder }}</span>
+					:allow-empty="allowEmpty"
+					:deselect-label="allowEmpty ? 'Press enter to remove' : 'Selected'"
+					@select="atSelect"
+					@search-change="search"
+				>
+					<div slot="noOptions" />
+					<div slot="noResult">
+						No elements found. Consider changing the search query. You may have to type at least 3 letters.
+					</div>
+					<div
+						slot="selection"
+						slot-scope="{ values, search, isOpen }"
+					>
+						<span
+							v-if="values.length &amp;&amp; !isOpen"
+							class="multiselect__single"
+						>{{ getPlaceholder }}</span>
 					</div>
 				</Multiselect>
 			</div>
-			<div :id="property + '_taglist'" v-if="isMultiselect" class="tag__list">
-				<p v-for="(option, index) in Array.from(selectedOptions)" :key="option.identifier" class="tag">
+			<div
+				v-if="isMultiselect"
+				:id="property + '_taglist'"
+				class="tag__list"
+			>
+				<p
+					v-for="(option, index) in Array.from(selectedOptions)"
+					:key="option.identifier"
+					class="tag"
+				>
 					{{ customLabel(option) }}
 					<span class="remove-button">
 						<DeleteButton @click="removeValue(index)" />
@@ -108,7 +142,7 @@ import RecordField from '@/composites/RecordField.vue'
 import TitleComponent from '@/partials/Title.vue'
 
 export default {
-	name: 'reference-data',
+	name: 'ReferenceData',
 	components: {
 		Multiselect,
 		DeleteButton,
@@ -206,6 +240,77 @@ export default {
 			return this.value && this.value.length > 0
 		},
 	},
+	watch: {
+		selectedOptions() {
+			// prevent actions from being stored as selected options
+			if (this.isMultiselect && this.selectedOptions) {
+				const filteredOptions = this.selectedOptions.filter(option => !this.actions.includes(option))
+				if (filteredOptions.length !== this.selectedOptions.length) {
+					this.selectedOptions = filteredOptions
+				}
+			}
+			if (!this.isMultiselect && this.actions.includes(this.selectedOptions)) {
+				this.selectedOptions = null
+			}
+
+			const selectedValueIsSet = this.selectedOptions !== null && typeof this.selectedOptions !== 'undefined'
+			const mapToStore = option => {
+				if (typeof option === 'undefined') {
+					return option
+				}
+
+				const { identifier, label: { sv, en, fi, und }} = option
+				return { identifier, [this.labelNameInSchema]: { sv, en, fi, und }}
+			}
+
+			let storableOptions = '' // this default allows item to be removed at updateValue
+			if (this.isMultiselect && selectedValueIsSet) {
+				storableOptions = this.selectedOptions.map(mapToStore)
+			}
+
+			if (!this.isMultiselect && selectedValueIsSet) {
+				storableOptions = mapToStore(this.selectedOptions)
+			}
+
+			if (!this.isInitializing) {
+				if (!this.isMultiselect && this.storableOptions !== '') {
+					// keep existing preservedFields on update
+					this.preservedFields.forEach(field => {
+						storableOptions[field] = this.parent[this.property][field]
+					})
+				}
+				this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: storableOptions })
+				this.$emit("changed")
+			}
+		},
+	},
+	created: function() {
+		if (this.isMultiselect && this.isArray) {
+			this.selectedOptions = this.value.map(v => ({
+				identifier: v.identifier, label: v[this.labelNameInSchema],
+			}))
+		}
+
+		if (!this.isMultiselect && !this.isEmptyObject) {
+			if (!(this.value && this.value.identifier)) {
+				this.selectedOptions = null
+			} else {
+				const { identifier } = this.value
+				const label = this.value[this.labelNameInSchema]
+				this.selectedOptions = { identifier, label }
+			}
+		}
+
+		if (!this.async) {
+			this.getAllReferenceData()
+		}
+	},
+	beforeUpdate: function() {
+		this.isInitializing = true
+	},
+	updated: function() {
+		this.isInitializing = false
+	},
 	methods: {
 		customLabel(option) {
 			if (option === null) {
@@ -295,77 +400,6 @@ export default {
 			}
 			if (this.async) {
 				this.responseData = {}
-			}
-		},
-	},
-	created: function() {
-		if (this.isMultiselect && this.isArray) {
-			this.selectedOptions = this.value.map(v => ({
-				identifier: v.identifier, label: v[this.labelNameInSchema]
-			}))
-		}
-
-		if (!this.isMultiselect && !this.isEmptyObject) {
-			if (!(this.value && this.value.identifier)) {
-				this.selectedOptions = null
-			} else {
-				const { identifier } = this.value
-				const label = this.value[this.labelNameInSchema]
-				this.selectedOptions = { identifier, label }
-			}
-		}
-
-		if (!this.async) {
-			this.getAllReferenceData()
-		}
-	},
-	beforeUpdate: function() {
-		this.isInitializing = true
-	},
-	updated: function() {
-		this.isInitializing = false
-	},
-	watch: {
-		selectedOptions() {
-			// prevent actions from being stored as selected options
-			if (this.isMultiselect && this.selectedOptions) {
-				const filteredOptions = this.selectedOptions.filter(option => !this.actions.includes(option))
-				if (filteredOptions.length !== this.selectedOptions.length) {
-					this.selectedOptions = filteredOptions
-				}
-			}
-			if (!this.isMultiselect && this.actions.includes(this.selectedOptions)) {
-				this.selectedOptions = null
-			}
-
-			const selectedValueIsSet = this.selectedOptions !== null && typeof this.selectedOptions !== 'undefined'
-			const mapToStore = option => {
-				if (typeof option === 'undefined') {
-					return option
-				}
-
-				const { identifier, label: { sv, en, fi, und } } = option
-				return { identifier, [this.labelNameInSchema]: { sv, en, fi, und } }
-			}
-
-			let storableOptions = '' // this default allows item to be removed at updateValue
-			if (this.isMultiselect && selectedValueIsSet) {
-				storableOptions = this.selectedOptions.map(mapToStore)
-			}
-
-			if (!this.isMultiselect && selectedValueIsSet) {
-				storableOptions = mapToStore(this.selectedOptions)
-			}
-
-			if (!this.isInitializing) {
-				if (!this.isMultiselect && this.storableOptions !== '') {
-					// keep existing preservedFields on update
-					this.preservedFields.forEach(field => {
-						storableOptions[field] = this.parent[this.property][field]
-					})
-				}
-				this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: storableOptions })
-				this.$emit("changed")
 			}
 		},
 	},

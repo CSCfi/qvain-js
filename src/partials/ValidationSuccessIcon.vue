@@ -1,7 +1,10 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
 	<div class="icon">
-		<font-awesome-icon icon="check" fixed-width />
+		<font-awesome-icon
+			icon="check"
+			fixed-width
+		/>
 	</div>
 </template>
 

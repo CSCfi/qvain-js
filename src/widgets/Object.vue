@@ -1,8 +1,14 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<div :id="property + '_object'" :style="listItemStyle(depth)">
+	<div
+		:id="property + '_object'"
+		:style="listItemStyle(depth)"
+	>
 		<header v-if="uiTitle">
-			<h3 class="title" :aria-controls="domId + '-props'">
+			<h3
+				class="title"
+				:aria-controls="domId + '-props'"
+			>
 				{{ uiTitle }}
 			</h3>
 		</header>
@@ -49,30 +55,6 @@ export default {
 			visible: true,
 		}
 	},
-	methods: {
-		isPropHidden(prop) {
-			const ui = this.propUi(prop)
-			return !this.shouldCreateProp(prop) || (ui.tab && ui.tab !== this.activeTab) || ui.visible === false
-		},
-		shouldCreateProp(prop) {
-			if (prop === '@type') return false
-			if (this.isPostponedProp(prop) || this.isIgnoredProp(prop)) return false
-			if (prop in this.value) return true
-			return false
-		},
-		isPostponedProp(prop) {
-			return this.postponedProps.includes(prop)
-		},
-		isIgnoredProp(prop) {
-			return this.ignoredProps.includes(prop)
-		},
-		addProp(prop) {
-			this.$store.commit('addProp', {
-				val: this.value,
-				prop: prop,
-			})
-		},
-	},
 	computed: {
 		vState() {
 			return this.$store.state.vState
@@ -102,6 +84,30 @@ export default {
 		},
 		ignoredProps() {
 			return this.ui['ignored'] || []
+		},
+	},
+	methods: {
+		isPropHidden(prop) {
+			const ui = this.propUi(prop)
+			return !this.shouldCreateProp(prop) || (ui.tab && ui.tab !== this.activeTab) || ui.visible === false
+		},
+		shouldCreateProp(prop) {
+			if (prop === '@type') return false
+			if (this.isPostponedProp(prop) || this.isIgnoredProp(prop)) return false
+			if (prop in this.value) return true
+			return false
+		},
+		isPostponedProp(prop) {
+			return this.postponedProps.includes(prop)
+		},
+		isIgnoredProp(prop) {
+			return this.ignoredProps.includes(prop)
+		},
+		addProp(prop) {
+			this.$store.commit('addProp', {
+				val: this.value,
+				prop: prop,
+			})
 		},
 	},
 }

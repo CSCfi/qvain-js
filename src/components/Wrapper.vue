@@ -10,7 +10,7 @@
 <script>
 
 export default {
-	name: 'wrapper',
+	name: 'Wrapper',
 	props: {
 		wrapped: { type: Boolean, default: false },
 		error: { type: Boolean, default: false },

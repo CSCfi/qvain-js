@@ -1,7 +1,14 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<record-field :required="required" :wrapped="true" :error="!isValid">
-		<title-component slot="title" :title="uiLabel" />
+	<record-field
+		:required="required"
+		:wrapped="true"
+		:error="!isValid"
+	>
+		<title-component
+			slot="title"
+			:title="uiLabel"
+		/>
 		<small
 			slot="help"
 			class="text-muted"
@@ -57,13 +64,12 @@
 			</b-tabs>
 			<div class="row">
 				<language-select
-					class="col lang-select-tab"
-					ref="langSelect"
 					:id="property + '_language-select'"
-					@change="userRequestedNewLanguage">
-				</language-select>
+					ref="langSelect"
+					class="col lang-select-tab"
+					@change="userRequestedNewLanguage"
+				/>
 			</div>
-
 		</div>
 	</record-field>
 </template>
@@ -102,10 +108,7 @@ import DeleteButton from '@/partials/DeleteButton.vue'
 import autosize from 'autosize'
 
 export default {
-	extends: vSchemaBase,
-	name: 'i18n-textarea',
-	description: 'a string with support for multiple languages',
-	schematype: 'object',
+	name: 'I18nTextarea',
 	components: {
 		LanguageSelect,
 		ValidationStatus,
@@ -113,6 +116,9 @@ export default {
 		TitleComponent,
 		DeleteButton,
 	},
+	extends: vSchemaBase,
+	description: 'a string with support for multiple languages',
+	schematype: 'object',
 	data() {
 		return {
 			languages: langCodes2,
@@ -134,6 +140,15 @@ export default {
 			return 'invalid'
 		},
 	},
+	watch: {
+		"$store.state.languages": function(languages) {
+			this.populateLanguages(languages)
+		},
+	},
+	created() {
+		this.state = this.value || {}
+		this.populateLanguages(this.$store.state.languages)
+	},
 	methods: {
 		userRequestedNewLanguage: function(lang) {
 			this.addLanguage(lang)
@@ -151,7 +166,7 @@ export default {
 				return
 			}
 			this.$set(this.state, lang, '')
-			this.$store.commit('setLanguages', {[lang]:true})
+			this.$store.commit('setLanguages', { [lang]:true })
 		},
 		deleteLang(lang) {
 			this.$delete(this.state, lang)
@@ -205,15 +220,6 @@ export default {
 				this.tabIndex = this.targetTabIndex
 			}
 		},
-	},
-	watch: {
-		"$store.state.languages": function(languages) {
-			this.populateLanguages(languages)
-		},
-	},
-	created() {
-		this.state = this.value || {}
-		this.populateLanguages(this.$store.state.languages)
 	},
 }
 </script>

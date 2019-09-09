@@ -3,30 +3,32 @@
 	<div class="input-group">
 		<div class="input-group-prepend">
 			<b-button
-				@click="updateOffset"> 
+				@click="updateOffset"
+			> 
 				UTC ±
 			</b-button>
 		</div>
 		<input
 			:value="timezoneString"
+			placeholder="[+-]hh:mm"
+			class="form-control"
 			@input="validate"
 			@change="submitChange"
-			placeholder="[+-]hh:mm"
-			class="form-control" />
+		>
 	</div>
 </template>
 
 <script>
 export default {
-	name: 'timezonepicker',
+	name: 'Timezonepicker',
 	model: {
 		prop: 'value',
-		event: 'input'
+		event: 'input',
 	},
 	props: {
 		format: String,
 		value: String,
-		timezonedate: String
+		timezonedate: String,
 	},
 	data() {
 		return {
@@ -34,7 +36,7 @@ export default {
 			initialValue: null,
 			isInitializing: true,
 			inputRegexp: /^[-+\d:]+$/,
-			timezoneRegexp: /^[+-]?(2[0-3]|[0-1]?\d)(:[0-5]?\d|:)?$/
+			timezoneRegexp: /^[+-]?(2[0-3]|[0-1]?\d)(:[0-5]?\d|:)?$/,
 		}
 	},
 	computed: {
@@ -47,12 +49,26 @@ export default {
 				if (this.timezoneRegexp.test(newValue)) {
 					this.internalValue = newValue
 				}
-			}
+			},
 		},
+	},
+	watch: {
+		timezonedate(value) {
+			this.updateOffset()
+		},
+	},
+	created() {
+		this.isInitializing = true
+		this.initialValue = this.value
+		this.internalValue = this.initialValue
+		if (this.timezonedate && !this.value) {
+			this.updateOffset()
+		}
+		this.isInitializing = false
 	},
 	methods: {
 		updateOffset() {
-			const [day, month, year] = this.fromExternalFormat(this.timezonedate).split(".")
+			const [ day, month, year ] = this.fromExternalFormat(this.timezonedate).split(".")
 			const monthIndex = month - 1
 			const localOffset = new Date(year, monthIndex, day).getTimezoneOffset()
 			if (isNaN(localOffset)) {
@@ -95,10 +111,10 @@ export default {
 				let hours = newValue.split(":")
 				const parts = hours.length
 
-				for(var i=0; i<hours.length; i++) {
+				for(let i=0; i<hours.length; i++) {
 					hours[i] = hours[i].padStart(2, '0')
 				}
-				for (var i=0; i<2-parts; i++) {
+				for (let j=0; j<2-parts; j++) {
 					hours.push("00")
 				}
 
@@ -116,12 +132,12 @@ export default {
 		},
 		toExternalFormat(internalFormat) {
 			if (!internalFormat) { return internalFormat }
-			const [day, month, year] = internalFormat.split(".")
+			const [ day, month, year ] = internalFormat.split(".")
 			return year + "-" + month + "-" + day
 		},
 		fromExternalFormat(externalFormat) {
 			if (!externalFormat) { return externalFormat }
-			const [year, month, day] = externalFormat.split("-")
+			const [ year, month, day ] = externalFormat.split("-")
 			return day + "." + month + "." + year
 		},
 		validate(event) {
@@ -132,23 +148,9 @@ export default {
 				this.initialValue = this.internalValue
 			} else if (!this.inputRegexp.test(newValue) && newValue !== '') {
 				this.internalValue = this.initialValue
-				this.$forceUpdate();
+				this.$forceUpdate()
 			}
 		},
 	},
-	created() {
-		this.isInitializing = true
-		this.initialValue = this.value
-		this.internalValue = this.initialValue
-		if (this.timezonedate && !this.value) {
-			this.updateOffset()
-		}
-		this.isInitializing = false
-	},
-	watch: {
-		timezonedate(value) {
-			this.updateOffset()
-		},
-	}
 }
 </script>

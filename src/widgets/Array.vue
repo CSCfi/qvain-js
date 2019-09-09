@@ -1,15 +1,37 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<record-field :id="property + '_array'" class="min-height" :required="required" :wrapped="wrapped" :header="!inArray" :error="!isValid">
-		<title-component slot="title" :title="uiLabel" />
-		<small slot="help" class="text-muted">
+	<record-field
+		:id="property + '_array'"
+		class="min-height"
+		:required="required"
+		:wrapped="wrapped"
+		:header="!inArray"
+		:error="!isValid"
+	>
+		<title-component
+			slot="title"
+			:title="uiLabel"
+		/>
+		<small
+			slot="help"
+			class="text-muted"
+		>
 			{{ uiDescription }}
 		</small>
 		<div slot="header-right">
-			<ValidationStatus v-if="!isValid" :status="'invalid'" />
+			<ValidationStatus
+				v-if="!isValid"
+				:status="'invalid'"
+			/>
 		</div>
 		<div slot="errors">
-			<b-badge variant="danger" :key="error" v-for="error in errors">{{ error }}</b-badge>
+			<b-badge
+				v-for="error in errors"
+				:key="error"
+				variant="danger"
+			>
+				{{ error }}
+			</b-badge>
 		</div>
 		<div slot="input">
 			<b-container v-if="tabFormat">
@@ -18,8 +40,12 @@
 					variant="light"
 					type="button"
 					:disabled="value.length >= maximum"
-					@click="doPlus()">
-					<font-awesome-icon icon="plus" fixed-width />
+					@click="doPlus()"
+				>
+					<font-awesome-icon
+						icon="plus"
+						fixed-width
+					/>
 				</b-btn>
 
 				<b-tabs
@@ -81,10 +107,26 @@
 						:depth="depth"
 						@delete="deleteElement"
 					/>
-					<delete-button class="array-delete-button" v-if="showDelete" @click="deleteElement(index)" />
+					<delete-button
+						v-if="showDelete"
+						class="array-delete-button"
+						@click="deleteElement(index)"
+					/>
 				</b-list-group-item>
 				<b-list-group-item>
-					<b-btn :id="property + '_array_button_add'" class="col" variant="light" type="button" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
+					<b-btn
+						:id="property + '_array_button_add'"
+						class="col"
+						variant="light"
+						type="button"
+						:disabled="value.length >= this.maximum"
+						@click="doPlus()"
+					>
+						<font-awesome-icon
+							icon="plus"
+							fixed-width
+						/>
+					</b-btn>
 				</b-list-group-item>
 			</b-list-group>
 		</div>
@@ -127,20 +169,20 @@ import ValidationStatus from '@/partials/ValidationStatus.vue'
 import DeleteButton from '@/partials/DeleteButton.vue'
 
 export default {
-	extends: vSchemaBase,
-	name: 'schema-array',
-	description: "generic array, nested",
-	schematype: 'array',
+	name: 'SchemaArray',
 	components: {
 		RecordField,
 		TitleComponent,
 		ValidationStatus,
 		DeleteButton,
 	},
+	extends: vSchemaBase,
+	description: "generic array, nested",
+	schematype: 'array',
 	props: {
 		tabFormat: { type: Boolean, default: true },
 		wrapped: { type: Boolean, default: true },
-		showDelete: { type: Boolean, default: false }
+		showDelete: { type: Boolean, default: false },
 	},
 	data() {
 		return {
@@ -151,6 +193,19 @@ export default {
 			targetTabIndex: null,
 			keys: [],
 		}
+	},
+	computed: {
+		isTuple: function() {
+			// list or tuple validation?
+			return this.schema['items'] instanceof Array
+		},
+		allowAdditional: function() {
+			// additionalItems: true if missing, true if true, true when object; false if false
+			return this.schema['additionalItems'] !== false
+		},
+	},
+	created() {
+		return this.init()
 	},
 	methods: {
 		tabTitle(index) {
@@ -217,19 +272,6 @@ export default {
 			}
 			return "arr-" + this.keys[idx]
 		},
-	},
-	computed: {
-		isTuple: function() {
-			// list or tuple validation?
-			return this.schema['items'] instanceof Array
-		},
-		allowAdditional: function() {
-			// additionalItems: true if missing, true if true, true when object; false if false
-			return this.schema['additionalItems'] !== false
-		},
-	},
-	created() {
-		return this.init()
 	},
 }
 </script>

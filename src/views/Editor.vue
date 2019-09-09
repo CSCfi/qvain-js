@@ -1,10 +1,17 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
 	<b-container id="editor-view">
-		<b-navbar sticky toggleable="sm" variant="light">
+		<b-navbar
+			sticky
+			toggleable="sm"
+			variant="light"
+		>
 			<b-container>
 				<b-row no-gutters>
-					<h4 class="component-title" v-if="!!selectedSchema">
+					<h4
+						v-if="!!selectedSchema"
+						class="component-title"
+					>
 						<span v-if="title">
 							{{ title }}
 						</span>
@@ -33,38 +40,62 @@
 							class="secondary-text text-muted"
 						>
 							<span v-if="qvainData && qvainData.published && !isPublishedAndUpdateAvailable">
-								<font-awesome-icon icon="circle" class="fa-sm text-primary" />
+								<font-awesome-icon
+									icon="circle"
+									class="fa-sm text-primary"
+								/>
 								&nbsp;
 								<span>Published</span>
 							</span>
 							<span v-else-if="isPublishedAndUpdateAvailable">
 								<font-awesome-layers class="fa-sm">
-									<font-awesome-icon icon="circle" class="text-warning" />
+									<font-awesome-icon
+										icon="circle"
+										class="text-warning"
+									/>
 								</font-awesome-layers>
 								&nbsp;
 								<span>Unpublished Changes</span>
 							</span>
 							<span v-else>
-								<font-awesome-icon icon="circle" class="fa-sm text-success" />
+								<font-awesome-icon
+									icon="circle"
+									class="fa-sm text-success"
+								/>
 								&nbsp;
 								<span>Draft</span>
 							</span>
 						</span>
-						<span class="secondary-text text-muted" v-else>
+						<span
+							v-else
+							class="secondary-text text-muted"
+						>
 							<span v-if="loading">
-								<font-awesome-icon icon="spinner" spin />
+								<font-awesome-icon
+									icon="spinner"
+									spin
+								/>
 							</span>
 							<span v-else>
-								<font-awesome-icon icon="circle" class="fa-sm text-danger" />
+								<font-awesome-icon
+									icon="circle"
+									class="fa-sm text-danger"
+								/>
 								&nbsp;<span>Unsaved draft</span>
 							</span>
 						</span>
 					</h4>
 				</b-row>
-				<b-navbar-toggle target="nav-collapse" class="navbar-toggler ml-auto"></b-navbar-toggle>
+				<b-navbar-toggle
+					target="nav-collapse"
+					class="navbar-toggler ml-auto"
+				/>
 			</b-container>
 
-			<b-collapse id="nav-collapse" is-nav>
+			<b-collapse
+				id="nav-collapse"
+				is-nav
+			>
 				<b-container>
 					<b-row>
 						<b-col md="3">
@@ -73,8 +104,12 @@
 								id="editor_refresh_dataset"
 								:variant="reloadDatasetCounter > 0 ? 'danger' : 'secondary'"
 								block
-								@click="reloadDataset">
-								<font-awesome-icon :icon="reloading ? 'spinner' : 'undo'" :spin="reloading" />
+								@click="reloadDataset"
+							>
+								<font-awesome-icon
+									:icon="reloading ? 'spinner' : 'undo'"
+									:spin="reloading"
+								/>
 								&nbsp;
 								<span v-if="!reloading">
 									{{ reloadDatasetTitle }}
@@ -85,12 +120,16 @@
 							<b-button
 								v-if="selectedSchema"
 								id="editor_button_save_top"
+								ref="dataset-save-button"
 								:variant="isSaveDisabled ? 'outline-secondary' : 'success'"
-								@click="save"
 								:disabled="isSaveDisabled"
 								block
-								ref="dataset-save-button">
-								<font-awesome-icon :icon="saving ? 'spinner' : 'save'" :spin="saving" />
+								@click="save"
+							>
+								<font-awesome-icon
+									:icon="saving ? 'spinner' : 'save'"
+									:spin="saving"
+								/>
 								&nbsp;
 								Save
 							</b-button>
@@ -99,12 +138,16 @@
 							<b-button
 								v-if="selectedSchema"
 								id="editor_button_publish_top"
-								:variant="isPublishDisabled ? 'outline-secondary' : 'primary'"
+								ref="dataset-publish-button"
 								v-b-modal.publishModal
+								:variant="isPublishDisabled ? 'outline-secondary' : 'primary'"
 								block
 								:disabled="isPublishDisabled"
-								ref="dataset-publish-button">
-								<font-awesome-icon :icon="publishing ? 'spinner' : 'upload'" :spin="publishing" />
+							>
+								<font-awesome-icon
+									:icon="publishing ? 'spinner' : 'upload'"
+									:spin="publishing"
+								/>
 								&nbsp;
 								Publish
 							</b-button>
@@ -112,10 +155,11 @@
 						<b-col v-if="isPublished">
 							<b-button
 								id="editor_button_etsin_top"
+								ref="dataset-etsin-button"
 								variant="info"
 								block
 								@click="viewInEtsin()"
-								ref="dataset-etsin-button">
+							>
 								<font-awesome-icon icon="external-link-alt" />
 								&nbsp;
 								Etsin
@@ -126,12 +170,28 @@
 			</b-collapse>
 		</b-navbar>
 
-		<b-alert variant="danger" :show="!!error" dismissible @dismissed="error=null"><i class="fas fa-ban"></i> API error: {{ error }}</b-alert>
-		<b-alert variant="warning"><font-awesome-icon icon="info"></font-awesome-icon> Publishing: I understand that publishing this dataset:</b-alert>
+		<b-alert
+			variant="danger"
+			:show="!!error"
+			dismissible
+			@dismissed="error=null"
+		>
+			<i class="fas fa-ban" /> API error: {{ error }}
+		</b-alert>
+		<b-alert variant="warning">
+			<font-awesome-icon icon="info" /> Publishing: I understand that publishing this dataset:
+		</b-alert>
 
 		<!-- Modals -->
-		<b-modal ref="publishModal" id="publishModal" title="Publish dataset?"
-			ok-title="Publish" cancel-variant="primary" ok-variant="success" @ok="publish">
+		<b-modal
+			id="publishModal"
+			ref="publishModal"
+			title="Publish dataset?"
+			ok-title="Publish"
+			cancel-variant="primary"
+			ok-variant="success"
+			@ok="publish"
+		>
 			<div class="d-block text-left">
 				<p>I understand that publishing this dataset:</p>
 				<ul>
@@ -149,12 +209,23 @@
 
 		<b-container>
 			<b-row no-gutters>
-				<b-col md="3" v-if="!!selectedSchema">
-					<b-nav class="sticky-top editor-index-navigation" vertical>
-						<b-nav-item v-for="(tab, index) in tabs" :key="tab.uri" :to="`/dataset/${id}/${tab.uri}`">
+				<b-col
+					v-if="!!selectedSchema"
+					md="3"
+				>
+					<b-nav
+						class="sticky-top editor-index-navigation"
+						vertical
+					>
+						<b-nav-item
+							v-for="(tab, index) in tabs"
+							:key="tab.uri"
+							:to="`/dataset/${id}/${tab.uri}`"
+						>
 							<b-row>
 								<b-badge
-									:variant="$route.params.tab === tab.uri ? 'info' : 'secondary'">
+									:variant="$route.params.tab === tab.uri ? 'info' : 'secondary'"
+								>
 									{{ index+1 }}
 								</b-badge>
 								<b-col>
@@ -182,17 +253,25 @@
 					<b-container class="page-is-loading">
 						<b-row>
 							<b-col>
-								<font-awesome-icon icon="spinner" spin />
+								<font-awesome-icon
+									icon="spinner"
+									spin
+								/>
 							</b-col>
 						</b-row>
 					</b-container>
 				</b-col>
 
-				<b-col v-else-if="!loading" class="schema-help-text">
+				<b-col
+					v-else-if="!loading"
+					class="schema-help-text"
+				>
 					<b-container>
 						<b-row>
 							<b-col>
-								<h2 class="component-title">Where are your files related to this dataset?</h2>
+								<h2 class="component-title">
+									Where are your files related to this dataset?
+								</h2>
 							</b-col>
 						</b-row>
 						<b-row class="mb-3">
@@ -205,24 +284,30 @@
 						</b-row>
 						<b-row class="mb-3">
 							<b-col>
-								<b-card-group deck v-model="selectedSchema" :key="index"
-										:title="bundle"
-										v-for="(bundle, index) in bundles">
-										<b-card
-											:id="id"
-											:title="val.title"
-											v-for="(val, id) in getSchemas(bundle)"
-											:key="id">
-											<b-card-text>
-												{{ val.description }}
-											</b-card-text>
-											<b-button
-												slot="footer"
-												@click="selectedSchema = val; selectSchema()"
-												variant="primary">
-												{{ val.name }}
-											</b-button>
-										</b-card>
+								<b-card-group
+									v-for="(bundle, index) in bundles"
+									:key="index"
+									v-model="selectedSchema"
+									deck
+									:title="bundle"
+								>
+									<b-card
+										v-for="(val, id) in getSchemas(bundle)"
+										:id="id"
+										:key="id"
+										:title="val.title"
+									>
+										<b-card-text>
+											{{ val.description }}
+										</b-card-text>
+										<b-button
+											slot="footer"
+											variant="primary"
+											@click="selectedSchema = val; selectSchema()"
+										>
+											{{ val.name }}
+										</b-button>
+									</b-card>
 								</b-card-group>
 							</b-col>
 						</b-row>
@@ -257,7 +342,7 @@ import Vue from 'vue'
 import TabSelector from '@/widgets/TabSelector.vue'
 
 export default {
-	name: "editor",
+	name: "Editor",
 	components: {
 		'publish-modal': PublishModal,
 		'tab-selector': TabSelector,
@@ -294,6 +379,85 @@ export default {
 			otherError: false,
 			openRecordCounter: 0,
 		}
+	},
+	computed: {
+		reloadDatasetTitle() {
+			return this.reloadDatasetCounter == 0 ? "Undo All Changes" : "Are you sure?"
+		},
+		isPublishDisabled() {
+			return this.loading || this.rateLimited || this.$store.state.metadata.id == null || (this.qvainData && this.qvainData.published && this.qvainData.synced >= this.qvainData.modified) || this.isDataChanged || this.saving || this.publishing
+		},
+		isPublished() {
+			return this.qvainData && this.qvainData.published
+		},
+		isPublishedAndUpdateAvailable() {
+			return this.isPublished && (this.qvainData.modified > this.qvainData.synced)
+		},
+		isSaveDisabled() {
+			return this.loading || this.rateLimited || this.isDataChanged == false || this.saving || this.publishing
+		},
+		tabs() {
+			return (this.$store.state.hints.tabs || []).filter(tab => tab.uri)
+		},
+		bundles() {
+			return Object.keys(Bundle)
+		},
+		title() {
+			return this.$store.getters.getTitle
+		},
+	},
+	watch: {
+		'$route.params.tab': async function(newTab, oldTab) {
+			if (!newTab) {
+				// this happens when the user navigates to "New dataset" via navigation
+				// when user is in Editor view
+				this.clearRecord()
+			} else {
+				this.$store.commit('setMetadata', { tab: newTab })
+				this.checkTab()
+			}
+		},
+		'$route.params.id': async function(newId, oldId) {
+			if (this.id === 'new') {
+				this.clearRecord()
+			} else if (this.id !== 'edit' && this.$store.state.metadata.id !== this.id) {
+				await this.openRecord(this.id)
+			}
+		},
+		'qvainData': {
+			handler(qvainData) {
+				this.$store.commit('setMetadata', {
+					isOldVersion: !!(qvainData && qvainData.next),
+					isDeprecated: !!(qvainData && qvainData.deprecated),
+				})
+			},
+			deep: true,
+			immediate: true,
+		},
+	},
+	destroyed: function() {
+		if (this.reloadDatasetTimer) {
+			clearTimeout(this.reloadDatasetTimer)
+		}
+		this.reloadDatasetTimer = null
+	},
+	async mounted() {
+		if (this.id === 'new') {
+			this.clearRecord()
+		} else if (this.id !== 'edit') {
+			await this.openRecord(this.id)
+		}
+
+		// if schema is not set, try to read schema from store
+		if (!this.selectedSchema && this.$store.state.metadata.schemaId) {
+			this.selectedSchema = this.getSchemaForId(this.$store.state.metadata.schemaId)
+		}
+
+		if (this.selectedSchema) {
+			this.startValidator()
+		}
+
+		this.checkTab()
 	},
 	methods: {
 		getSchemas(bundle) {
@@ -357,7 +521,7 @@ export default {
 				}
 			} catch (e) {
 				// check if we got an api error for the modal, else show a generic error message
-				console.log("publish error:", e, Object.keys(e))
+				console.error("publish error:", e, Object.keys(e))
 				if (e.response && e.response.status == 401) {
 					this.handleLostSession()
 				}
@@ -475,7 +639,7 @@ export default {
 				else {
 					this.handleOtherError()
 				}
-				console.log(error)
+				console.error(error)
 			} finally {
 				this.loading = false
 			}
@@ -531,61 +695,6 @@ export default {
 			})
 		},
 	},
-	computed: {
-		reloadDatasetTitle() {
-			return this.reloadDatasetCounter == 0 ? "Undo All Changes" : "Are you sure?"
-		},
-		isPublishDisabled() {
-			return this.loading || this.rateLimited || this.$store.state.metadata.id == null || (this.qvainData && this.qvainData.published && this.qvainData.synced >= this.qvainData.modified) || this.isDataChanged || this.saving || this.publishing
-		},
-		isPublished() {
-			return this.qvainData && this.qvainData.published
-		},
-		isPublishedAndUpdateAvailable() {
-			return this.isPublished && (this.qvainData.modified > this.qvainData.synced)
-		},
-		isSaveDisabled() {
-			return this.loading || this.rateLimited || this.isDataChanged == false || this.saving || this.publishing
-		},
-		tabs() {
-			return (this.$store.state.hints.tabs || []).filter(tab => tab.uri)
-		},
-		bundles() {
-			return Object.keys(Bundle)
-		},
-		title() {
-			return this.$store.getters.getTitle
-		},
-	},
-	watch: {
-		'$route.params.tab': async function(newTab, oldTab) {
-			if (!newTab) {
-				// this happens when the user navigates to "New dataset" via navigation
-				// when user is in Editor view
-				this.clearRecord()
-			} else {
-				this.$store.commit('setMetadata', { tab: newTab })
-				this.checkTab()
-			}
-		},
-		'$route.params.id': async function(newId, oldId) {
-			if (this.id === 'new') {
-				this.clearRecord()
-			} else if (this.id !== 'edit' && this.$store.state.metadata.id !== this.id) {
-				await this.openRecord(this.id)
-			}
-		},
-		'qvainData': {
-			handler(qvainData) {
-				this.$store.commit('setMetadata', {
-					isOldVersion: !!(qvainData && qvainData.next),
-					isDeprecated: !!(qvainData && qvainData.deprecated),
-				})
-			},
-			deep: true,
-			immediate: true,
-		},
-	},
 	beforeRouteLeave(to, from, next) {
 		if (!this.isDataChanged) {
 			next()
@@ -598,30 +707,6 @@ export default {
 				next()
 			}
 		})
-	},
-	destroyed: function() {
-		if (this.reloadDatasetTimer) {
-			clearTimeout(this.reloadDatasetTimer)
-		}
-		this.reloadDatasetTimer = null
-	},
-	async mounted() {
-		if (this.id === 'new') {
-			this.clearRecord()
-		} else if (this.id !== 'edit') {
-			await this.openRecord(this.id)
-		}
-
-		// if schema is not set, try to read schema from store
-		if (!this.selectedSchema && this.$store.state.metadata.schemaId) {
-			this.selectedSchema = this.getSchemaForId(this.$store.state.metadata.schemaId)
-		}
-
-		if (this.selectedSchema) {
-			this.startValidator()
-		}
-
-		this.checkTab()
 	},
 }
 </script>

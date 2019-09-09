@@ -41,7 +41,7 @@ export default {
 							props: { 'no-body': true },
 							class: "border-0 my-3 q-skipped-added-card " + (inSameTab ? "q-insametab" : ("q-notinsametab-" + myTab + "-" + uiTab + "-" + context.props.tab)),
 						},
-						[ child ],
+						[child],
 					)
 				}
 				return child
@@ -49,7 +49,7 @@ export default {
 			})
 		)
 	},
-	props: ['schema', 'path', 'value', 'parent', 'property', 'tab', 'activeTab', 'required'],
+	props: [ 'schema', 'path', 'value', 'parent', 'property', 'tab', 'activeTab', 'required' ],
 	components: {
 		'TabSelector': require('./TabSelector.vue'),
 	},

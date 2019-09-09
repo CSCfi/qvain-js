@@ -6,23 +6,24 @@
 				<b-form @submit.stop.prevent>
 					<b-form-group
 						:label="title"
-						:description="description">
+						:description="description"
+					>
 						<datepicker
 							v-if="format === 'date-time' || format === 'date'"
+							v-model="date"
 							:format="format"
-							v-model="date">
-						</datepicker>
+						/>
 						<timepicker
 							v-if="format === 'date-time' || format === 'time'"
+							v-model="time"
 							:format="format"
-							v-model="time">
-						</timepicker>
+						/>
 						<timezonepicker
 							v-if="format === 'date-time' || format === 'time'"
+							v-model="timezone"
 							:format="format"
 							:timezonedate="date"
-							v-model="timezone">
-						</timezonepicker>
+						/>
 					</b-form-group>
 				</b-form>
 			</b-col>
@@ -59,7 +60,7 @@ import TimePicker from "@/components/TimePicker.vue"
 import TimeZonePicker from "@/components/TimeZonePicker.vue"
 
 export default {
-	name: 'datetime-picker',
+	name: 'DatetimePicker',
 	components: {
 		"datepicker": DatePicker,
 		"timepicker": TimePicker,
@@ -81,21 +82,55 @@ export default {
 			isInitializing: true,
 		}
 	},
+	watch: {
+		time() {
+			if (this.isInitializing) { return }
+			this.updateValue()
+		},
+		date() {
+			if (this.isInitializing) { return }
+			this.updateValue()
+		},
+		timezone() {
+			if (this.isInitializing) { return }
+			this.updateValue()
+		},
+	},
+	created() {
+		this.isInitializing = true
+		this.internalValue = this.value
+		this.initialValue = this.value
+		if (this.internalValue) {
+			const timeValue = this.internalValue.split("T")
+			const timeValueWithTimezone = timeValue[1]
+			let timezonePrefix = "-"
+			if (timeValueWithTimezone) {
+				if (timeValueWithTimezone.indexOf("+") > 0) {
+					timezonePrefix = "+"
+				}
+				const timeAndTimezone = timeValueWithTimezone.split(timezonePrefix)
+				this.timezone = timezonePrefix + timeAndTimezone[1]
+				this.time = timeAndTimezone[0]
+			}
+			this.date = timeValue[0]
+		}
+		this.isInitializing = false
+	},
 
 	methods: {
 		toExternalDateFormat(internalFormat) {
 			if (!internalFormat) { return internalFormat }
-			const [date, time] = internalFormat.split("T")
+			const [ date, time ] = internalFormat.split("T")
 			return date
 		},
 		toExternalTimeFormat(internalFormat) {
 			if (!internalFormat) { return internalFormat }
-			const [date, time] = internalFormat.split("T")
+			const [ date, time ] = internalFormat.split("T")
 			return time
 		},
 		fromExternalDateFormat(externalFormat) {
 			if (!externalFormat) { return externalFormat }
-			const [year, month, day] = externalFormat.split("-")
+			const [ year, month, day ] = externalFormat.split("-")
 			return day + "." + month + "." + year
 		},
 		updateValue() {
@@ -127,42 +162,8 @@ export default {
 			} else if (this.format === "time") {
 				this.$emit('input', this.toExternalTimeFormat(this.internalValue))
 			} else {
-				console.log("Unhandled data format (" + this.format + ") for DateTimePicker")
+				console.error("Unhandled data format (" + this.format + ") for DateTimePicker")
 			}
-		}
-	},
-	created() {
-		this.isInitializing = true
-		this.internalValue = this.value
-		this.initialValue = this.value
-		if (this.internalValue) {
-			const timeValue = this.internalValue.split("T")
-			const timeValueWithTimezone = timeValue[1]
-			let timezonePrefix = "-"
-			if (timeValueWithTimezone) {
-				if (timeValueWithTimezone.indexOf("+") > 0) {
-					timezonePrefix = "+"
-				}
-				const timeAndTimezone = timeValueWithTimezone.split(timezonePrefix)
-				this.timezone = timezonePrefix + timeAndTimezone[1]
-				this.time = timeAndTimezone[0]
-			}
-			this.date = timeValue[0]
-		}
-		this.isInitializing = false
-	},
-	watch: {
-		time() {
-			if (this.isInitializing) { return }
-			this.updateValue()
-		},
-		date() {
-			if (this.isInitializing) { return }
-			this.updateValue()
-		},
-		timezone() {
-			if (this.isInitializing) { return }
-			this.updateValue()
 		},
 	},
 }
