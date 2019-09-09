@@ -392,6 +392,7 @@ import PublishModal from '@/components/PublishModal.vue'
 
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
 import formatDate from 'date-fns/format'
+import getApiError from '@/lib/getApiError.js'
 
 // id owner created modified published identifier title{} description{} preservation_state
 const fields = [
@@ -428,23 +429,6 @@ const fields = [
 	},
 ]
 
-function getApiError(error,apiCall,datasetId) {
-	let errorText=[ "Error", apiCall, datasetId ].join(" ")
-	if (error.response) {
-		errorText += [ " [" , error.response.status + "]" ].join(" ")
-		if (error.response.data && error.response.data.msg) {
-			errorText += [ " :" ,error.response.data.msg ].join(" ")
-		}
-		if(error.response.data.error_id) {
-			errorText+=[" Error id =",error.response.data.error_id,"Please contact servicedesk(at)csc.fi." ].join(" ")
-		}
-	} else if (error.code  && error.code === 'ECONNABORTED') {
-		errorText += [ " :","Request is taking too long" ].join(" ")
-	}else if (error.message) {
-		errorText += [ " :",error.message.toLowerCase() ].join(" ")
-	}
-	return errorText
-}
 
 export default {
 	name: "dataset-list",

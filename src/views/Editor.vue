@@ -65,7 +65,7 @@
 			</b-container>
 
 			<b-collapse id="nav-collapse" is-nav>
-				<b-container v-if="!timeoutError && !otherError">
+				<b-container v-if="!errorMessage">
 					<b-row>
 						<b-col md="3">
 							<b-button
@@ -146,14 +146,14 @@
 			:error="publishError"
 			@hidden="publishError = null"
 		/>
-		<b-alert :show="otherError" variant="danger">
-			{{ errorMessage }}. Please contact servicedesk(at)csc.fi.
-		</b-alert>
-		<b-alert :show="timeoutError" variant="danger">
+		<b-alert
+			variant="danger"
+			:show="!!errorMessage"
+		>
 			{{ errorMessage }}
 		</b-alert>
 
-		<b-container v-if="!timeoutError && !otherError">
+		<b-container v-if="!errorMessage">
 			<b-row no-gutters>
 				<b-col md="3" v-if="!!selectedSchema">
 					<b-nav class="sticky-top editor-index-navigation" vertical>
@@ -261,6 +261,7 @@ import Validator from '../../vendor/validator/src/validate.js'
 import cloneWithPrune from '@/lib/cloneWithPrune.js'
 import Vue from 'vue'
 import TabSelector from '@/widgets/TabSelector.vue'
+import getApiError from '@/lib/getApiError.js'
 
 export default {
 	name: "editor",
@@ -297,8 +298,6 @@ export default {
 			qvainData: null,
 			reloadDatasetCounter: 0,
 			reloadDatasetTimer: null,
-			otherError: false,
-			timeoutError:false,
 			openRecordCounter: 0,
 			errorMessage:null,
 		}
@@ -366,7 +365,7 @@ export default {
 					this.handleLostSession()
 				}
 				if(e.code ==='ECONNABORTED') {
-					this.errorMessage = this.getError(e," While Publishing dataset:",this.$store.state.metadata.id)
+					this.errorMessage = getApiError(e," While Publishing dataset:",this.$store.state.metadata.id)
 				}
 				if (e.response && e.response.data) {
 					this.publishError = e.response.data
@@ -408,7 +407,7 @@ export default {
 					this.handleLostSession()
 				}
 				else {
-					this.errorMessage = this.getError(error,errorMethod,this.$store.state.metadata.id)
+					this.errorMessage = getApiError(error,errorMethod,this.$store.state.metadata.id)
 				}
 			} finally {
 				this.saving = false
@@ -484,9 +483,8 @@ export default {
 					this.handleLostSession()
 				}
 				else {
-					this.errorMessage = this.getError(error,"while opening dataset",id)
+					this.errorMessage = getApiError(error,"while opening dataset",id)
 				}
-				console.log("Error occured "+error +" for dataset id :"+id)
 			} finally {
 				this.loading = false
 			}
@@ -537,26 +535,6 @@ export default {
 					this.isDataChanged = true
 				}
 			})
-		},
-		getError(error,apiCall,datasetId) {
-			let errorText=[ "Error", apiCall, datasetId ].join(" ")
-			if (error.response) {
-				this.otherError = true
-				errorText += [ " [", error.response.status ,"]" ].join(" ")
-				if (error.response.data && error.response.data.msg) {
-					errorText += [ " :" , error.response.data.msg,"," ].join(" ")
-				}
-				if(error.response.data.error_id) {
-					errorText+=[ " Error id = ",error.response.data.error_id ].join(" ")
-				}
-			} else if (error.code  && error.code === 'ECONNABORTED') {
-				this.timeoutError = true
-				errorText += [ ": " , "Request is taking too long" ].join(" ")
-			}else if (error.message) {
-				this.otherError = true
-				errorText += [ ":", error.message.toLowerCase() ].join(" ")
-			}
-			return errorText
 		},
 	},
 	computed: {
