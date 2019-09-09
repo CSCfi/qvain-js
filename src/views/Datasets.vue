@@ -9,28 +9,28 @@
 				<b-btn
 					class="dataset-filter__button"
 					:pressed="datasetsView.showState === 'all'"
-					@click="()=>setShowState('all')"
+					@click="setShowState('all')"
 					:variant="datasetsView.showState === 'all' ? 'secondary' : 'outline-secondary'">
 					All
 				</b-btn>
 				<b-btn
 					class="dataset-filter__button"
 					:pressed="datasetsView.showState === 'draft'"
-					@click="()=>setShowState('draft')"
+					@click="setShowState('draft')"
 					:variant="datasetsView.showState === 'all' || datasetsView.showState === 'draft' ? 'success' : 'outline-secondary'">
 					Draft
 				</b-btn>
 				<b-btn
 					class="dataset-filter__button"
 					:pressed="datasetsView.showState === 'published'"
-					@click="()=>setShowState('published')"
+					@click="setShowState('published')"
 					:variant="datasetsView.showState === 'all' || datasetsView.showState === 'published' ? 'primary' : 'outline-secondary'">
 					Published
 				</b-btn>
 				<b-btn
 					class="dataset-filter__button"
 					:pressed="datasetsView.showState === 'unpublishedchanges'"
-					@click="()=>setShowState('unpublishedchanges')"
+					@click="setShowState('unpublishedchanges')"
 					:variant="datasetsView.showState === 'all' || datasetsView.showState === 'unpublishedchanges' ? 'warning' : 'outline-secondary'">
 					Unpublished Changes
 				</b-btn>
@@ -74,7 +74,7 @@
 			<b-button-group size="sm">
 				<b-btn
 					:pressed="datasetsView.perPage === 0"
-					@click="() => setPerPage(0)"
+					@click="setPerPage(0)"
 				>
 					show all
 				</b-btn>
@@ -83,7 +83,7 @@
 					:key="option"
 					:pressed="datasetsView.perPage === option"
 					class="btn"
-					@click="() => setPerPage(option)"
+					@click="setPerPage(option)"
 				>{{ option }}
 				</b-btn>
 			</b-button-group>
@@ -154,8 +154,14 @@
 						<font-awesome-icon icon="circle" class="text-success" v-else />
 					</span>
 					{{ preferredLanguage(row.item.title) }}
-					<b-badge v-if="row.item.next !== null" variant="warning" class="old-version">Old version</b-badge>
-					<b-badge v-if="row.item.deprecated" variant="danger" class="old-version">Deprecated</b-badge>
+					<b-badge v-if="row.item.next !== null" variant="warning" >Old version</b-badge>
+					<b-badge v-if="row.item.deprecated" variant="danger" >Deprecated</b-badge>
+					<b-badge
+						v-if="row.item.preservation_state > 0 || row.item.data_catalog=='urn:nbn:fi:att:data-catalog-pas'"
+						variant="info"
+					>
+						PAS
+					</b-badge>
 				</h5>
 				<p v-if="row.item.description" class="text-muted pointer" @click.stop="editDataset(row.item)">
 					<small>{{ preferredLanguage(row.item.description) }}</small>
@@ -237,7 +243,7 @@
 			<b-button-group size="sm">
 				<b-btn
 					:pressed="datasetsView.perPage === 0"
-					@click="() => setPerPage(0)"
+					@click="setPerPage(0)"
 				>
 					show all
 				</b-btn>
@@ -246,7 +252,7 @@
 					:key="option"
 					:pressed="datasetsView.perPage === option"
 					class="btn"
-					@click="() => setPerPage(option)"
+					@click="setPerPage(option)"
 				>{{ option }}
 				</b-btn>
 			</b-button-group>

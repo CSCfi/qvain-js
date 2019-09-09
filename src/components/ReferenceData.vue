@@ -20,7 +20,9 @@
 					:options="languages"
 					placeholder="Select language"
 					label="language"
-					class="lang-select"/>
+					class="lang-select"
+					:disabled="readOnly"
+				/>
 
 				<Multiselect v-if="optionsShouldBeGrouped"
 					:id="property + '_value-select'"
@@ -40,7 +42,7 @@
 					:placeholder="getPlaceholder"
 					group-values="children"
 					:group-label="labelNameInSchema"
-					:disabled="disabled"
+					:disabled="readOnly"
 					:allowEmpty="allowEmpty"
 					:deselectLabel="allowEmpty ? 'Press enter to remove' : 'Selected'"
 					@search-change="search"
@@ -76,7 +78,7 @@
 					:customLabel="customLabel"
 					:placeholder="getPlaceholder"
 					@select="atSelect"
-					:disabled="disabled"
+					:disabled="readOnly"
 					:allowEmpty="allowEmpty"
 					:deselectLabel="allowEmpty ? 'Press enter to remove' : 'Selected'"
 					@search-change="search">
@@ -91,7 +93,7 @@
 				<p v-for="(option, index) in Array.from(selectedOptions)" :key="option.identifier" class="tag">
 					{{ customLabel(option) }}
 					<span class="remove-button">
-						<DeleteButton @click="removeValue(index)" />
+						<DeleteButton @click="removeValue(index)" :disabled="readOnly" />
 					</span>
 				</p>
 			</div>
@@ -131,7 +133,6 @@ export default {
 		placeholder: { type: String, required: false, default: null },
 		actions: { type: Array, default: ()=>[] },
 		disableInternalSearch: { type: Boolean, default: false },
-		disabled: { type: Boolean, default: false },
 		header: { type: Boolean, default: true },
 		preservedFields: { type: Array, default: () => [] },
 		allowEmpty: { type: Boolean, default: true },

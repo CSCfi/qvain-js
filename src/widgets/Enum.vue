@@ -9,7 +9,12 @@
 			<b-form-group>
 				<span slot="label" v-if="makeLabel !== uiLabel">
 					{{ makeLabel }}
-					<delete-button v-if="inArray" slot="label" @click="deleteMe"/>
+					<delete-button
+						v-if="inArray"
+						slot="label"
+						:disabled="readOnly"
+						@click="deleteMe"
+					/>
 				</span>
 
 				<b-input-group>

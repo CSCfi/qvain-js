@@ -33,21 +33,31 @@
 				</p>
 			</div>
 			<b-btn-group class="ml-auto">
-				<b-btn :disabled="readonly || deleted" variant="primary" class="px-3 py-2" v-b-toggle="single.identifier">
+				<b-btn :disabled="deleted" variant="primary" class="px-3 py-2" v-b-toggle="single.identifier">
 					<font-awesome-icon :icon="icons.faPen"/>
 				</b-btn>
-				<b-btn :disabled="readonly" variant="danger" class="px-3 py-2" @click="$emit('delete', { type, fields: single })">
+				<b-btn :disabled="readOnly" variant="danger" class="px-3 py-2" @click="$emit('delete', { type, fields: single })">
 					<font-awesome-icon :icon="icons.faTrash"/>
 				</b-btn>
 			</b-btn-group>
 		</b-card-body>
 		<b-collapse :id="single.identifier" accordion="file-accordion" class="mt-2" :style="{'padding': '20px', 'padding-top': '0px'}">
 			<b-form-group class="item-field my-1" label="Title" key="title" label-cols="3" lable-for="title">
-				<b-form-input class="qvain-input" placeholder="Title" v-model="single.title"></b-form-input>
+				<b-form-input
+					v-model="single.title"
+					class="qvain-input"
+					placeholder="Title"
+					:disabled="readOnly"
+				/>
 			</b-form-group>
 
 			<b-form-group class="item-field my-1" label="Description" key="description" label-cols="3" lable-for="description">
-				<b-form-input class="qvain-input" placeholder="Description" v-model="single.description"></b-form-input>
+				<b-form-input
+					v-model="single.description"
+					class="qvain-input"
+					placeholder="Description"
+					:disabled="readOnly"
+				/>
 			</b-form-group>
 
 			<RefList
@@ -69,8 +79,9 @@
 					item['pref_label']['fi'] ||
 					item['pref_label']['und'] ||
 					'(no label)' : item['identifier']"
-				isRequired>
-			</RefList>
+				isRequired
+				:read-only="readOnly"
+			/>
 
 			<RefList v-if="type === 'files'"
 				esDoctype="file_type"
@@ -90,8 +101,9 @@
 					item['pref_label']['en'] ||
 					item['pref_label']['fi'] ||
 					item['pref_label']['und'] ||
-					'(no label)' : item['identifier']">
-			</RefList>
+					'(no label)' : item['identifier']"
+					:read-only="readOnly"
+			/>
 		</b-collapse>
 	</b-card>
 </template>
@@ -119,7 +131,7 @@ export default {
 		"single",
 		"removeItem",
 		"type",
-		"readonly",
+		"readOnly",
 		"deleted",
 	],
 	data() {

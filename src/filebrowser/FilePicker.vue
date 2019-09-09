@@ -1,15 +1,29 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
 	<div>
-		<b-alert :show="readonly">
-			You are editing an old version of the dataset and cannot make changes to the files.
+		<b-alert :show="!readOnly && isOld">
+			You are editing an old version of the dataset and cannot add or remove files.
 		</b-alert>
 
-		<b-alert :show="!readonly && hasDeletedItems">
-			Some of the files in your dataset have been deleted. You need to remove the deleted files before the dataset can be published.
+		<b-alert :show="isPas">
+			You are editing a PAS dataset and cannot add or remove files, but can still modify the PAS metadata of your files.
 		</b-alert>
 
-		<b-dropdown v-if="!readonly" text="Change project" class="my-3">
+		<b-alert :show="hasDeletedItems">
+			Some of the files in your dataset have been deleted.
+			<template v-if="!readOnly && !editOnlyMetadata">
+				You need to remove the deleted files from the dataset before it can be published.
+			</template>
+			<template v-else>
+				The dataset cannot be published with deleted files.
+			</template>
+		</b-alert>
+
+		<b-dropdown
+			v-if="!readOnly && !editOnlyMetadata"
+			text="Change project"
+			class="my-3"
+		>
 			<b-dropdown-item v-for="proj in projects" :key="proj" @click="updateProject(proj)">
 				Project {{ proj }}
 			</b-dropdown-item>
@@ -27,10 +41,10 @@
 			</b-row>
 
 			<Browser
-				v-if="!readonly"
 				:selected="selectedByIdentifiers"
 				:project="selectedProject"
 				:disabled="hasFilesFromOtherProject"
+				:edit-only-metadata="editOnlyMetadata"
 				@select="addFileOrDirectory"
 				@remove="removeFileOrDirectory" />
 		</div>
@@ -48,7 +62,7 @@
 						:type="category"
 						:secondary="item.identifier"
 						:icon="icons[category]"
-						:readonly="readonly"
+						:read-only="readOnly || isOld"
 						:deleted="$store.state.deletedItems[category][item.identifier] === true"
 						@delete="removeFileOrDirectory"/>
 				</div>
@@ -67,7 +81,7 @@ import axios from 'axios'
 
 const metaxAPI = axios.create({
 	baseURL: process.env.VUE_APP_METAX_FILEAPI_URL || '/api/proxy',
-	timeout: 3000,
+	timeout: 5000,
 	responseType: 'json',
 })
 
@@ -76,6 +90,11 @@ export default {
 	components: {
 		Browser,
 		FileItem,
+	},
+	props: {
+		'readOnly': {
+			type: Boolean,
+		},
 	},
 	data() {
 		return {
@@ -194,8 +213,14 @@ export default {
 				this.$store.commit('setMetadata', { project })
 			},
 		},
-		readonly() {
+		isOld() {
 			return this.$store.state.metadata.isOldVersion
+		},
+		isPas() {
+			return this.$store.state.metadata.isPas
+		},
+		editOnlyMetadata() {
+			return this.isPas || this.isOld
 		},
 		hasDeletedItems() {
 			for (const category in this.state) {
@@ -213,7 +238,7 @@ export default {
 			// return ['project_x', '2001036'] // this is only for development purpose
 		},
 		selectedProject() {
-			if (this.readonly) {
+			if (this.readOnly) {
 				return this.project || null
 			}
 

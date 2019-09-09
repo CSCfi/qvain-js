@@ -4,7 +4,14 @@
 		<b-input-group-text class="height" slot="prepend">
 			<font-awesome-icon icon="plus" fixed-width class="text-dark" />
 		</b-input-group-text>
-		<b-form-select class="select" v-model="state" :options="languages" v-bind="$attrs" v-on="$listeners" @change="reset">
+		<b-form-select
+			v-model="state"
+			class="select"
+			:options="languages"
+			:disabled="disabled"
+			v-bind="$attrs"
+			v-on="$listeners"
+			@change="reset">
 			<template slot="first">
 				<option :value="undefined" disabled class="text-muted">{{ placeholder }}</option>
 			</template>
@@ -37,6 +44,7 @@ export default {
 			type: String,
 			default: "Add translation",
 		},
+		disabled: Boolean,
 	},
 	data() {
 		return {
