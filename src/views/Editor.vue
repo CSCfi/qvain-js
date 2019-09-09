@@ -410,12 +410,12 @@ export default {
 
 				const isExisting = (currentId && currentId !== 'new')
 				if (isExisting) {
-					errorMethod = " While updating dataset "
+					errorMethod = "While updating dataset"
 					payload.id = currentId
 					await apiClient.put("/datasets/" + currentId, payload)
 					await this.openRecord(currentId)
 				} else {
-					errorMethod = " While saving dataset "
+					errorMethod = "While saving dataset"
 					const { data: { id }} = await apiClient.post("/datasets/", payload)
 					await this.openRecord(id)
 					this.$store.commit('setMetadata', { id })
