@@ -4,7 +4,7 @@ This function returns well texted error message
 */
 
 export default function getApiError(error,apiCall,datasetId) {
-	let errorText=[ "Error", apiCall, datasetId ]
+	let errorText = [ "Error", apiCall, datasetId ]
 	if (error.response) {
 		errorText.push("[",error.response.status,"]")
 		if (error.response.data && error.response.data.msg) {
