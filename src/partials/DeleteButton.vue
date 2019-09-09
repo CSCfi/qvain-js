@@ -36,7 +36,7 @@
 
 <script>
 export default {
-	name: 'delete-button',
+	name: 'DeleteButton',
 	props: {
 		disabled: {
 			type: Boolean,

@@ -79,8 +79,8 @@ const combine = (state, data, dir) => {
 			_showDetails: false,
 		}))
 	}
-	console.log('files and folders', [...parsedFolders, ...parsedFiles])
-	return [...parsedFolders, ...parsedFiles]
+	console.log('files and folders', [ ...parsedFolders, ...parsedFiles ])
+	return [ ...parsedFolders, ...parsedFiles ]
 }
 
 // TODO: Add functions to clear data from store when user is finished
@@ -131,7 +131,7 @@ export default {
 			Vue.set(state, 'project', project)
 		},
 		addNames(state, items) {
-			Vue.set(state, 'namesOfSelected', {...state.namesOfSelected, ...items})
+			Vue.set(state, 'namesOfSelected', { ...state.namesOfSelected, ...items })
 		},
 		removeName(state, identifier) {
 			Vue.delete(state.namesOfSelected, identifier)
@@ -191,7 +191,7 @@ export default {
 
 			// save names separately. They will be displayed in ui but not stored in record
 			const saveName = (item) => {
-				names[item.identifier] = {name: item.name, path: item.parentPath, project: item.project}
+				names[item.identifier] = { name: item.name, path: item.parentPath, project: item.project }
 			}
 
 			const process = (item) => {
@@ -208,18 +208,18 @@ export default {
 
 			console.log('rootState', rootState)
 			if (recordFiles.length > 0) {
-				commit('pushMultiple', {p: rootState.record, prop: 'files', val: recordFiles}, { root: true })
+				commit('pushMultiple', { p: rootState.record, prop: 'files', val: recordFiles }, { root: true })
 			}
 
 			if (recordDirs.length > 0) {
-				commit('pushMultiple', {p: rootState.record, prop: 'directories', val: recordDirs}, { root: true })
+				commit('pushMultiple', { p: rootState.record, prop: 'directories', val: recordDirs }, { root: true })
 			}
 			commit('addNames', names)
 			commit('clearPicked')
 		},
-		removeItem({ commit, state, rootState }, {identifier, type, path, project}) {
+		removeItem({ commit, state, rootState }, { identifier, type, path, project }) {
 			commit('removeName', identifier)
-			commit('removeValue', {p: rootState.record, prop: type === 'file' ? 'files' : 'directories', val: identifier}, {root: true})
+			commit('removeValue', { p: rootState.record, prop: type === 'file' ? 'files' : 'directories', val: identifier }, { root: true })
 			console.log('projects,path', state.projects[project], path)
 			state.projects[project][path].find(single => {
 				if (single.identifier === identifier) {

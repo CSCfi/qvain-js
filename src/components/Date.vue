@@ -1,8 +1,18 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<record-field v-if="isVisible" :required="isRequired" :wrapped="wrapped">
-		<title-component slot="title" :title="uiLabel" />
-		<small slot="help" class="text-muted">
+	<record-field
+		v-if="isVisible"
+		:required="isRequired"
+		:wrapped="wrapped"
+	>
+		<title-component
+			slot="title"
+			:title="uiLabel"
+		/>
+		<small
+			slot="help"
+			class="text-muted"
+		>
 			{{ uiDescription }}
 		</small>
 
@@ -27,8 +37,7 @@ import RecordField from '@/composites/RecordField.vue'
 import TitleComponent from '@/partials/Title.vue'
 
 export default {
-	name: 'date',
-	extends: SchemaBase,
+	name: 'Date',
 	components: {
 		Datepicker,
 		DeleteButton,
@@ -36,18 +45,20 @@ export default {
 		RecordField,
 		TitleComponent,
 	},
+	extends: SchemaBase,
 	props: {
 		wrapped: { type: Boolean, default: false },
 	},
 	data() {
 		return {
 			date: null,
-			initializing: true
+			initializing: true,
 		}
 	},
-	methods: {
-		clear() {
-			this.date = null
+	watch: {
+		date() {
+			if(this.initializing) return
+			this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: this.date })
 		},
 	},
 	async created() {
@@ -56,10 +67,9 @@ export default {
 		await this.$nextTick()
 		this.initializing = false
 	},
-	watch: {
-		date() {
-			if(this.initializing) return;
-			this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: this.date })
+	methods: {
+		clear() {
+			this.date = null
 		},
 	},
 }

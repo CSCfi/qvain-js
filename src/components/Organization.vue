@@ -1,14 +1,27 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<wrapper :wrapped="false" :style="listItemStyle(depth)">
-		<h3>{{ uiTitle }}
-			<span v-if="isRequired || inArray" class="require-badge">
+	<wrapper
+		:wrapped="false"
+		:style="listItemStyle(depth)"
+	>
+		<h3>
+			{{ uiTitle }}
+			<span
+				v-if="isRequired || inArray"
+				class="require-badge"
+			>
 				<b-badge variant="danger">REQUIRED</b-badge>
 			</span>
 		</h3>
 		<div>
-			<p class="ml-4 card-text text-muted" v-if="uiDescription">
-				<sup><font-awesome-icon icon="quote-left" class="text-muted" /></sup>
+			<p
+				v-if="uiDescription"
+				class="ml-4 card-text text-muted"
+			>
+				<sup><font-awesome-icon
+					icon="quote-left"
+					class="text-muted"
+				/></sup>
 				{{ uiDescription }}
 			</p>
 
@@ -52,12 +65,22 @@
 						v-else
 						class="org-title pointer"
 					>
-						<b-container class="toggle-org" v-b-toggle="domId + '-accordion-' + i">
+						<b-container
+							v-b-toggle="domId + '-accordion-' + i"
+							class="toggle-org"
+						>
 							<div class="multiselect__tags">
 								<span class="multiselect__input">
-									<font-awesome-icon class="edit-icon" icon="edit" fixed-width />&nbsp;
+									<font-awesome-icon
+										class="edit-icon"
+										icon="edit"
+										fixed-width
+									/>&nbsp;
 									<span v-if="getOrgName(org)">{{ getOrgName(org) }}</span>
-									<span v-else class="placeholder">{{ getDescriptionForLevel(i) }}</span>
+									<span
+										v-else
+										class="placeholder"
+									>{{ getDescriptionForLevel(i) }}</span>
 								</span>
 							</div>
 						</b-container>
@@ -98,7 +121,10 @@
 					:disabled="!canAddNew || readOnly"
 					@click="add()"
 				>
-					<font-awesome-icon icon="plus" fixed-width /> Add another level
+					<font-awesome-icon
+						icon="plus"
+						fixed-width
+					/> Add another level
 				</b-button>
 			</div>
 			<div
@@ -221,6 +247,40 @@ export default {
 			keys: [],
 			actions: [{ label:{ "en": "- Add Organization Manually -" }, action: "set_manual" }],
 		}
+	},
+	computed: {
+		canAddNew() {
+			if (this.lastReferenceData === this.lastLevel) {
+				return this.lastReferenceData < 0 || this.flattened[this.lastReferenceData].identifier
+			} else {
+				return true
+			}
+		},
+		lastReferenceData() {
+			let last = -1
+			for (let i=0; i<this.flattened.length; i++) {
+				if (this.getIsReferenceData(i)) {
+					last = i
+				}
+			}
+			return last
+		},
+		countLevels() {
+			if (!this.value) { return -1 }
+			let recurse = this.value
+			let depth = 0
+			while (this.refField in recurse) {
+				depth++
+				recurse = recurse[this.refField]
+			}
+			return depth + 1
+		},
+		flattened() {
+			return this.flatten(this.value)
+		},
+		lastLevel() {
+			return this.flattened.length - 1
+		},
 	},
 	created() {
 		for (let i=0; i<this.flattened.length; i++) {
@@ -437,40 +497,6 @@ export default {
 		},
 		getPlaceholderForLevel(level) {
 			return "Select " + this.getDescriptionForLevel(level)
-		},
-	},
-	computed: {
-		canAddNew() {
-			if (this.lastReferenceData === this.lastLevel) {
-				return this.lastReferenceData < 0 || this.flattened[this.lastReferenceData].identifier
-			} else {
-				return true
-			}
-		},
-		lastReferenceData() {
-			let last = -1
-			for (let i=0; i<this.flattened.length; i++) {
-				if (this.getIsReferenceData(i)) {
-					last = i
-				}
-			}
-			return last
-		},
-		countLevels() {
-			if (!this.value) { return -1 }
-			let recurse = this.value
-			let depth = 0
-			while (this.refField in recurse) {
-				depth++
-				recurse = recurse[this.refField]
-			}
-			return depth + 1
-		},
-		flattened() {
-			return this.flatten(this.value)
-		},
-		lastLevel() {
-			return this.flattened.length - 1
 		},
 	},
 }

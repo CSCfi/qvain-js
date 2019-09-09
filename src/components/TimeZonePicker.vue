@@ -22,10 +22,10 @@
 
 <script>
 export default {
-	name: 'timezonepicker',
+	name: 'Timezonepicker',
 	model: {
 		prop: 'value',
-		event: 'input'
+		event: 'input',
 	},
 	props: {
 		format: String,
@@ -39,7 +39,7 @@ export default {
 			initialValue: null,
 			isInitializing: true,
 			inputRegexp: /^[-+\d:]+$/,
-			timezoneRegexp: /^[+-]?(2[0-3]|[0-1]?\d)(:[0-5]?\d|:)?$/
+			timezoneRegexp: /^[+-]?(2[0-3]|[0-1]?\d)(:[0-5]?\d|:)?$/,
 		}
 	},
 	computed: {
@@ -52,12 +52,26 @@ export default {
 				if (this.timezoneRegexp.test(newValue)) {
 					this.internalValue = newValue
 				}
-			}
+			},
 		},
+	},
+	watch: {
+		timezonedate(value) {
+			this.updateOffset()
+		},
+	},
+	created() {
+		this.isInitializing = true
+		this.initialValue = this.value
+		this.internalValue = this.initialValue
+		if (this.timezonedate && !this.value) {
+			this.updateOffset()
+		}
+		this.isInitializing = false
 	},
 	methods: {
 		updateOffset() {
-			const [day, month, year] = this.fromExternalFormat(this.timezonedate).split(".")
+			const [ day, month, year ] = this.fromExternalFormat(this.timezonedate).split(".")
 			const monthIndex = month - 1
 			const localOffset = new Date(year, monthIndex, day).getTimezoneOffset()
 			if (isNaN(localOffset)) {
@@ -121,12 +135,12 @@ export default {
 		},
 		toExternalFormat(internalFormat) {
 			if (!internalFormat) { return internalFormat }
-			const [day, month, year] = internalFormat.split(".")
+			const [ day, month, year ] = internalFormat.split(".")
 			return year + "-" + month + "-" + day
 		},
 		fromExternalFormat(externalFormat) {
 			if (!externalFormat) { return externalFormat }
-			const [year, month, day] = externalFormat.split("-")
+			const [ year, month, day ] = externalFormat.split("-")
 			return day + "." + month + "." + year
 		},
 		validate(event) {
@@ -137,23 +151,9 @@ export default {
 				this.initialValue = this.internalValue
 			} else if (!this.inputRegexp.test(newValue) && newValue !== '') {
 				this.internalValue = this.initialValue
-				this.$forceUpdate();
+				this.$forceUpdate()
 			}
 		},
 	},
-	created() {
-		this.isInitializing = true
-		this.initialValue = this.value
-		this.internalValue = this.initialValue
-		if (this.timezonedate && !this.value) {
-			this.updateOffset()
-		}
-		this.isInitializing = false
-	},
-	watch: {
-		timezonedate(value) {
-			this.updateOffset()
-		},
-	}
 }
 </script>

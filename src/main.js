@@ -46,7 +46,6 @@ store.registerModule('files', FilesStore)
 const app = new Vue({
 	router,
 	store,
-	render: h => h(App),
 	data: {
 		user: null,
 		language: null,
@@ -54,21 +53,6 @@ const app = new Vue({
 		dismissCountDown: 0,
 		alertText: "hello there!",
 		alertVariant: "dark",
-	},
-	methods: {
-		countDownChanged (dismissCountDown) {
-			this.dismissCountDown = dismissCountDown
-		},
-		showAlert (text, variant) {
-			this.dismissCountDown = this.dismissSecs
-			this.alertText = text
-			this.alertVariant = variant || "dark"
-		},
-		dismissAlert () {
-			this.dismissCountDown = 0
-			this.alertText = null
-			this.alertVariant = "dark"
-		},
 	},
 	computed: {
 		authenticated() {
@@ -87,10 +71,10 @@ const app = new Vue({
 			_paq.push(['trackPageView'])
 			_paq.push(['enableLinkTracking']);
 			(function() {
-				var u= "//matomo.rahtiapp.fi/"
-				_paq.push(['setTrackerUrl', u +'piwik.php'])
-				_paq.push(['setSiteId', process.env['VUE_APP_MATOMO_SITE_ID']])
-				var d=document,
+				let u= "//matomo.rahtiapp.fi/"
+				_paq.push([ 'setTrackerUrl', u +'piwik.php' ])
+				_paq.push([ 'setSiteId', process.env['VUE_APP_MATOMO_SITE_ID'] ])
+				let d=document,
 					g=d.createElement('script'),
 					s=d.getElementsByTagName('script')[0]
 				g.type='text/javascript'
@@ -100,5 +84,21 @@ const app = new Vue({
 				s.parentNode.insertBefore(g,s)
 			})()
 		}
-	}
+	},
+	methods: {
+		countDownChanged (dismissCountDown) {
+			this.dismissCountDown = dismissCountDown
+		},
+		showAlert (text, variant) {
+			this.dismissCountDown = this.dismissSecs
+			this.alertText = text
+			this.alertVariant = variant || "dark"
+		},
+		dismissAlert () {
+			this.dismissCountDown = 0
+			this.alertText = null
+			this.alertVariant = "dark"
+		},
+	},
+	render: h => h(App),
 }).$mount('#app')

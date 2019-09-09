@@ -1,13 +1,23 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<b-card class="rounded-0" no-body>
+	<b-card
+		class="rounded-0"
+		no-body
+	>
 		<b-card-body class="d-flex py-1 align-items-center">
-			<font-awesome-icon :icon="icon" size="2x" class="mr-4 text-muted"/>
+			<font-awesome-icon
+				:icon="icon"
+				size="2x"
+				class="mr-4 text-muted"
+			/>
 			<div class="py-2">
 				<div class="d-flex">
 					<h6 class="mb-0">
-						{{single.title}}
-						<span v-if="secondary" class="text-muted m-0 font-italic">({{secondary}})</span>
+						{{ single.title }}
+						<span
+							v-if="secondary"
+							class="text-muted m-0 font-italic"
+						>({{ secondary }})</span>
 						<b-badge
 							v-if="deleted"
 							variant="danger"
@@ -23,26 +33,49 @@
 						title="Title"
 						:icon="icons.faPencilAlt"
 						:class="single.title ? 'text-primary' : 'text-secondary'"
-						class="mr-2" />
+						class="mr-2"
+					/>
 					<font-awesome-icon
 						v-b-tooltip.hover
 						class="mr-2"
 						:icon="icons.faTag"
 						title="Use Category"
-						:class="single.use_category ? 'text-primary' : 'text-secondary'" />
+						:class="single.use_category ? 'text-primary' : 'text-secondary'"
+					/>
 				</p>
 			</div>
 			<b-btn-group class="ml-auto">
-				<b-btn :disabled="deleted" variant="primary" class="px-3 py-2" v-b-toggle="single.identifier">
-					<font-awesome-icon :icon="icons.faPen"/>
+				<b-btn
+					v-b-toggle="single.identifier"
+					:disabled="deleted"
+					variant="primary"
+					class="px-3 py-2"
+				>
+					<font-awesome-icon :icon="icons.faPen" />
 				</b-btn>
-				<b-btn :disabled="readOnly" variant="danger" class="px-3 py-2" @click="$emit('delete', { type, fields: single })">
-					<font-awesome-icon :icon="icons.faTrash"/>
+				<b-btn
+					:disabled="readOnly"
+					variant="danger"
+					class="px-3 py-2"
+					@click="$emit('delete', { type, fields: single })"
+				>
+					<font-awesome-icon :icon="icons.faTrash" />
 				</b-btn>
 			</b-btn-group>
 		</b-card-body>
-		<b-collapse :id="single.identifier" accordion="file-accordion" class="mt-2" :style="{'padding': '20px', 'padding-top': '0px'}">
-			<b-form-group class="item-field my-1" label="Title" key="title" label-cols="3" lable-for="title">
+		<b-collapse
+			:id="single.identifier"
+			accordion="file-accordion"
+			class="mt-2"
+			:style="{'padding': '20px', 'padding-top': '0px'}"
+		>
+			<b-form-group
+				key="title"
+				class="item-field my-1"
+				label="Title"
+				label-cols="3"
+				lable-for="title"
+			>
 				<b-form-input
 					v-model="single.title"
 					class="qvain-input"
@@ -51,7 +84,13 @@
 				/>
 			</b-form-group>
 
-			<b-form-group class="item-field my-1" label="Description" key="description" label-cols="3" lable-for="description">
+			<b-form-group
+				key="description"
+				class="item-field my-1"
+				label="Description"
+				label-cols="3"
+				lable-for="description"
+			>
 				<b-form-input
 					v-model="single.description"
 					class="qvain-input"
@@ -61,12 +100,12 @@
 			</b-form-group>
 
 			<RefList
-				esDoctype="use_category"
+				es-doctype="use_category"
 				placeholder="use category"
 				help="help text"
-				uiLabel="Use category"
+				ui-label="Use category"
 				:value="single.use_category"
-				:setValue="v => {
+				:set-value="v => {
 					$set(single, 'use_category', {
 						in_scheme: v.in_scheme,
 						identifier: v.identifier,
@@ -74,35 +113,36 @@
 					})
 				}"
 				type="multiselect"
-				:customLabel="(item) => item['pref_label'] ?
+				:custom-label="(item) => item['pref_label'] ?
 					item['pref_label']['en'] ||
 					item['pref_label']['fi'] ||
 					item['pref_label']['und'] ||
 					'(no label)' : item['identifier']"
-				isRequired
+				is-required
 				:read-only="readOnly"
 			/>
 
-			<RefList v-if="type === 'files'"
-				esDoctype="file_type"
+			<RefList
+				v-if="type === 'files'"
+				es-doctype="file_type"
 				placeholder="file type"
 				type="multiselect"
 				help="help text"
-				uiLabel="File Type"
+				ui-label="File Type"
 				:value="single.file_type"
-				:setValue="v => {
+				:set-value="v => {
 					$set(single, 'file_type', {
 						in_scheme: v.in_scheme,
 						identifier: v.identifier,
 						pref_label: v.pref_label,
 					})
 				}"
-				:customLabel="(item) => item['pref_label'] ?
+				:custom-label="(item) => item['pref_label'] ?
 					item['pref_label']['en'] ||
 					item['pref_label']['fi'] ||
 					item['pref_label']['und'] ||
 					'(no label)' : item['identifier']"
-					:read-only="readOnly"
+				:read-only="readOnly"
 			/>
 		</b-collapse>
 	</b-card>

@@ -1,21 +1,26 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
 	<b-container>
-		<h1 class="component-title">User Information</h1>
+		<h1 class="component-title">
+			User Information
+		</h1>
 
-		<b-form v-if="$auth.user" id="form-userinfo">
+		<b-form
+			v-if="$auth.user"
+			id="form-userinfo"
+		>
 			<b-form-group
 				id="organization"
 				label-cols-sm="4"
 				label-cols-lg="3"
 				label="Organization"
-				label-for="input-organization">
+				label-for="input-organization"
+			>
 				<b-form-input
 					id="input-organization"
 					v-model="$auth.user.organisation"
 					disabled
-					>
-				</b-form-input>
+				/>
 			</b-form-group>
 
 			<b-form-group
@@ -23,48 +28,59 @@
 				label-cols-sm="4"
 				label-cols-lg="3"
 				label="User"
-				label-for="input-username">
+				label-for="input-username"
+			>
 				<b-form-input
 					id="input-username"
 					v-model="$auth.user.name"
 					disabled
-					>
-				</b-form-input>
+				/>
 			</b-form-group>
 			<b-form-group
 				id="email"
 				label-cols-sm="4"
 				label-cols-lg="3"
 				label="Email"
-				label-for="input-email">
+				label-for="input-email"
+			>
 				<b-form-input
 					id="input-email"
 					v-model="$auth.user.email"
 					disabled
-					>
-				</b-form-input>
+				/>
 			</b-form-group>
 			<b-form-group
 				id="projects"
 				label="IDA Projects"
 				label-for="input-projects"
 				label-cols-sm="4"
-				label-cols-lg="3">
+				label-cols-lg="3"
+			>
 				<div>
 					<b-badge
 						v-for="project in $auth.user.projects"
 						:key="project"
-						:value="project">{{ project }}</b-badge>
+						:value="project"
+					>
+						{{ project }}
+					</b-badge>
 
-					<b-badge v-if="$auth.user.projects.length === 0">(no projects)</b-badge>
+					<b-badge v-if="$auth.user.projects.length === 0">
+						(no projects)
+					</b-badge>
 				</div>
-
 			</b-form-group>
 		</b-form>
 		<div v-else>
-			<b-alert variant="secondary" show><p class="font-italic">You are not logged in.</p></b-alert>
+			<b-alert
+				variant="secondary"
+				show
+			>
+				<p class="font-italic">
+					You are not logged in.
+				</p>
+			</b-alert>
 		</div>
-
 	</b-container>
 </template>
 <style scoped>
@@ -87,9 +103,22 @@
 </style>
 <script>
 export default {
-	name: "user-info",
+	name: "UserInfo",
 	data: function() {
 		return {}
+	},
+	computed: {
+		/*
+		filterRegExp: function() {
+			return new RegExp('.*' + this.filterString + '.*', 'ig')
+		},
+		*/
+		stringifiedToken() {
+			return (this.$auth && this.$auth.user._jwt) ? JSON.stringify(this.$auth.user._jwt, null, 2) : null
+		},
+	},
+	created() {
+		//this.$auth.user.projects = ["2001036", "20010xx", "2001666"]
 	},
 	methods: {
 		/*
@@ -104,19 +133,6 @@ export default {
 				})
 		},
 		*/
-	},
-	computed: {
-		/*
-		filterRegExp: function() {
-			return new RegExp('.*' + this.filterString + '.*', 'ig')
-		},
-		*/
-		stringifiedToken() {
-			return (this.$auth && this.$auth.user._jwt) ? JSON.stringify(this.$auth.user._jwt, null, 2) : null
-		},
-	},
-	created() {
-		//this.$auth.user.projects = ["2001036", "20010xx", "2001666"]
 	},
 }
 </script>

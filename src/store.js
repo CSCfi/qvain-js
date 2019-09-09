@@ -148,7 +148,7 @@ export default new Vuex.Store({
 		},
 		initStateFor(state, path) {
 			if (!state.vState[path]) {
-				Vue.set(state.vState, path, {e: [], v: null})
+				Vue.set(state.vState, path, { e: [], v: null })
 			}
 		},
 		cleanStateFor(state, path) {
@@ -251,6 +251,6 @@ export default new Vuex.Store({
 				}
 			}
 			return Object.values(multi)[0] || null
-		}
+		},
 	},
 })

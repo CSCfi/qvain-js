@@ -1,28 +1,44 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<wrapper :wrapped="wrapped" :error="error">
-		<div v-if="header" class="header">
+	<wrapper
+		:wrapped="wrapped"
+		:error="error"
+	>
+		<div
+			v-if="header"
+			class="header"
+		>
 			<b-container fluid>
 				<b-row class="row">
 					<b-col>
-						<slot name="title"/>
-						<b-badge v-if="required" variant="danger">REQUIRED</b-badge>
+						<slot name="title" />
+						<b-badge
+							v-if="required"
+							variant="danger"
+						>
+							REQUIRED
+						</b-badge>
 					</b-col>
 				</b-row>
 				<b-row>
 					<b-col>
-						<slot name="help"/>
+						<slot name="help" />
 					</b-col>
 				</b-row>
 			</b-container>
 			<div class="header__right">
-				<slot name="header-right"/>
+				<slot name="header-right" />
 			</div>
 		</div>
 
-		<b-container class="error-container" v-if="hasErrorsSlot"><slot name="errors"/></b-container>
+		<b-container
+			v-if="hasErrorsSlot"
+			class="error-container"
+		>
+			<slot name="errors" />
+		</b-container>
 
-		<b-container><slot name="input"/></b-container>
+		<b-container><slot name="input" /></b-container>
 	</wrapper>
 </template>
 
@@ -61,7 +77,7 @@
 <script>
 import Wrapper from '@/components/Wrapper.vue'
 export default {
-	name: 'record-field',
+	name: 'RecordField',
 	components: {
 		Wrapper,
 	},
@@ -86,7 +102,7 @@ export default {
 	computed: {
 		hasErrorsSlot() {
 			return !!this.$slots['errors']
-		}
-	}
+		},
+	},
 }
 </script>

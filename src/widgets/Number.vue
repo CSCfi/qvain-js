@@ -1,8 +1,14 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<record-field :required="required" >
-		<title-component slot="title" :title="makeLabel" />
-		<small slot="help" class="text-muted">
+	<record-field :required="required">
+		<title-component
+			slot="title"
+			:title="makeLabel"
+		/>
+		<small
+			slot="help"
+			class="text-muted"
+		>
 			{{ uiDescription }}
 			{{ makeLabel }}
 		</small>
@@ -10,7 +16,8 @@
 		<div slot="input">
 			<b-form-group
 				:label-cols="inArray ? 3 : ((makeLabel !== uiLabel) ? 3 : 0)"
-				:label-for="inArray ? 'input-' + property.toString() : property">
+				:label-for="inArray ? 'input-' + property.toString() : property"
+			>
 				<b-input-group>
 					<b-form-input
 						:id="inArray ? 'input-' + property.toString() : property"
@@ -19,13 +26,12 @@
 						:value="parent[property]"
 						:step="schema['multipleOf']"
 						:state="isValid ? null : false"
-						@input.native="updateValue">
-					</b-form-input>
+						@input.native="updateValue"
+					/>
 				</b-input-group>
 			</b-form-group>
 		</div>
 	</record-field>
-
 </template>
 
 <script>
@@ -41,15 +47,15 @@ function toNumber(val) {
 }
 
 export default {
-	extends: vSchemaBase,
-	name: 'schema-number',
-	description: 'generic number',
-	schematype: 'number',
+	name: 'SchemaNumber',
 	components: {
 		FontAwesomeIcon,
 		RecordField,
 		TitleComponent,
 	},
+	extends: vSchemaBase,
+	description: 'generic number',
+	schematype: 'number',
 	data: function() {
 		return {
 			label: '',
@@ -59,6 +65,18 @@ export default {
 				faMinus,
 			},
 		}
+	},
+	computed: {
+		makeLabel: function() {
+			return typeof this.property === 'number'
+				? '#' + (this.property + 1)
+				: this.uiTitle
+		},
+		uiLabel: function() {
+			return typeof this.property === 'number'
+				? '#' + (this.property + 1)
+				: this.uiTitle
+		},
 	},
 	methods: {
 		deleteMe: function(event) {
@@ -71,18 +89,6 @@ export default {
 				val: e.target.value !== '' ? toNumber(e.target.value) : undefined,
 			})
 		},
-	},
-	computed: {
-		makeLabel: function() {
-			return typeof this.property === 'number'
-				? '#' + (this.property + 1)
-				: this.uiTitle
-		},
-		uiLabel: function() {
-			return typeof this.property === 'number'
-				? '#' + (this.property + 1)
-				: this.uiTitle
-		}
 	},
 }
 </script>

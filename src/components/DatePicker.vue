@@ -6,12 +6,12 @@
 		</div>
 		<input
 			:value="dateString"
-			@input="validate"
-			@change="submitChange"
 			placeholder="dd.MM.yyyy"
 			class="form-control"
 			:disabled="disabled"
-		/>
+			@input="validate"
+			@change="submitChange"
+		>
 	</div>
 </template>
 
@@ -32,10 +32,10 @@
 
 <script>
 export default {
-	name: 'datepicker',
+	name: 'Datepicker',
 	model: {
 		prop: 'value',
-		event: 'input'
+		event: 'input',
 	},
 	props: {
 		format: String,
@@ -48,15 +48,21 @@ export default {
 			initialValue: null,
 			isInitializing: true,
 			inputRegexp: /^[\d\.]+$/,
-			dateRegexp: /^((([1-9]|0[1-9]|[12]\d|3[01])\.([1-9]|0[1-9]|1[0-2])(\.[12]\d{3})?)|([1-9]|0[1-9]|[12]\d|3[01]))$/
+			dateRegexp: /^((([1-9]|0[1-9]|[12]\d|3[01])\.([1-9]|0[1-9]|1[0-2])(\.[12]\d{3})?)|([1-9]|0[1-9]|[12]\d|3[01]))$/,
 		}
 	},
 	computed: {
 		dateString: {
 			get() {
 				return this.internalValue
-			}
+			},
 		},
+	},
+	created() {
+		this.isInitializing = true
+		this.internalValue = this.fromExternalFormat(this.value)
+		this.initialValue = this.fromExternalFormat(this.value)
+		this.isInitializing = false
 	},
 	methods: {
 		submitChange(event) {
@@ -95,12 +101,12 @@ export default {
 		},
 		toExternalFormat(internalFormat) {
 			if (!internalFormat) { return internalFormat }
-			const [day, month, year] = internalFormat.split(".")
+			const [ day, month, year ] = internalFormat.split(".")
 			return year + "-" + month + "-" + day
 		},
 		fromExternalFormat(externalFormat) {
 			if (!externalFormat) { return externalFormat }
-			const [year, month, day] = externalFormat.split("-")
+			const [ year, month, day ] = externalFormat.split("-")
 			return day + "." + month + "." + year
 		},
 		validate(event) {
@@ -111,15 +117,9 @@ export default {
 				this.initialValue = this.internalValue
 			} else if (!this.inputRegexp.test(newValue) && newValue !== '') {
 				this.internalValue = this.initialValue
-				this.$forceUpdate();
+				this.$forceUpdate()
 			}
 		},
 	},
-	created() {
-		this.isInitializing = true
-		this.internalValue = this.fromExternalFormat(this.value)
-		this.initialValue = this.fromExternalFormat(this.value)
-		this.isInitializing = false
-	}
 }
 </script>
