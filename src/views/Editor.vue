@@ -310,7 +310,7 @@ export default {
 	},
 	methods: {
 		getCatalogOptions(bundle) {
-			const options = Object.entries(Bundle[bundle]).filter(([ key, val ]) => !val.hidden) // !val.hiddfen
+			const options = Object.entries(Bundle[bundle]).filter(([ key, val ]) => !val.hidden)
 			return Object.fromEntries(options)
 		},
 		getCatalogForId(catalogId) {
@@ -506,7 +506,6 @@ export default {
 			}
 		},
 		selectCatalog(catalog) {
-			console.log("select")
 			this.selectedCatalog = catalog
 			if (this.selectedCatalog !== null) {
 				this.$store.commit('loadSchema', this.selectedCatalog.schema)
