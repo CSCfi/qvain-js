@@ -13,39 +13,46 @@
 		</div>
 		<div slot="input">
 			<b-form class="record-field">
-
 				<b-form-group
-						:key="lang"
-						v-for="(val, lang) in state"
-						label-cols=3
-						:label-for="property + '_' + lang + '_input'">
-
+					:key="lang"
+					v-for="(val, lang) in state"
+					label-cols="3"
+					:label-for="property + '_' + lang + '_input'">
 					<span slot="label">
-						<DeleteButton slot="label" @click="deleteLanguage(lang)"/>
+						<DeleteButton
+							slot="label"
+							:disabled="readOnly"
+							@click="deleteLanguage(lang)"
+						/>
 						{{ languages[lang] }}
 					</span>
 
 					<b-input-group>
 						<b-form-input
 							:id="property + '_' + lang + '_input'"
-							type="text"
 							:ref="lang"
+							v-model="state[lang]"
+							type="text"
 							required
 							:placeholder="'Start typing in ' + languages[lang]"
-							v-model="state[lang]"
-							@input="updateValue">
-						</b-form-input>
+							:disabled="readOnly"
+							@input="updateValue"
+						/>
 					</b-input-group>
 				</b-form-group>
 
 				<p class="intro-text" v-if="Object.keys(state).length === 0">
 					Start by selecting the language. You may add as many languages as you wish by clicking them from the dropdown below.
 				</p>
-				<div class="row language-row">
+				<div
+					v-if="!readOnly"
+					class="row language-row"
+				>
 					<language-select
 						:id="property + '_language-select'"
 						class="col"
-						@change="userRequestedNewLanguage" />
+						@change="userRequestedNewLanguage"
+					/>
 				</div>
 			</b-form>
 		</div>
@@ -112,7 +119,7 @@ export default {
 		addLanguage(lang) {
 			if (!lang || lang in this.state) return
 			this.$set(this.state, lang, '')
-			this.$store.commit('setLanguages', {[lang]:true})
+			this.$store.commit('setLanguages', { [lang]:true })
 		},
 		deleteLanguage(lang) {
 			this.$delete(this.state, lang)

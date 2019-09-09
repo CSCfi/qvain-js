@@ -20,7 +20,11 @@
 		<b-row>
 			<b-col lg="6">
 				<b-form-group label="Encoding:">
-					<b-form-select v-model="dataFromServer.file_characteristics.encoding" :options="encodingOptions">
+					<b-form-select
+						v-model="dataFromServer.file_characteristics.encoding"
+						:options="encodingOptions"
+						:disabled="readOnly"
+					>
 						<template slot="first">
 							<option :value="undefined" disabled>-- Select an encoding --</option>
 						</template>
@@ -30,7 +34,13 @@
 
 			<b-col lg="6">
 				<b-form-group label="Sequential settings:">
-					<b-form-checkbox class="" v-model="sequential" name="check-button" switch>
+					<b-form-checkbox
+						v-model="sequential"
+						class=""
+						name="check-button"
+						switch
+						:disabled="readOnly"
+					>
 						This file is a sequential file (for example csv file)
 					</b-form-checkbox>
 				</b-form-group>
@@ -40,7 +50,11 @@
 		<b-row v-if="sequential" style="margin-bottom: 10px;">
 			<b-col lg="6">
 				<b-form-group label="Delimiter:">
-					<b-form-select v-model="dataFromServer.file_characteristics.csv_delimiter" :options="delimiterOptions">
+					<b-form-select
+						v-model="dataFromServer.file_characteristics.csv_delimiter"
+						:options="delimiterOptions"
+						:disabled="readOnly"
+					>
 						<template slot="first">
 							<option :value="undefined" disabled>-- Select a delimiter --</option>
 						</template>
@@ -48,8 +62,12 @@
 				</b-form-group>
 			</b-col>
 			<b-col lg="6">
-				<b-form-group label="Quoting character (defaults: \ ):" >
-					<b-form-input v-model="dataFromServer.file_characteristics.csv_quoting_char" placeholder="Enter quoting character"></b-form-input>
+				<b-form-group label="Quoting character (defaults: \ ):">
+					<b-form-input
+						v-model="dataFromServer.file_characteristics.csv_quoting_char"
+						placeholder="Enter quoting character"
+						:disabled="readOnly"
+					/>
 				</b-form-group>
 			</b-col>
 		</b-row>
@@ -57,7 +75,11 @@
 		<b-row v-if="sequential" style="margin-bottom: 10px;">
 			<b-col lg="6">
 				<b-form-group label="Record separator:">
-					<b-form-select v-model="dataFromServer.file_characteristics.csv_record_separator" :options="separatorOptions">
+					<b-form-select
+						v-model="dataFromServer.file_characteristics.csv_record_separator"
+						:options="separatorOptions"
+						:disabled="readOnly"
+					>
 						<template slot="first">
 							<option :value="undefined" disabled>-- Select a record separator --</option>
 						</template>
@@ -66,19 +88,28 @@
 			</b-col>
 			<b-col lg="6">
 				<b-form-group label="Header:">
-					<b-form-checkbox v-model="dataFromServer.file_characteristics.csv_has_header" name="check-button" switch>
+					<b-form-checkbox
+						v-model="dataFromServer.file_characteristics.csv_has_header"
+						name="check-button"
+						switch
+						:disabled="readOnly"
+					>
 						Header in file?
 					</b-form-checkbox>
 				</b-form-group>
 			</b-col>
-
 		</b-row>
 
 		<p class="info-text" v-if="file"> Note! By saving the data you are changing the file metadata regardless whether you select the file into your dataset or not. Dataset is not saved / published!</p>
 		<p class="info-text" v-else> Note! By saving the data you are changing the file metadata FOR ALL THE FILES IN THE FOLDER regardless whether you select the files / folder into your dataset or not. Dataset is not saved / published!</p>
 		<b-alert :show="saveResult === 'failed'" variant="danger" dismissible>Something went wrong. Your changes are not saved. Please try again.</b-alert>
 		<b-alert :show="saveResult === 'success'" variant="success" dismissible>The file metadata was successfully saved.</b-alert>
-		<b-button @click="save" variant="primary" class="w-100">Save PAS Metadata</b-button>
+		<b-button
+			:disabled="readOnly"
+			variant="primary"
+			class="w-100"
+			@click="save"
+		>Save PAS Metadata</b-button>
 	</b-card>
 </template>
 
@@ -117,16 +148,19 @@ export default {
 	props: {
 		identifier: {
 			type: String,
-			required: true
+			required: true,
 		},
 		file: {
 			type: Object,
-			default: null
+			default: null,
 		},
 		folder: {
 			type: Object,
-			default: null
-		}
+			default: null,
+		},
+		readOnly: {
+			type: Boolean,
+		},
 	},
 	computed: {
 		testing_id() {

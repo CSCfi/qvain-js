@@ -183,7 +183,7 @@ export default new Vuex.Store({
 				.map((key, index, array) => {
 					if (isNaN(key)) {
 						return key
-					} else if (array[index - 1] === 'oneOf') {
+					} else if (array[index - 1] === 'oneOf' || array[index - 1] === 'anyOf') {
 						return key
 					} else {
 						return '*'

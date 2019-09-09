@@ -3,16 +3,20 @@
 	<div class="input-group">
 		<div class="input-group-prepend">
 			<b-button
-				@click="updateOffset"> 
+				:disabled="disabled"
+				@click="updateOffset"
+			>
 				UTC ±
 			</b-button>
 		</div>
 		<input
 			:value="timezoneString"
+			placeholder="[+-]hh:mm"
+			class="form-control"
+			:disabled="disabled"
 			@input="validate"
 			@change="submitChange"
-			placeholder="[+-]hh:mm"
-			class="form-control" />
+		>
 	</div>
 </template>
 
@@ -26,7 +30,8 @@ export default {
 	props: {
 		format: String,
 		value: String,
-		timezonedate: String
+		timezonedate: String,
+		disabled: Boolean,
 	},
 	data() {
 		return {

@@ -18,7 +18,12 @@
 				:label-for="inArray ? 'input-' + property.toString() : property">
 				<span slot="label" v-if="makeLabel !== uiLabel">
 					{{ makeLabel }}
-					<delete-button v-if="inArray" slot="label" @click="deleteMe"/>
+					<delete-button
+						v-if="inArray"
+						slot="label"
+						:disabled="readOnly"
+						@click="deleteMe"
+					/>
 				</span>
 
 				<b-input-group>
@@ -28,6 +33,7 @@
 						:placeholder="uiPlaceholder"
 						:value="value"
 						:state="isValid ? null : false"
+						:disabled="readOnly"
 						@input.native="updateValue">
 					</b-form-input>
 				</b-input-group>

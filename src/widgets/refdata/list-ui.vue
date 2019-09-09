@@ -1,33 +1,42 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-  <div row>
-    <!-- ElasticSearch widget -->
-    <b-form-group id="list-ui-form-group" class="list-ui-form-group" :class="isRequired ? 'required' : ''" :label-cols="uiLabel ? labelCols : 1" :description="uiDescription" :label="uiLabel">
-      <b-input-group>
-        <div v-if="type === 'multiselect'" class="flex-grow-1">
-          <Multiselect v-model="model" @input="setValue" :options="items" v-if="items" :customLabel="customLabel"
-            :optionsLimit="40" :allowEmpty="!isRequired" :showLabels="false" />
-        </div>
-        <b-input-group-append>
-          <b-btn id="list-ui-error-btn" variant="danger" ref="refErrorButton" v-b-tooltip.hover="error" v-if="error">
-            <font-awesome-icon icon="exclamation-triangle" />
-          </b-btn>
-          <b-btn variant="dark" v-b-tooltip.hover="error" title="retry" v-if="error" @click="getList(esIndex, esDoctype)">
-            <font-awesome-icon icon="sync" />
-            <font-awesome-icon icon="sync" spin v-if="busy" />
-          </b-btn>
-        </b-input-group-append>
-      </b-input-group>
-    </b-form-group>
-  </div>
+	<div row>
+		<!-- ElasticSearch widget -->
+		<b-form-group id="list-ui-form-group" class="list-ui-form-group" :class="isRequired ? 'required' : ''" :label-cols="uiLabel ? labelCols : 1" :description="uiDescription" :label="uiLabel">
+			<b-input-group>
+				<div v-if="type === 'multiselect'" class="flex-grow-1">
+					<Multiselect
+						v-if="items"
+						v-model="model"
+						:options="items"
+						:customLabel="customLabel"
+						:optionsLimit="40"
+						:allowEmpty="!isRequired"
+						:showLabels="false"
+						:disabled="readOnly"
+						@input="setValue"
+					/>
+				</div>
+				<b-input-group-append>
+					<b-btn id="list-ui-error-btn" variant="danger" ref="refErrorButton" v-b-tooltip.hover="error" v-if="error">
+						<font-awesome-icon icon="exclamation-triangle" />
+					</b-btn>
+					<b-btn variant="dark" v-b-tooltip.hover="error" title="retry" v-if="error" @click="getList(esIndex, esDoctype)">
+						<font-awesome-icon icon="sync" />
+						<font-awesome-icon icon="sync" spin v-if="busy" />
+					</b-btn>
+				</b-input-group-append>
+			</b-input-group>
+		</b-form-group>
+	</div>
 </template>
 
 <style>
 .popover {
-  color: red;
+	color: red;
 }
 .error-popover {
-  background-color: red;
+	background-color: red;
 }
 
 fieldset.list-ui-form-group.required div.form-row legend:after {
@@ -127,6 +136,7 @@ export default {
 		setValue: { required: true, type: Function },
 		value: { required: true },
 		type: { type: String },
+		readOnly: { type: Boolean },
 	},
 	data: function() {
 		return {
@@ -222,6 +232,6 @@ export default {
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style>
 .input-group {
-  flex-wrap: nowrap;
+	flex-wrap: nowrap;
 }
 </style>
