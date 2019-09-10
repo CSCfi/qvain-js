@@ -385,7 +385,7 @@ export default {
 					this.handleLostSession()
 				}
 				if(e.code ==='ECONNABORTED') {
-					this.errorMessage = getApiError(e," While Publishing dataset:",this.$store.state.metadata.id)
+					this.errorMessage = getApiError(e, "While Publishing dataset:", this.$store.state.metadata.id)
 				}
 				if (e.response && e.response.data) {
 					this.publishError = e.response.data
@@ -428,7 +428,7 @@ export default {
 					this.handleLostSession()
 				}
 				else {
-					this.errorMessage = getApiError(error,errorMethod,this.$store.state.metadata.id)
+					this.errorMessage = getApiError(error, errorMethod, this.$store.state.metadata.id)
 				}
 			} finally {
 				this.saving = false
@@ -510,7 +510,7 @@ export default {
 					this.handleLostSession()
 				}
 				else {
-					this.errorMessage = getApiError(error,"while opening dataset",id)
+					this.errorMessage = getApiError(error, "while opening dataset", id)
 				}
 			} finally {
 				this.loading = false
