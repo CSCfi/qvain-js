@@ -13,7 +13,7 @@ export default function getApiError(error, apiCall, datasetId) {
 		if (error.response.data && error.response.data.error_id) {
 			errorText.push("Error id =", error.response.data.error_id, "Please contact servicedesk(at)csc.fi with this error Id")
 		}
-	} else if (error.code  && error.code === 'ECONNABORTED') {
+	} else if (error.code && error.code === 'ECONNABORTED') {
 		errorText.push(":", "Request is taking too long")
 	} else if (error.message) {
 		errorText.push(":", error.message.toLowerCase())

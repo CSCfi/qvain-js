@@ -480,7 +480,7 @@ export default {
 					await this.$auth.logoutDueSessionTimeout()
 					this.$router.push({ name: "home", params: { missingSession: true }})
 				}
-				this.error = getApiError(e,"While fetching datasets","")
+				this.error = getApiError(e, "While fetching datasets", "")
 				this.setDatasetList([])
 			} finally {
 				this.isBusy = false
@@ -508,7 +508,7 @@ export default {
 					console.log("Show modal error")
 					this.$root.$emit('bv::show::modal', 'publishErrorModal')
 				} else {
-					this.error = getApiError(e,"While publishing dataset",this.itemToBePublished.id)
+					this.error = getApiError(e, "While publishing dataset", this.itemToBePublished.id)
 				}
 			} finally {
 				this.publishing = false
@@ -531,7 +531,7 @@ export default {
 					await this.$auth.logoutDueSessionTimeout()
 					this.$router.push({ name: "home", params: { missingSession: true }})
 				}
-				this.error = getApiError(e,"While deleting dataset",this.itemToBeDeleted.id)
+				this.error = getApiError(e, "While deleting dataset", this.itemToBeDeleted.id)
 			} finally {
 				this.isBusy = false
 				this.deleting = false

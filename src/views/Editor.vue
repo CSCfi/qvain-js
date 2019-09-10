@@ -312,7 +312,7 @@ export default {
 			reloadDatasetCounter: 0,
 			reloadDatasetTimer: null,
 			openRecordCounter: 0,
-			errorMessage:null,
+			errorMessage: null,
 		}
 	},
 	methods: {
