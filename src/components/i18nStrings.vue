@@ -1,23 +1,40 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<record-field :required="required" :wrapped="true" :error="!isValid">
-		<title-component slot="title" :title="uiLabel" />
-		<small slot="help" class="text-muted">
-			{{ uiDescription }}
+	<record-field
+		:required="required"
+		:wrapped="true"
+		:error="!isValid"
+	>
+		<title-component
+			slot="title"
+			:title="uiLabel"
+		/>
+		<small
+			slot="help"
+			class="text-muted"
+		>
+			{{ uiDescription }}
 		</small>
 		<div slot="header-right">
 			<ValidationStatus :status="validationStatus" />
 		</div>
 		<div slot="errors">
-			<b-badge variant="danger" :key="error" v-for="error in errors">{{ error }}</b-badge>
+			<b-badge
+				v-for="error in errors"
+				:key="error"
+				variant="danger"
+			>
+				{{ error }}
+			</b-badge>
 		</div>
 		<div slot="input">
 			<b-form class="record-field">
 				<b-form-group
-					:key="lang"
 					v-for="(val, lang) in state"
+					:key="lang"
 					label-cols="3"
-					:label-for="property + '_' + lang + '_input'">
+					:label-for="property + '_' + lang + '_input'"
+				>
 					<span slot="label">
 						<DeleteButton
 							slot="label"
@@ -41,7 +58,10 @@
 					</b-input-group>
 				</b-form-group>
 
-				<p class="intro-text" v-if="Object.keys(state).length === 0">
+				<p
+					v-if="Object.keys(state).length === 0"
+					class="intro-text"
+				>
 					Start by selecting the language. You may add as many languages as you wish by clicking them from the dropdown below.
 				</p>
 				<div
@@ -89,26 +109,52 @@ import DeleteButton from '@/partials/DeleteButton.vue'
 import ValidationStatus from '@/partials/ValidationStatus.vue'
 import RecordField from '@/composites/RecordField.vue'
 import TitleComponent from '@/partials/Title.vue'
-import InfoIcon from '@/partials/InfoIcon.vue'
 
 export default {
-	extends: vSchemaBase,
-	name: 'i18n-string',
-	description: 'a string with support for multiple languages',
-	schematype: 'object',
+	name: 'I18nString',
 	components: {
 		LanguageSelect,
 		DeleteButton,
 		ValidationStatus,
 		RecordField,
 		TitleComponent,
-		InfoIcon,
 	},
+	extends: vSchemaBase,
+	description: 'a string with support for multiple languages',
+	schematype: 'object',
 	data() {
 		return {
 			state: {},
 			languages: languages,
 		}
+	},
+	computed: {
+		hasEmptyValues() {
+			return Object.values(this.state).some(v => v !== undefined && v.length == 0)
+		},
+		validationStatus() {
+			if (this.isValid && this.hasEmptyValues) return 'uncertain'
+			if (this.isValid) return 'valid'
+			return 'invalid'
+		},
+	},
+	watch: {
+		state: {
+			handler(newState, oldState) {
+				const shouldClearValidation = Object.keys(newState).length < Object.keys(oldState).length
+				if (shouldClearValidation) {
+					this.$store.commit('cleanStateFor', this.path)
+				}
+			},
+			deep: true,
+		},
+		"$store.state.languages": function(languages) {
+			this.populateLanguages(languages)
+		},
+	},
+	created() {
+		this.state = this.value
+		this.populateLanguages(this.$store.state.languages)
 	},
 	methods: {
 		userRequestedNewLanguage(lang) {
@@ -138,34 +184,6 @@ export default {
 				}
 			}
 		},
-	},
-	computed: {
-		hasEmptyValues() {
-			return Object.values(this.state).some(v => v !== undefined && v.length == 0)
-		},
-		validationStatus() {
-			if (this.isValid && this.hasEmptyValues) return 'uncertain'
-			if (this.isValid) return 'valid'
-			return 'invalid'
-		},
-	},
-	watch: {
-		state: {
-			handler(newState, oldState) {
-				const shouldClearValidation = Object.keys(newState).length < Object.keys(oldState).length
-				if (shouldClearValidation) {
-					this.$store.commit('cleanStateFor', this.path)
-				}
-			},
-			deep: true,
-		},
-		"$store.state.languages": function(languages) {
-			this.populateLanguages(languages)
-		},
-	},
-	created() {
-		this.state = this.value
-		this.populateLanguages(this.$store.state.languages)
 	},
 }
 </script>

@@ -3,27 +3,80 @@
 	<div>
 		<!-- autocomplete widget -->
 
-		<b-form-group :label-cols="2" :description="uiDescription" :label="uiLabel">
-			<transition-group name="tags" tag="div" class="my-2">
-				<b-badge :ref="`badge-${i}`" variant="secondary" class="p-1 mr-2 animated-tag" v-for="(value, i) in values" :key="value.id" @mouseenter="hover" @mouseleave="unhover" @click="values.splice(i, 1)">
-					<h6>{{ value.label[searchLanguage] || value.label['und'] }}
+		<b-form-group
+			:label-cols="2"
+			:description="uiDescription"
+			:label="uiLabel"
+		>
+			<transition-group
+				name="tags"
+				tag="div"
+				class="my-2"
+			>
+				<b-badge
+					v-for="(value, i) in values"
+					:ref="`badge-${i}`"
+					:key="value.id"
+					variant="secondary"
+					class="p-1 mr-2 animated-tag"
+					@mouseenter="hover"
+					@mouseleave="unhover"
+					@click="values.splice(i, 1)"
+				>
+					<h6>
+						{{ value.label[searchLanguage] || value.label['und'] }}
 						<sup>
-							<font-awesome-icon icon="times" class="text-danger" />
+							<font-awesome-icon
+								icon="times"
+								class="text-danger"
+							/>
 						</sup>
 					</h6>
 				</b-badge>
 			</transition-group>
 			<b-input-group>
-				<b-input v-model="input" @input="onInput" @change="onChange" @keyup.enter.native="addValue" :state="apiState"></b-input>
+				<b-input
+					v-model="input"
+					:state="apiState"
+					@input="onInput"
+					@change="onChange"
+					@keyup.enter.native="addValue"
+				/>
 				<b-input-group-append>
-					<b-dropdown :text="this.searchLanguage.toUpperCase()" v-if="this.languages.length > 1" @hidden="onInput">
-						<b-dropdown-item v-for="lang in languages" :key="lang" @click="searchLanguage = lang">{{ lang | uppercase }}</b-dropdown-item>
+					<b-dropdown
+						v-if="languages.length > 1"
+						:text="searchLanguage.toUpperCase()"
+						@hidden="onInput"
+					>
+						<b-dropdown-item
+							v-for="lang in languages"
+							:key="lang"
+							@click="searchLanguage = lang"
+						>
+							{{ lang | uppercase }}
+						</b-dropdown-item>
 					</b-dropdown>
-					<b-btn @click="addValue" variant="primary"><font-awesome-icon icon="plus" fixed-width/></b-btn>
+					<b-btn
+						variant="primary"
+						@click="addValue"
+					>
+						<font-awesome-icon
+							icon="plus"
+							fixed-width
+						/>
+					</b-btn>
 				</b-input-group-append>
 			</b-input-group>
 
-			<b-form-select v-model="selected" :options="suggestions" :select-size="selectSize" class="mb-3" @input="onSelected" v-show="isOpen" v-if="typeahead" />
+			<b-form-select
+				v-show="isOpen"
+				v-if="typeahead"
+				v-model="selected"
+				:options="suggestions"
+				:select-size="selectSize"
+				class="mb-3"
+				@input="onSelected"
+			/>
 			<span v-if="false">
 				input: {{ input }} values: {{ values }}
 			</span>
@@ -61,8 +114,14 @@ import { esApiSearchClient } from './es.js'
 import debounce from 'lodash.debounce'
 
 export default {
+	name: 'Autocomplete',
+	filters: {
+		uppercase: function(value) {
+			if (!value) return ''
+			return value.toString().toUpperCase()
+		},
+	},
 	extends: vSchemaBase,
-	name: 'autocomplete',
 	description: 'autocomplete keywords from Elastic Search',
 	schematype: 'object',
 	props: {
@@ -79,7 +138,7 @@ export default {
 			type: Boolean,
 		},
 		languages: {
-			default: () => ['en', 'fi', 'sv'],
+			default: () => [ 'en', 'fi', 'sv' ],
 			type: Array,
 		},
 	},
@@ -116,6 +175,32 @@ export default {
 			apiState: null,
 			searchLanguage: null,
 		}
+	},
+	computed: {
+		suggestions: function() {
+			if (!this.apiResults) return []
+
+			//return this.items.filter(item => { return item.toLowerCase().indexOf(this.input.toLowerCase()) > -1 })
+			return this.apiResults.map(x => ({
+				text: x.label[this.searchLanguage],
+				value: x,
+			}))
+		},
+		selectSize: function() {
+			// there's a bug in the bootstrap-vue select component: if the size is 1, the component changes type; so don't set `select-size` to 1.
+			return this.apiResults.length > 8
+				? 8
+				: this.apiResults.length < 2 ? 2 : this.apiResults.length
+		},
+	},
+	watch: {
+		apiResults: function(results) {
+			this.isOpen = results.length > 0
+		},
+	},
+	created() {
+		this.searchLanguage = this.languages.length ? this.languages[0] : 'en'
+		this.debouncedGetList = debounce(this.getList, 300)
 	},
 	methods: {
 		onSelected: function() {
@@ -161,7 +246,7 @@ export default {
 			this.apiBusy = true
 			this.apiState = null
 			let vm = this
-			console.log('calling api for', term, 'in language', this.searchLanguage)
+			//console.log('calling api for', term, 'in language', this.searchLanguage)
 			esApiSearchClient(
 				this.esIndex,
 				this.esDoctype,
@@ -180,7 +265,7 @@ export default {
 					}
 				})
 				.catch(error => {
-					console.log(error)
+					console.error(error)
 					vm.apiError = 'error calling ElasticSearch API'
 					vm.apiState = false
 					vm.apiResults = []
@@ -193,38 +278,6 @@ export default {
 					vm.apiBusy = false
 				})
 		},
-	},
-	filters: {
-		uppercase: function(value) {
-			if (!value) return ''
-			return value.toString().toUpperCase()
-		},
-	},
-	computed: {
-		suggestions: function() {
-			if (!this.apiResults) return []
-
-			//return this.items.filter(item => { return item.toLowerCase().indexOf(this.input.toLowerCase()) > -1 })
-			return this.apiResults.map(x => ({
-				text: x.label[this.searchLanguage],
-				value: x,
-			}))
-		},
-		selectSize: function() {
-			// there's a bug in the bootstrap-vue select component: if the size is 1, the component changes type; so don't set `select-size` to 1.
-			return this.apiResults.length > 8
-				? 8
-				: this.apiResults.length < 2 ? 2 : this.apiResults.length
-		},
-	},
-	watch: {
-		apiResults: function(results) {
-			this.isOpen = results.length > 0
-		},
-	},
-	created() {
-		this.searchLanguage = this.languages.length ? this.languages[0] : 'en'
-		this.debouncedGetList = debounce(this.getList, 300)
 	},
 }
 </script>

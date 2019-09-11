@@ -1,12 +1,25 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<record-field :required="required" :wrapped="false" :header="!inArray">
-		<title-component slot="title" :title="uiLabel" />
-		<small slot="help" class="text-muted">
+	<record-field
+		:required="required"
+		:wrapped="false"
+		:header="!inArray"
+	>
+		<title-component
+			slot="title"
+			:title="uiLabel"
+		/>
+		<small
+			slot="help"
+			class="text-muted"
+		>
 			{{ uiDescription }}
 			<div v-if="uiExample">
 				<b-badge variant="info">Example</b-badge>
-				<span v-for="(example, index) in uiExample" :key="index">
+				<span
+					v-for="(example, index) in uiExample"
+					:key="index"
+				>
 					{{ example }}
 				</span>
 			</div>
@@ -15,9 +28,13 @@
 		<div slot="input">
 			<b-form-group
 				:label-cols="inArray ? 3 : ((makeLabel !== uiLabel) ? 3 : 0)"
-				:label-for="inArray ? 'input-' + property.toString() : property">
-				<span slot="label" v-if="makeLabel !== uiLabel">
-					{{ makeLabel }}
+				:label-for="inArray ? 'input-' + property.toString() : property"
+			>
+				<span
+					v-if="makeLabel !== uiLabel"
+					slot="label"
+				>
+					{{ makeLabel }}
 					<delete-button
 						v-if="inArray"
 						slot="label"
@@ -34,8 +51,8 @@
 						:value="value"
 						:state="isValid ? null : false"
 						:disabled="readOnly"
-						@input.native="updateValue">
-					</b-form-input>
+						@input.native="updateValue"
+					/>
 				</b-input-group>
 			</b-form-group>
 		</div>
@@ -57,15 +74,22 @@ import TitleComponent from '@/partials/Title.vue'
 import DeleteButton from '@/partials/DeleteButton.vue'
 
 export default {
-	extends: vSchemaBase,
-	name: 'schema-string',
-	description: 'generic string',
-	schematype: 'string',
+	name: 'SchemaString',
 	components: {
 		RecordField,
 		TitleComponent,
 		DeleteButton,
 	},
+	directives: {
+		focus: {
+			inserted: function (el) {
+				el.focus()
+			},
+		},
+	},
+	extends: vSchemaBase,
+	description: 'generic string',
+	schematype: 'string',
 	data() {
 		return {
 			label: '',
@@ -74,25 +98,6 @@ export default {
 			editing: null,
 			hover: null,
 		}
-	},
-	methods: {
-		deleteMe(event) {
-			this.$parent.$emit('delete', this.property)
-		},
-		deleteIfEmpty() {
-			if (this.value === undefined || this.value.length < 1) {
-				this.$parent.$emit('delete', this.property)
-			} else {
-				this.editing = false
-			}
-		},
-		updateValue(e) {
-			this.$store.commit('updateValue', {
-				p: this.parent,
-				prop: this.property,
-				val: e.target.value,
-			})
-		},
 	},
 	computed: {
 		makeLabel: function() {
@@ -117,11 +122,23 @@ export default {
 			return this.hover ? "trash" : "pen"
 		},
 	},
-	directives: {
-		focus: {
-			inserted: function (el) {
-				el.focus()
-			},
+	methods: {
+		deleteMe() {
+			this.$parent.$emit('delete', this.property)
+		},
+		deleteIfEmpty() {
+			if (this.value === undefined || this.value.length < 1) {
+				this.$parent.$emit('delete', this.property)
+			} else {
+				this.editing = false
+			}
+		},
+		updateValue(e) {
+			this.$store.commit('updateValue', {
+				p: this.parent,
+				prop: this.property,
+				val: e.target.value,
+			})
 		},
 	},
 }

@@ -46,7 +46,6 @@ store.registerModule('files', FilesStore)
 const app = new Vue({
 	router,
 	store,
-	render: h => h(App),
 	data: {
 		user: null,
 		language: null,
@@ -54,6 +53,37 @@ const app = new Vue({
 		dismissCountDown: 0,
 		alertText: "hello there!",
 		alertVariant: "dark",
+	},
+	computed: {
+		authenticated() {
+			return this.user !== null
+		},
+	},
+	watch: {
+		language(val) {
+			this.showAlert("language set to: " + val)
+		},
+	},
+	mounted() {
+		// load Matomo script, add a PageView
+		if (process.env['VUE_APP_MATOMO_SITE_ID']) {
+			window._paq = []
+			window._paq.push(['trackPageView'])
+			window._paq.push(['enableLinkTracking']);
+			(function() {
+				let u= "//matomo.rahtiapp.fi/"
+				window._paq.push([ 'setTrackerUrl', u +'piwik.php' ])
+				window._paq.push([ 'setSiteId', process.env['VUE_APP_MATOMO_SITE_ID'] ])
+				let d=document,
+					g=d.createElement('script'),
+					s=d.getElementsByTagName('script')[0]
+				g.type='text/javascript'
+				g.async=true
+				g.defer=true
+				g.src= u+'piwik.js'
+				s.parentNode.insertBefore(g,s)
+			})()
+		}
 	},
 	methods: {
 		countDownChanged (dismissCountDown) {
@@ -70,35 +100,5 @@ const app = new Vue({
 			this.alertVariant = "dark"
 		},
 	},
-	computed: {
-		authenticated() {
-			return this.user !== null
-		},
-	},
-	watch: {
-		language(val) {
-			this.showAlert("language set to: " + val)
-		},
-	},
-	mounted() {
-		// load Matomo script, add a PageView
-		if (process.env['VUE_APP_MATOMO_SITE_ID']) {
-			window._paq = []
-			_paq.push(['trackPageView'])
-			_paq.push(['enableLinkTracking']);
-			(function() {
-				var u= "//matomo.rahtiapp.fi/"
-				_paq.push(['setTrackerUrl', u +'piwik.php'])
-				_paq.push(['setSiteId', process.env['VUE_APP_MATOMO_SITE_ID']])
-				var d=document,
-					g=d.createElement('script'),
-					s=d.getElementsByTagName('script')[0]
-				g.type='text/javascript'
-				g.async=true
-				g.defer=true
-				g.src= u+'piwik.js'
-				s.parentNode.insertBefore(g,s)
-			})()
-		}
-	}
+	render: h => h(App),
 }).$mount('#app')
