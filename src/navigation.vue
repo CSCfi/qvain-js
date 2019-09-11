@@ -1,38 +1,85 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
-	<b-navbar id="app-topbar" toggleable="sm" type="dark" variant="primary">
-		<b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
+	<b-navbar
+		id="app-topbar"
+		toggleable="sm"
+		type="dark"
+		variant="primary"
+	>
+		<b-navbar-toggle target="nav_collapse" />
 
 		<b-navbar-brand to="/">
-			<img src="/static/imgs/Qvain_neg_300px.png" class="d-inline-block align-top" alt="Fairdata: Qvain">
+			<img
+				src="/static/imgs/Qvain_neg_300px.png"
+				class="d-inline-block align-top"
+				alt="Fairdata: Qvain"
+			>
 		</b-navbar-brand>
 
-		<b-collapse is-nav id="nav_collapse">
-
+		<b-collapse
+			id="nav_collapse"
+			is-nav
+		>
 			<b-navbar-nav>
-				<b-button variant="primary" target="_blank" rel="noopener noreferrer" href="https://www.fairdata.fi/en/qvain/qvain-user-guide/">
+				<b-button
+					variant="primary"
+					target="_blank"
+					rel="noopener noreferrer"
+					href="https://www.fairdata.fi/en/qvain/qvain-user-guide/"
+				>
 					<font-awesome-icon icon="info" />&nbsp;
 					User Guide
 				</b-button>
 			</b-navbar-nav>
 
 			<!-- right-aligned items -->
-			<b-navbar-nav id="usermenu" class="ml-auto right-nav-items" >
-				<b-nav-text v-if="$auth.loading.state" class="user-nav load-placeholder" key="user-loading">
-					<font-awesome-icon icon="circle-notch" spin />
+			<b-navbar-nav
+				id="usermenu"
+				class="ml-auto right-nav-items"
+			>
+				<b-nav-text
+					v-if="$auth.loading.state"
+					key="user-loading"
+					class="user-nav load-placeholder"
+				>
+					<font-awesome-icon
+						icon="circle-notch"
+						spin
+					/>
 				</b-nav-text>
 
 				<b-button-group v-else>
-					<b-button v-if="$auth.loggedIn" id="usermenu_userinfo" variant="primary" to="/userinfo" >
-						<font-awesome-icon icon="user" class="text-light mr-2" fixed-width /> <a id="usermenu_fullname">{{ $auth.user.name }}</a>
+					<b-button
+						v-if="$auth.loggedIn"
+						id="usermenu_userinfo"
+						variant="primary"
+						to="/userinfo"
+					>
+						<font-awesome-icon
+							icon="user"
+							class="text-light mr-2"
+							fixed-width
+						/> <a id="usermenu_fullname">{{ $auth.user.name }}</a>
 					</b-button>
 
-					<b-button v-if="$auth.loggedIn || $auth.getLoginError()" id="usermenu_signout" variant="primary" @click="logout()">
+					<b-button
+						v-if="$auth.loggedIn || $auth.getLoginError()"
+						id="usermenu_signout"
+						variant="primary"
+						@click="logout()"
+					>
 						<font-awesome-icon icon="sign-out-alt" />
 						&nbsp;
 						Sign out
 					</b-button>
-					<b-button v-else id="usermenu_login" class="user-nav" key="user-login" variant="primary" :href="$auth.loginUrl">
+					<b-button
+						v-else
+						id="usermenu_login"
+						key="user-login"
+						class="user-nav"
+						variant="primary"
+						:href="$auth.loginUrl"
+					>
 						<font-awesome-icon icon="sign-in-alt" />
 						&nbsp;
 						Login
@@ -45,7 +92,7 @@
 
 <script>
 export default {
-	name: 'navigation',
+	name: 'Navigation',
 	data: function() {
 		return {
 		}

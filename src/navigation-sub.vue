@@ -1,15 +1,35 @@
 <template>
-	<b-navbar :toggleable="false" type="dark" id="app-subbar" v-if="$auth.loggedIn">
-		<b-nav-toggle target="app-subbar-collapse"></b-nav-toggle>
-		<b-collapse id="app-subbar-collapse" is-nav>
+	<b-navbar
+		v-if="$auth.loggedIn"
+		id="app-subbar"
+		:toggleable="false"
+		type="dark"
+	>
+		<b-nav-toggle target="app-subbar-collapse" />
+		<b-collapse
+			id="app-subbar-collapse"
+			is-nav
+		>
 			<b-navbar-nav>
 				<b-button-group class="editor-actions">
-					<b-button v-if="isActiveRoute('datasets') && isDraftActive && !isEditActive" key="continue_draft" variant="primary" size="sm" to="/dataset/edit">
+					<b-button
+						v-if="isActiveRoute('datasets') && isDraftActive && !isEditActive"
+						key="continue_draft"
+						variant="primary"
+						size="sm"
+						to="/dataset/edit"
+					>
 						<font-awesome-icon icon="backward" />
 						&nbsp;
 						Unsaved dataset
 					</b-button>
-					<b-button v-if="isActiveRoute('datasets') && isEditActive" key="continue_edit" variant="primary" size="sm" :to="continueEditUrl">
+					<b-button
+						v-if="isActiveRoute('datasets') && isEditActive"
+						key="continue_edit"
+						variant="primary"
+						size="sm"
+						:to="continueEditUrl"
+					>
 						<font-awesome-icon icon="backward" />
 						&nbsp;
 						{{ editTitle || '(no title)' }}
@@ -17,7 +37,13 @@
 				</b-button-group>
 			</b-navbar-nav>
 			<b-navbar-nav key="links">
-				<b-button v-if="!isActiveRoute('datasets')" size="sm" variant="primary" key="datasets" to="/datasets">
+				<b-button
+					v-if="!isActiveRoute('datasets')"
+					key="datasets"
+					size="sm"
+					variant="primary"
+					to="/datasets"
+				>
 					<font-awesome-icon icon="table" />
 					&nbsp;
 					Datasets
@@ -30,7 +56,8 @@
 						key="new"
 						:variant="isActiveRoute('editor') || isActiveRoute('tab') ? 'primary' : 'success'"
 						size="sm"
-						to="/dataset/new">
+						to="/dataset/new"
+					>
 						<font-awesome-icon icon="plus" />
 						&nbsp;
 						New dataset
@@ -43,7 +70,7 @@
 
 <script>
 export default {
-	name: 'navigation-sub',
+	name: 'NavigationSub',
 	data: function() {
 		return {
 		}
@@ -69,7 +96,7 @@ export default {
 	methods: {
 		isActiveRoute(routeName) {
 			if (!this.$route.name) { return false }
-			return this.$route.name == routeName;
+			return this.$route.name == routeName
 		},
 	},
 }

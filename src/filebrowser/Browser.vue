@@ -1,22 +1,50 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
 	<div>
-		<b-alert :show="!!error" variant="danger">
+		<b-alert
+			:show="!!error"
+			variant="danger"
+		>
 			{{ error }}
 
-			<div :style="{'margin-top': '15px'}" align="center">
-				<b-btn @click="openDirectory">Retry</b-btn>
+			<div
+				:style="{'margin-top': '15px'}"
+				align="center"
+			>
+				<b-btn @click="openDirectory">
+					Retry
+				</b-btn>
 			</div>
 		</b-alert>
 
 		<!-- BREADCRUMBS AND TOOLBAR -->
-		<b-button-toolbar key-nav aria-label="File browser toolbar" class="d-flex align-items-center">
-			<Breadcrumbs :breadcrumbs="breadcrumbs" :click="goTo" class="mr-auto" homePath="/" />
+		<b-button-toolbar
+			key-nav
+			aria-label="File browser toolbar"
+			class="d-flex align-items-center"
+		>
+			<Breadcrumbs
+				:breadcrumbs="breadcrumbs"
+				:click="goTo"
+				class="mr-auto"
+				home-path="/"
+			/>
 		</b-button-toolbar>
 
 		<!-- TABLE -->
-		<b-table :fields="fields" :items="filesAndDirectoriesForCWD" show-empty empty-text="No files in this directory" striped hover class="mb-0">
-			<template slot="selection" slot-scope="data">
+		<b-table
+			:fields="fields"
+			:items="filesAndDirectoriesForCWD"
+			show-empty
+			empty-text="No files in this directory"
+			striped
+			hover
+			class="mb-0"
+		>
+			<template
+				slot="selection"
+				slot-scope="data"
+			>
 				<b-form-checkbox
 					v-if="!disabled"
 					class="m-0"
@@ -26,7 +54,10 @@
 				/>
 			</template>
 
-			<template slot="type" slot-scope="data">
+			<template
+				slot="type"
+				slot-scope="data"
+			>
 				<b-btn
 					v-if="data.item.type !== 'files'"
 					size="sm"
@@ -34,14 +65,27 @@
 					class="m-0 p-0 float-right"
 					@click.stop="goTo(data.item.path)"
 				>
-					<font-awesome-icon :icon="icon.faFolder" size="2x" />
+					<font-awesome-icon
+						:icon="icon.faFolder"
+						size="2x"
+					/>
 				</b-btn>
 				<div v-else />
 			</template>
 
-			<template slot="name" slot-scope="data">
-				<b-btn v-if="data.item.type !== 'files'" variant="link" @click.stop="goTo(data.item.path)" class="m-0 p-0">{{data.item.name}}</b-btn>
-				<span v-else>{{data.item.name}}</span>
+			<template
+				slot="name"
+				slot-scope="data"
+			>
+				<b-btn
+					v-if="data.item.type !== 'files'"
+					variant="link"
+					class="m-0 p-0"
+					@click.stop="goTo(data.item.path)"
+				>
+					{{ data.item.name }}
+				</b-btn>
+				<span v-else>{{ data.item.name }}</span>
 			</template>
 
 			<template
@@ -52,21 +96,31 @@
 			</template>
 
 			<template
-				slot="file_count" slot-scope="data" >
+				slot="file_count"
+				slot-scope="data"
+			>
 				{{ data.item.type === 'files' ? '' : data.item.directory.file_count }}
 			</template>
 
-			<template slot="actions" slot-scope="data">
+			<template
+				slot="actions"
+				slot-scope="data"
+			>
 				<b-btn
 					v-if="data.item.type === 'files'"
 					variant="primary"
 					size="sm"
 					class="mr-2"
 					@click.stop="data.toggleDetails"
-				>{{ data.detailsShowing ? 'Hide' : 'Show'}} PAS metadata</b-btn>
+				>
+					{{ data.detailsShowing ? 'Hide' : 'Show' }} PAS metadata
+				</b-btn>
 			</template>
 
-			<template slot="row-details" slot-scope="data">
+			<template
+				slot="row-details"
+				slot-scope="data"
+			>
 				<PASMetadata
 					v-if="data.item.type === 'files'"
 					:identifier="data.item.identifier"
@@ -98,19 +152,19 @@ const formatBytes = (bytes, decimals) => {
 	if (bytes == 0) return '0 Bytes'
 	const k = 1024,
 		dm = decimals || 2,
-		sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+		sizes = [ 'Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB' ],
 		i = Math.floor(Math.log(bytes) / Math.log(k))
 	return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
 }
 
 export default {
-	name: 'browser',
-	props: ['project', 'selected', 'disabled', 'editOnlyMetadata'],
+	name: 'Browser',
 	components: {
 		Breadcrumbs,
 		FontAwesomeIcon,
-		PASMetadata
+		PASMetadata,
 	},
+	props: [ 'project', 'selected', 'disabled', 'editOnlyMetadata' ],
 	data() {
 		return {
 			fields: [
@@ -119,7 +173,7 @@ export default {
 					label: '',
 					class: '',
 					tdClass: 'align-middle',
-					thStyle: { width: '50px' }
+					thStyle: { width: '50px' },
 				},
 				{
 					key: 'type',
@@ -174,6 +228,82 @@ export default {
 				files: [],
 			},
 		}
+	},
+	computed: {
+		path() {
+			const { relpath } = this.$route.params
+			if (!relpath) {
+				return '/'
+			}
+			if (relpath.charAt(0) === '/') {
+				return relpath
+			}
+			return '/' + relpath
+		},
+		breadcrumbs() {
+			return this.path.split('/').reduce((acc, path, index) => {
+				acc[index] = {}
+				acc[index].label = path
+				acc[index].to = index === 0 ? [path] : [ ...acc[index -1].to, path ]
+				return acc
+			}, [])
+				.map(value => ({ label: value.label, to: value.to.join('/') }))
+		},
+		filesAndDirectoriesForCWD() {
+			const mapToInternalValues = type => item => {
+				// _showDetails is custom class for bootstrap table details
+				const base = { type, parentPath: this.path, _showDetails: false }
+				const shared = {
+					identifier: item.identifier,
+					project: item.project_identifier,
+					byte_size: item.byte_size,
+				}
+
+				const directory = {
+					name: item.directory_name,
+					path: item.directory_path,
+					date_modified: item.directory_modified,
+					directory: {
+						file_count: item.file_count,
+					},
+					file: undefined,
+				}
+
+				const file = {
+					name: item.file_name,
+					path: item.file_path,
+					date_modified: item.file_modified,
+					file: {
+						file_format: item.file_format,
+						open_access: item.open_access,
+						file_characteristics: item.file_characteristics || {},
+						checksum: { value: item.checksum_value },
+					},
+					directory: undefined,
+				}
+
+				return Object.assign(base, shared, type === 'files' ? file : directory)
+			}
+
+			return [
+				...(this.directory.directories || []).map(mapToInternalValues('directories')),
+				...(this.directory.files || []).map(mapToInternalValues('files')),
+			]
+		},
+	},
+	watch: {
+		path() {
+			this.openDirectory()
+		},
+		project: {
+			immediate: true,
+			handler() {
+				this.clearDirectory()
+				if (this.project) {
+					this.openDirectory()
+				}
+			},
+		},
 	},
 	methods: {
 		updatePasMetadata(savedData) {
@@ -235,82 +365,6 @@ export default {
 			} else {
 				this.$emit('remove', { type: data.item.type, fields })
 			}
-		},
-	},
-	computed: {
-		path() {
-			const { relpath } = this.$route.params
-			if (!relpath) {
-				return '/'
-			}
-			if (relpath.charAt(0) === '/') {
-				return relpath
-			}
-			return '/' + relpath
-		},
-		breadcrumbs() {
-			return this.path.split('/').reduce((acc, path, index) => {
-				acc[index] = {}
-				acc[index].label = path
-				acc[index].to = index === 0 ? [path] : [...acc[index -1].to, path]
-				return acc
-			}, [])
-				.map(value => ({ label: value.label, to: value.to.join('/') }))
-		},
-		filesAndDirectoriesForCWD() {
-			const mapToInternalValues = type => item => {
-				// _showDetails is custom class for bootstrap table details
-				const base = { type, parentPath: this.path, _showDetails: false }
-				const shared = {
-					identifier: item.identifier,
-					project: item.project_identifier,
-					byte_size: item.byte_size,
-				}
-
-				const directory = {
-					name: item.directory_name,
-					path: item.directory_path,
-					date_modified: item.directory_modified,
-					directory: {
-						file_count: item.file_count,
-					},
-					file: undefined,
-				}
-
-				const file = {
-					name: item.file_name,
-					path: item.file_path,
-					date_modified: item.file_modified,
-					file: {
-						file_format: item.file_format,
-						open_access: item.open_access,
-						file_characteristics: item.file_characteristics || {},
-						checksum: { value: item.checksum_value },
-					},
-					directory: undefined,
-				}
-
-				return Object.assign(base, shared, type === 'files' ? file : directory)
-			}
-
-			return [
-				...(this.directory.directories || []).map(mapToInternalValues('directories')),
-				...(this.directory.files || []).map(mapToInternalValues('files')),
-			]
-		},
-	},
-	watch: {
-		path() {
-			this.openDirectory()
-		},
-		project: {
-			immediate: true,
-			handler() {
-				this.clearDirectory()
-				if (this.project) {
-					this.openDirectory()
-				}
-			},
 		},
 	},
 }

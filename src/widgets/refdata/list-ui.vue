@@ -2,28 +2,54 @@
 <template>
 	<div row>
 		<!-- ElasticSearch widget -->
-		<b-form-group id="list-ui-form-group" class="list-ui-form-group" :class="isRequired ? 'required' : ''" :label-cols="uiLabel ? labelCols : 1" :description="uiDescription" :label="uiLabel">
+		<b-form-group
+			id="list-ui-form-group"
+			class="list-ui-form-group"
+			:class="isRequired ? 'required' : ''"
+			:label-cols="uiLabel ? labelCols : 1"
+			:description="uiDescription"
+			:label="uiLabel"
+		>
 			<b-input-group>
-				<div v-if="type === 'multiselect'" class="flex-grow-1">
+				<div
+					v-if="type === 'multiselect'"
+					class="flex-grow-1"
+				>
 					<Multiselect
 						v-if="items"
 						v-model="model"
 						:options="items"
-						:customLabel="customLabel"
-						:optionsLimit="40"
-						:allowEmpty="!isRequired"
-						:showLabels="false"
+						:custom-label="customLabel"
+						:options-limit="40"
+						:allow-empty="!isRequired"
+						:show-labels="false"
 						:disabled="readOnly"
 						@input="setValue"
 					/>
 				</div>
 				<b-input-group-append>
-					<b-btn id="list-ui-error-btn" variant="danger" ref="refErrorButton" v-b-tooltip.hover="error" v-if="error">
+					<b-btn
+						v-if="error"
+						id="list-ui-error-btn"
+						ref="refErrorButton"
+						v-b-tooltip.hover="error"
+						variant="danger"
+					>
 						<font-awesome-icon icon="exclamation-triangle" />
 					</b-btn>
-					<b-btn variant="dark" v-b-tooltip.hover="error" title="retry" v-if="error" @click="getList(esIndex, esDoctype)">
+					<b-btn
+						v-if="error"
+						v-b-tooltip.hover="error"
+						variant="dark"
+						title="retry"
+						@click="getList(esIndex, esDoctype)"
+					>
 						<font-awesome-icon icon="sync" />
-						<font-awesome-icon icon="sync" spin v-if="busy" />
+						<font-awesome-icon
+							v-if="busy"
+							icon="sync"
+							spin
+						/>
 					</b-btn>
 				</b-input-group-append>
 			</b-input-group>
@@ -98,9 +124,12 @@ function filterKeys(full, wanted) {
 }
 
 export default {
-	name: 'refdata-list',
+	name: 'RefdataList',
 	description: 'refdata list from Elastic Search',
 	schematype: 'object',
+	components: {
+		Multiselect,
+	},
 	props: {
 		esIndex: {
 			default: 'reference_data',
@@ -146,8 +175,22 @@ export default {
 			busy: false,
 			filterApiFields: true,
 			lang: 'en',
-			apiFields: ['code', 'id', 'label', 'type', 'uri'],
+			apiFields: [ 'code', 'id', 'label', 'type', 'uri' ],
 		}
+	},
+	computed: {
+		groups: function() {
+			return this.items ? Object.keys(this.items).sort() : []
+		},
+		noGroupItems: function() {
+			return this.items && this.items[''] && this.items[''].children
+				? this.items[''].children
+				: []
+		},
+	},
+	created() {
+		this.model = this.value
+		this.getList(this.esIndex, this.esDoctype)
 	},
 	methods: {
 		getList: function(index, doctype) {
@@ -185,9 +228,8 @@ export default {
 					}
 				})
 				.catch(error => {
-					console.log(error)
+					console.error(error)
 					this.error = 'error calling ElasticSearch API'
-					console.log(Object.keys(error))
 					if (error.response && error.response.status) {
 						this.error += ': ' + error.response.status + (error.response.statusText ? '(' + error.response.statusText + ')' : '')
 					}
@@ -208,23 +250,6 @@ export default {
 			}
 			return -1
 		},
-	},
-	computed: {
-		groups: function() {
-			return this.items ? Object.keys(this.items).sort() : []
-		},
-		noGroupItems: function() {
-			return this.items && this.items[''] && this.items[''].children
-				? this.items[''].children
-				: []
-		},
-	},
-	created() {
-		this.model = this.value
-		this.getList(this.esIndex, this.esDoctype)
-	},
-	components: {
-		Multiselect,
 	},
 }
 </script>
