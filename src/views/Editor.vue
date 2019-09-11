@@ -398,7 +398,7 @@ export default {
 			}
 		},
 		save: async function saveCallback() {
-			let errorMethod = null
+			let errorDescription = null
 			if (this.saving) {
 				return
 			}
@@ -410,12 +410,12 @@ export default {
 
 				const isExisting = (currentId && currentId !== 'new')
 				if (isExisting) {
-					errorMethod = "While updating dataset"
+					errorDescription = "While updating dataset"
 					payload.id = currentId
 					await apiClient.put("/datasets/" + currentId, payload)
 					await this.openRecord(currentId)
 				} else {
-					errorMethod = "While saving dataset"
+					errorDescription = "While saving dataset"
 					const { data: { id }} = await apiClient.post("/datasets/", payload)
 					await this.openRecord(id)
 					this.$store.commit('setMetadata', { id })
@@ -428,7 +428,7 @@ export default {
 					this.handleLostSession()
 				}
 				else {
-					this.errorMessage = getApiError(error, errorMethod, this.$store.state.metadata.id)
+					this.errorMessage = getApiError(error, errorDescription, this.$store.state.metadata.id)
 				}
 			} finally {
 				this.saving = false
