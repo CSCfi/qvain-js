@@ -134,7 +134,7 @@
 			@filtered="updateFiltered"
 		>
 			<template
-				slot="tree_actions"
+				slot="cell(tree_actions)"
 				slot-scope="row"
 			>
 				<b-button-toolbar
@@ -156,7 +156,7 @@
 				</b-button-toolbar>
 			</template>
 			<template
-				slot="actions"
+				slot="cell(actions)"
 				slot-scope="row"
 			>
 				<b-button-group
@@ -177,7 +177,7 @@
 				</b-button-group>
 			</template>
 			<template
-				slot="owner"
+				slot="cell(owner)"
 				slot-scope="data"
 			>
 				<span
@@ -186,13 +186,13 @@
 				>{{ data.item.owner }}</span>
 			</template>
 			<template
-				slot="preservation_state"
+				slot="cell(preservation_state)"
 				slot-scope="data"
 			>
 				<preservation-state :state="data.item.preservation_state" />
 			</template>
 			<template
-				slot="created"
+				slot="cell(created)"
 				slot-scope="row"
 			>
 				<p
@@ -204,7 +204,7 @@
 				</p>
 			</template>
 			<template
-				slot="title"
+				slot="cell(title)"
 				slot-scope="row"
 			>
 				<h5
