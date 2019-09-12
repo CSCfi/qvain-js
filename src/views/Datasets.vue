@@ -540,8 +540,7 @@ import PreservationState from '@/components/PreservationState.vue'
 import DatasetVersionsModal from '@/components/VersionsModal.vue'
 import PublishModal from '@/components/PublishModal.vue'
 
-import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
-import formatDate from 'date-fns/format'
+import { parseISO, formatDistanceToNow, format as formatDate } from 'date-fns'
 import getApiError from '@/lib/getApiError.js'
 
 // id owner created modified published identifier title{} description{} preservation_state
@@ -697,9 +696,11 @@ export default {
 		view(extid) {
 			window.open(`${process.env.VUE_APP_ETSIN_API_URL}/${extid}`, '_blank')
 		},
-		friendlyDate: distanceInWordsToNow,
+		friendlyDate(iso) {
+			return formatDistanceToNow(parseISO(iso))
+		},
 		readableIso(iso) {
-			return formatDate(iso, "YYYY-MM-DD HH:mm:ss")
+			return formatDate(parseISO(iso), "yyyy-MM-dd HH:mm:ss")
 		},
 		preferredLanguage(langObj) {
 			if (typeof langObj === "string") {

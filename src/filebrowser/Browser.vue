@@ -140,7 +140,7 @@ import { faFolder } from '@fortawesome/free-solid-svg-icons'
 
 import Breadcrumbs from './breadcrumbs.vue'
 import PASMetadata from './PasMetadata.vue'
-import dateFormat from 'date-fns/format'
+import { format as dateFormat, parseISO } from 'date-fns'
 
 const fileAPI = axios.create({
 	baseURL: process.env.VUE_APP_METAX_FILEAPI_URL || '/api/proxy',
@@ -201,7 +201,7 @@ export default {
 					key: 'date_modified',
 					sortable: true,
 					formatter: value => {
-						return dateFormat(value, 'YYYY-MM-DD')
+						return dateFormat(parseISO(value), 'yyyy-MM-dd')
 					},
 					tdClass: 'align-middle',
 				},
