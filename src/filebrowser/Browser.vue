@@ -45,8 +45,12 @@
 				slot="selection"
 				slot-scope="data"
 			>
+
+				<span v-if="!isInIda(data.item)">
+					<b-badge>Not IDA</b-badge>
+				</span>
 				<b-form-checkbox
-					v-if="!disabled"
+					v-else-if="!disabled"
 					class="m-0"
 					:checked="selected.includes(data.item.identifier)"
 					:disabled="editOnlyMetadata"
@@ -127,9 +131,11 @@
 					:file="data.item.file"
 					@saved="updatePasMetadata"
 				/>
-				<!--<PASMetadata v-else :identifier="data.item.identifier" :folder="data.item" />-->
 			</template>
 		</b-table>
+		<b-alert show variant="info">
+			The directory contains some files that are not in IDA. Only IDA files can be included in the dataset.
+		</b-alert>
 	</div>
 </template>
 
@@ -266,6 +272,7 @@ export default {
 					directory: {
 						file_count: item.file_count,
 					},
+					// WIP: get storage for directory
 					file: undefined,
 				}
 
@@ -279,6 +286,7 @@ export default {
 						file_characteristics: item.file_characteristics || {},
 						checksum: { value: item.checksum_value },
 					},
+					storage: item.file_storage && item.file_storage.identifier,
 					directory: undefined,
 				}
 
@@ -306,6 +314,9 @@ export default {
 		},
 	},
 	methods: {
+		isInIda(item) {
+			return item.storage ===  "urn:nbn:fi:att:file-storage-ida"
+		},
 		updatePasMetadata(savedData) {
 			// Expects only files since it has no way of knowing the type, and atm only file metadata can be edited
 			const editedFile = this.directory.files.find(file => file.identifier === savedData.identifier)
