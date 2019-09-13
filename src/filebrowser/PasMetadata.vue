@@ -25,18 +25,65 @@
 			</tbody>
 		</table>
 
-		<b-row>
-			<b-col lg="6">
-				<b-form-group label="Encoding:">
+		<b-alert
+			variant="danger"
+			:show="error"
+		>
+			{{ error }}
+		</b-alert>
+
+		<b-form-row class="file-metadata">
+			<b-col lg="4">
+				<b-form-group label="File format:">
 					<b-form-select
-						v-model="dataFromServer.file_characteristics.encoding"
-						:options="encodingOptions"
-						:disabled="readOnly"
+						v-model="dataFromServer.file_characteristics.file_format"
+						:options="formatOptions"
+						:disabled="fieldsDisabled"
 					>
 						<template slot="first">
 							<option
 								:value="undefined"
-								disabled
+							>
+								-- Select a file format --
+							</option>
+						</template>
+					</b-form-select>
+				</b-form-group>
+			</b-col>
+
+			<b-col lg="4">
+				<b-form-group label="File format version:">
+					<b-form-select
+						v-model="dataFromServer.file_characteristics.format_version"
+						:options="versionOptions"
+						:disabled="fieldsDisabled || versionOptions.length === 0"
+					>
+						<template slot="first">
+							<option
+								:value="undefined"
+							>
+								<span v-if="versionOptions.length > 0">
+									-- Select a version --
+								</span>
+								<span v-else>
+									-- No options available --
+								</span>
+							</option>
+						</template>
+					</b-form-select>
+				</b-form-group>
+			</b-col>
+
+			<b-col lg="4">
+				<b-form-group label="Encoding:">
+					<b-form-select
+						v-model="dataFromServer.file_characteristics.encoding"
+						:options="encodingOptions"
+						:disabled="fieldsDisabled"
+					>
+						<template slot="first">
+							<option
+								:value="undefined"
 							>
 								-- Select an encoding --
 							</option>
@@ -44,87 +91,73 @@
 					</b-form-select>
 				</b-form-group>
 			</b-col>
+		</b-form-row>
 
-			<b-col lg="6">
-				<b-form-group label="Sequential settings:">
-					<b-form-checkbox
-						v-model="sequential"
-						class=""
-						name="check-button"
-						switch
-						:disabled="readOnly"
-					>
-						This file is a sequential file (for example csv file)
-					</b-form-checkbox>
-				</b-form-group>
-			</b-col>
-		</b-row>
-
-		<b-row
-			v-if="sequential"
-			style="margin-bottom: 10px;"
-		>
-			<b-col lg="6">
-				<b-form-group label="Delimiter:">
-					<b-form-select
-						v-model="dataFromServer.file_characteristics.csv_delimiter"
-						:options="delimiterOptions"
-						:disabled="readOnly"
-					>
-						<template slot="first">
-							<option
-								:value="undefined"
-								disabled
-							>
-								-- Select a delimiter --
-							</option>
-						</template>
-					</b-form-select>
-				</b-form-group>
-			</b-col>
-			<b-col lg="6">
-				<b-form-group label="Quoting character (defaults: \ ):">
-					<b-form-input
-						v-model="dataFromServer.file_characteristics.csv_quoting_char"
-						placeholder="Enter quoting character"
-						:disabled="readOnly"
-					/>
-				</b-form-group>
-			</b-col>
-		</b-row>
-
-		<b-row
-			v-if="sequential"
-			style="margin-bottom: 10px;"
-		>
-			<b-col lg="6">
-				<b-form-group label="Record separator:">
-					<b-form-select
-						v-model="dataFromServer.file_characteristics.csv_record_separator"
-						:options="separatorOptions"
-						:disabled="readOnly"
-					>
-						<template slot="first">
-							<option
-								:value="undefined"
-								disabled
-							>
-								-- Select a record separator --
-							</option>
-						</template>
-					</b-form-select>
-				</b-form-group>
-			</b-col>
-			<b-col lg="6">
-				<b-form-group label="Header:">
-					<b-form-checkbox
-						v-model="dataFromServer.file_characteristics.csv_has_header"
-						name="check-button"
-						switch
-						:disabled="readOnly"
-					>
-						Header in file?
-					</b-form-checkbox>
+		<b-row>
+			<b-col>
+				<b-form-group
+					label="CSV options"
+					label-size="lg"
+					label-class="font-weight-normal"
+					class="mt-2 mb-0"
+				>
+					<b-form-row>
+						<b-col lg="6">
+							<b-form-group label="Delimiter:">
+								<b-form-select
+									v-model="dataFromServer.file_characteristics.csv_delimiter"
+									:options="delimiterOptions"
+									:disabled="fieldsDisabled"
+								>
+									<template slot="first">
+										<option
+											:value="undefined"
+										>
+											-- Select a delimiter --
+										</option>
+									</template>
+								</b-form-select>
+							</b-form-group>
+						</b-col>
+						<b-col lg="6">
+							<b-form-group label="Quoting character (defaults: \ ):">
+								<b-form-input
+									v-model="dataFromServer.file_characteristics.csv_quoting_char"
+									placeholder="Enter quoting character"
+									:disabled="fieldsDisabled"
+								/>
+							</b-form-group>
+						</b-col>
+						<b-col lg="6">
+							<b-form-group label="Record separator:">
+								<b-form-select
+									v-model="dataFromServer.file_characteristics.csv_record_separator"
+									:options="separatorOptions"
+									:disabled="fieldsDisabled"
+								>
+									<template slot="first">
+										<option
+											:value="undefined"
+										>
+											-- Select a record separator --
+										</option>
+									</template>
+								</b-form-select>
+							</b-form-group>
+						</b-col>
+						<b-col lg="6">
+							<b-form-group label="Header:">
+								<b-form-checkbox
+									v-model="dataFromServer.file_characteristics.csv_has_header"
+									name="check-button"
+									switch
+									:disabled="fieldsDisabled"
+								>
+									Header in file?
+								</b-form-checkbox>
+							</b-form-group>
+						</b-col>
+					</b-form-row>
 				</b-form-group>
 			</b-col>
 		</b-row>
@@ -156,7 +189,7 @@
 			The file metadata was successfully saved.
 		</b-alert>
 		<b-button
-			:disabled="readOnly"
+			:disabled="fieldsDisabled"
 			variant="primary"
 			class="w-100"
 			@click="save"
@@ -190,11 +223,15 @@
 table.file-table thead th {
     border-top: 0px;
 }
+
+.file-metadata > * {
+	margin-bottom: 0.5rem;
+}
 </style>
 
 <script>
 import axios from 'axios'
-import dateFormat from 'date-fns/format'
+import esApiClient from '@/widgets/refdata/es.js'
 
 export default {
 	name: 'PASMetadata',
@@ -219,7 +256,6 @@ export default {
 		return {
 			dataFromServer: null,
 			saveResult: null,
-			sequential: false,
 			separatorOptions: [
 				{ value: 'LF', text: 'LF (default)' },
 				{ value: 'CRLF', text: 'CRLF' },
@@ -253,9 +289,18 @@ export default {
 				{ value: 'UTF-32', text: 'UTF-32' },
 				{ value: 'ISO-8859-15', text: 'ISO-8859-15' },
 			],
+			formatOptions: [],
+			formatVersionsMap: {},
+			error: null,
 		}
 	},
 	computed: {
+		fieldsDisabled() {
+			return !!(this.readOnly || this.error)
+		},
+		versionOptions() {
+			return this.formatVersionsMap[this.dataFromServer.file_characteristics.file_format] || []
+		},
 		testing_id() {
 			return `${this.identifier}_PAS_METADATA`
 		},
@@ -263,23 +308,66 @@ export default {
 			// TODO: extend here to support folders
 			return Object.assign(
 				{ identifier: this.identifier },
-				this.createPayload(this.dataFromServer, this.sequential)
+				this.createPayload(this.dataFromServer)
 			)
 		},
 	},
 	watch: {
-		dataFromServer(newValues) {
-			this.sequential = newValues.file_format === 'text/csv'
+		"dataFromServer.file_characteristics.file_format"(newFormat, oldFormat) {
+			if (oldFormat && oldFormat !== newFormat) {
+				this.dataFromServer.file_characteristics.format_version = undefined
+			}
 		},
 	},
+
 	created() {
-		// set values to data for editability. Use Object.assign to avoid sharing object references with parent.
-		// this.dataFromServer = Object.assign({}, this.file);
-		// this.dataFromServer.file_characteristics = Object.assign({}, this.file.file_characteristics);
-		this.dataFromServer = JSON.parse(JSON.stringify(this.file))
+		this.loadOptions()
+		this.dataFromServer = JSON.parse(JSON.stringify(this.file)) // copy data for editing
 	},
 	methods: {
-		createPayload(state, sequential) {
+		async loadOptions() {
+			this.formatOptions = []
+			this.formatVersionsMap = {}
+			try {
+				const resp = await esApiClient('reference_data','file_format_version')
+				const options = resp.data.hits.hits.map(v => v._source)
+
+				// get array of available versions for each file format
+				const formatVersionsMap = {}
+				options.forEach(option => {
+					if (formatVersionsMap[option.input_file_format] === undefined) {
+						formatVersionsMap[option.input_file_format] = []
+					}
+					if (option.output_format_version !== "") {
+						formatVersionsMap[option.input_file_format].push(option.output_format_version)
+					}
+				})
+
+				// use natural sort order for version numbers
+				const sortArray = (arr => arr.sort(
+					(a,b) =>a.localeCompare(b, undefined, { numeric: true })
+				))
+				Object.values(formatVersionsMap).forEach(versions => sortArray(versions))
+				const formatOptions = Object.keys(formatVersionsMap)
+				sortArray(formatOptions)
+
+				this.formatOptions = formatOptions
+				this.formatVersionsMap = formatVersionsMap
+			} catch (e) {
+				// show the currently selected file_format/file_version option
+				const format = this.dataFromServer.file_characteristics.file_format
+				const version = this.dataFromServer.file_characteristics.format_version
+				if (format) {
+					this.formatOptions = [format]
+					if (version) {
+						this.formatVersionsMap = { [format]: [version] }
+					}
+				}
+
+				this.error = "Error retrieving file format information."
+			}
+		},
+		createPayload(state) {
 			const payload = {
 				// take copy for later delete calls
 				file_characteristics: Object.assign({}, state.file_characteristics),
@@ -289,20 +377,6 @@ export default {
 			if (state.encoding) {
 				payload.encoding = state.encoding
 			}
-
-			if (sequential) {
-				payload.file_format = 'text/csv'
-			} else {
-				// Note: by the default set file_format to text/plain if not defined or csv
-				payload.file_format = state.file_format !== 'text/csv' ? state.file_format : 'text/plain'
-
-				// remove csv info if not sequential
-				delete payload.file_characteristics.csv_delimiter
-				delete payload.file_characteristics.csv_has_header
-				delete payload.file_characteristics.csv_record_separator
-				delete payload.file_characteristics.csv_quoting_char
-			}
-
 			return payload
 		},
 		// needs to support adding values and updating values. Should be able to delete csv values

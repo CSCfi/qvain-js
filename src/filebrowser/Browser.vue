@@ -144,7 +144,7 @@ import dateFormat from 'date-fns/format'
 
 const fileAPI = axios.create({
 	baseURL: process.env.VUE_APP_METAX_FILEAPI_URL || '/api/proxy',
-	timeout: 3000,
+	timeout: 10000,
 	responseType: 'json',
 })
 
