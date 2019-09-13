@@ -321,8 +321,8 @@ export default {
 	},
 
 	created() {
-		this.loadOptions()
 		this.dataFromServer = JSON.parse(JSON.stringify(this.file)) // copy data for editing
+		this.loadOptions()
 	},
 	methods: {
 		async loadOptions() {
