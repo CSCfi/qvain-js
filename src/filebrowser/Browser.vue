@@ -42,7 +42,7 @@
 			class="mb-0"
 		>
 			<template
-				slot="selection"
+				slot="cell(selection)"
 				slot-scope="data"
 			>
 				<b-form-checkbox
@@ -55,7 +55,7 @@
 			</template>
 
 			<template
-				slot="type"
+				slot="cell(type)"
 				slot-scope="data"
 			>
 				<b-btn
@@ -74,7 +74,7 @@
 			</template>
 
 			<template
-				slot="name"
+				slot="cell(name)"
 				slot-scope="data"
 			>
 				<b-btn
@@ -89,21 +89,21 @@
 			</template>
 
 			<template
-				slot="identifier"
+				slot="cell(identifier)"
 				slot-scope="data"
 			>
 				{{ data.item.type !== 'files' ? '' : data.item.identifier }}
 			</template>
 
 			<template
-				slot="file_count"
+				slot="cell(file_count)"
 				slot-scope="data"
 			>
 				{{ data.item.type === 'files' ? '' : data.item.directory.file_count }}
 			</template>
 
 			<template
-				slot="actions"
+				slot="cell(actions)"
 				slot-scope="data"
 			>
 				<b-btn
