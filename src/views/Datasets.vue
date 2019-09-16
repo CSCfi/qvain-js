@@ -69,12 +69,6 @@
 			{{ error }}
 		</b-alert>
 
-		<b-alert
-			:show="otherError"
-			variant="danger"
-		>
-			There was an unspecified error loading the dataset. Please contact servicedesk(at)csc.fi.
-		</b-alert>
 
 		<div class="pagination-controls">
 			<b-pagination
@@ -548,6 +542,7 @@ import PublishModal from '@/components/PublishModal.vue'
 
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
 import formatDate from 'date-fns/format'
+import getApiError from '@/lib/getApiError.js'
 
 // id owner created modified published identifier title{} description{} preservation_state
 const fields = [
@@ -584,18 +579,6 @@ const fields = [
 	},
 ]
 
-function getApiError(error) {
-	let apiError = "API Error"
-	if (error.response) {
-		apiError += " [" + error.response.status + "]"
-		if (error.response.data && error.response.data.msg) {
-			apiError += ": " + error.response.data.msg
-		}
-	} else if (error.message) {
-		apiError += ": " + error.message.toLowerCase()
-	}
-	return apiError
-}
 
 export default {
 	name: "DatasetList",
@@ -603,9 +586,6 @@ export default {
 		PreservationState,
 		DatasetVersionsModal,
 		'publish-modal': PublishModal,
-	},
-	props: {
-		otherError: Boolean,
 	},
 	data() {
 		return {
@@ -658,7 +638,7 @@ export default {
 					await this.$auth.logoutDueSessionTimeout()
 					this.$router.push({ name: "home", params: { missingSession: true }})
 				}
-				this.error = getApiError(e)
+				this.error = getApiError(e, "While fetching datasets", "")
 				this.setDatasetList([])
 			} finally {
 				this.isBusy = false
@@ -685,7 +665,7 @@ export default {
 					this.publishError = e.response.data
 					this.$root.$emit('bv::show::modal', 'publishErrorModal')
 				} else {
-					this.error = getApiError(e)
+					this.error = getApiError(e, "While publishing dataset", this.itemToBePublished.id)
 				}
 			} finally {
 				this.publishing = false
@@ -708,7 +688,7 @@ export default {
 					await this.$auth.logoutDueSessionTimeout()
 					this.$router.push({ name: "home", params: { missingSession: true }})
 				}
-				this.error = getApiError(e)
+				this.error = getApiError(e, "While deleting dataset", this.itemToBeDeleted.id)
 			} finally {
 				this.isBusy = false
 				this.deleting = false

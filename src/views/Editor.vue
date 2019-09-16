@@ -100,7 +100,7 @@
 				id="nav-collapse"
 				is-nav
 			>
-				<b-container>
+				<b-container v-if="!errorMessage">
 					<b-row>
 						<b-col md="3">
 							<b-button
@@ -211,8 +211,14 @@
 			:error="publishError"
 			@hidden="publishError = null"
 		/>
+		<b-alert
+			variant="danger"
+			:show="!!errorMessage"
+		>
+			{{ errorMessage }}
+		</b-alert>
 
-		<b-container>
+		<b-container v-if="!errorMessage">
 			<b-row no-gutters>
 				<b-col
 					v-if="!!selectedCatalog"
@@ -346,6 +352,7 @@ import Validator from '../../vendor/validator/src/validate.js'
 import cloneWithPrune from '@/lib/cloneWithPrune.js'
 import Vue from 'vue'
 import TabSelector from '@/widgets/TabSelector.vue'
+import getApiError from '@/lib/getApiError.js'
 
 export default {
 	name: "Editor",
@@ -382,8 +389,8 @@ export default {
 			qvainData: null,
 			reloadDatasetCounter: 0,
 			reloadDatasetTimer: null,
-			otherError: false,
 			openRecordCounter: 0,
+			errorMessage: null,
 		}
 	},
 	computed: {
@@ -515,10 +522,6 @@ export default {
 			await this.$auth.logoutDueSessionTimeout()
 			this.$router.push({ name: "home", params: { missingSession: true }})
 		},
-		handleOtherError() {
-			this.otherError=true
-			this.$router.push({ name:"datasets", params: { otherError: true }})
-		},
 		viewInEtsin() {
 			window.open(`${process.env.VUE_APP_ETSIN_API_URL}/${this.qvainData.identifier}`, '_blank')
 		},
@@ -543,6 +546,9 @@ export default {
 				if (e.response && e.response.status == 401) {
 					this.handleLostSession()
 				}
+				if(e.code ==='ECONNABORTED') {
+					this.errorMessage = getApiError(e, "While Publishing dataset:", this.$store.state.metadata.id)
+				}
 				if (e.response && e.response.data) {
 					this.publishError = e.response.data
 					this.$root.$emit('bv::show::modal', 'publishErrorModal', this.$refs['dataset-publish-button'])
@@ -554,6 +560,7 @@ export default {
 			}
 		},
 		save: async function saveCallback() {
+			let errorDescription = null
 			if (this.saving) {
 				return
 			}
@@ -565,10 +572,12 @@ export default {
 
 				const isExisting = (currentId && currentId !== 'new')
 				if (isExisting) {
+					errorDescription = "While updating dataset"
 					payload.id = currentId
 					await apiClient.put("/datasets/" + currentId, payload)
 					await this.openRecord(currentId)
 				} else {
+					errorDescription = "While saving dataset"
 					const { data: { id }} = await apiClient.post("/datasets/", payload)
 					await this.openRecord(id)
 					this.$store.commit('setMetadata', { id })
@@ -579,6 +588,9 @@ export default {
 				this.$root.showAlert("Save failed!", "danger")
 				if (error.response && error.response.status == 401) {
 					this.handleLostSession()
+				}
+				else {
+					this.errorMessage = getApiError(error, errorDescription, this.$store.state.metadata.id)
 				}
 			} finally {
 				this.saving = false
@@ -660,7 +672,7 @@ export default {
 					this.handleLostSession()
 				}
 				else {
-					this.handleOtherError()
+					this.errorMessage = getApiError(error, "while opening dataset", id)
 				}
 				console.error(error)
 			} finally {
@@ -684,9 +696,6 @@ export default {
 			}
 		},
 		checkTab() {
-			if(this.otherError) {
-				return
-			}
 			// if tab is unset or invalid (not in tabs list), try to read tab from store or use the first tab
 			const tabUris = this.tabs.map(tab=>tab.uri)
 			if (!this.$route.params.tab || !tabUris.includes(this.$route.params.tab)) {
