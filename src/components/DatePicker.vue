@@ -11,6 +11,7 @@
 			:disabled="disabled"
 			@input="validate"
 			@change="submitChange"
+			@keyup.enter="submitChange"
 		>
 	</div>
 </template>
@@ -31,6 +32,9 @@
 </style>
 
 <script>
+
+import { parse as parseDate, format as formatDate } from 'date-fns'
+
 export default {
 	name: 'Datepicker',
 	model: {
@@ -47,8 +51,7 @@ export default {
 			internalValue: null,
 			initialValue: null,
 			isInitializing: true,
-			inputRegexp: /^[\d.]+$/,
-			dateRegexp: /^((([1-9]|0[1-9]|[12]\d|3[01])\.([1-9]|0[1-9]|1[0-2])(\.[12]\d{3})?)|([1-9]|0[1-9]|[12]\d|3[01]))$/,
+			invalidInputRegexp: /[^\d.]/g,
 		}
 	},
 	computed: {
@@ -59,45 +62,38 @@ export default {
 		},
 	},
 	created() {
-		this.isInitializing = true
 		this.internalValue = this.fromExternalFormat(this.value)
 		this.initialValue = this.fromExternalFormat(this.value)
 		this.isInitializing = false
 	},
 	methods: {
+		normalizeDate(str) {
+			// Parse date string, convert it into dd.MM.yyyy format.
+			// The current date is used for month and year if they are missing.
+			const now = new Date()
+			const formats = [ 'd', 'd.', 'd.M', 'd.M.', 'd.M.yy', 'd.M.yyyy' ]
+			for (let i=0; i<formats.length; i++) {
+				const date = parseDate(str, formats[i],  now)
+				if (date != 'Invalid Date') {
+					return formatDate(date, 'dd.MM.yyyy')
+				}
+			}
+			return null
+		},
 		submitChange(event) {
 			if (this.isInitializing) { return }
 			let newValue = event.target.value
 			if (!newValue || newValue === '') {
-				this.internalValue = newValue
 				this.initialValue = newValue
-				this.$emit('input', this.toExternalFormat(newValue))
-			} else if (this.dateRegexp.test(newValue)) {
-				let dateStructure = newValue.split(".")
-				const parts = dateStructure.length
-				for(let i=0; i<dateStructure.length; i++) {
-					dateStructure[i] = dateStructure[i].padStart(2, '0')
-				}
-				for (let i=0; i<3-parts; i++) {
-					dateStructure.push("00")
-				}
-				// ensure that the month is not empty
-				if (dateStructure[1] === "00") {
-					dateStructure[1] = String(new Date().getMonth()+1).padStart(2, '0')
-				}
-				// ensure that the year is not empty
-				dateStructure[2] = dateStructure[2].padStart(4, '0')
-				if (dateStructure[2] === "0000") {
-					dateStructure[2] = new Date().getFullYear()
-				}
-				newValue = dateStructure.join(".")
-				this.internalValue = newValue
-				this.initialValue = newValue
-				this.$emit('input', this.toExternalFormat(newValue))
 			} else {
-				this.internalValue = this.initialValue
-				this.$emit('input', this.toExternalFormat(this.internalValue))
+				newValue = this.normalizeDate(newValue)
+				if (newValue) {
+					this.initialValue = newValue
+				}
 			}
+			this.internalValue = this.initialValue
+			this.$emit('input', this.toExternalFormat(this.internalValue))
+			this.$forceUpdate()
 		},
 		toExternalFormat(internalFormat) {
 			if (!internalFormat) { return internalFormat }
@@ -112,11 +108,9 @@ export default {
 		validate(event) {
 			if (this.isInitializing) { return }
 			const newValue = event.target.value
-			if (this.dateRegexp.test(newValue)) {
-				this.internalValue = newValue
-				this.initialValue = this.internalValue
-			} else if (!this.inputRegexp.test(newValue) && newValue !== '') {
-				this.internalValue = this.initialValue
+			const isDate = !!this.normalizeDate(newValue)
+			if (!isDate) {
+				this.internalValue = newValue.replace(this.invalidInputRegexp, "")
 				this.$forceUpdate()
 			}
 		},

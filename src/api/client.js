@@ -48,7 +48,7 @@ export default function qvainApiClient(dataset) {
 
 const apiClient = axios.create({
 	baseURL: apiUrl,
-	timeout: 5000,
+	timeout: 10000,
 	responseType: "json",
 })
 

@@ -57,7 +57,7 @@
 							:preserved-fields="hoistedFields"
 							:allow-empty="false"
 							@changed="handleChanged(i)"
-							@action="(action) => handleAction(i, action)"
+							@action="handleAction(i, $event)"
 						/>
 					</div>
 
