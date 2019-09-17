@@ -92,8 +92,7 @@ export default {
 		validate(event) {
 			if (this.isInitializing) { return }
 			const newValue = event.target.value
-			const isTime = !!this.normalizeTime(newValue)
-			if (!isTime) {
+			if (newValue.match(this.invalidInputRegexp)) {
 				this.internalValue = newValue.replace(this.invalidInputRegexp, "")
 				this.$forceUpdate()
 			}
