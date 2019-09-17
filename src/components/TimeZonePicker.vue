@@ -16,6 +16,7 @@
 			:disabled="disabled"
 			@input="validate"
 			@change="submitChange"
+			@keyup.enter="submitChange"
 		>
 	</div>
 </template>
@@ -38,8 +39,7 @@ export default {
 			internalValue: null,
 			initialValue: null,
 			isInitializing: true,
-			inputRegexp: /^[-+\d:]+$/,
-			timezoneRegexp: /^[+-]?(2[0-3]|[0-1]?\d)(:[0-5]?\d|:)?$/,
+			invalidInputRegexp: /[^-+\d:.]/g,
 		}
 	},
 	computed: {
@@ -70,7 +70,29 @@ export default {
 		this.isInitializing = false
 	},
 	methods: {
+		normalizeTimezone(str) {
+			// Parse timezone string, convert it into ±HH:mm format.
+			const formats = [
+				/^([+-]?)(2[0-3]|[0-1]?\d)[:.]?$/,          // ±23    (leading 0 optional, trailing ./: allowed)
+				/^([+-]?)(2[0-3]|[0-1]?\d)[:.]([0-5]?\d)$/, // ±23:59 (leading 0 optional)
+			]
+			for (let i=0; i<formats.length; i++) {
+				const match = formats[i].exec(str)
+				if (!match) {
+					continue
+				}
+				let [ , sign, hours, minutes ] = match
+				sign = sign || '+'
+				hours = hours.padStart(2, "0")
+				minutes = (minutes || "").padStart(2, "0")
+				return sign + hours + ":" + minutes
+			}
+			return null
+		},
 		updateOffset() {
+			if (!this.timezonedate) {
+				return
+			}
 			const [ day, month, year ] = this.fromExternalFormat(this.timezonedate).split(".")
 			const monthIndex = month - 1
 			const localOffset = new Date(year, monthIndex, day).getTimezoneOffset()
@@ -102,36 +124,16 @@ export default {
 			if (this.isInitializing) { return }
 			let newValue = event.target.value
 			if (!newValue || newValue === '') {
-				this.internalValue = newValue
 				this.initialValue = newValue
-				this.$emit('input', newValue)
-			} else if (this.timezoneRegexp.test(newValue)) {
-				let symbol = "+"
-				if (newValue[0]==="+" || newValue[0]==="-") {
-					symbol = newValue[0]
-					newValue = newValue.substring(1)
-				}
-				let hours = newValue.split(":")
-				const parts = hours.length
-
-				for(let i=0; i<hours.length; i++) {
-					hours[i] = hours[i].padStart(2, '0')
-				}
-				for (let i=0; i<2-parts; i++) {
-					hours.push("00")
-				}
-
-				if (hours[0] == "00") {
-					symbol = ""
-				}
-				newValue = symbol + hours.join(":")
-				this.internalValue = newValue
-				this.initialValue = newValue
-				this.$emit('input', newValue)
 			} else {
-				this.internalValue = this.initialValue
-				this.$emit('input', this.internalValue)
+				newValue = this.normalizeTimezone(newValue)
+				if (newValue) {
+					this.initialValue = newValue
+				}
 			}
+			this.internalValue = this.initialValue
+			this.$emit('input', this.internalValue)
+			this.$forceUpdate()
 		},
 		toExternalFormat(internalFormat) {
 			if (!internalFormat) { return internalFormat }
@@ -146,11 +148,8 @@ export default {
 		validate(event) {
 			if (this.isInitializing) { return }
 			const newValue = event.target.value
-			if (this.timezoneRegexp.test(newValue)) {
-				this.internalValue = newValue
-				this.initialValue = this.internalValue
-			} else if (!this.inputRegexp.test(newValue) && newValue !== '') {
-				this.internalValue = this.initialValue
+			if (newValue.match(this.invalidInputRegexp)) {
+				this.internalValue = newValue.replace(this.invalidInputRegexp, "")
 				this.$forceUpdate()
 			}
 		},
