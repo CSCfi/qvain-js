@@ -63,7 +63,7 @@ export default {
 		normalizeTime(str) {
 			// Parse time string, convert it into HH:mm:ss format.
 			// Missing minutes and seconds are set to 0.
-			const now = new Date() // required for filling missing day/month/year even though we don't need them here
+			const now = new Date() // required by date-fns for filling missing day/month/year even though we don't need them here
 			str = str.replace(/\./g, ':') // allow '.' as separator in the input, replace with ':'
 			const formats = [ 'H', 'H:', 'H:m', 'H:m:', 'H:m:s' ]
 			for (let i=0; i<formats.length; i++) {
