@@ -151,6 +151,8 @@ export default {
 			if (newValue.match(this.invalidInputRegexp)) {
 				this.internalValue = newValue.replace(this.invalidInputRegexp, "")
 				this.$forceUpdate()
+			} else {
+				this.internalValue = newValue
 			}
 		},
 	},
