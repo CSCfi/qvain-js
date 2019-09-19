@@ -106,12 +106,7 @@
 
 <script>
 import apiClient from '@/api/client.js'
-import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
-import format from 'date-fns/format'
-
-// TODO: figure out locale of latest date-fns library
-//import { en, fi } from 'date-fns/esm/locale'
-//import fi from 'date-fns/locale/fi'
+import { formatDistanceToNow, format as formatDate, parseISO } from 'date-fns'
 
 export default {
 	name: 'DatasetVersionsModal',
@@ -122,21 +117,6 @@ export default {
 			versions: [],
 			error: null,
 		}
-	},
-	computed: {
-	},
-	/*
-	watch: {
-		dataset: function(newVal, oldVal) {
-			if (newVal !== null) {
-				this.fetch()
-			}
-		}
-	},
-	*/
-	created() {
-		//console.log(this.dataset)
-		//this.fetch()
 	},
 	methods: {
 		show: function(item, index, button) {
@@ -174,12 +154,10 @@ export default {
 			}
 		},
 		friendlyDate: function(iso) {
-			// TODO: locale
-			//return distanceInWordsToNow(iso, { locale: fi })
-			return distanceInWordsToNow(iso)
+			return formatDistanceToNow(parseISO(iso))
 		},
 		readableIso: function(iso) {
-			return format(iso, "YYYY-MM-DD HH:mm:ss")
+			return formatDate(parseISO(iso), "yyyy-MM-dd HH:mm:ss")
 		},
 	},
 }

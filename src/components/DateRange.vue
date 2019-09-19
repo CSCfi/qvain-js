@@ -77,7 +77,7 @@
 <script>
 import DateTimePicker from '@/components/DateTimePicker.vue'
 import SchemaBase from '@/widgets/base.vue'
-import { distanceInWords } from 'date-fns'
+import { formatDistance, parseISO } from 'date-fns'
 import DeleteButton from '@/partials/DeleteButton.vue'
 
 export default {
@@ -97,7 +97,11 @@ export default {
 	computed: {
 		timeBetweenString() {
 			if (!this.end || !this.start) { return null }
-			return distanceInWords(this.end, this.start)
+			try { // avoid throwing error on invalid dates, e.g. 0.0.0000
+				return formatDistance(parseISO(this.start), parseISO(this.end))
+			} catch {
+				return null
+			}
 		},
 		title() {
 			return typeof(this.property)=="number" ? '#' + (this.property + 1) : this.schema.title

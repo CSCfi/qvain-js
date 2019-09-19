@@ -155,6 +155,9 @@ export default {
 				timeZoneValue = "-" + timeZoneValue
 			}
 			this.internalValue = dateValue + "T" + timeValue + timeZoneValue
+			if (this.internalValue.match(/0000-00-00T00:00:00[+-]00:00/)) {
+				this.internalValue = null
+			}
 			const isEmpty = (this.format === 'date' && !this.date) ||
 				(this.format === "time" && !this.time)
 			if (isEmpty) {
