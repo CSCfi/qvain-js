@@ -171,7 +171,7 @@ export default {
 		},
 		conditionsAccepted() {
 			return this.$store.getters.conditionsAccepted
-		}
+		},
 	},
 	methods: {
 		loginClick() {
