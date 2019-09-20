@@ -60,28 +60,48 @@
 		<div v-else-if="!$auth.loggedIn">
 			<p>
 				By using Qvain the user agrees:
-				<ul>
-					<li>
+				<b-form-group>
+					<b-form-checkbox
+						class="mt-2"
+						:checked="userConditions.consent"
+						@change="updateUserCondition('consent', $event)"
+					>
 						That he or she has asked consent from all persons whose personal information the user will add to the
 						descriptive data and informed them of how they can get their personal data removed.
-					</li>
-					<li>
-						the
-						<a href="https://www.fairdata.fi/hyodyntaminen/kayttopolitiikat-ja-ehdot/">Terms of Usage</a>
-					</li>
-				</ul>
+					</b-form-checkbox>
+					<b-form-checkbox
+						class="mt-2"
+						:checked="userConditions.terms"
+						@change="updateUserCondition('terms', $event)"
+					>
+						That he or she accepts the <a href="https://www.fairdata.fi/hyodyntaminen/kayttopolitiikat-ja-ehdot/">Terms of Usage</a>.
+					</b-form-checkbox>
+				</b-form-group>
 			</p>
 
 			<p>
-				<a
-					:href="$auth.loginUrl"
-					class="btn btn-info btn-lg"
-					role="button"
+				<span
+					class="login"
+					@click="loginClick"
 				>
-					<font-awesome-icon icon="sign-in-alt" />
-					&nbsp;
-					Login
-				</a>
+					<a
+						:href="$auth.loginUrl"
+						class="btn btn-info btn-lg"
+						role="button"
+						:class="{disabled: !conditionsAccepted}"
+						:aria-disabled="!conditionsAccepted"
+					>
+						<font-awesome-icon icon="sign-in-alt" />
+						&nbsp;
+						Login
+					</a>
+					<b-alert
+						:show="showTermsPrompt && !conditionsAccepted"
+						variant="warning"
+					>
+						You need to agree to the terms of service before logging in.
+					</b-alert>
+				</span>
 			</p>
 		</div>
 
@@ -117,19 +137,51 @@
 .btn-link:hover {
 	text-decoration: underline;
 }
+
+.login {
+	display: flex;
+
+	> a {
+		margin-right: 4px;
+	}
+
+	> .alert {
+		margin-bottom: 0;
+	}
+}
 </style>
 
 <script>
+
 export default {
 	props: {
 		missingSession: Boolean,
+	},
+	data() {
+		return {
+			showTermsPrompt: false,
+		}
 	},
 	computed: {
 		loginError() {
 			return this.$auth.getLoginError()
 		},
+		userConditions() {
+			return this.$store.state.userConditions
+		},
+		conditionsAccepted() {
+			return this.$store.getters.conditionsAccepted
+		}
 	},
 	methods: {
+		loginClick() {
+			if (!this.conditionsAccepted) {
+				this.showTermsPrompt = true
+			}
+		},
+		updateUserCondition(key, value) {
+			this.$store.commit('setUserCondition', { key: key, val: value })
+		},
 		async logout() {
 			if (!await this.$auth.logout()) {
 				this.$root.showAlert("Failed to sign out. Please try again later.", "danger")

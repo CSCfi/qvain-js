@@ -10,6 +10,10 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
 	state: {
+		userConditions: {
+			consent: false,
+			terms: false,
+		},
 		record: undefined,
 		schema: {},
 		hints: {},
@@ -165,8 +169,16 @@ export default new Vuex.Store({
 		setDeletedItem(state, payload) {
 			Vue.set(state.deletedItems[payload.category], payload.identifier, payload.val)
 		},
+		setUserCondition(state, payload) {
+			state.userConditions[payload.key] = payload.val
+		},
 	},
 	getters: {
+		// conditionsAccepted returns true if all userConditions have been accepted
+		conditionsAccepted(state) {
+			return Object.values(state.userConditions).every(v=>v === true)
+		},
+
 		// prunedDataset returns a deep-clone of the dataset discarding empty leaves
 		prunedDataset: (state) => {
 			return cloneWithPrune(state.record, [], [ "", undefined ])

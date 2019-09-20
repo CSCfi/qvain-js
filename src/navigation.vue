@@ -79,6 +79,7 @@
 						class="user-nav"
 						variant="primary"
 						:href="$auth.loginUrl"
+						:disabled="!$store.getters.conditionsAccepted"
 					>
 						<font-awesome-icon icon="sign-in-alt" />
 						&nbsp;
