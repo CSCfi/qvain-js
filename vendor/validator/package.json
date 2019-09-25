@@ -4,29 +4,31 @@
   "description": "A json-schema validator for the Qvain metadata tool",
   "main": "index.js",
   "scripts": {
-    "build": "babel --no-babelrc src --out-dir build --presets=env",
+    "build": "babel --no-babelrc src --out-dir build --presets=@babel/env",
     "watch": "npm run build -- -w",
-    "test": "mocha --require babel-register",
+    "test": "mocha --require @babel/register",
     "clean": "rm -rf build/"
   },
   "author": "Wouter Van Hemel",
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "deep-equal": "^1.0.1",
-    "deepmerge": "^2.1.0",
+    "deep-equal": "^1.1.0",
+    "deepmerge": "^2.2.1",
     "json-deep-copy": "^1.0.2",
     "json-pointer": "^0.6.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
+    "@babel/cli": "^7.6.0",
+    "@babel/core": "^7.6.0",
+    "@babel/preset-env": "^7.6.0",
+    "@babel/register": "^7.6.0",
     "mocha": "^5.2.0",
     "vue": "^2.6.10"
   },
   "babel": {
     "presets": [
-      "env"
+      "@babel/env"
     ]
   }
 }
