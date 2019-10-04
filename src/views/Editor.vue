@@ -589,15 +589,20 @@ export default {
 				console.error("publish error:", e, Object.keys(e))
 				if (e.response && e.response.status == 401) {
 					this.handleLostSession()
+					return
 				}
-				if(e.code ==='ECONNABORTED') {
-					this.errorMessage = getApiError(e, "While Publishing dataset:", this.$store.state.metadata.id)
+				if (e.code ==='ECONNABORTED') {
+					const msg = getApiError(e, "while publishing dataset:", this.$store.state.metadata.id)
+					this.$root.showAlert("Publish failed! " + msg, "danger")
+					return
 				}
 				if (e.response && e.response.data) {
 					this.publishError = e.response.data
 					this.$root.$emit('bv::show::modal', 'publishErrorModal', this.$refs['dataset-publish-button'])
+					return
 				} else {
 					this.$root.showAlert("Publish failed!", "danger")
+					return
 				}
 			} finally {
 				this.publishing = false
@@ -640,9 +645,6 @@ export default {
 					const msg = getApiError(error, errorDescription, this.$store.state.metadata.id)
 					this.$root.showAlert("Save failed! " + msg, "danger", true)
 				}
-				//else {
-					// this.errorMessage = getApiError(error, errorDescription, this.$store.state.metadata.id)
-				//}
 			} finally {
 				this.saving = false
 			}

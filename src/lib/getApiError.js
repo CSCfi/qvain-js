@@ -11,7 +11,8 @@ export default function getApiError(error, apiCall, datasetId) {
 			errorText.push(":", error.response.data.msg, ",")
 		}
 		if (error.response.data && error.response.data.error_id) {
-			errorText.push("Error id =", error.response.data.error_id, "Please contact servicedesk(at)csc.fi with this error Id")
+			errorText.push("Error ID =", error.response.data.error_id + ".",
+				"Please contact servicedesk(at)csc.fi with this error ID.")
 		}
 	} else if (error.code && error.code === 'ECONNABORTED') {
 		errorText.push(":", "Request is taking too long")
