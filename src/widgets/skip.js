@@ -32,6 +32,7 @@ export default {
 						required: (context.props.schema.required || []).includes(key),
 						readOnly: context.props.readOnly,
 					},
+					on: context.listeners, // pass events through
 					// don't reuse VNode
 					key: key,
 				})

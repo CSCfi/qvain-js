@@ -19,6 +19,111 @@
 			</template>
 		</b-alert>
 
+		<record-field
+			v-if="!isPas && !isOld"
+			:wrapped="true"
+			:header="true"
+		>
+			<title-component
+				slot="title"
+				title="Cumulative dataset"
+			>
+				Cumulative dataset
+			</title-component>
+			<template v-if="!$store.state.metadata.isPublished">
+				<small
+					slot="help"
+					class="text-muted"
+				>
+					This determines if new files and folders can be added after publishing the dataset without creating a new version.
+				</small>
+				<b-row
+					slot="input"
+				>
+					<b-col>
+						<b-form-group>
+							<b-form-radio-group
+								:checked="$store.state.metadata.cumulativeState"
+								label="Header:"
+								stacked
+								@change="$emit('set-cumulative', $event)"
+							>
+								<b-form-radio
+									:value="0"
+								>
+									No. (Adding files or folders will automatically create a new version of the dataset.)
+								</b-form-radio>
+								<b-form-radio
+									:value="1"
+								>
+									Yes. (New files or folders can be added without version change.)
+								</b-form-radio>
+							</b-form-radio-group>
+						</b-form-group>
+					</b-col>
+				</b-row>
+			</template>
+			<template v-else>
+				<small
+					v-if="isCumulative"
+					slot="help"
+					class="text-muted"
+				>
+					This is a cumulative dataset. New files and folders can be added to it without creating a new version.
+				</small>
+
+				<small
+					v-else
+					slot="help"
+					class="text-muted"
+				>
+					This is a non-cumulative dataset. Adding or removing files will create a new version of the dataset.
+				</small>
+
+				<small
+					slot="help"
+					class="text-muted"
+				>
+					You need to have published your current changes before you can change this option.
+				</small>
+
+
+				<b-row
+					v-if="isCumulative"
+					slot="input"
+				>
+					<b-button
+						class="col-4"
+						variant="primary"
+						:disabled="!canToggleCumulative"
+						@click="$emit('set-cumulative', 2)"
+					>
+						Turn non-cumulative
+					</b-button>
+					<span class="col">
+						After turning non-cumulative, no new files or folders can be added to the current version.
+					</span>
+				</b-row>
+
+				<b-row
+					v-else
+					slot="input"
+				>
+					<b-button
+						class="col-4"
+						variant="primary"
+						:disabled="!canToggleCumulative"
+						@click="$emit('set-cumulative', 1)"
+					>
+						Turn cumulative
+					</b-button>
+					<span class="col">
+						This will create a new version of the dataset.
+					</span>
+				</b-row>
+			</template>
+		</record-field>
+
 		<b-dropdown
 			v-if="!readOnly && !editOnlyMetadata"
 			text="Change project"
@@ -98,6 +203,8 @@
 
 import Browser from './Browser'
 import FileItem from './FileItem.vue'
+import RecordField from '@/composites/RecordField.vue'
+import TitleComponent from '@/partials/Title.vue'
 
 import { faFile, faFolder } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
@@ -113,6 +220,8 @@ export default {
 	components: {
 		Browser,
 		FileItem,
+		RecordField,
+		TitleComponent,
 	},
 	props: {
 		'readOnly': {
@@ -134,6 +243,12 @@ export default {
 		}
 	},
 	computed: {
+		canToggleCumulative() {
+			return this.$store.state.metadata.isPublished && !this.$store.state.metadata.isPublishedAndUpdateAvailable
+		},
+		isCumulative() {
+			return this.$store.state.metadata.cumulativeState === 1
+		},
 		project: {
 			get() {
 				return this.$store.state.metadata.project

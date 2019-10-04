@@ -48,7 +48,10 @@ export default new Vuex.Store({
 			state.metadata = Object.assign({}, state.metadata, payload)
 		},
 		resetMetadata(state) {
-			state.metadata = {}
+			// reset to default values
+			state.metadata = {
+				cumulativeState: 0,
+			}
 		},
 		loadData(state, record) {
 			Vue.set(state, 'record', record)

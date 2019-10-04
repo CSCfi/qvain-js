@@ -258,6 +258,7 @@
 						:active-tab="$route.params.tab"
 						:depth="0"
 						:read-only="$store.state.metadata.isReadOnly"
+						@set-cumulative="setCumulative"
 					/>
 				</b-col>
 
@@ -447,6 +448,8 @@ export default {
 					isDeprecated: !!(qvainData && qvainData.deprecated),
 					isReadOnly: !!(qvainData && qvainData.preservation_state >= 80),
 					isPas: !!(qvainData && (qvainData.data_catalog === "urn:nbn:fi:att:data-catalog-pas" || qvainData.preservation_state > 0)),
+					isPublished: !!(qvainData && this.qvainData.published),
+					isPublishedAndUpdateAvailable: !!(qvainData && this.qvainData.modified > this.qvainData.synced),
 				})
 			},
 			deep: true,
@@ -497,6 +500,19 @@ export default {
 			}
 			return this.getCatalogForId(data.data_catalog)
 		},
+		async confirm(dialogTitle, dialogText, yesButtonTitle, noButtonTitle) {
+			return await this.$bvModal.msgBoxConfirm(dialogText, {
+				title: dialogTitle,
+				size: 'md',
+				buttonSize: 'md',
+				okVariant: 'danger',
+				okTitle: 'Yes',
+				cancelTitle: noButtonTitle,
+				footerClass: 'p-2',
+				hideHeaderClose: false,
+				centered: true,
+			})
+		},
 		async confirmUnsavedChanges(dialogTitle, noButtonTitle, callback) {
 			// if session is lost, user cannot save
 			if (this.$auth.user === null) {
@@ -514,6 +530,31 @@ export default {
 					centered: true,
 				})
 				callback(value)
+			}
+		},
+		async confirmOpenNewVersion() {
+			return await this.confirm(
+				"Open new dataset version?",
+				"A new version of the dataset was created. Do you want to open the new version?",
+				"Yes",
+				"No",
+			)
+		},
+		async confirmSetCumulative(newIsCumulative) {
+			if (newIsCumulative) {
+				return await this.confirm(
+					"Make dataset cumulative?",
+					"This will create a new version of the dataset.",
+					"Yes",
+					"No",
+				)
+			} else {
+				return await this.confirm(
+					"Make dataset non-cumulative?",
+					"Turning the dataset cumulative again later will create a new version of the dataset.",
+					"Yes",
+					"No",
+				)
 			}
 		},
 		async handleLostSession() {
@@ -537,6 +578,9 @@ export default {
 					const currentId = this.$store.state.metadata.id
 					const response = await apiClient.post("/datasets/" + currentId + "/publish", {})
 					await this.openRecord(currentId)
+					if (response.data && response.data.new_id && await this.confirmOpenNewVersion()) {
+						this.$router.replace({ name: 'tab', params: { id: response.data.new_id, tab: this.$route.params.tab }})
+					}
 				} else {
 					this.$root.showAlert("Please save your dataset first", "danger")
 				}
@@ -568,7 +612,12 @@ export default {
 			try {
 				const currentId = this.$store.state.metadata.id
 				const dataset = this.$store.getters.prunedDataset
-				const payload = { dataset, type: 2, schema: this.$store.state.metadata.schemaId }
+				const payload = {
+					dataset,
+					type: 2,
+					schema: this.$store.state.metadata.schemaId,
+					cumulative_state: this.$store.state.metadata.cumulativeState,
+				}
 
 				const isExisting = (currentId && currentId !== 'new')
 				if (isExisting) {
@@ -585,30 +634,48 @@ export default {
 				}
 				this.isDataChanged = false
 			} catch(error) {
-				this.$root.showAlert("Save failed!", "danger")
 				if (error.response && error.response.status == 401) {
 					this.handleLostSession()
+				} else {
+					const msg = getApiError(error, errorDescription, this.$store.state.metadata.id)
+					this.$root.showAlert("Save failed! " + msg, "danger", true)
 				}
-				else {
-					this.errorMessage = getApiError(error, errorDescription, this.$store.state.metadata.id)
-				}
+				//else {
+					// this.errorMessage = getApiError(error, errorDescription, this.$store.state.metadata.id)
+				//}
 			} finally {
 				this.saving = false
 			}
 		},
-		createNewRecord() {
-			this.loading = true
-			this.$nextTick(() => {
-				this.clearRecord()
-				this.initDataset()
-				this.loading = false
-				this.$router.replace({ name: 'editor', params: { id: "new" }})
-			})
-		},
-		initDataset() {
-			if (this.selectedCatalog !== null) {
-				this.$store.commit('loadSchema', this.selectedCatalog.schema)
-				this.$store.commit('loadHints', this.selectedCatalog.ui)
+		async setCumulative(value) {
+			// Changing the cumulative_state of a published dataset cannot be done directly to
+			// the Qvain dataset and requires a Metax RPC call.
+			if (this.isPublished) {
+				const currentId = this.$store.state.metadata.id
+				try {
+					if (!await this.confirmSetCumulative()) {
+						return
+					}
+
+					const response = await apiClient.post(
+						"/datasets/" + currentId + "/change_cumulative_state",
+						null,
+						{ params: { cumulative_state: value }}
+					)
+					await this.openRecord(this.id) // reopen updated dataset so possible old version tag gets updated
+					if (response.data && response.data.new_id && await this.confirmOpenNewVersion()) {
+						this.$router.replace({ name: 'tab', params: { id: response.data.new_id, tab: this.$route.params.tab }})
+					}
+				} catch(error) {
+					let msg = getApiError(error, "changing cumulative state for dataset", this.$store.state.metadata.id)
+					if (error.response.data && error.response.data.more && error.response.data.more.detail) {
+						msg += "\n\nDetails: " + error.response.data.more.detail
+					}
+					this.$root.showAlert(msg, "danger", true)
+				}
+			} else {
+				this.$store.commit('setMetadata', { cumulativeState: value })
+				this.isDataChanged = true
 			}
 		},
 		clearRecord() {
@@ -656,14 +723,19 @@ export default {
 				this.$store.commit('loadSchema', this.selectedCatalog.schema)
 				this.$store.commit('loadHints', this.selectedCatalog.ui)
 				this.$store.commit('loadData', Object(data.dataset))
-				this.$store.commit('setMetadata',
-					{
-						id,
-						schemaId: this.selectedCatalog.schemaId,
-						catalog: this.selectedCatalog.id,
-						originalCatalog: data.data_catalog,
-					}
-				)
+				const metadata = {
+					id,
+					schemaId: this.selectedCatalog.schemaId,
+					catalog: this.selectedCatalog.id,
+					originalCatalog: data.data_catalog,
+				}
+
+				// If a published dataset has no cumulative_state in the db, leave it empty
+				// so Metax will use its current value when publishing.
+				if (data.cumulative_state != null || data.published) {
+					metadata.cumulativeState = data.cumulative_state
+				}
+				this.$store.commit('setMetadata', metadata)
 				this.qvainData = data
 				this.openRecordCounter++
 				this.startValidator()
@@ -706,7 +778,10 @@ export default {
 				if (newTab) {
 					this.$router.replace({ name: 'tab', params: { id: this.$route.params.id, tab: newTab  }})
 				} else {
+					// Remove tab etc. from url if any. If url didn't change,
+					// nothing happens and we get an error that can be safely ignored.
 					this.$router.replace({ name: 'editor', params: { id: this.$route.params.id }})
+						.catch(()=>{})
 				}
 			}
 		},
