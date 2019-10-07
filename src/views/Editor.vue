@@ -535,7 +535,7 @@ export default {
 		async confirmOpenNewVersion() {
 			return await this.confirm(
 				"Open new dataset version?",
-				"A new version of the dataset was created. Do you want to open the new version?",
+				"A new version of the dataset was created. Do you want to open the new version for editing?",
 				"Yes",
 				"No",
 			)
@@ -544,7 +544,7 @@ export default {
 			if (newIsCumulative) {
 				return await this.confirm(
 					"Make dataset cumulative?",
-					"This will create a new version of the dataset.",
+					"A new version of the dataset will be created.",
 					"Yes",
 					"No",
 				)
@@ -655,7 +655,7 @@ export default {
 			if (this.isPublished) {
 				const currentId = this.$store.state.metadata.id
 				try {
-					if (!await this.confirmSetCumulative()) {
+					if (!await this.confirmSetCumulative(value===1)) {
 						return
 					}
 

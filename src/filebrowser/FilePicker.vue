@@ -35,7 +35,8 @@
 					slot="help"
 					class="text-muted"
 				>
-					This determines if new files and folders can be added after publishing the dataset without creating a new version.
+					Note! After the dataset has been published, changing the value from "No" to "Yes" will cause a new version of the dataset to be created.
+					Change from "Yes" to "No" will not create a new version.
 				</small>
 				<b-row
 					slot="input"
@@ -56,7 +57,7 @@
 								<b-form-radio
 									:value="1"
 								>
-									Yes. (New files or folders can be added without version change.)
+									Yes. (New files or folders can be added without a version change.)
 								</b-form-radio>
 							</b-form-radio-group>
 						</b-form-group>
@@ -98,7 +99,7 @@
 						:disabled="!canToggleCumulative"
 						@click="$emit('set-cumulative', 2)"
 					>
-						Turn non-cumulative
+						Make non-cumulative
 					</b-button>
 					<span class="col">
 						After turning non-cumulative, no new files or folders can be added to the current version.
@@ -115,10 +116,10 @@
 						:disabled="!canToggleCumulative"
 						@click="$emit('set-cumulative', 1)"
 					>
-						Turn cumulative
+						Make cumulative
 					</b-button>
 					<span class="col">
-						This will create a new version of the dataset.
+						New files and folders can be added to a cumulative datasets without creating a new version. Enabling this will create a new version of the dataset.
 					</span>
 				</b-row>
 			</template>
@@ -344,14 +345,24 @@ export default {
 
 			if (type === 'files') {
 				fields.description = fields.description ? fields.description : 'File'
+				if (this.state.files.filter(v => v.identifier === fields.identifier).length > 0) {
+					return // prevent adding same file twice
+				}
 				this.state.files.push(fields)
 			} else {
 				fields.description = fields.description ? fields.description : 'Folder'
+				if (this.state.directories.filter(v => v.identifier === fields.identifier).length > 0) {
+					return // prevent adding same directory twice
+				}
 				this.state.directories.push(fields)
 			}
 			this.project = this.selectedProject
 		},
 		removeFileOrDirectory({ type, fields }) {
+			if (this.isCumulative) {
+				return // cannot remove files or directories from cumulative datasets
+			}
+
 			if (type === 'files') {
 				this.$set(this.state, 'files', this.state.files.filter(f => f.identifier !== fields.identifier))
 			} else {
