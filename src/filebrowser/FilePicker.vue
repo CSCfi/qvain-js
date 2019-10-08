@@ -30,7 +30,7 @@
 			>
 				Cumulative dataset
 			</title-component>
-			<template v-if="!$store.state.metadata.isPublished">
+			<template v-if="!isPublished">
 				<small
 					slot="help"
 					class="text-muted"
@@ -160,43 +160,54 @@
 				:project="selectedProject"
 				:disabled="hasFilesFromOtherProject"
 				:edit-only-metadata="editOnlyMetadata"
+				:is-added-map="fileAndDirectoryChanges.isAdded"
+				:only-remove-added="isCumulative && isPublished"
 				@select="addFileOrDirectory"
 				@remove="removeFileOrDirectory"
 			/>
 		</div>
 
-		<div class="my-2">
-			<div class="px-2 py-2 d-flex justify-content-between">
-				<h3>Selected items</h3>
-			</div>
-			<b-card
-				v-if="state.directories.length === 0 && state.files.length === 0"
-				class="text-center bg-light"
+		<template v-if="Object.keys(fileAndDirectoryChanges.items).length > 0">
+			<div
+				v-for="(categoryItems, change) in fileAndDirectoryChanges.items"
+				:key="change"
+				class="my-2"
 			>
-				No files added
-			</b-card>
-			<b-card
-				v-else
-				no-body
-			>
-				<div
-					v-for="category in Object.keys(state)"
-					:key="category"
-				>
-					<FileItem
-						v-for="item in state[category]"
-						:key="item.identifier"
-						:single="item"
-						:type="category"
-						:secondary="item.identifier"
-						:icon="icons[category]"
-						:read-only="readOnly || isOld"
-						:deleted="$store.state.deletedItems[category][item.identifier] === true"
-						@delete="removeFileOrDirectory"
-					/>
+				<div class="px-2 py-2 d-flex justify-content-between">
+					<h4>{{ changeLabels[change] }}</h4>
 				</div>
-			</b-card>
-		</div>
+				<b-card
+					no-body
+				>
+					<div
+						v-for="(items, category) in categoryItems"
+						:key="category"
+					>
+						<FileItem
+							v-for="item in items"
+							:key="item.identifier"
+							:single="item"
+							:type="category"
+							:secondary="item.identifier"
+							:icon="icons[category]"
+							:read-only="readOnly || isOld"
+							:no-remove="isCumulative && isPublished && change !== 'added'"
+							:revertable="change === 'removed'"
+							:edited="fileAndDirectoryChanges.isEdited[category][item.identifier]"
+							:deleted="$store.state.deletedItems[category][item.identifier] === true"
+							@delete="removeFileOrDirectory"
+							@revert="addFileOrDirectory"
+						/>
+					</div>
+				</b-card>
+			</div>
+		</template>
+		<b-card
+			v-else
+			class="text-center bg-light"
+		>
+			No files added
+		</b-card>
 	</div>
 </template>
 
@@ -210,7 +221,7 @@ import TitleComponent from '@/partials/Title.vue'
 import { faFile, faFolder } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
 
-const metaxAPI = axios.create({
+const metaxFileAPI = axios.create({
 	baseURL: process.env.VUE_APP_METAX_FILEAPI_URL || '/api/proxy',
 	timeout: 5000,
 	responseType: 'json',
@@ -241,11 +252,22 @@ export default {
 				files: [],
 			},
 			initializing: true,
+			changeLabels: {
+				added: "Added items",
+				removed: "Removed items",
+				existing: "Published items",
+			},
 		}
 	},
 	computed: {
+		fileAndDirectoryChanges() {
+			return this.$store.getters.getFileAndDirectoryChanges(this.state)
+		},
 		canToggleCumulative() {
-			return this.$store.state.metadata.isPublished && !this.$store.state.metadata.isPublishedAndUpdateAvailable
+			return this.isPublished && !this.$store.state.metadata.isPublishedAndUpdateAvailable
+		},
+		isPublished() {
+			return this.$store.state.metadata.isPublished
 		},
 		isCumulative() {
 			return this.$store.state.metadata.cumulativeState === 1
@@ -325,9 +347,13 @@ export default {
 	async created() {
 		this.loadFilesAndFoldersFromStore()
 
+		let projectAsync
 		if (!this.project) {
-			await this.fetchFileAndProjectInfo()
+			projectAsync = this.fetchFileAndProjectInfo()
 		}
+		await this.$store.dispatch('fetchMetaxRecord')
+		await projectAsync
+
 		await this.$nextTick()
 		this.initializing = false
 	},
@@ -359,8 +385,8 @@ export default {
 			this.project = this.selectedProject
 		},
 		removeFileOrDirectory({ type, fields }) {
-			if (this.isCumulative) {
-				return // cannot remove files or directories from cumulative datasets
+			if (this.isCumulative && !this.fileAndDirectoryChanges.isAdded[type][fields.identifier]) {
+				return // cannot remove published files or directories from cumulative datasets
 			}
 
 			if (type === 'files') {
@@ -392,7 +418,7 @@ export default {
 			for (let i=0; i<this.state.files.length; i++) {
 				const identifier = this.state.files[i].identifier
 				try {
-					const { data } = await metaxAPI.get(`/files/${identifier}?removed`) // returns the file even if it was deleted
+					const { data } = await metaxFileAPI.get(`/files/${identifier}?removed`) // returns the file even if it was deleted
 					if (!project) {
 						project = data.project_identifier
 					}
@@ -415,7 +441,7 @@ export default {
 			for (let i=0; i<this.state.directories.length; i++) {
 				const identifier = this.state.directories[i].identifier
 				try {
-					const { data } = await metaxAPI.get(`/directories/${identifier}/files`)
+					const { data } = await metaxFileAPI.get(`/directories/${identifier}/files`)
 					if (!project) {
 						project = (data.directories && data.directories[0] && data.directories[0].project_identifier) ||
 							(data.files && data.files[0] && data.files[0].project_identifier) || null

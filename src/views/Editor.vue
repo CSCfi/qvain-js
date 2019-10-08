@@ -450,6 +450,7 @@ export default {
 					isPas: !!(qvainData && (qvainData.data_catalog === "urn:nbn:fi:att:data-catalog-pas" || qvainData.preservation_state > 0)),
 					isPublished: !!(qvainData && this.qvainData.published),
 					isPublishedAndUpdateAvailable: !!(qvainData && this.qvainData.modified > this.qvainData.synced),
+					metaxIdentifier: qvainData && this.qvainData.identifier,
 				})
 			},
 			deep: true,
@@ -721,6 +722,7 @@ export default {
 			try {
 				const { data } = await apiClient.get(`/datasets/${id}`)
 				this.$store.commit('resetMetadata')
+				this.$store.commit('clearMetaxRecord')
 				this.selectedCatalog = this.getCatalogForData(data)
 				this.$store.commit('loadSchema', this.selectedCatalog.schema)
 				this.$store.commit('loadHints', this.selectedCatalog.ui)

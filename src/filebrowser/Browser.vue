@@ -49,7 +49,7 @@
 					v-if="!disabled"
 					class="m-0"
 					:checked="selected.includes(data.item.identifier)"
-					:disabled="editOnlyMetadata"
+					:disabled="!canToggle(data.item)"
 					@change="e => togglePick(e, data)"
 				/>
 			</template>
@@ -164,7 +164,7 @@ export default {
 		FontAwesomeIcon,
 		PASMetadata,
 	},
-	props: [ 'project', 'selected', 'disabled', 'editOnlyMetadata' ],
+	props: [ 'project', 'selected', 'disabled', 'editOnlyMetadata', 'onlyRemoveAdded', 'isAddedMap' ],
 	data() {
 		return {
 			fields: [
@@ -306,6 +306,16 @@ export default {
 		},
 	},
 	methods: {
+		canToggle(item) {
+			if (this.editOnlyMetadata) {
+				return false
+			}
+			if (!this.selected.includes(item.identifier)) {
+				return true
+			}
+			// when onlyRemoveAdded is enabled, only allow removing files that were added after last save
+			return !this.onlyRemoveAdded || (this.isAddedMap[item.type] && this.isAddedMap[item.type][item.identifier])
+		},
 		updatePasMetadata(savedData) {
 			// Expects only files since it has no way of knowing the type, and atm only file metadata can be edited
 			const editedFile = this.directory.files.find(file => file.identifier === savedData.identifier)
