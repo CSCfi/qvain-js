@@ -219,9 +219,12 @@ import RecordField from '@/composites/RecordField.vue'
 import TitleComponent from '@/partials/Title.vue'
 
 import { faFile, faFolder } from '@fortawesome/free-solid-svg-icons'
+
 import axios from 'axios'
+import { cacheAdapterEnhancer, throttleAdapterEnhancer } from 'axios-extensions'
 
 const metaxFileAPI = axios.create({
+	adapter: throttleAdapterEnhancer(cacheAdapterEnhancer(axios.defaults.adapter)),
 	baseURL: process.env.VUE_APP_METAX_FILEAPI_URL || '/api/proxy',
 	timeout: 5000,
 	responseType: 'json',
