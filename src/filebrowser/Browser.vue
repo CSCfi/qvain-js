@@ -36,11 +36,27 @@
 			:fields="fields"
 			:items="filesAndDirectoriesForCWD"
 			show-empty
-			empty-text="No files in this directory"
 			striped
 			hover
 			class="mb-0"
 		>
+			<template v-slot:empty="scope">
+				<div
+					v-if="loading"
+					class="text-center my-2"
+				>
+					<font-awesome-icon
+						icon="spinner"
+						spin
+					/>
+				</div>
+				<div
+					v-else
+					class="text-center my-2"
+				>
+					No files in this directory
+				</div>
+			</template>
 			<template
 				slot="cell(selection)"
 				slot-scope="data"
@@ -229,6 +245,7 @@ export default {
 				directories: [],
 				files: [],
 			},
+			loading: true,
 		}
 	},
 	computed: {
@@ -299,11 +316,12 @@ export default {
 		},
 		project: {
 			immediate: true,
-			handler() {
+			async handler() {
 				this.clearDirectory()
 				if (this.project) {
-					this.openDirectory()
+					await this.openDirectory()
 				}
+				this.loading = false
 			},
 		},
 	},
