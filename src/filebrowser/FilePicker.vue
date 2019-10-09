@@ -202,12 +202,22 @@
 				</b-card>
 			</div>
 		</template>
-		<b-card
+		<div
 			v-else
-			class="text-center bg-light"
+			class="my-2"
 		>
-			No files added
-		</b-card>
+			<font-awesome-icon
+				v-if="initializing"
+				icon="spinner"
+				spin
+			/>
+			<b-card
+				v-else
+				class="text-center bg-light"
+			>
+				No files added
+			</b-card>
+		</div>
 	</div>
 </template>
 
