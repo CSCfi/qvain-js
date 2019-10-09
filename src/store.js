@@ -270,21 +270,13 @@ export default new Vuex.Store({
 			return Object.values(multi)[0] || null
 		},
 		getFileAndDirectoryChanges: (state) => (selected) => {
-			if (!state.metaxRecord || !state.metaxRecord.research_dataset) {
-				return {
-					items: {},
-					isEdited: {
-						directories: {},
-						files: {},
-					},
-					isAdded: {
-						directories: {},
-						files: {},
-					},
-				}
+			let files = []
+			let directories = []
+
+			if (state.metaxRecord && state.metaxRecord.research_dataset) {
+				files = state.metaxRecord.research_dataset.files || []
+				directories = state.metaxRecord.research_dataset.directories || []
 			}
-			const files = state.metaxRecord.research_dataset.files || []
-			const directories = state.metaxRecord.research_dataset.directories || []
 
 			// apply a function to values in array, returns an object with key-value pairs
 			const toMap = function(items, func) {
