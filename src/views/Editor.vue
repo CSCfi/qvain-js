@@ -722,7 +722,7 @@ export default {
 			try {
 				const { data } = await apiClient.get(`/datasets/${id}`)
 				this.$store.commit('resetMetadata')
-				this.$store.commit('clearMetaxRecord')
+				this.$store.commit('setMetaxRecord', null)
 				this.selectedCatalog = this.getCatalogForData(data)
 				this.$store.commit('loadSchema', this.selectedCatalog.schema)
 				this.$store.commit('loadHints', this.selectedCatalog.ui)

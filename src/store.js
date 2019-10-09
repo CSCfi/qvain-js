@@ -11,7 +11,7 @@ Vue.use(Vuex)
 
 const metaxAPI = axios.create({
 	baseURL: process.env.VUE_APP_METAX_API_URL,
-	timeout: 5000,
+	timeout: 10000,
 	responseType: 'json',
 })
 
@@ -19,6 +19,7 @@ export default new Vuex.Store({
 	state: {
 		record: undefined,
 		metaxRecord: null, // the published version of the current record
+		metaxRecordError: null,
 		schema: {},
 		hints: {},
 		metadata: {},
@@ -179,8 +180,8 @@ export default new Vuex.Store({
 		setMetaxRecord(state, payload) {
 			Vue.set(state, 'metaxRecord', payload)
 		},
-		clearMetaxRecord(state) {
-			Vue.set(state, 'metaxRecord', null)
+		setMetaxRecordError(state, payload) {
+			Vue.set(state, 'metaxRecordError', payload)
 		},
 	},
 	getters: {
@@ -346,14 +347,19 @@ export default new Vuex.Store({
 					const recordIdentifier = (state.metaxRecord && state.metaxRecord.identifier) || null
 					if (state.metadata.metaxIdentifier !== recordIdentifier) {
 						const { data } = await metaxAPI.get('/datasets/'+state.metadata.metaxIdentifier)
+						commit('setMetaxRecordError', null)
 						commit('setMetaxRecord', data)
 					}
-				} catch (e) {
-					commit('clearMetaxRecord')
+				} catch (error) {
+					const msg = error.response && (error.response.data && error.response.data.detail || error.response.data) || error.message
+					commit('setMetaxRecordError',
+						`Error retrieving information from Metax for dataset with identifier ${ state.metadata.metaxIdentifier }: ${ msg }`)
+					commit('setMetaxRecord', null)
 				}
 			} else {
 				if (state.metaxRecord) {
-					commit('clearMetaxRecord')
+					commit('setMetaxRecordError', null)
+					commit('setMetaxRecord', null)
 				}
 			}
 		},

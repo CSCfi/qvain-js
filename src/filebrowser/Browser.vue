@@ -159,12 +159,14 @@ import Breadcrumbs from './breadcrumbs.vue'
 import PASMetadata from './PasMetadata.vue'
 import { format as formatDate, parseISO } from 'date-fns'
 
-const fileAPI = axios.create({
-	adapter: throttleAdapterEnhancer(cacheAdapterEnhancer(axios.defaults.adapter)),
-	baseURL: process.env.VUE_APP_METAX_FILEAPI_URL || '/api/proxy',
-	timeout: 10000,
-	responseType: 'json',
-})
+import fileAPI from './client.js'
+
+// const fileAPI = axios.create({
+// 	adapter: throttleAdapterEnhancer(cacheAdapterEnhancer(axios.defaults.adapter)),
+// 	baseURL: process.env.VUE_APP_METAX_FILEAPI_URL || '/api/proxy',
+// 	timeout: 10000,
+// 	responseType: 'json',
+// })
 
 const formatBytes = (bytes, decimals) => {
 	if (bytes == 0) return '0 Bytes'

@@ -1,6 +1,20 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
 	<div>
+		<b-alert
+			:show="!!metaxError"
+			variant="danger"
+		>
+			<div>{{ metaxError }}</div>
+			<b-button
+				variant="primary"
+				@click="fetchMetaxRecord"
+			>
+				Retry
+			</b-button>
+		</b-alert>
+
+
 		<b-alert :show="!readOnly && isOld">
 			You are editing an old version of the dataset and cannot add or remove files.
 		</b-alert>
@@ -159,7 +173,7 @@
 				:selected="selectedByIdentifiers"
 				:project="selectedProject"
 				:disabled="hasFilesFromOtherProject"
-				:edit-only-metadata="editOnlyMetadata"
+				:edit-only-metadata="editOnlyMetadata || metaxError"
 				:is-added-map="fileAndDirectoryChanges.isAdded"
 				:only-remove-added="isCumulative && isPublished"
 				@select="addFileOrDirectory"
@@ -190,7 +204,7 @@
 							:type="category"
 							:secondary="item.identifier"
 							:icon="icons[category]"
-							:read-only="readOnly || isOld"
+							:read-only="readOnly || isOld || metaxError"
 							:no-remove="isCumulative && isPublished && change !== 'added'"
 							:revertable="change === 'removed'"
 							:edited="fileAndDirectoryChanges.isEdited[category][item.identifier]"
@@ -230,15 +244,7 @@ import TitleComponent from '@/partials/Title.vue'
 
 import { faFile, faFolder } from '@fortawesome/free-solid-svg-icons'
 
-import axios from 'axios'
-import { cacheAdapterEnhancer, throttleAdapterEnhancer } from 'axios-extensions'
-
-const metaxFileAPI = axios.create({
-	adapter: throttleAdapterEnhancer(cacheAdapterEnhancer(axios.defaults.adapter)),
-	baseURL: process.env.VUE_APP_METAX_FILEAPI_URL || '/api/proxy',
-	timeout: 5000,
-	responseType: 'json',
-})
+import fileAPI from './client.js'
 
 export default {
 	name: 'Filepicker',
@@ -255,7 +261,6 @@ export default {
 	},
 	data() {
 		return {
-			error: null,
 			icons: {
 				files: faFile,
 				directories: faFolder,
@@ -273,6 +278,9 @@ export default {
 		}
 	},
 	computed: {
+		metaxError() {
+			return this.$store.state.metaxRecordError
+		},
 		fileAndDirectoryChanges() {
 			return this.$store.getters.getFileAndDirectoryChanges(this.state)
 		},
@@ -364,14 +372,22 @@ export default {
 		if (!this.project) {
 			projectAsync = this.fetchFileAndProjectInfo()
 		}
-		await this.$store.dispatch('fetchMetaxRecord')
+
+		await this.fetchMetaxRecord()
 		await projectAsync
 
 		await this.$nextTick()
 		this.initializing = false
 	},
 	methods: {
+		async fetchMetaxRecord() {
+			await this.$store.dispatch('fetchMetaxRecord')
+		},
 		addFileOrDirectory({ type, fields }) {
+			if (this.metaxError) {
+				return
+			}
+
 			fields.use_category = {
 				"in_scheme": undefined,
 				"identifier": "http://uri.suomi.fi/codelist/fairdata/use_category/code/outcome",
@@ -398,6 +414,10 @@ export default {
 			this.project = this.selectedProject
 		},
 		removeFileOrDirectory({ type, fields }) {
+			if (this.metaxError) {
+				return
+			}
+
 			if (this.isCumulative && !this.fileAndDirectoryChanges.isAdded[type][fields.identifier]) {
 				return // cannot remove published files or directories from cumulative datasets
 			}
@@ -431,7 +451,7 @@ export default {
 			for (let i=0; i<this.state.files.length; i++) {
 				const identifier = this.state.files[i].identifier
 				try {
-					const { data } = await metaxFileAPI.get(`/files/${identifier}?removed`) // returns the file even if it was deleted
+					const { data } = await fileAPI.get(`/files/${identifier}?removed`) // returns the file even if it was deleted
 					if (!project) {
 						project = data.project_identifier
 					}
