@@ -1,3 +1,4 @@
+/* ADD_LICENSE_HEADER */
 import axios from 'axios'
 import { cacheAdapterEnhancer, throttleAdapterEnhancer } from 'axios-extensions'
 
