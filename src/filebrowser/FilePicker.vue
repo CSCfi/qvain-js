@@ -474,7 +474,7 @@ export default {
 			for (let i=0; i<this.state.directories.length; i++) {
 				const identifier = this.state.directories[i].identifier
 				try {
-					const { data } = await metaxFileAPI.get(`/directories/${identifier}/files`)
+					const { data } = await fileAPI.get(`/directories/${identifier}/files`)
 					if (!project) {
 						project = (data.directories && data.directories[0] && data.directories[0].project_identifier) ||
 							(data.files && data.files[0] && data.files[0].project_identifier) || null

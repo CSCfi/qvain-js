@@ -150,8 +150,6 @@
 </template>
 
 <script>
-import axios from 'axios'
-import { cacheAdapterEnhancer, throttleAdapterEnhancer } from 'axios-extensions'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faFolder } from '@fortawesome/free-solid-svg-icons'
 
@@ -160,13 +158,6 @@ import PASMetadata from './PasMetadata.vue'
 import { format as formatDate, parseISO } from 'date-fns'
 
 import fileAPI from './client.js'
-
-// const fileAPI = axios.create({
-// 	adapter: throttleAdapterEnhancer(cacheAdapterEnhancer(axios.defaults.adapter)),
-// 	baseURL: process.env.VUE_APP_METAX_FILEAPI_URL || '/api/proxy',
-// 	timeout: 10000,
-// 	responseType: 'json',
-// })
 
 const formatBytes = (bytes, decimals) => {
 	if (bytes == 0) return '0 Bytes'
