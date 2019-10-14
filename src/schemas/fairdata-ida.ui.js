@@ -49,7 +49,7 @@ export default {
 		'order': [ "name", "email", "identifier" ],
 	},
 	'#/definitions/Document': {
-		'visible': false,
+		'visible': (record, prop) => prop !== "homepage",
 	},
 	'/properties/title': {
 		'tab': 'description',

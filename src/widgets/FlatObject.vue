@@ -86,7 +86,8 @@ export default {
 	methods: {
 		isPropHidden(prop) {
 			const ui = this.propUi(prop)
-			return prop === '@type' || !this.shouldCreateProp(prop) || (ui.tab && ui.tab !== this.activeTab) || ui.visible === false || this.skipped.includes(prop)
+			return prop === '@type' || !this.shouldCreateProp(prop) || (ui.tab && ui.tab !== this.activeTab)
+			|| (ui.visible && ui.visible(this.$store.state.record, prop) === false) || this.skipped.includes(prop)
 		},
 		shouldCreateProp(prop) {
 			if (prop === 'is_part_of') {
