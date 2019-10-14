@@ -25,7 +25,7 @@
 					:variant="datasetsView.showState === 'all' || datasetsView.showState === 'draft' ? 'success' : 'outline-secondary'"
 					@click="setShowState('draft')"
 				>
-					Draft
+					Draft (D)
 				</b-btn>
 				<b-btn
 					class="dataset-filter__button"
@@ -33,7 +33,7 @@
 					:variant="datasetsView.showState === 'all' || datasetsView.showState === 'published' ? 'primary' : 'outline-secondary'"
 					@click="setShowState('published')"
 				>
-					Published
+					Published (P)
 				</b-btn>
 				<b-btn
 					class="dataset-filter__button"
@@ -41,7 +41,7 @@
 					:variant="datasetsView.showState === 'all' || datasetsView.showState === 'unpublishedchanges' ? 'warning' : 'outline-secondary'"
 					@click="setShowState('unpublishedchanges')"
 				>
-					Unpublished Changes
+					Unpublished Changes (U)
 				</b-btn>
 			</b-button-group>
 
@@ -209,22 +209,27 @@
 						class="dataset-row-publish-status"
 						@click.stop="editDataset(row.item)"
 					>
-						<font-awesome-icon
+						<span
 							v-if="row.item.published && !isItemPublishedAndHasUpdates(row.item)"
-							icon="circle"
-							class="text-primary"
-						/>
-						<font-awesome-icon
+							class="status-icon bg-primary"
+							aria-label="Published"
+						><span class="text">P</span>
+						</span>
+						<span
 							v-else-if="row.item.published && isItemPublishedAndHasUpdates(row.item)"
-							icon="circle"
-							class="text-warning"
-						/>
-						<font-awesome-icon
+							class="status-icon bg-warning"
+							aria-label="Unpublished changes"
+						><span class="text">U</span>
+						</span>
+						<span
 							v-else
 							icon="circle"
-							class="text-success"
-						/>
+							class="status-icon bg-success"
+							aria-label="Draft"
+						><span class="text">D</span>
+						</span>
 					</span>
+
 					{{ preferredLanguage(row.item.title) }}
 					<b-badge
 						v-if="row.item.next !== null"
@@ -433,6 +438,29 @@
 </template>
 
 <style lang="scss" scoped>
+	.status-icon {
+		display: inline-flex;
+		justify-content: center;
+		align-items: center;
+		width: 1em;
+		height: 1em;
+		border-radius: 0.5em;
+		text-align: center;
+		position: relative;
+		bottom: 0.15em;
+		margin-right: 0.05em;
+
+		& > span {
+			color: white;
+			font-weight: bold;
+			font-size: 0.7em;
+		}
+	}
+
+	.dataset-row-publish-status {
+		vertical-align: top;
+	}
+
 	.tool-bar {
 		margin: -2px -4px;
 
