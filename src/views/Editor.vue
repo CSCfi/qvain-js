@@ -106,7 +106,7 @@
 							<b-button
 								v-if="qvainData"
 								id="editor_refresh_dataset"
-								:variant="reloadDatasetCounter > 0 ? 'danger' : 'secondary'"
+								variant="secondary"
 								block
 								:disabled="this.$store.state.metadata.isReadOnly"
 								@click="reloadDataset"
@@ -117,7 +117,7 @@
 								/>
 								&nbsp;
 								<span v-if="!reloading">
-									{{ reloadDatasetTitle }}
+									Undo All Changes
 								</span>
 							</b-button>
 						</b-col>
@@ -387,16 +387,11 @@ export default {
 			publishing: false,
 			isDataChanged: false,
 			qvainData: null,
-			reloadDatasetCounter: 0,
-			reloadDatasetTimer: null,
 			openRecordCounter: 0,
 			errorMessage: null,
 		}
 	},
 	computed: {
-		reloadDatasetTitle() {
-			return this.reloadDatasetCounter == 0 ? "Undo All Changes" : "Are you sure?"
-		},
 		isPublishDisabled() {
 			return this.loading || this.rateLimited || this.$store.state.metadata.id == null
 				|| (this.qvainData && this.qvainData.published && this.qvainData.synced >= this.qvainData.modified)
@@ -452,12 +447,6 @@ export default {
 			deep: true,
 			immediate: true,
 		},
-	},
-	destroyed: function() {
-		if (this.reloadDatasetTimer) {
-			clearTimeout(this.reloadDatasetTimer)
-		}
-		this.reloadDatasetTimer = null
 	},
 	async mounted() {
 		if (this.id === 'new') {
@@ -620,31 +609,14 @@ export default {
 			this.$store.commit('loadData', undefined)
 			this.$store.commit('resetMetadata')
 		},
-		cancelReloadDataset() {
-			this.reloadDatasetTimer = null
-			this.reloadDatasetCounter = 0
-		},
 		async reloadDataset() {
-			if (this.isDataChanged) {
-				this.confirmUnsavedChanges("Do you want to reload the dataset?", "No, I do not want to.", async value => {
-					if (value) {
-						this.reloading = true
-						await this.openRecord(this.id)
-						this.reloadDatasetCounter = 0
-						this.reloading = false
-					}
-				})
-				return
-			}
-			if (this.reloadDatasetCounter == 0) {
-				this.reloadDatasetCounter += 1
-				this.reloadDatasetTimer = setTimeout(this.cancelReloadDataset, 2000)
-			} else {
-				this.reloading = true
-				await this.openRecord(this.id)
-				this.reloadDatasetCounter = 0
-				this.reloading = false
-			}
+			this.confirmUnsavedChanges("Do you want to reload the dataset?", "No, I do not want to.", async value => {
+				if (value) {
+					this.reloading = true
+					await this.openRecord(this.id)
+					this.reloading = false
+				}
+			})
 		},
 		async openRecord(id) {
 			if (this.loading) { return }
