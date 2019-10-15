@@ -68,7 +68,7 @@ const app = new Vue({
 		// load Matomo script, add a PageView
 		if (process.env['VUE_APP_MATOMO_SITE_ID']) {
 			window._paq = []
-			window._paq.push(['disableCookies']);
+			window._paq.push(['disableCookies'])
 			window._paq.push(['trackPageView'])
 			window._paq.push(['enableLinkTracking']);
 			(function() {
