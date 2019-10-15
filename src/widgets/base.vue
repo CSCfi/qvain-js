@@ -28,7 +28,7 @@ export default {
 	props: [ 'schema', 'value', 'valtype', 'parent', 'property', 'path', 'tab', 'activeTab', 'depth', 'hasTypeError', 'required', 'readOnly' ],
 	computed: {
 		isVisible() {
-			return this.ui.visible ? this.ui.visible(this.$store.state.record) : true
+			return this.ui.visible ? this.ui.visible(this.$store.state.record, this.property) : true
 		},
 		isRequired() {
 			return this.ui.required ? this.ui.required(this.$store.state.record) : this.required

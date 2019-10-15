@@ -90,7 +90,8 @@ export default {
 	methods: {
 		isPropHidden(prop) {
 			const ui = this.propUi(prop)
-			return !this.shouldCreateProp(prop) || (ui.tab && ui.tab !== this.activeTab) || ui.visible === false
+			return !this.shouldCreateProp(prop) || (ui.tab && ui.tab !== this.activeTab)
+				|| (ui.visible && ui.visible(this.$store.state.record, prop) === false)
 		},
 		shouldCreateProp(prop) {
 			if (prop === '@type') return false
