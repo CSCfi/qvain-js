@@ -19,9 +19,16 @@
 							class="text-muted m-0 font-italic"
 						>({{ secondary }})</span>
 						<b-badge
+							v-if="edited"
+							variant="warning"
+							class="badge"
+						>
+							Edited
+						</b-badge>
+						<b-badge
 							v-if="deleted"
 							variant="danger"
-							class="deleted"
+							class="badge"
 						>
 							Deleted
 						</b-badge>
@@ -47,19 +54,29 @@
 			<b-btn-group class="ml-auto">
 				<b-btn
 					v-b-toggle="single.identifier"
-					:disabled="deleted"
+					:disabled="deleted || revertable"
 					variant="primary"
 					class="px-3 py-2"
 				>
 					<font-awesome-icon :icon="icons.faPen" />
 				</b-btn>
 				<b-btn
-					:disabled="readOnly"
+					v-if="!revertable"
+					:disabled="readOnly || noRemove"
 					variant="danger"
 					class="px-3 py-2"
 					@click="$emit('delete', { type, fields: single })"
 				>
 					<font-awesome-icon :icon="icons.faTrash" />
+				</b-btn>
+
+				<b-btn
+					v-else
+					variant="info"
+					class="px-3 py-2"
+					@click="$emit('revert', { type, fields: single })"
+				>
+					<font-awesome-icon :icon="icons.faPlus" />
 				</b-btn>
 			</b-btn-group>
 		</b-card-body>
@@ -157,6 +174,7 @@ import {
 	faPen,
 	faPencilAlt,
 	faTag,
+	faPlus,
 } from "@fortawesome/free-solid-svg-icons"
 
 export default {
@@ -172,7 +190,10 @@ export default {
 		"removeItem",
 		"type",
 		"readOnly",
+		"noRemove",
+		"edited",
 		"deleted",
+		"revertable",
 	],
 	data() {
 		return {
@@ -181,13 +202,14 @@ export default {
 				faTrash,
 				faPencilAlt,
 				faTag,
+				faPlus,
 			},
 		}
 	},
 }
 </script>
 
-<style>
+<style scoped>
 .form-group {
 	margin-bottom: 0;
 }
@@ -203,7 +225,7 @@ fieldset.item-field div.form-row legend:after {
 	color: red;
 }
 
-.deleted {
+.badge {
 	margin-left: 0.5rem;
 }
 </style>

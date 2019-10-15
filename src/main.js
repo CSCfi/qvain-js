@@ -90,8 +90,12 @@ const app = new Vue({
 		countDownChanged (dismissCountDown) {
 			this.dismissCountDown = dismissCountDown
 		},
-		showAlert (text, variant) {
-			this.dismissCountDown = this.dismissSecs
+		showAlert (text, variant, persist) {
+			if (!persist) {
+				this.dismissCountDown = this.dismissSecs
+			} else {
+				this.dismissCountDown = true // show until manually dismissed
+			}
 			this.alertText = text
 			this.alertVariant = variant || "dark"
 		},

@@ -36,11 +36,27 @@
 			:fields="fields"
 			:items="filesAndDirectoriesForCWD"
 			show-empty
-			empty-text="No files in this directory"
 			striped
 			hover
 			class="mb-0"
 		>
+			<template v-slot:empty="scope">
+				<div
+					v-if="loading"
+					class="text-center my-2"
+				>
+					<font-awesome-icon
+						icon="spinner"
+						spin
+					/>
+				</div>
+				<div
+					v-else
+					class="text-center my-2"
+				>
+					No files in this directory
+				</div>
+			</template>
 			<template
 				slot="cell(selection)"
 				slot-scope="data"
@@ -49,7 +65,7 @@
 					v-if="!disabled"
 					class="m-0"
 					:checked="selected.includes(data.item.identifier)"
-					:disabled="editOnlyMetadata"
+					:disabled="!canToggle(data.item)"
 					@change="e => togglePick(e, data)"
 				/>
 			</template>
@@ -134,7 +150,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faFolder } from '@fortawesome/free-solid-svg-icons'
 
@@ -142,11 +157,7 @@ import Breadcrumbs from './breadcrumbs.vue'
 import PASMetadata from './PasMetadata.vue'
 import { format as formatDate, parseISO } from 'date-fns'
 
-const fileAPI = axios.create({
-	baseURL: process.env.VUE_APP_METAX_FILEAPI_URL || '/api/proxy',
-	timeout: 10000,
-	responseType: 'json',
-})
+import fileAPI from './client.js'
 
 const formatBytes = (bytes, decimals) => {
 	if (bytes == 0) return '0 Bytes'
@@ -164,7 +175,7 @@ export default {
 		FontAwesomeIcon,
 		PASMetadata,
 	},
-	props: [ 'project', 'selected', 'disabled', 'editOnlyMetadata' ],
+	props: [ 'project', 'selected', 'disabled', 'editOnlyMetadata', 'onlyRemoveAdded', 'isAddedMap' ],
 	data() {
 		return {
 			fields: [
@@ -227,6 +238,7 @@ export default {
 				directories: [],
 				files: [],
 			},
+			loading: true,
 		}
 	},
 	computed: {
@@ -297,15 +309,26 @@ export default {
 		},
 		project: {
 			immediate: true,
-			handler() {
+			async handler() {
 				this.clearDirectory()
 				if (this.project) {
-					this.openDirectory()
+					await this.openDirectory()
 				}
+				this.loading = false
 			},
 		},
 	},
 	methods: {
+		canToggle(item) {
+			if (this.editOnlyMetadata) {
+				return false
+			}
+			if (!this.selected.includes(item.identifier)) {
+				return true
+			}
+			// when onlyRemoveAdded is enabled, only allow removing files that were added after last save
+			return !this.onlyRemoveAdded || (this.isAddedMap[item.type] && this.isAddedMap[item.type][item.identifier])
+		},
 		updatePasMetadata(savedData) {
 			// Expects only files since it has no way of knowing the type, and atm only file metadata can be edited
 			const editedFile = this.directory.files.find(file => file.identifier === savedData.identifier)

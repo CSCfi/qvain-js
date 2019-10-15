@@ -4,7 +4,7 @@
 		<b-alert
 			id="root_alert"
 			:show="$root.dismissCountDown"
-			style="z-index: 1000; position: fixed; top: 1rem; left: 0; right: 0; width: 90%; margin: 0 auto; opacity: 0.90;"
+			class="alert"
 			dismissible
 			:variant="$root.alertVariant"
 			@dismissed="$root.dismissAlert"
@@ -56,6 +56,18 @@
 	.loading-session {
 		padding-top: 2em;
 		padding-left: 2em;
+	}
+
+	.alert {
+		z-index: 2000;
+		position: fixed;
+		top: 1rem;
+		left: 0;
+		right: 0;
+		width: 90%;
+		margin: 0 auto;
+		opacity: 0.95;
+		white-space: pre-line;
 	}
 </style>
 
