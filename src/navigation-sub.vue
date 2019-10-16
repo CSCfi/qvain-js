@@ -4,6 +4,7 @@
 		id="app-subbar"
 		:toggleable="false"
 		type="dark"
+		class="thin"
 	>
 		<b-nav-toggle target="app-subbar-collapse" />
 		<b-collapse
@@ -11,58 +12,56 @@
 			is-nav
 		>
 			<b-navbar-nav>
-				<b-button-group class="editor-actions">
-					<b-button
-						v-if="isActiveRoute('datasets') && isDraftActive && !isEditActive"
-						key="continue_draft"
-						variant="primary"
-						size="sm"
-						to="/dataset/edit"
-					>
-						<font-awesome-icon icon="backward" />
-						&nbsp;
-						Unsaved dataset
-					</b-button>
-					<b-button
-						v-if="isActiveRoute('datasets') && isEditActive"
-						key="continue_edit"
-						variant="primary"
-						size="sm"
-						:to="continueEditUrl"
-					>
-						<font-awesome-icon icon="backward" />
-						&nbsp;
-						{{ editTitle || '(no title)' }}
-					</b-button>
-				</b-button-group>
+				<b-nav-item
+					v-if="isActiveRoute('datasets') && isDraftActive && !isEditActive"
+					key="continue_draft"
+					link-classes="btn btn-primary btn-sm"
+					to="/dataset/edit"
+				>
+					<font-awesome-icon
+						icon="backward"
+						class="mr-2"
+					/>Unsaved dataset
+				</b-nav-item>
+
+				<b-nav-item
+					v-if="isActiveRoute('datasets') && isEditActive"
+					key="continue_edit"
+					link-classes="btn btn-primary btn-sm"
+					:to="continueEditUrl"
+				>
+					<font-awesome-icon
+						icon="backward"
+						class="mr-2"
+					/>{{ editTitle || '(no title)' }}
+				</b-nav-item>
 			</b-navbar-nav>
+
 			<b-navbar-nav key="links">
-				<b-button
+				<b-nav-item
 					v-if="!isActiveRoute('datasets')"
 					key="datasets"
-					size="sm"
-					variant="primary"
+					link-classes="btn btn-primary btn-sm"
 					to="/datasets"
 				>
-					<font-awesome-icon icon="table" />
-					&nbsp;
-					Datasets
-				</b-button>
+					<font-awesome-icon
+						icon="table"
+						class="mr-2"
+					/>Datasets
+				</b-nav-item>
 			</b-navbar-nav>
 			<b-navbar-nav class="ml-auto">
-				<b-button-group class="page-actions">
-					<b-button
-						id="button-new-dataset"
-						key="new"
-						:variant="isActiveRoute('editor') || isActiveRoute('tab') ? 'primary' : 'success'"
-						size="sm"
-						to="/dataset/new"
-					>
-						<font-awesome-icon icon="plus" />
-						&nbsp;
-						New dataset
-					</b-button>
-				</b-button-group>
+				<b-nav-item
+					id="button-new-dataset"
+					key="new"
+					:link-classes="'btn btn-sm btn-' + (isActiveRoute('editor') || isActiveRoute('tab') ? 'primary' : 'success')"
+					to="/dataset/new"
+				>
+					<font-awesome-icon
+						icon="plus"
+						class="mr-2"
+					/>New dataset
+				</b-nav-item>
 			</b-navbar-nav>
 		</b-collapse>
 	</b-navbar>
