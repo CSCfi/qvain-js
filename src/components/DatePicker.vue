@@ -9,6 +9,7 @@
 			placeholder="dd.MM.yyyy"
 			class="form-control"
 			:disabled="disabled"
+			aria-label="Date"
 			@input="validate"
 			@change="submitChange"
 			@keyup.enter="submitChange"
