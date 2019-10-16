@@ -56,6 +56,7 @@
 						:placeholder="'Start typing in ' + languages[key]"
 						:value="state[key]"
 						:disabled="readOnly"
+						:lang="key"
 						@input="v => changeText(key, v)"
 					/>
 				</b-tab>

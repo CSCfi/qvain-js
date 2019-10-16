@@ -53,6 +53,7 @@
 					:disabled="readOnly"
 					:allow-empty="allowEmpty"
 					:deselect-label="allowEmpty ? 'Press enter to remove' : 'Selected'"
+					:lang="currentLanguage"
 					@search-change="search"
 				>
 					<div slot="noResult">
@@ -62,6 +63,7 @@
 						v-if="grouped"
 						slot="option"
 						slot-scope="{ option }"
+						:lang="currentLanguage"
 						:class="{ option__child: !option.$groupLabel, option__parent: option.$groupLabel }"
 					>
 						{{ option.$groupLabel || customLabel(option) }}
@@ -96,9 +98,17 @@
 					:disabled="readOnly"
 					:allow-empty="allowEmpty"
 					:deselect-label="allowEmpty ? 'Press enter to remove' : 'Selected'"
+					:lang="currentLanguage"
 					@select="atSelect"
 					@search-change="search"
 				>
+					<div
+						slot="option"
+						slot-scope="{ option }"
+						:lang="currentLanguage"
+					>
+						{{ customLabel(option) }}
+					</div>
 					<div slot="noOptions" />
 					<div slot="noResult">
 						No elements found. Consider changing the search query. You may have to type at least 3 letters.
@@ -106,6 +116,7 @@
 					<div
 						slot="selection"
 						slot-scope="{ values, search, isOpen }"
+						:lang="currentLanguage"
 					>
 						<span
 							v-if="values.length &amp;&amp; !isOpen"
@@ -118,6 +129,7 @@
 				v-if="isMultiselect"
 				:id="property + '_taglist'"
 				class="tag__list"
+				:lang="currentLanguage"
 			>
 				<p
 					v-for="(option, index) in Array.from(selectedOptions)"
@@ -492,6 +504,13 @@ export default {
 
 .multiselect__option--selected.multiselect__option--highlight:after {
 	background: $danger;
+}
+
+.multiselect__placeholder {
+	padding-bottom: 0;
+	padding-top: 0;
+	margin-bottom: 0;
+	font-size: 1rem;
 }
 
 .multiselect__single,
