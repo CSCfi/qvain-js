@@ -70,10 +70,6 @@
 <script>
 export default {
 	name: 'NavigationSub',
-	data: function() {
-		return {
-		}
-	},
 	computed: {
 		editTitle() {
 			if (this.$store.getters.getTitle) {

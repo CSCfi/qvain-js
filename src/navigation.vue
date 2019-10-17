@@ -92,16 +92,9 @@
 	</b-navbar>
 </template>
 
-
 <script>
 export default {
 	name: 'Navigation',
-	data: function() {
-		return {
-		}
-	},
-	computed: {
-	},
 	methods: {
 		async logout() {
 			if (!await this.$auth.logout()) {
