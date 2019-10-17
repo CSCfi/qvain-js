@@ -225,6 +225,11 @@ $fd-primary-white: #ffffff;
 	color: $fd-primary-white;
 }
 
+.navbar-dark .navbar-nav .nav-link,
+.navbar-dark .navbar-nav .nav-link:focus {
+	color: $fd-primary-white;
+}
+
 a {
 	color: $fd-primary;
 }
@@ -665,8 +670,8 @@ body {
 }
 
 .nav-link .badge {
-    display: flex;
+	display: flex;
 	padding-left: 1em;
 	padding-right: 1em;
-    align-items: center;
+	align-items: center;
 }
