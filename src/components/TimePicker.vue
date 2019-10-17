@@ -11,6 +11,7 @@
 			placeholder="hh:mm:ss"
 			class="form-control"
 			:disabled="disabled"
+			aria-label="Time"
 			@input="validate"
 			@change="submitChange"
 			@keyup.enter="submitChange"

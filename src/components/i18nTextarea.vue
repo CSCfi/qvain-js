@@ -57,6 +57,7 @@
 						:value="state[key]"
 						:disabled="readOnly"
 						:lang="key"
+						:aria-label="uiLabel + ' in ' + languages[key]"
 						@input="v => changeText(key, v)"
 					/>
 				</b-tab>

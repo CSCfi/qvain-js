@@ -36,9 +36,11 @@
 		<div slot="input">
 			<b-container v-if="tabFormat">
 				<b-btn
+					:id="property + '_array_button_add'"
 					class="add-button col"
 					variant="light"
 					type="button"
+					aria-label="Add item"
 					:disabled="value.length >= maximum || readOnly"
 					@click="doPlus()"
 				>
@@ -124,6 +126,7 @@
 						class="col"
 						variant="light"
 						type="button"
+						aria-label="Add item"
 						:disabled="value.length >= maximum || readOnly"
 						@click="doPlus()"
 					>
