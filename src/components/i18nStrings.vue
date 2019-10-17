@@ -53,6 +53,7 @@
 							required
 							:placeholder="'Start typing in ' + languages[lang]"
 							:disabled="readOnly"
+							:lang="lang"
 							@input="updateValue"
 						/>
 					</b-input-group>
