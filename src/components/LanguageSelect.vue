@@ -17,11 +17,13 @@
 			:options="languages"
 			:disabled="disabled"
 			v-bind="$attrs"
+			:aria-labelledby="placeholderId"
 			v-on="$listeners"
 			@change="reset"
 		>
 			<template slot="first">
 				<option
+					:id="placeholderId"
 					:value="undefined"
 					disabled
 					class="text-muted"
@@ -36,12 +38,6 @@
 <style lang="scss" scoped>
 .height {
 	height: 38px;
-}
-.select:focus {
-	border-color: #ced4da !important;
-	-webkit-box-shadow: none;
-	-moz-box-shadow: none;
-	box-shadow: none;
 }
 </style>
 
@@ -65,6 +61,11 @@ export default {
 			languages: langCodes2,
 			state: undefined,
 		}
+	},
+	computed: {
+		placeholderId() {
+			return this.$attrs.id + '_placeholder'
+		},
 	},
 	methods: {
 		reset() {

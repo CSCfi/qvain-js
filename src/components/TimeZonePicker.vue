@@ -14,6 +14,7 @@
 			placeholder="[+-]hh:mm"
 			class="form-control"
 			:disabled="disabled"
+			aria-label="UTC offset"
 			@input="validate"
 			@change="submitChange"
 			@keyup.enter="submitChange"
