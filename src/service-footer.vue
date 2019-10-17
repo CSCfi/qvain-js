@@ -20,6 +20,7 @@
 					<b-img
 						src="/static/imgs/CSC.png"
 						width="50"
+						alt=""
 						fluid
 						center
 					/>
