@@ -6,7 +6,6 @@
 			variant="danger"
 		>
 			{{ error }}
-
 			<div
 				:style="{'margin-top': '15px'}"
 				align="center"
