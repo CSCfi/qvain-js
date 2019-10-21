@@ -28,7 +28,7 @@
 			</b-badge>
 		</div>
 		<div slot="input">
-			<b-form class="record-field">
+			<div class="record-field">
 				<b-form-group
 					v-for="(val, lang) in state"
 					:key="lang"
@@ -75,7 +75,7 @@
 						@change="userRequestedNewLanguage"
 					/>
 				</div>
-			</b-form>
+			</div>
 		</div>
 	</record-field>
 </template>
