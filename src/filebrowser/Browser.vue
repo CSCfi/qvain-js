@@ -66,7 +66,8 @@
 					class="m-0"
 					:checked="selected.includes(data.item.identifier)"
 					:disabled="!canToggle(data.item)"
-					@change="e => togglePick(e, data)"
+					aria-label="In dataset"
+					@change="togglePick($event, data)"
 				/>
 			</template>
 
@@ -79,6 +80,7 @@
 					size="sm"
 					variant="link"
 					class="m-0 p-0 float-right"
+					aria-label="Open folder"
 					@click.stop="goTo(data.item.path)"
 				>
 					<font-awesome-icon
