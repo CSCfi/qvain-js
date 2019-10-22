@@ -792,9 +792,9 @@ export default {
 			})
 		},
 		updateAutocomplete() {
-			// Autocomplete values are saved when a form is submitted or the submit button is clicked.
-			// Use a hidden submit button and prevent the event to trigger saving autocomplete.
-			this.$refs.submit.click()
+			// New autocomplete values are saved when a form is submitted or the submit button is clicked.
+			// The form prevents the triggered event from reloading the page.
+			this.$refs.submit.click() // click hidden submit button
 		},
 	},
 	beforeRouteUpdate(to, form, next) {
