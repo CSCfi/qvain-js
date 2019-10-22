@@ -1,14 +1,17 @@
 <!-- ADD_LICENSE_HEADER -->
 <template>
 	<ol class="breadcrumb m-0 bg-white">
-		<b-btn
-			v-if="homePath"
-			class="m-0 py-0 px-2"
-			variant="link"
-			@click.stop="click(homePath)"
-		>
-			<font-awesome-icon :icon="icon.faHome" />
-		</b-btn>
+		<li>
+			<b-btn
+				v-if="homePath"
+				class="m-0 py-0 px-2"
+				variant="link"
+				aria-label="Project home"
+				@click.stop="click(homePath)"
+			>
+				<font-awesome-icon :icon="icon.faHome" />
+			</b-btn>
+		</li>
 		<li
 			v-for="(crumb, i) in breadcrumbs"
 			:key="i"
