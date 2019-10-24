@@ -21,7 +21,7 @@ export default {
 <style lang="scss" scoped>
 .wrapper {
 	padding: 1em;
-	border: 1px solid #efefef;
+	border: 1px solid #e9e9e9;
 }
 
 .error {
