@@ -121,6 +121,7 @@
 .terms {
 	text-decoration: underline;
 	font-weight: 400;
+	color: $gray-700;
 }
 </style>
 
