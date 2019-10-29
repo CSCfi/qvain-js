@@ -67,7 +67,7 @@
 					</li>
 					<li>
 						the
-						<a href="https://www.fairdata.fi/hyodyntaminen/kayttopolitiikat-ja-ehdot/">Terms of Usage</a>
+						<a class="terms" href="https://www.fairdata.fi/hyodyntaminen/kayttopolitiikat-ja-ehdot/">Terms of Usage</a>
 					</li>
 				</ul>
 			</p>
@@ -116,6 +116,12 @@
 }
 .btn-link:hover {
 	text-decoration: underline;
+}
+
+.terms {
+	text-decoration: underline;
+	font-weight: 400;
+	color: $gray-700;
 }
 </style>
 
