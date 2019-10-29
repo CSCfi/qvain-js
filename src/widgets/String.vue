@@ -42,7 +42,6 @@
 						@click="deleteMe"
 					/>
 				</span>
-
 				<b-input-group>
 					<b-form-input
 						:id="inArray ? 'input-' + property.toString() : property"
@@ -51,6 +50,7 @@
 						:value="value"
 						:state="isValid ? null : false"
 						:disabled="readOnly"
+						:autocomplete="ui.autocomplete || 'on'"
 						@input.native="updateValue"
 					/>
 				</b-input-group>

@@ -264,18 +264,23 @@ export default {
 	},
 	'/properties/creator/*/oneOf/0/properties/name': {
 		'description': 'Please write your name in first_name last_name fashion if possible',
+		'autocomplete': 'name',
 	},
 	'/properties/contributor/*/oneOf/0/properties/name': {
 		'description': 'Please write your name in first_name last_name fashion if possible',
+		'autocomplete': 'name',
 	},
 	'/properties/rights_holder/*/oneOf/0/properties/name': {
 		'description': 'Please write your name in first_name last_name fashion if possible',
+		'autocomplete': 'name',
 	},
 	'/properties/curator/*/oneOf/0/properties/name': {
 		'description': 'Please write your name in first_name last_name fashion if possible',
+		'autocomplete': 'name',
 	},
 	'/properties/publisher/oneOf/0/properties/name': {
 		'description': 'Please write your name in first_name last_name fashion if possible',
+		'autocomplete': 'name',
 	},
 	'/properties/creator/*/oneOf/*/properties/contributor_type': {
 		'tab': 'extra',
@@ -906,5 +911,8 @@ export default {
 	},
 	'**/telephone': {
 		'tab': 'extra',
+	},
+	'**/email': {
+		'autocomplete': 'email',
 	},
 }

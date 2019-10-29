@@ -248,18 +248,27 @@
 				</b-col>
 
 				<b-col v-if="selectedCatalog">
-					<tab-selector
-						:key="openRecordCounter"
-						:schema="$store.state.schema"
-						path=""
-						:parent="$store.state"
-						property="record"
-						:value="$store.state.record"
-						:active-tab="$route.params.tab"
-						:depth="0"
-						:read-only="$store.state.metadata.isReadOnly"
-						@set-cumulative="setCumulative"
-					/>
+					<b-form
+						:key="refreshCounter"
+						@submit.prevent
+					>
+						<tab-selector
+							:schema="$store.state.schema"
+							path=""
+							:parent="$store.state"
+							property="record"
+							:value="$store.state.record"
+							:active-tab="$route.params.tab"
+							:depth="0"
+							:read-only="$store.state.metadata.isReadOnly"
+							@set-cumulative="setCumulative"
+						/>
+						<input
+							v-show="false"
+							ref="submit"
+							type="submit"
+						>
+					</b-form>
 				</b-col>
 
 				<b-col v-else-if="loading">
@@ -388,7 +397,7 @@ export default {
 			publishing: false,
 			isDataChanged: false,
 			qvainData: null,
-			openRecordCounter: 0,
+			refreshCounter: 0, // dataset form is recreated when this changes
 			errorMessage: null,
 		}
 	},
@@ -599,6 +608,7 @@ export default {
 			}
 		},
 		save: async function saveCallback() {
+			this.updateAutocomplete()
 			let errorDescription = null
 			if (this.saving) {
 				return
@@ -713,7 +723,7 @@ export default {
 				}
 				this.$store.commit('setMetadata', metadata)
 				this.qvainData = data
-				this.openRecordCounter++
+				this.refreshCounter++
 				this.startValidator()
 			} catch (error) {
 				if (error.response && error.response.status == 401) {
@@ -781,8 +791,19 @@ export default {
 				}
 			})
 		},
+		updateAutocomplete() {
+			// New autocomplete values are saved when a form is submitted or the submit button is clicked.
+			// The form prevents the triggered event from reloading the page.
+			this.$refs.submit.click() // click hidden submit button
+		},
+	},
+	beforeRouteUpdate(to, form, next) {
+		this.refreshCounter++
+		this.updateAutocomplete()
+		next()
 	},
 	beforeRouteLeave(to, from, next) {
+		this.updateAutocomplete()
 		if (!this.isDataChanged) {
 			next()
 			return
@@ -853,7 +874,6 @@ export default {
 	padding: 0;
 
 }
-
 
 h2.component-title {
 	font-weight: 300;
