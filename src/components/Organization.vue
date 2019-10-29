@@ -4,7 +4,7 @@
 		:wrapped="false"
 		:style="listItemStyle(depth)"
 	>
-		<h3>
+		<h3 class="title">
 			{{ uiTitle }}
 			<span
 				v-if="isRequired || inArray"
@@ -152,6 +152,7 @@
 .margin-left {
 	margin-left: 20px;
 }
+
 .toggle-org:not(.collapsed) {
 	.multiselect__tags, .multiselect__input {
 		background-color: #6c757d;

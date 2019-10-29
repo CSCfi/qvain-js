@@ -1,4 +1,8 @@
 /* ADD_LICENSE_HEADER */
+
+// bootstrap overrides
+$text-muted: $gray-650;
+
 @import '../../../node_modules/bootstrap/scss/bootstrap';
 @import '../../../node_modules/bootstrap-vue/src/index.scss';
 
@@ -195,12 +199,9 @@ body {
 // #dcdcdd gainsboro
 // #46494c outer space
 //$form-feedback-valid-color: $dark !default;
-$form-feedback-valid-color: #ced4da !default;
 
-$fd-primary: #6c757d;
-$fd-primary-dark: #212529;
-$fd-primary-black: #002533;
-$fd-primary-white: #ffffff;
+$form-feedback-valid-color: #ced4da !default;
+$title-color: $gray-650;
 
 .vdp-datepicker__calendar {
 	.cell.highlighted {
@@ -591,10 +592,11 @@ body {
 }
 
 .title {
-	font-size: 1.75em !important;
+	font-size: 1.65em !important;
 	margin-bottom: 0.5em !important;
 	margin-top: 1em;
-	font-weight: 200;
+	font-weight: 300;
+	color: $title-color;
 }
 
 .header__required {
@@ -614,7 +616,7 @@ body {
 }
 
 *::placeholder {
-	color: #ddd !important;
+	color: #d1d1d1 !important;
 }
 
 .badge {
@@ -651,6 +653,10 @@ body {
 
 .multiselect__content-wrapper {
 	z-index: 3000 !important;
+}
+
+.multiselect__tags {
+	border-color: $input-border-color !important;
 }
 
 .jumbotron {
