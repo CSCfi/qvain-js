@@ -209,8 +209,10 @@
 							:revertable="change === 'removed'"
 							:edited="fileAndDirectoryChanges.isEdited[category][item.identifier]"
 							:deleted="$store.state.deletedItems[category][item.identifier] === true"
+							:published="change === 'existing'"
 							@delete="removeFileOrDirectory"
 							@revert="addFileOrDirectory"
+							@refresh-directory="$emit('refresh-directory', $event)"
 						/>
 					</div>
 				</b-card>

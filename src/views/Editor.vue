@@ -259,6 +259,7 @@
 						:depth="0"
 						:read-only="$store.state.metadata.isReadOnly"
 						@set-cumulative="setCumulative"
+						@refresh-directory="refreshDirectory"
 					/>
 				</b-col>
 
@@ -490,13 +491,25 @@ export default {
 			}
 			return this.getCatalogForId(data.data_catalog)
 		},
+		async ok(dialogTitle, dialogText, yesButtonTitle) {
+			return await this.$bvModal.msgBoxOk(dialogText, {
+				title: dialogTitle,
+				size: 'md',
+				buttonSize: 'md',
+				okVariant: 'danger',
+				okTitle: yesButtonTitle,
+				footerClass: 'p-2',
+				hideHeaderClose: false,
+				centered: true,
+			})
+		},
 		async confirm(dialogTitle, dialogText, yesButtonTitle, noButtonTitle) {
 			return await this.$bvModal.msgBoxConfirm(dialogText, {
 				title: dialogTitle,
 				size: 'md',
 				buttonSize: 'md',
 				okVariant: 'danger',
-				okTitle: 'Yes',
+				okTitle: yesButtonTitle,
 				cancelTitle: noButtonTitle,
 				footerClass: 'p-2',
 				hideHeaderClose: false,
@@ -670,6 +683,56 @@ export default {
 				this.isDataChanged = true
 			}
 		},
+		async refreshDirectory(directory) {
+			// Refreshes the content of a directory using a Metax RPC.
+			if (!this.isPublished) {
+				return
+			}
+
+			const title = "Refresh folder content"
+			let description =
+				`This will update the dataset to include any new files you have added to the folder "${directory.title}" after the dataset was published.
+				The result will be published immediately.`
+
+			// using an array of vnodes allows having multiple paragraphs in the message box
+			const paragraphs = [this.$createElement("p", description)]
+
+			if (this.$store.state.metadata.cumulativeState !== 1) { // not cumulative
+				const note = "If there are new files, a new version of the dataset will be created."
+				paragraphs.push([this.$createElement("p", note)])
+			}
+
+			if (this.$store.state.metadata.isPublishedAndUpdateAvailable) {
+				const note = "You have unpublished changes. You need to publish any changes to the dataset before you can refresh the folder."
+				paragraphs.push(this.$createElement("p", note))
+				await this.ok(title, paragraphs, "OK")
+				return
+			}
+
+			if (!await this.confirm(title+"?", paragraphs, "Refresh", "Cancel")) {
+				return
+			}
+
+			try {
+				const currentId = this.$store.state.metadata.id
+				const response = await apiClient.post(
+					"/datasets/" + currentId + "/refresh_directory_content",
+					null,
+					{ params: { dir_identifier: directory.identifier }}
+				)
+				await this.openRecord(this.id) // reopen updated dataset so possible old version tag gets updated
+				if (response.data && response.data.new_id && await this.confirmOpenNewVersion()) {
+					this.$router.replace({ name: 'tab', params: { id: response.data.new_id, tab: this.$route.params.tab }})
+				}
+			} catch(error) {
+				let msg = getApiError(error, "refreshing directory content for dataset", this.$store.state.metadata.id)
+				if (error.response.data && error.response.data.more && error.response.data.more.detail) {
+					msg += "\n\nDetails: " + error.response.data.more.detail
+				}
+				this.$root.showAlert(msg, "danger", true)
+			}
+		},
+
 		clearRecord() {
 			this.isDataChanged = false
 			this.qvainData = null
