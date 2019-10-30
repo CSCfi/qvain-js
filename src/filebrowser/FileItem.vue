@@ -53,7 +53,7 @@
 			</div>
 			<div class="item-buttons ml-auto">
 				<b-btn
-					v-if="type=='directories' && published"
+					v-if="published && type==='directories'"
 					variant="primary"
 					class="px-3 py-2"
 					@click="$emit('refresh-directory', single)"
@@ -219,6 +219,7 @@ export default {
 	},
 }
 </script>
+
 <style lang="scss" scoped>
 .form-group {
 	margin-bottom: 0;
