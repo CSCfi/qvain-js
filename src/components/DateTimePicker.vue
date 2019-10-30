@@ -3,32 +3,30 @@
 	<b-container class="datetimepicker">
 		<b-row>
 			<b-col>
-				<b-form @submit.stop.prevent>
-					<b-form-group
-						:label="title"
-						:description="description"
-					>
-						<datepicker
-							v-if="format === 'date-time' || format === 'date'"
-							v-model="date"
-							:format="format"
-							:disabled="disabled"
-						/>
-						<timepicker
-							v-if="format === 'date-time' || format === 'time'"
-							v-model="time"
-							:format="format"
-							:disabled="disabled"
-						/>
-						<timezonepicker
-							v-if="format === 'date-time' || format === 'time'"
-							v-model="timezone"
-							:format="format"
-							:timezonedate="date"
-							:disabled="disabled"
-						/>
-					</b-form-group>
-				</b-form>
+				<b-form-group
+					:label="title"
+					:description="description"
+				>
+					<datepicker
+						v-if="format === 'date-time' || format === 'date'"
+						v-model="date"
+						:format="format"
+						:disabled="disabled"
+					/>
+					<timepicker
+						v-if="format === 'date-time' || format === 'time'"
+						v-model="time"
+						:format="format"
+						:disabled="disabled"
+					/>
+					<timezonepicker
+						v-if="format === 'date-time' || format === 'time'"
+						v-model="timezone"
+						:format="format"
+						:timezonedate="date"
+						:disabled="disabled"
+					/>
+				</b-form-group>
 			</b-col>
 		</b-row>
 	</b-container>
