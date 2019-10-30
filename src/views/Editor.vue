@@ -712,6 +712,7 @@ export default {
 					metadata.cumulativeState = data.cumulative_state
 				}
 				this.$store.commit('setMetadata', metadata)
+				this.isDataChanged = false
 				this.qvainData = data
 				this.openRecordCounter++
 				this.startValidator()
