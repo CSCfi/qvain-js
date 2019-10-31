@@ -15,7 +15,7 @@
 					v-if="shouldCreateProp(propName)"
 					:key="propName"
 					:schema="schema['properties'][propName]"
-					:required="(schema.required || []).includes(propName)"
+					:required="isPropRequired(propName)"
 					:path="newPath('properties/' + propName)"
 					:value="value[propName]"
 					:parent="value"
@@ -84,6 +84,14 @@ export default {
 		},
 	},
 	methods: {
+		isPropRequired(prop) {
+			const ui = this.propUi(prop)
+			if (ui.required) {
+				return ui.required(this.$store.state.record)
+			} else {
+				return (this.schema.required || []).includes(prop)
+			}
+		},
 		isPropHidden(prop) {
 			const ui = this.propUi(prop)
 			return prop === '@type' || !this.shouldCreateProp(prop) || (ui.tab && ui.tab !== this.activeTab)

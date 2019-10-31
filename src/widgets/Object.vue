@@ -22,7 +22,7 @@
 				>
 					<TabSelector
 						:key="propName"
-						:required="(schema.required || []).includes(propName)"
+						:required="isPropRequired(propName)"
 						:schema="schema['properties'][propName]"
 						:path="newPath('properties/' + propName)"
 						:value="value[propName]"
@@ -88,6 +88,14 @@ export default {
 		},
 	},
 	methods: {
+		isPropRequired(prop) {
+			const ui = this.propUi(prop)
+			if (ui.required) {
+				return ui.required(this.$store.state.record)
+			} else {
+				return (this.schema.required || []).includes(prop)
+			}
+		},
 		isPropHidden(prop) {
 			const ui = this.propUi(prop)
 			return !this.shouldCreateProp(prop) || (ui.tab && ui.tab !== this.activeTab)

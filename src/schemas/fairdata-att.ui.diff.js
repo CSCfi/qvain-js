@@ -15,6 +15,7 @@ export default (idaUi) => {
 		},
 		'/properties/remote_resources/*/properties/access_url/properties/identifier': {
 			'description': "URL that gives access to a distribution of the dataset. E.g. landing page download. Use when your catalog does not have information on which it is or when it is definitely not a download.",
+			'required': ()=>false,
 		},
 		'/properties/remote_resources/*/properties/access_url/properties/title': {
 			'tab': 'notab',
@@ -24,6 +25,7 @@ export default (idaUi) => {
 		},
 		'/properties/remote_resources/*/properties/download_url/properties/identifier': {
 			'description': "A direct link to a downloadable file in a given format. E.g. CSV file or RDF file.",
+			'required': ()=>false,
 		},
 		'/properties/remote_resources/*/properties/download_url/properties/title': {
 			'tab': 'notab',
