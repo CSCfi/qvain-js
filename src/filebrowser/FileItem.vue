@@ -51,34 +51,44 @@
 					/>
 				</p>
 			</div>
-			<b-btn-group class="ml-auto">
+			<div class="item-buttons ml-auto">
 				<b-btn
-					v-b-toggle="single.identifier"
-					:disabled="deleted || revertable"
+					v-if="published && type==='directories'"
 					variant="primary"
 					class="px-3 py-2"
+					@click="$emit('refresh-directory', single)"
 				>
-					<font-awesome-icon :icon="icons.faPen" />
+					Refresh folder content
 				</b-btn>
-				<b-btn
-					v-if="!revertable"
-					:disabled="readOnly || noRemove"
-					variant="danger"
-					class="px-3 py-2"
-					@click="$emit('delete', { type, fields: single })"
-				>
-					<font-awesome-icon :icon="icons.faTrash" />
-				</b-btn>
+				<b-btn-group>
+					<b-btn
+						v-b-toggle="single.identifier"
+						:disabled="deleted || revertable"
+						variant="primary"
+						class="px-3 py-2"
+					>
+						<font-awesome-icon :icon="icons.faPen" />
+					</b-btn>
+					<b-btn
+						v-if="!revertable"
+						:disabled="readOnly || noRemove"
+						variant="danger"
+						class="px-3 py-2"
+						@click="$emit('delete', { type, fields: single })"
+					>
+						<font-awesome-icon :icon="icons.faTrash" />
+					</b-btn>
 
-				<b-btn
-					v-else
-					variant="info"
-					class="px-3 py-2"
-					@click="$emit('revert', { type, fields: single })"
-				>
-					<font-awesome-icon :icon="icons.faPlus" />
-				</b-btn>
-			</b-btn-group>
+					<b-btn
+						v-else
+						variant="info"
+						class="px-3 py-2"
+						@click="$emit('revert', { type, fields: single })"
+					>
+						<font-awesome-icon :icon="icons.faPlus" />
+					</b-btn>
+				</b-btn-group>
+			</div>
 		</b-card-body>
 		<b-collapse
 			:id="single.identifier"
@@ -193,6 +203,7 @@ export default {
 		"noRemove",
 		"edited",
 		"deleted",
+		"published",
 		"revertable",
 	],
 	data() {
@@ -209,7 +220,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .form-group {
 	margin-bottom: 0;
 }
@@ -227,5 +238,15 @@ fieldset.item-field div.form-row legend:after {
 
 .badge {
 	margin-left: 0.5rem;
+}
+
+.item-buttons {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	margin: -2px;
+	& > * {
+		margin: 2px;
+	}
 }
 </style>
