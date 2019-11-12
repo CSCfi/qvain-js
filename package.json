@@ -20,6 +20,7 @@
     "dev-watch": "vue-cli-service build --mode development --watch",
     "testing-build": "vue-cli-service build --mode testing",
     "stable-build": "vue-cli-service build --mode stable",
+    "demo-build": "vue-cli-service build --mode demo",
     "lint": "vue-cli-service lint",
     "clean": "rm -r dist/*",
     "env": "env"
