@@ -70,10 +70,10 @@ const app = new Vue({
 			window._paq = []
 			window._paq.push(['disableCookies'])
 			window._paq.push(['trackPageView'])
-			window._paq.push(['enableLinkTracking']);
+			window._paq.push(['enableLinkTracking'])
 			(function() {
-				let u= "//matomo.rahtiapp.fi/"
-				window._paq.push([ 'setTrackerUrl', u +'piwik.php' ])
+				let u= process.env['VUE_APP_MATOMO_URL']
+				window._paq.push([ 'setTrackerUrl', u + process.env['VUE_APP_MATOMO_TRACKER_PHP'] ])
 				window._paq.push([ 'setSiteId', process.env['VUE_APP_MATOMO_SITE_ID'] ])
 				let d=document,
 					g=d.createElement('script'),
@@ -81,7 +81,7 @@ const app = new Vue({
 				g.type='text/javascript'
 				g.async=true
 				g.defer=true
-				g.src= u+'piwik.js'
+				g.src= u+process.env['VUE_APP_MATOMO_SRC']
 				s.parentNode.insertBefore(g,s)
 			})()
 		}
