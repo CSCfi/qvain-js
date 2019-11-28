@@ -32,7 +32,18 @@
 						class="mr-2"
 					/>User Guide
 				</b-nav-item>
+
+				<b-nav-item
+					link-classes="btn btn-primary"
+					to="/accessibility"
+				>
+					<font-awesome-icon
+						icon="universal-access"
+						class="mr-2"
+					/>Accessibility Statement
+				</b-nav-item>
 			</b-navbar-nav>
+
 
 			<!-- right-aligned items -->
 			<b-navbar-nav

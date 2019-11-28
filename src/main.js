@@ -37,7 +37,7 @@ library.add(fas.faUser, fas.faInfo, fas.faMinus, fas.faPlus, fas.faTimes,
 	fas.faCircleNotch, fas.faList, fas.faListAlt, fas.faUndo, fas.faExternalLinkAlt, fas.faEllipsisV,
 	fas.faSave, fas.faCircle, fas.faSpinner, fas.faSignInAlt, fas.faSignOutAlt, fas.faTable, fas.faUpload,
 	fas.faExclamation, fas.faEdit, fas.faChevronLeft, fas.faChevronRight, fas.faChevronDown,
-	fas.faBackward)
+	fas.faBackward, fas.faUniversalAccess)
 
 store.registerModule('files', FilesStore)
 
