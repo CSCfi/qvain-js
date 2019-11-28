@@ -70,7 +70,7 @@ const app = new Vue({
 			window._paq = []
 			window._paq.push(['disableCookies'])
 			window._paq.push(['trackPageView'])
-			window._paq.push(['enableLinkTracking'])
+			window._paq.push(['enableLinkTracking']);
 			(function() {
 				let u= process.env['VUE_APP_MATOMO_URL']
 				window._paq.push([ 'setTrackerUrl', u + process.env['VUE_APP_MATOMO_TRACKER_PHP'] ])
