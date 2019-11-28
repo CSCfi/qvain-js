@@ -44,7 +44,6 @@
 				</b-nav-item>
 			</b-navbar-nav>
 
-
 			<!-- right-aligned items -->
 			<b-navbar-nav
 				id="usermenu"
