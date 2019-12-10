@@ -13,11 +13,11 @@ venv:
 
 chromedriver:
 ifeq ($(UNAME_S),Linux)
-	@curl -O https://chromedriver.storage.googleapis.com/74.0.3729.6/chromedriver_linux64.zip
+	@curl -O https://chromedriver.storage.googleapis.com/78.0.3904.105/chromedriver_linux64.zip
 	@unzip chromedriver_linux64.zip
 endif
 ifeq ($(UNAME_S),Darwin)
-	@curl -O https://chromedriver.storage.googleapis.com/74.0.3729.6/chromedriver_mac64.zip
+	@curl -O https://chromedriver.storage.googleapis.com/78.0.3904.105/chromedriver_mac64.zip
 	@unzip chromedriver_mac64.zip
 endif
 
