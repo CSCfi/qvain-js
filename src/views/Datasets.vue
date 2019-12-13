@@ -262,7 +262,10 @@
 				slot="row-details"
 				slot-scope="row"
 			>
-				<b-button-toolbar key-nav>
+				<b-button-toolbar
+					:id="'actions-toolbar-' + row.item.id"
+					key-nav
+				>
 					<b-button-group
 						size="sm"
 						class="mr-1"
