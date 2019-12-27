@@ -683,7 +683,7 @@ export default {
 							this.$router.replace({ name: 'tab', params: { id: response.data.new_id, tab: this.$route.params.tab }})
 						}
 					} else {
-						this.$root.showAlert("Cumulative state changed succesfully.", "primary")
+						this.$root.showAlert("Cumulative state changed successfully.", "primary")
 					}
 				} catch(error) {
 					let msg = getApiError(error, "changing cumulative state for dataset", this.$store.state.metadata.id)
@@ -740,7 +740,7 @@ export default {
 						this.$router.replace({ name: 'tab', params: { id: response.data.new_id, tab: this.$route.params.tab }})
 					}
 				} else {
-					this.$root.showAlert("Folder content refreshed succesfully.", "primary")
+					this.$root.showAlert("Folder content refreshed successfully.", "primary")
 				}
 			} catch(error) {
 				let msg = getApiError(error, "refreshing directory content for dataset", this.$store.state.metadata.id)
