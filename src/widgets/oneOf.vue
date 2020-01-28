@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <script>
 export default {
 	name: 'SchemaOneof',
@@ -13,4 +14,3 @@ export default {
 	},
 }
 </script>
-

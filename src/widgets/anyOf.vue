@@ -1,3 +1,4 @@
+<!-- ADD_LICENSE_HEADER -->
 <script>
 export default {
 	name: 'SchemaAnyof',
