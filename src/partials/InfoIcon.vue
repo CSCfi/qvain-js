@@ -13,11 +13,13 @@ Copyright (C) 2019 Ministry of Culture and Education, Finland.
 All Rights Reserved.
 -->
 <template>
-	<font-awesome-icon class="info-icon"
+	<font-awesome-icon
 		v-if="description"
-		:icon="icons.faQuestionCircle"
 		v-b-tooltip.hover.left
-		:title="description"/>
+		class="info-icon"
+		:icon="icons.faQuestionCircle"
+		:title="description"
+	/>
 </template>
 
 <style lang="scss" scoped>
@@ -37,7 +39,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 export default {
-	name: 'info-icon',
+	name: 'InfoIcon',
 	components: {
 		FontAwesomeIcon,
 	},

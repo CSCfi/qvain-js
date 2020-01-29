@@ -21,7 +21,7 @@ All Rights Reserved.
 import StateDefs from '@/data/preservation_state.json'
 
 export default {
-	name: "archive-state",
+	name: "ArchiveState",
 	props: ['state'],
 	computed: {
 		description: function() {

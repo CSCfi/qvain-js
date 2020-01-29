@@ -34,8 +34,8 @@ class Editor(object):
 
         # we should end up into new dataset page
         self.testcase.ensure_view_title(
-            title="Dataset",
-            error_msg="We are not in Dataset view, it seems that we are in {header}"
+            title="Where are your files related to this dataset?",
+            error_msg="We are not in New Dataset view, it seems that we are in '{header}'"
         )
 
     def close(self):
@@ -43,38 +43,36 @@ class Editor(object):
         self.testcase.open_frontpage()
 
     def select_schema(self, schema):
-        self.testcase.select_option("editor_select_schema", schema)
+        card = self.testcase.find_element(schema)
+        select_button = card.find_element_by_class_name("btn-primary").click()
 
     def save(self):
         self.testcase.scroll_to_up()
+        before_url = self.testcase.get_url()
+        resave = not ("new" in before_url)
         self.testcase.click_elem("editor_button_save_top")
-        # If this is a save of an old item then the message is
-        #  "Dataset successfully saved"
-        # if this is a new save then the message is
-        #  "Success! Created as 0589ec6d4452eeae99c0647346f98e40"
-        alert_text = self.testcase.get_alert_text()
-        resave = True
-        if (alert_text.find("Created as") != -1):
-            self.dataset_id = alert_text.replace("Success! Created as ", "")
-            resave = False
 
-        self.testcase.close_alert()
+        url = self.testcase.get_url()
+        self.dataset_id = url.split("/")[-2]
+
         return self.dataset_id, resave
 
     def show_content_description_tab(self):
         self.testcase.scroll_to_up()
-        self.testcase.click_elem("nav-link_description")
+        navigation = self.testcase.find_element_by_class_name("editor-index-navigation")
+        navigation.find_element_by_xpath('//a[contains(@href, "description")]').click()
 
     def show_actors_tab(self):
         self.testcase.scroll_to_up()
-        self.testcase.click_elem("nav-link_actors")
+        navigation = self.testcase.find_element_by_class_name("editor-index-navigation")
+        navigation.find_element_by_xpath('//a[contains(@href, "actors")]').click()
 
     def show_rights_and_licenses_tab(self):
         self.testcase.scroll_to_up()
-        self.testcase.click_elem("nav-link_rights")
+        navigation = self.testcase.find_element_by_class_name("editor-index-navigation")
+        navigation.find_element_by_xpath('//a[contains(@href, "rights")]').click()
 
     def set_title(self, title):
-        self.testcase.select_option("title_language-select", self.language)
         elemId = "title_{language_short}_input".format(language_short=self.language_short)
         self.testcase.clear_text(elemId)
         self.testcase.enter_text(
@@ -83,7 +81,10 @@ class Editor(object):
         )
 
     def set_description(self, description):
-        self.testcase.select_option("description_language-select", self.language)
+        description_tab = self.testcase.find_element("description_tab-selector")
+        nav = description_tab.find_element_by_class_name("nav-pills")
+        nav.find_element_by_link_text(self.language).click()
+
         elemId = "description_textarea-{language_short}".format(language_short=self.language_short)
         self.testcase.clear_text(elemId)
         self.testcase.enter_text(
@@ -96,12 +97,21 @@ class Editor(object):
         self.testcase.click_elem("creator_array_button_add")
 
         # add then an organization
-        self.testcase.open_dropdown("tab_0_object")
-        self.testcase.select_dropdown_option("tab_0_object", "Organization")
-        self.testcase.select_option("name_language-select", self.language)
-        elemId = "name_{language_short}_input".format(language_short=self.language_short)
-        self.testcase.clear_text(elemId)
-        self.testcase.enter_text(elemId, organizationName)
+        container = self.testcase.find_element("tab_0_object")
+        organization_button = container.find_element_by_xpath('//button[contains(text(), "Organization")]')
+        organization_button.click()
+
+        # enter text to the searchbox in the dropdown
+        dropdown_entrybox = self.testcase.wait_until_located_by_id("0_referenceData")
+        dropdown_entrybox.click()
+
+        self.testcase.clear_text("0_value-select")
+        self.testcase.enter_text("0_value-select", organizationName)
+
+        # then select that manual value from dropdown
+        refdata = self.testcase.find_element("0_referenceData")
+        item = refdata.find_element_by_xpath('//li[@class="multiselect__element"]//div[contains(text(), "- Add Organization Manually -")]')
+        item.click()
 
     def set_access_type(self, access_type):
         self.testcase.select_option_from_multiselect("tab_access_type_object", access_type)

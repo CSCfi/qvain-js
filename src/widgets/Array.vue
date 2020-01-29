@@ -15,28 +15,55 @@ Copyright (C) 2019 Ministry of Culture and Education, Finland.
 All Rights Reserved.
 -->
 <template>
-	<record-field :id="property + '_array'" class="min-height" :required="required" :wrapped="wrapped" :header="!inArray" :error="!isValid">
-		<title-component slot="title" :title="uiLabel" />
-		<small slot="help" class="text-muted">
+	<record-field
+		:id="property + '_array'"
+		class="min-height"
+		:required="required"
+		:wrapped="wrapped"
+		:header="!inArray"
+		:error="!isValid"
+	>
+		<title-component
+			slot="title"
+			:title="uiLabel"
+		/>
+		<small
+			slot="help"
+			class="text-muted"
+		>
 			{{ uiDescription }}
 		</small>
 		<div slot="header-right">
-			<ValidationStatus v-if="!isValid" :status="'invalid'" />
+			<ValidationStatus
+				v-if="!isValid"
+				:status="'invalid'"
+			/>
 		</div>
 		<div slot="errors">
-			<b-badge variant="danger" :key="error" v-for="error in errors">{{ error }}</b-badge>
+			<b-badge
+				v-for="error in errors"
+				:key="error"
+				variant="danger"
+			>
+				{{ error }}
+			</b-badge>
 		</div>
 		<div slot="input">
 			<b-container v-if="tabFormat">
 				<b-btn
+					:id="property + '_array_button_add'"
 					class="add-button col"
 					variant="light"
 					type="button"
-					:disabled="value.length >= maximum"
-					@click="doPlus()">
-					<font-awesome-icon icon="plus" fixed-width />
+					aria-label="Add item"
+					:disabled="value.length >= maximum || readOnly"
+					@click="doPlus()"
+				>
+					<font-awesome-icon
+						icon="plus"
+						fixed-width
+					/>
 				</b-btn>
-
 				<b-tabs
 					:value="tabIndex"
 					class="tab-array-margin"
@@ -50,11 +77,14 @@ All Rights Reserved.
 						:key="getKey(index)"
 						style="{margin-top: 5px}"
 						title-link-class="tab-field-link"
-						@click="()=>setTab(index)"
+						@click="setTab(index)"
 					>
 						<template slot="title">
 							{{ tabTitle(index) }}
-							<delete-button @click="deleteElement(index)" />
+							<delete-button
+								:disabled="readOnly"
+								@click="deleteElement(index)"
+							/>
 						</template>
 
 						<TabSelector
@@ -67,6 +97,7 @@ All Rights Reserved.
 							:tab="myTab"
 							:active-tab="activeTab"
 							:depth="depth"
+							:read-only="readOnly"
 							@delete="deleteElement"
 						/>
 					</b-tab>
@@ -94,12 +125,31 @@ All Rights Reserved.
 						:tab="myTab"
 						:active-tab="activeTab"
 						:depth="depth"
+						:read-only="readOnly"
 						@delete="deleteElement"
 					/>
-					<delete-button class="array-delete-button" v-if="showDelete" @click="deleteElement(index)" />
+					<delete-button
+						v-if="showDelete"
+						:disabled="readOnly"
+						class="array-delete-button"
+						@click="deleteElement(index)"
+					/>
 				</b-list-group-item>
 				<b-list-group-item>
-					<b-btn :id="property + '_array_button_add'" class="col" variant="light" type="button" :disabled="value.length >= this.maximum" @click="doPlus()"><font-awesome-icon icon="plus" fixed-width /></b-btn>
+					<b-btn
+						:id="property + '_array_button_add'"
+						class="col"
+						variant="light"
+						type="button"
+						aria-label="Add item"
+						:disabled="value.length >= maximum || readOnly"
+						@click="doPlus()"
+					>
+						<font-awesome-icon
+							icon="plus"
+							fixed-width
+						/>
+					</b-btn>
 				</b-list-group-item>
 			</b-list-group>
 		</div>
@@ -142,20 +192,20 @@ import ValidationStatus from '@/partials/ValidationStatus.vue'
 import DeleteButton from '@/partials/DeleteButton.vue'
 
 export default {
-	extends: vSchemaBase,
-	name: 'schema-array',
-	description: "generic array, nested",
-	schematype: 'array',
+	name: 'SchemaArray',
 	components: {
 		RecordField,
 		TitleComponent,
 		ValidationStatus,
 		DeleteButton,
 	},
+	extends: vSchemaBase,
+	description: "generic array, nested",
+	schematype: 'array',
 	props: {
 		tabFormat: { type: Boolean, default: true },
 		wrapped: { type: Boolean, default: true },
-		showDelete: { type: Boolean, default: false }
+		showDelete: { type: Boolean, default: false },
 	},
 	data() {
 		return {
@@ -166,6 +216,19 @@ export default {
 			targetTabIndex: null,
 			keys: [],
 		}
+	},
+	computed: {
+		isTuple: function() {
+			// list or tuple validation?
+			return this.schema['items'] instanceof Array
+		},
+		allowAdditional: function() {
+			// additionalItems: true if missing, true if true, true when object; false if false
+			return this.schema['additionalItems'] !== false
+		},
+	},
+	created() {
+		return this.init()
 	},
 	methods: {
 		tabTitle(index) {
@@ -232,19 +295,6 @@ export default {
 			}
 			return "arr-" + this.keys[idx]
 		},
-	},
-	computed: {
-		isTuple: function() {
-			// list or tuple validation?
-			return this.schema['items'] instanceof Array
-		},
-		allowAdditional: function() {
-			// additionalItems: true if missing, true if true, true when object; false if false
-			return this.schema['additionalItems'] !== false
-		},
-	},
-	created() {
-		return this.init()
 	},
 }
 </script>

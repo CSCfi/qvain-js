@@ -14,7 +14,10 @@ All Rights Reserved.
 -->
 <template>
 	<div class="error">
-		<font-awesome-icon icon="exclamation" fixed-width />
+		<font-awesome-icon
+			icon="exclamation"
+			fixed-width
+		/>
 	</div>
 </template>
 

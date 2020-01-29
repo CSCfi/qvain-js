@@ -16,54 +16,82 @@ Copyright (C) 2019 Ministry of Culture and Education, Finland.
 All Rights Reserved.
 -->
 <template>
-	<record-field :required="required" :wrapped="true" :error="!isValid">
-		<title-component slot="title" :title="uiLabel" />
-		<small slot="help" class="text-muted">
-			{{ uiDescription }}
+	<record-field
+		:required="required"
+		:wrapped="true"
+		:error="!isValid"
+	>
+		<title-component
+			slot="title"
+			:title="uiLabel"
+		/>
+		<small
+			slot="help"
+			class="text-muted"
+		>
+			{{ uiDescription }}
 		</small>
 		<div slot="header-right">
 			<ValidationStatus :status="validationStatus" />
 		</div>
 		<div slot="errors">
-			<b-badge variant="danger" :key="error" v-for="error in errors">{{ error }}</b-badge>
+			<b-badge
+				v-for="error in errors"
+				:key="error"
+				variant="danger"
+			>
+				{{ error }}
+			</b-badge>
 		</div>
 		<div slot="input">
-			<b-form class="record-field">
-
+			<div class="record-field">
 				<b-form-group
-						:key="lang"
-						v-for="(val, lang) in state"
-						label-cols=3
-						:label-for="property + '_' + lang + '_input'">
-
+					v-for="(val, lang) in state"
+					:key="lang"
+					label-cols="3"
+					:label-for="property + '_' + lang + '_input'"
+				>
 					<span slot="label">
-						<DeleteButton slot="label" @click="deleteLanguage(lang)"/>
+						<DeleteButton
+							slot="label"
+							:disabled="readOnly"
+							@click="deleteLanguage(lang)"
+						/>
 						{{ languages[lang] }}
 					</span>
 
 					<b-input-group>
 						<b-form-input
 							:id="property + '_' + lang + '_input'"
-							type="text"
 							:ref="lang"
+							v-model="state[lang]"
+							type="text"
 							required
 							:placeholder="'Start typing in ' + languages[lang]"
-							v-model="state[lang]"
-							@input="updateValue">
-						</b-form-input>
+							:disabled="readOnly"
+							:lang="lang"
+							@input="updateValue"
+						/>
 					</b-input-group>
 				</b-form-group>
 
-				<p class="intro-text" v-if="Object.keys(state).length === 0">
+				<p
+					v-if="Object.keys(state).length === 0"
+					class="intro-text"
+				>
 					Start by selecting the language. You may add as many languages as you wish by clicking them from the dropdown below.
 				</p>
-				<div class="row language-row">
+				<div
+					v-if="!readOnly"
+					class="row language-row"
+				>
 					<language-select
 						:id="property + '_language-select'"
 						class="col"
-						@change="userRequestedNewLanguage" />
+						@change="userRequestedNewLanguage"
+					/>
 				</div>
-			</b-form>
+			</div>
 		</div>
 	</record-field>
 </template>
@@ -98,55 +126,24 @@ import DeleteButton from '@/partials/DeleteButton.vue'
 import ValidationStatus from '@/partials/ValidationStatus.vue'
 import RecordField from '@/composites/RecordField.vue'
 import TitleComponent from '@/partials/Title.vue'
-import InfoIcon from '@/partials/InfoIcon.vue'
 
 export default {
-	extends: vSchemaBase,
-	name: 'i18n-string',
-	description: 'a string with support for multiple languages',
-	schematype: 'object',
+	name: 'I18nString',
 	components: {
 		LanguageSelect,
 		DeleteButton,
 		ValidationStatus,
 		RecordField,
 		TitleComponent,
-		InfoIcon,
 	},
+	extends: vSchemaBase,
+	description: 'a string with support for multiple languages',
+	schematype: 'object',
 	data() {
 		return {
 			state: {},
 			languages: languages,
 		}
-	},
-	methods: {
-		userRequestedNewLanguage(lang) {
-			this.addLanguage(lang)
-			// wait for rendering so that the ref is present in dom before focus
-			this.$nextTick(() => this.$refs[lang][0].$el.focus())
-		},
-		addLanguage(lang) {
-			if (!lang || lang in this.state) return
-			this.$set(this.state, lang, '')
-			this.$store.commit('setLanguages', {[lang]:true})
-		},
-		deleteLanguage(lang) {
-			this.$delete(this.state, lang)
-		},
-		updateValue() {
-			this.$store.commit('updateValue', {
-				p: this.parent,
-				prop: this.property,
-				val: this.state,
-			})
-		},
-		populateLanguages(languages) {
-			for (const lang in languages) {
-				if (languages[lang]) {
-					this.addLanguage(lang)
-				}
-			}
-		},
 	},
 	computed: {
 		hasEmptyValues() {
@@ -175,6 +172,35 @@ export default {
 	created() {
 		this.state = this.value
 		this.populateLanguages(this.$store.state.languages)
+	},
+	methods: {
+		userRequestedNewLanguage(lang) {
+			this.addLanguage(lang)
+			// wait for rendering so that the ref is present in dom before focus
+			this.$nextTick(() => this.$refs[lang][0].$el.focus())
+		},
+		addLanguage(lang) {
+			if (!lang || lang in this.state) return
+			this.$set(this.state, lang, '')
+			this.$store.commit('setLanguages', { [lang]:true })
+		},
+		deleteLanguage(lang) {
+			this.$delete(this.state, lang)
+		},
+		updateValue() {
+			this.$store.commit('updateValue', {
+				p: this.parent,
+				prop: this.property,
+				val: this.state,
+			})
+		},
+		populateLanguages(languages) {
+			for (const lang in languages) {
+				if (languages[lang]) {
+					this.addLanguage(lang)
+				}
+			}
+		},
 	},
 }
 </script>

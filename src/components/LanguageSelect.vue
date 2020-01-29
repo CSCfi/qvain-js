@@ -15,12 +15,35 @@ All Rights Reserved.
 -->
 <template>
 	<b-input-group class="language_select">
-		<b-input-group-text class="height" slot="prepend">
-			<font-awesome-icon icon="plus" fixed-width class="text-dark" />
+		<b-input-group-text
+			slot="prepend"
+			class="height"
+		>
+			<font-awesome-icon
+				icon="plus"
+				fixed-width
+				class="text-dark"
+			/>
 		</b-input-group-text>
-		<b-form-select class="select" v-model="state" :options="languages" v-bind="$attrs" v-on="$listeners" @change="reset">
+		<b-form-select
+			v-model="state"
+			class="select"
+			:options="languages"
+			:disabled="disabled"
+			v-bind="$attrs"
+			:aria-labelledby="placeholderId"
+			v-on="$listeners"
+			@change="reset"
+		>
 			<template slot="first">
-				<option :value="undefined" disabled class="text-muted">{{ placeholder }}</option>
+				<option
+					:id="placeholderId"
+					:value="undefined"
+					disabled
+					class="text-muted"
+				>
+					{{ placeholder }}
+				</option>
 			</template>
 		</b-form-select>
 	</b-input-group>
@@ -30,12 +53,6 @@ All Rights Reserved.
 .height {
 	height: 38px;
 }
-.select:focus {
-	border-color: #ced4da !important;
-	-webkit-box-shadow: none;
-	-moz-box-shadow: none;
-	box-shadow: none;
-}
 </style>
 
 
@@ -44,13 +61,14 @@ All Rights Reserved.
 import langCodes2 from '@/data/iso639-1.json'
 
 export default {
-	name: 'language-select',
+	name: 'LanguageSelect',
 	props: {
 		value: String,
 		placeholder: {
 			type: String,
 			default: "Add translation",
 		},
+		disabled: Boolean,
 	},
 	data() {
 		return {
@@ -58,10 +76,15 @@ export default {
 			state: undefined,
 		}
 	},
+	computed: {
+		placeholderId() {
+			return this.$attrs.id + '_placeholder'
+		},
+	},
 	methods: {
 		reset() {
 			this.state = undefined
-		}
-	}
+		},
+	},
 }
 </script>

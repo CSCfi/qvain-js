@@ -76,8 +76,9 @@ class Datasets(object):
         # lets see those titles if we can find any
         found = []
         for row in dataset_rows:
-            if row.find_elements_by_css_selector("td")[1].find_element_by_css_selector("h5").text == title:
+            if title in row.find_elements_by_css_selector("td")[1].find_element_by_css_selector("h5").text:
                 found.append(row.get_attribute("id").replace("dataset-list__row_", ""))
+
         return found
 
     def exists(self, dataset_id):
@@ -89,16 +90,17 @@ class Datasets(object):
         dataset_id = self.workaround_cscqvain_171(dataset_id)
         # find the correct row and the actions cell
         row = self.testcase.find_element("dataset-list__row_{id}".format(id=dataset_id))
-        actions_td = row.find_elements_by_css_selector("td")[4]
+        actions_td = row.find_element_by_class_name("details-column")
 
         # press more button
-        dropdown = actions_td.find_element_by_css_selector(".dropdown")
-        more_dropdown = dropdown.find_element_by_class_name("dropdown-toggle")
-        more_dropdown.click()
+        details_button = actions_td.find_element_by_class_name("btn-secondary")
+        details_button.click()
 
-        # find the delete option
-        delete_option = dropdown.find_element_by_class_name("dropdown-menu").find_elements_by_class_name("dropdown-item")[1]
-        delete_option.click()
+        # find the delete button
+        elem_id = "actions-toolbar-{id}".format(id=dataset_id)
+        details = self.testcase.find_element(elem_id)
+        delete_button = details.find_element_by_class_name("btn-danger")
+        delete_button.click()
 
         # press delete on the modal dialog
         deleteModalFooter = self.testcase.find_element("deleteModal___BV_modal_footer_")
@@ -112,11 +114,6 @@ class Datasets(object):
             if (self.testcase.elem_is_not_found("deleteModal")):
                 break
             retries += 1
-
-        # hide alert with "successfully deleted dataset"
-        msg = self.testcase.get_alert_text()
-        assert msg.find("successfully deleted dataset") != -1
-        self.testcase.close_alert()
 
     def edit(self, dataset_id):
         dataset_id = self.workaround_cscqvain_171(dataset_id)

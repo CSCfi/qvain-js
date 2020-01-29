@@ -20,6 +20,6 @@ All Rights Reserved.
 
 <script>
 export default {
-	name: "title-component",
+	name: "TitleComponent",
 }
 </script>

@@ -11,15 +11,28 @@ Copyright (C) 2019 Ministry of Culture and Education, Finland.
 All Rights Reserved.
 -->
 <template>
-	<wrapper :wrapped="false" :style="listItemStyle(depth)">
-		<h3>{{ uiTitle }}
-			<span v-if="isRequired || inArray" class="require-badge">
+	<wrapper
+		:wrapped="false"
+		:style="listItemStyle(depth)"
+	>
+		<h3 class="title">
+			{{ uiTitle }}
+			<span
+				v-if="isRequired || inArray"
+				class="require-badge"
+			>
 				<b-badge variant="danger">REQUIRED</b-badge>
 			</span>
 		</h3>
 		<div>
-			<p class="ml-4 card-text text-muted" v-if="uiDescription">
-				<sup><font-awesome-icon icon="quote-left" class="text-muted" /></sup>
+			<p
+				v-if="uiDescription"
+				class="ml-4 card-text text-muted"
+			>
+				<sup><font-awesome-icon
+					icon="quote-left"
+					class="text-muted"
+				/></sup>
 				{{ uiDescription }}
 			</p>
 
@@ -46,16 +59,16 @@ All Rights Reserved.
 							:tab="myTab"
 							:active-tab="activeTab"
 							:depth="depth"
-							:disabled="i!==lastLevel"
+							:read-only="i!==lastLevel || readOnly"
 							v-bind="ui.props.referenceData"
 							:es-query-extra="getQueryExtraForLevel(i)"
 							:placeholder="getPlaceholderForLevel(i)"
 							:actions="actions"
 							:disable-internal-search="true"
 							:preserved-fields="hoistedFields"
-							:allowEmpty="false"
-							@changed="()=>handleChanged(i)"
-							@action="(action)=>handleAction(i, action)"
+							:allow-empty="false"
+							@changed="handleChanged(i)"
+							@action="(action) => handleAction(i, action)"
 						/>
 					</div>
 
@@ -63,19 +76,32 @@ All Rights Reserved.
 						v-else
 						class="org-title pointer"
 					>
-						<b-container class="toggle-org" v-b-toggle="domId + '-accordion-' + i">
+						<b-container
+							v-b-toggle="domId + '-accordion-' + i"
+							class="toggle-org"
+						>
 							<div class="multiselect__tags">
 								<span class="multiselect__input">
-									<font-awesome-icon class="edit-icon" icon="edit" fixed-width />&nbsp;
+									<font-awesome-icon
+										class="edit-icon"
+										icon="edit"
+										fixed-width
+									/>&nbsp;
 									<span v-if="getOrgName(org)">{{ getOrgName(org) }}</span>
-									<span v-else class="placeholder">{{ getDescriptionForLevel(i) }}</span>
+									<span
+										v-else
+										class="placeholder"
+									>{{ getDescriptionForLevel(i) }}</span>
 								</span>
 							</div>
 						</b-container>
 					</div>
 
-					<div class="delete-button" :class="{invisible: i < lastLevel}">
-						<delete-button @click="remove(i)" />
+					<div :class="{invisible: i < lastLevel}">
+						<delete-button
+							:disabled="readOnly"
+							@click="remove(i)"
+						/>
 					</div>
 				</div>
 
@@ -95,6 +121,7 @@ All Rights Reserved.
 						:active-tab="activeTab"
 						:depth="depth"
 						:skipped="hoistedFields"
+						:read-only="readOnly"
 					/>
 				</b-collapse>
 			</div>
@@ -102,10 +129,13 @@ All Rights Reserved.
 				<b-button
 					variant="outline-dark"
 					class="mb-2 w-100"
-					:disabled="!canAddNew"
+					:disabled="!canAddNew || readOnly"
 					@click="add()"
 				>
-					<font-awesome-icon icon="plus" fixed-width /> Add another level
+					<font-awesome-icon
+						icon="plus"
+						fixed-width
+					/> Add another level
 				</b-button>
 			</div>
 			<div
@@ -133,6 +163,7 @@ All Rights Reserved.
 .margin-left {
 	margin-left: 20px;
 }
+
 .toggle-org:not(.collapsed) {
 	.multiselect__tags, .multiselect__input {
 		background-color: #6c757d;
@@ -228,6 +259,40 @@ export default {
 			keys: [],
 			actions: [{ label:{ "en": "- Add Organization Manually -" }, action: "set_manual" }],
 		}
+	},
+	computed: {
+		canAddNew() {
+			if (this.lastReferenceData === this.lastLevel) {
+				return this.lastReferenceData < 0 || this.flattened[this.lastReferenceData].identifier
+			} else {
+				return true
+			}
+		},
+		lastReferenceData() {
+			let last = -1
+			for (let i=0; i<this.flattened.length; i++) {
+				if (this.getIsReferenceData(i)) {
+					last = i
+				}
+			}
+			return last
+		},
+		countLevels() {
+			if (!this.value) { return -1 }
+			let recurse = this.value
+			let depth = 0
+			while (this.refField in recurse) {
+				depth++
+				recurse = recurse[this.refField]
+			}
+			return depth + 1
+		},
+		flattened() {
+			return this.flatten(this.value)
+		},
+		lastLevel() {
+			return this.flattened.length - 1
+		},
 	},
 	created() {
 		for (let i=0; i<this.flattened.length; i++) {
@@ -325,7 +390,6 @@ export default {
 			}
 			return recurse(this.schema, data)
 		},
-
 		async handleAction(idx, action) {
 			if (action.action === "set_manual") {
 				this.$set(this.isReferenceData, idx, false)
@@ -445,40 +509,6 @@ export default {
 		},
 		getPlaceholderForLevel(level) {
 			return "Select " + this.getDescriptionForLevel(level)
-		},
-	},
-	computed: {
-		canAddNew() {
-			if (this.lastReferenceData === this.lastLevel) {
-				return this.lastReferenceData < 0 || this.flattened[this.lastReferenceData].identifier
-			} else {
-				return true
-			}
-		},
-		lastReferenceData() {
-			let last = -1
-			for (let i=0; i<this.flattened.length; i++) {
-				if (this.getIsReferenceData(i)) {
-					last = i
-				}
-			}
-			return last
-		},
-		countLevels() {
-			if (!this.value) { return -1 }
-			let recurse = this.value
-			let depth = 0
-			while (this.refField in recurse) {
-				depth++
-				recurse = recurse[this.refField]
-			}
-			return depth + 1
-		},
-		flattened() {
-			return this.flatten(this.value)
-		},
-		lastLevel() {
-			return this.flattened.length - 1
 		},
 	},
 }

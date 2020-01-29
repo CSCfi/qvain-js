@@ -15,18 +15,35 @@ Copyright (C) 2019 Ministry of Culture and Education, Finland.
 All Rights Reserved.
 -->
 <template>
-	<b-card class="rounded-0" no-body>
+	<b-card
+		class="rounded-0"
+		no-body
+	>
 		<b-card-body class="d-flex py-1 align-items-center">
-			<font-awesome-icon :icon="icon" size="2x" class="mr-4 text-muted"/>
+			<font-awesome-icon
+				:icon="icon"
+				size="2x"
+				class="mr-4 text-muted"
+			/>
 			<div class="py-2">
 				<div class="d-flex">
 					<h6 class="mb-0">
-						{{single.title}}
-						<span v-if="secondary" class="text-muted m-0 font-italic">({{secondary}})</span>
+						{{ single.title }}
+						<span
+							v-if="secondary"
+							class="text-muted m-0 font-italic"
+						>({{ secondary }})</span>
+						<b-badge
+							v-if="edited"
+							variant="warning"
+							class="badge"
+						>
+							Edited
+						</b-badge>
 						<b-badge
 							v-if="deleted"
 							variant="danger"
-							class="deleted"
+							class="badge"
 						>
 							Deleted
 						</b-badge>
@@ -38,40 +55,99 @@ All Rights Reserved.
 						title="Title"
 						:icon="icons.faPencilAlt"
 						:class="single.title ? 'text-primary' : 'text-secondary'"
-						class="mr-2" />
+						class="mr-2"
+					/>
 					<font-awesome-icon
 						v-b-tooltip.hover
 						class="mr-2"
 						:icon="icons.faTag"
 						title="Use Category"
-						:class="single.use_category ? 'text-primary' : 'text-secondary'" />
+						:class="single.use_category ? 'text-primary' : 'text-secondary'"
+					/>
 				</p>
 			</div>
-			<b-btn-group class="ml-auto">
-				<b-btn :disabled="readonly || deleted" variant="primary" class="px-3 py-2" v-b-toggle="single.identifier">
-					<font-awesome-icon :icon="icons.faPen"/>
+			<div class="item-buttons ml-auto">
+				<b-btn
+					v-if="published && isCumulative && type==='directories'"
+					variant="primary"
+					class="px-3 py-2"
+					@click="$emit('refresh-directory', single)"
+				>
+					Refresh folder content
 				</b-btn>
-				<b-btn :disabled="readonly" variant="danger" class="px-3 py-2" @click="$emit('delete', { type, fields: single })">
-					<font-awesome-icon :icon="icons.faTrash"/>
-				</b-btn>
-			</b-btn-group>
+				<b-btn-group>
+					<b-btn
+						v-b-toggle="single.identifier"
+						:disabled="deleted || revertable"
+						variant="primary"
+						class="px-3 py-2"
+					>
+						<font-awesome-icon :icon="icons.faPen" />
+					</b-btn>
+					<b-btn
+						v-if="!revertable"
+						:disabled="readOnly || noRemove"
+						variant="danger"
+						class="px-3 py-2"
+						@click="$emit('delete', { type, fields: single })"
+					>
+						<font-awesome-icon :icon="icons.faTrash" />
+					</b-btn>
+
+					<b-btn
+						v-else
+						variant="info"
+						class="px-3 py-2"
+						@click="$emit('revert', { type, fields: single })"
+					>
+						<font-awesome-icon :icon="icons.faPlus" />
+					</b-btn>
+				</b-btn-group>
+			</div>
 		</b-card-body>
-		<b-collapse :id="single.identifier" accordion="file-accordion" class="mt-2" :style="{'padding': '20px', 'padding-top': '0px'}">
-			<b-form-group class="item-field my-1" label="Title" key="title" label-cols="3" lable-for="title">
-				<b-form-input class="qvain-input" placeholder="Title" v-model="single.title"></b-form-input>
+		<b-collapse
+			:id="single.identifier"
+			accordion="file-accordion"
+			class="mt-2"
+			:style="{'padding': '20px', 'padding-top': '0px'}"
+		>
+			<b-form-group
+				key="title"
+				class="item-field my-1"
+				label="Title"
+				label-cols="3"
+				lable-for="title"
+			>
+				<b-form-input
+					v-model="single.title"
+					class="qvain-input"
+					placeholder="Title"
+					:disabled="readOnly"
+				/>
 			</b-form-group>
 
-			<b-form-group class="item-field my-1" label="Description" key="description" label-cols="3" lable-for="description">
-				<b-form-input class="qvain-input" placeholder="Description" v-model="single.description"></b-form-input>
+			<b-form-group
+				key="description"
+				class="item-field my-1"
+				label="Description"
+				label-cols="3"
+				lable-for="description"
+			>
+				<b-form-input
+					v-model="single.description"
+					class="qvain-input"
+					placeholder="Description"
+					:disabled="readOnly"
+				/>
 			</b-form-group>
 
 			<RefList
-				esDoctype="use_category"
+				es-doctype="use_category"
 				placeholder="use category"
 				help="help text"
-				uiLabel="Use category"
+				ui-label="Use category"
 				:value="single.use_category"
-				:setValue="v => {
+				:set-value="v => {
 					$set(single, 'use_category', {
 						in_scheme: v.in_scheme,
 						identifier: v.identifier,
@@ -79,34 +155,37 @@ All Rights Reserved.
 					})
 				}"
 				type="multiselect"
-				:customLabel="(item) => item['pref_label'] ?
+				:custom-label="(item) => item['pref_label'] ?
 					item['pref_label']['en'] ||
 					item['pref_label']['fi'] ||
 					item['pref_label']['und'] ||
 					'(no label)' : item['identifier']"
-				isRequired>
-			</RefList>
+				is-required
+				:read-only="readOnly"
+			/>
 
-			<RefList v-if="type === 'files'"
-				esDoctype="file_type"
+			<RefList
+				v-if="type === 'files'"
+				es-doctype="file_type"
 				placeholder="file type"
 				type="multiselect"
 				help="help text"
-				uiLabel="File Type"
+				ui-label="File Type"
 				:value="single.file_type"
-				:setValue="v => {
+				:set-value="v => {
 					$set(single, 'file_type', {
 						in_scheme: v.in_scheme,
 						identifier: v.identifier,
 						pref_label: v.pref_label,
 					})
 				}"
-				:customLabel="(item) => item['pref_label'] ?
+				:custom-label="(item) => item['pref_label'] ?
 					item['pref_label']['en'] ||
 					item['pref_label']['fi'] ||
 					item['pref_label']['und'] ||
-					'(no label)' : item['identifier']">
-			</RefList>
+					'(no label)' : item['identifier']"
+				:read-only="readOnly"
+			/>
 		</b-collapse>
 	</b-card>
 </template>
@@ -120,6 +199,7 @@ import {
 	faPen,
 	faPencilAlt,
 	faTag,
+	faPlus,
 } from "@fortawesome/free-solid-svg-icons"
 
 export default {
@@ -134,8 +214,12 @@ export default {
 		"single",
 		"removeItem",
 		"type",
-		"readonly",
+		"readOnly",
+		"noRemove",
+		"edited",
 		"deleted",
+		"published",
+		"revertable",
 	],
 	data() {
 		return {
@@ -144,13 +228,19 @@ export default {
 				faTrash,
 				faPencilAlt,
 				faTag,
+				faPlus,
 			},
 		}
+	},
+	computed: {
+		isCumulative() {
+			return this.$store.state.metadata.cumulativeState === 1
+		},
 	},
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
 .form-group {
 	margin-bottom: 0;
 }
@@ -166,7 +256,17 @@ fieldset.item-field div.form-row legend:after {
 	color: red;
 }
 
-.deleted {
+.badge {
 	margin-left: 0.5rem;
+}
+
+.item-buttons {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	margin: -2px;
+	& > * {
+		margin: 2px;
+	}
 }
 </style>
