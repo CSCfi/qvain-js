@@ -1,20 +1,4 @@
-/*
-This file is part of Qvain -project.
-
-Author(s):
-	Juhapekka Piiroinen <jp@1337.fi>
-	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
-	Jori Niemi <3295718+tahme@users.noreply.github.com>
-	Shreyas Deshpande <31839853+ShreyasDeshpande@users.noreply.github.com>
-	Eemeli Kouhia <eemeli.kouhia@gofore.com>
-	Kauhia <Kauhia@users.noreply.github.com>
-
-License: GPLv3
-
-See LICENSE file for more information.
-Copyright (C) 2019 Ministry of Culture and Education, Finland.
-All Rights Reserved.
-*/
+/* ADD_LICENSE_HEADER */
 export default {
 	tabs: [
 		{ label: 'Content Description', uri: 'description' },
@@ -65,7 +49,7 @@ export default {
 		'order': [ "name", "email", "identifier" ],
 	},
 	'#/definitions/Document': {
-		'visible': false,
+		'visible': (record, prop) => prop !== "homepage",
 	},
 	'/properties/title': {
 		'tab': 'description',
@@ -280,18 +264,23 @@ export default {
 	},
 	'/properties/creator/*/oneOf/0/properties/name': {
 		'description': 'Please write your name in first_name last_name fashion if possible',
+		'autocomplete': 'name',
 	},
 	'/properties/contributor/*/oneOf/0/properties/name': {
 		'description': 'Please write your name in first_name last_name fashion if possible',
+		'autocomplete': 'name',
 	},
 	'/properties/rights_holder/*/oneOf/0/properties/name': {
 		'description': 'Please write your name in first_name last_name fashion if possible',
+		'autocomplete': 'name',
 	},
 	'/properties/curator/*/oneOf/0/properties/name': {
 		'description': 'Please write your name in first_name last_name fashion if possible',
+		'autocomplete': 'name',
 	},
 	'/properties/publisher/oneOf/0/properties/name': {
 		'description': 'Please write your name in first_name last_name fashion if possible',
+		'autocomplete': 'name',
 	},
 	'/properties/creator/*/oneOf/*/properties/contributor_type': {
 		'tab': 'extra',
@@ -827,7 +816,7 @@ export default {
 	},
 	'/properties/access_rights/properties/license/*': {
 		props: {
-			oneOfFunc: value => {
+			choiceFunc: value => {
 				if (value && value.identifier) {
 					return 0
 				}
@@ -838,7 +827,7 @@ export default {
 			},
 		},
 	},
-	'/properties/access_rights/properties/license/*/oneOf/0': {
+	'/properties/access_rights/properties/license/*/anyOf/0': {
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -855,7 +844,7 @@ export default {
 		'description': "A license agreement signifies what a user is allowed to do with the data.",
 		'help': "Select a license agreement for your dataset.",
 	},
-	'/properties/access_rights/properties/license/*/oneOf/1': {
+	'/properties/access_rights/properties/license/*/anyOf/1': {
 		'title': ' ',
 	},
 	'/properties/modified': {
@@ -922,5 +911,8 @@ export default {
 	},
 	'**/telephone': {
 		'tab': 'extra',
+	},
+	'**/email': {
+		'autocomplete': 'email',
 	},
 }

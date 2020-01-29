@@ -1,57 +1,55 @@
-<!--
-This file is part of Qvain -project.
-
-Author(s):
-	Juhapekka Piiroinen <jp@1337.fi>
-	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
-	Eemeli Kouhia <eemeli.kouhia@gofore.com>
-	Jori Niemi <3295718+tahme@users.noreply.github.com>
-	Shreyas Deshpande <31839853+ShreyasDeshpande@users.noreply.github.com>
-
-License: GPLv3
-
-See LICENSE file for more information.
-Copyright (C) 2019 Ministry of Culture and Education, Finland.
-All Rights Reserved.
--->
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<b-container fluid>
-		<h1 class="component-title">Datasets</h1>
+		<h1 class="component-title">
+			Datasets
+		</h1>
 
 		<!-- controls -->
 		<b-button-toolbar class="mb-4 tool-bar">
-			<b-button-group class="filter-buttons" size="sm">
+			<b-button-group
+				class="filter-buttons"
+				size="sm"
+			>
 				<b-btn
 					class="dataset-filter__button"
 					:pressed="datasetsView.showState === 'all'"
-					@click="()=>setShowState('all')"
-					:variant="datasetsView.showState === 'all' ? 'secondary' : 'outline-secondary'">
+					:variant="datasetsView.showState === 'all' ? 'secondary' : 'outline-secondary'"
+					@click="setShowState('all')"
+				>
 					All
 				</b-btn>
 				<b-btn
 					class="dataset-filter__button"
 					:pressed="datasetsView.showState === 'draft'"
-					@click="()=>setShowState('draft')"
-					:variant="datasetsView.showState === 'all' || datasetsView.showState === 'draft' ? 'success' : 'outline-secondary'">
-					Draft
+					:variant="datasetsView.showState === 'all' || datasetsView.showState === 'draft' ? 'success' : 'outline-secondary'"
+					@click="setShowState('draft')"
+				>
+					Draft (D)
 				</b-btn>
 				<b-btn
 					class="dataset-filter__button"
 					:pressed="datasetsView.showState === 'published'"
-					@click="()=>setShowState('published')"
-					:variant="datasetsView.showState === 'all' || datasetsView.showState === 'published' ? 'primary' : 'outline-secondary'">
-					Published
+					:variant="datasetsView.showState === 'all' || datasetsView.showState === 'published' ? 'primary' : 'outline-secondary'"
+					@click="setShowState('published')"
+				>
+					Published (P)
 				</b-btn>
 				<b-btn
 					class="dataset-filter__button"
 					:pressed="datasetsView.showState === 'unpublishedchanges'"
-					@click="()=>setShowState('unpublishedchanges')"
-					:variant="datasetsView.showState === 'all' || datasetsView.showState === 'unpublishedchanges' ? 'warning' : 'outline-secondary'">
-					Unpublished Changes
+					:variant="datasetsView.showState === 'all' || datasetsView.showState === 'unpublishedchanges' ? 'warning' : 'outline-secondary'"
+					@click="setShowState('unpublishedchanges')"
+				>
+					Unpublished Changes (U)
 				</b-btn>
 			</b-button-group>
 
-			<b-input-group class="search" size="sm" prepend="Search">
+			<b-input-group
+				class="search"
+				size="sm"
+				prepend="Search"
+			>
 				<b-form-input
 					:value="datasetsView.filterString"
 					placeholder="type here to search"
@@ -62,11 +60,15 @@ All Rights Reserved.
 
 
 		<!-- alerts -->
-		<b-alert variant="danger" :show="!!error" dismissible @dismissed="error = null">{{ error }}</b-alert>
-
-		<b-alert :show="otherError" variant="danger">
-			There was an unspecified error loading the dataset. Please contact servicedesk(at)csc.fi.
+		<b-alert
+			variant="danger"
+			:show="!!error"
+			dismissible
+			@dismissed="error = null"
+		>
+			{{ error }}
 		</b-alert>
+
 
 		<div class="pagination-controls">
 			<b-pagination
@@ -89,7 +91,7 @@ All Rights Reserved.
 			<b-button-group size="sm">
 				<b-btn
 					:pressed="datasetsView.perPage === 0"
-					@click="() => setPerPage(0)"
+					@click="setPerPage(0)"
 				>
 					show all
 				</b-btn>
@@ -98,8 +100,9 @@ All Rights Reserved.
 					:key="option"
 					:pressed="datasetsView.perPage === option"
 					class="btn"
-					@click="() => setPerPage(option)"
-				>{{ option }}
+					@click="setPerPage(option)"
+				>
+					{{ option }}
 				</b-btn>
 			</b-button-group>
 		</div>
@@ -124,110 +127,233 @@ All Rights Reserved.
 			@sort-changed="setSort"
 			@filtered="updateFiltered"
 		>
-			<template slot="tree_actions" slot-scope="row">
-				<b-button-toolbar key-nav class="row-main-actions">
+			<template
+				slot="cell(tree_actions)"
+				slot-scope="row"
+			>
+				<b-button-toolbar
+					key-nav
+					class="row-main-actions"
+				>
 					<b-button-group class="mr-1">
 						<b-button
 							variant="secondary"
-							@click.stop="row.toggleDetails()">
+							@click.stop="row.toggleDetails()"
+						>
 							{{ 1 + row.index + (datasetsView.currentPage-1)*datasetsView.perPage }}
 							<font-awesome-icon
 								:icon="row.detailsShowing ? 'chevron-down' : 'chevron-right'"
-								fixed-width />
+								fixed-width
+							/>
 						</b-button>
 					</b-button-group>
 				</b-button-toolbar>
 			</template>
-			<template slot="actions" slot-scope="row">
-				<b-button-group size="sm" class="mr-1">
+			<template
+				slot="cell(actions)"
+				slot-scope="row"
+			>
+				<b-button-group
+					size="sm"
+					class="mr-1"
+				>
 					<b-button
 						:variant="row.item.identifier == null ? 'outline-secondary' : 'info'"
+						:disabled="row.item.identifier == null"
 						@click.stop="view(row.item.identifier)"
-						:disabled="row.item.identifier == null">
-						<font-awesome-icon icon="external-link-alt" fixed-width />
+					>
+						<font-awesome-icon
+							icon="external-link-alt"
+							fixed-width
+						/>
 						Etsin
 					</b-button>
 				</b-button-group>
 			</template>
-			<template slot="owner" slot-scope="data">
-				<span v-b-tooltip.hover.auto :title="data.item.uid">{{ data.item.owner }}</span>
+			<template
+				slot="cell(owner)"
+				slot-scope="data"
+			>
+				<span
+					v-b-tooltip.hover.auto
+					:title="data.item.uid"
+				>{{ data.item.owner }}</span>
 			</template>
-			<template slot="preservation_state" slot-scope="data">
+			<template
+				slot="cell(preservation_state)"
+				slot-scope="data"
+			>
 				<preservation-state :state="data.item.preservation_state" />
 			</template>
-			<template slot="created" slot-scope="row">
-				<p class="text-muted pointer" @click.stop="editDataset(row.item)">
-					{{ friendlyDate(row.item.created) }} ago<br />
+			<template
+				slot="cell(created)"
+				slot-scope="row"
+			>
+				<p
+					class="text-muted pointer"
+					@click.stop="editDataset(row.item)"
+				>
+					{{ friendlyDate(row.item.created) }} ago<br>
 					<small>{{ readableIso(row.item.created) }}</small>
 				</p>
 			</template>
-			<template slot="title" slot-scope="row">
-				<h5 class="mb-1 pointer" @click.stop="editDataset(row.item)">
-					<span class="dataset-row-publish-status" @click.stop="editDataset(row.item)">
-						<font-awesome-icon icon="circle" class="text-primary" v-if="row.item.published && !isItemPublishedAndHasUpdates(row.item)" />
-						<font-awesome-icon icon="circle" class="text-warning" v-else-if="row.item.published && isItemPublishedAndHasUpdates(row.item)" />
-						<font-awesome-icon icon="circle" class="text-success" v-else />
+			<template
+				slot="cell(title)"
+				slot-scope="row"
+			>
+				<h5
+					class="mb-1 pointer"
+					@click.stop="editDataset(row.item)"
+				>
+					<span
+						class="dataset-row-publish-status"
+						@click.stop="editDataset(row.item)"
+					>
+						<span
+							v-if="row.item.published && !isItemPublishedAndHasUpdates(row.item)"
+							class="status-icon bg-primary"
+							aria-label="Published"
+						><span class="text">P</span>
+						</span>
+						<span
+							v-else-if="row.item.published && isItemPublishedAndHasUpdates(row.item)"
+							class="status-icon bg-warning"
+							aria-label="Unpublished changes"
+						><span class="text">U</span>
+						</span>
+						<span
+							v-else
+							icon="circle"
+							class="status-icon bg-success"
+							aria-label="Draft"
+						><span class="text">D</span>
+						</span>
 					</span>
+
 					{{ preferredLanguage(row.item.title) }}
-					<b-badge v-if="row.item.next !== null" variant="warning" class="old-version">Old version</b-badge>
-					<b-badge v-if="row.item.deprecated" variant="danger" class="old-version">Deprecated</b-badge>
+					<b-badge
+						v-if="row.item.next !== null"
+						variant="warning"
+					>
+						Old version
+					</b-badge>
+					<b-badge
+						v-if="row.item.deprecated"
+						variant="danger"
+					>
+						Deprecated
+					</b-badge>
+					<b-badge
+						v-if="row.item.preservation_state > 0 || row.item.data_catalog=='urn:nbn:fi:att:data-catalog-pas'"
+						variant="info"
+					>
+						PAS
+					</b-badge>
 				</h5>
-				<p v-if="row.item.description" class="text-muted pointer" @click.stop="editDataset(row.item)">
+				<p
+					v-if="row.item.description"
+					class="text-muted pointer"
+					@click.stop="editDataset(row.item)"
+				>
 					<small>{{ preferredLanguage(row.item.description) }}</small>
 				</p>
 			</template>
-			<template slot="row-details" slot-scope="row">
-				<b-button-toolbar key-nav>
-					<b-button-group size="sm" class="mr-1">
+			<template
+				slot="row-details"
+				slot-scope="row"
+			>
+				<b-button-toolbar
+					:id="'actions-toolbar-' + row.item.id"
+					key-nav
+				>
+					<b-button-group
+						size="sm"
+						class="mr-1"
+					>
 						<b-button
 							:variant="isItemPublishedAndHasUpdates(row.item) ? 'warning' : 'success'"
-							@click.stop="editDataset(row.item)">
-							<font-awesome-icon icon="pen" fixed-width />
+							@click.stop="editDataset(row.item)"
+						>
+							<font-awesome-icon
+								icon="pen"
+								fixed-width
+							/>
 							Edit
 						</b-button>
 					</b-button-group>
-					<b-button-group size="sm" class="mr-1">
+					<b-button-group
+						size="sm"
+						class="mr-1"
+					>
 						<b-button
+							v-b-modal.publishModal
 							:disabled="row.item.published && !isItemPublishedAndHasUpdates(row.item)"
 							:variant="row.item.published && !isItemPublishedAndHasUpdates(row.item) ? 'outline-secondary' : 'primary'"
 							@click="itemToBePublished = row.item"
-							v-b-modal.publishModal>
-							<font-awesome-icon :icon="publishing ? 'spinner' : 'upload'" :spin="publishing" />
+						>
+							<font-awesome-icon
+								:icon="publishing ? 'spinner' : 'upload'"
+								:spin="publishing"
+							/>
 							Publish
 						</b-button>
 					</b-button-group>
-					<b-button-group size="sm" class="mr-1">
+					<b-button-group
+						size="sm"
+						class="mr-1"
+					>
 						<b-button
 							:variant="row.item.identifier == null ? 'outline-secondary' : 'info'"
+							:disabled="row.item.identifier == null"
 							@click.stop="view(row.item.identifier)"
-							:disabled="row.item.identifier == null">
-							<font-awesome-icon icon="external-link-alt" fixed-width />
+						>
+							<font-awesome-icon
+								icon="external-link-alt"
+								fixed-width
+							/>
 							View in Etsin
 						</b-button>
 					</b-button-group>
-					<b-button-group size="sm" class="mr-1">
+					<b-button-group
+						size="sm"
+						class="mr-1"
+					>
 						<b-button
-							:variant="row.item.versions < 1 ? 'outline-secondary' : 'secondary'"
 							v-b-modal="'dataset-versions-modal'"
+							:variant="row.item.versions < 1 ? 'outline-secondary' : 'secondary'"
+							:disabled="row.item.versions < 1"
 							@click="activeInModal = row.item.id"
-							:disabled="row.item.versions < 1">
-							<font-awesome-icon icon="history" fixed-width />
+						>
+							<font-awesome-icon
+								icon="history"
+								fixed-width
+							/>
 							Versions
 						</b-button>
 					</b-button-group>
-					<b-button-group size="sm" class="mr-1">
+					<b-button-group
+						size="sm"
+						class="mr-1"
+					>
 						<b-button
+							v-b-modal.deleteModal
 							variant="danger"
 							@click="itemToBeDeleted = row.item"
-							v-b-modal.deleteModal>
-							<font-awesome-icon icon="trash" fixed-width />
+						>
+							<font-awesome-icon
+								icon="trash"
+								fixed-width
+							/>
 							Delete
 						</b-button>
 					</b-button-group>
 				</b-button-toolbar>
 			</template>
-			<div slot="table-busy" class="text-center text-primary my-2">
-				<b-spinner class="align-middle"></b-spinner>
+			<div
+				slot="table-busy"
+				class="text-center text-primary my-2"
+			>
+				<b-spinner class="align-middle" />
 			</div>
 		</b-table>
 
@@ -252,7 +378,7 @@ All Rights Reserved.
 			<b-button-group size="sm">
 				<b-btn
 					:pressed="datasetsView.perPage === 0"
-					@click="() => setPerPage(0)"
+					@click="setPerPage(0)"
 				>
 					show all
 				</b-btn>
@@ -261,8 +387,9 @@ All Rights Reserved.
 					:key="option"
 					:pressed="datasetsView.perPage === option"
 					class="btn"
-					@click="() => setPerPage(option)"
-				>{{ option }}
+					@click="setPerPage(option)"
+				>
+					{{ option }}
 				</b-btn>
 			</b-button-group>
 		</div>
@@ -275,7 +402,8 @@ All Rights Reserved.
 			ok-title="Delete"
 			cancel-variant="primary"
 			ok-variant="danger"
-			@ok="del">
+			@ok="del"
+		>
 			<p>
 				You are about to delete {{ itemToBeDeleted.published ? "published" : "draft" }} dataset "{{ preferredLanguage(itemToBeDeleted.title) }}".
 				This action cannot be reversed. Are you sure you want to delete the dataset?
@@ -285,8 +413,15 @@ All Rights Reserved.
 				The deleted dataset will still have a landing page (direct access via URN/DOI) but it cannot be found through Etsin's search nor is it visible in Qvain anymore.
 			</p>
 		</b-modal>
-		<b-modal ref="publishModal" id="publishModal" title="Publish dataset?"
-			ok-title="Publish" cancel-variant="primary" ok-variant="success" @ok="publish">
+		<b-modal
+			id="publishModal"
+			ref="publishModal"
+			title="Publish dataset?"
+			ok-title="Publish"
+			cancel-variant="primary"
+			ok-variant="success"
+			@ok="publish"
+		>
 			<div class="d-block text-left">
 				<p>I understand that publishing this dataset:</p>
 				<ul>
@@ -295,12 +430,40 @@ All Rights Reserved.
 				</ul>
 			</div>
 		</b-modal>
-		<publish-modal ref="publishErrorModal" id="publishErrorModal" :error="publishError" @hidden="publishError = null"></publish-modal>
-		<dataset-versions-modal :dataset="activeInModal"></dataset-versions-modal>
+		<publish-modal
+			id="publishErrorModal"
+			ref="publishErrorModal"
+			:error="publishError"
+			@hidden="publishError = null"
+		/>
+		<dataset-versions-modal :dataset="activeInModal" />
 	</b-container>
 </template>
 
 <style lang="scss" scoped>
+	.status-icon {
+		display: inline-flex;
+		justify-content: center;
+		align-items: center;
+		width: 1em;
+		height: 1em;
+		border-radius: 0.5em;
+		text-align: center;
+		position: relative;
+		bottom: 0.15em;
+		margin-right: 0.05em;
+
+		& > span {
+			color: white;
+			font-weight: bold;
+			font-size: 0.7em;
+		}
+	}
+
+	.dataset-row-publish-status {
+		vertical-align: top;
+	}
+
 	.tool-bar {
 		margin: -2px -4px;
 
@@ -408,8 +571,8 @@ import PreservationState from '@/components/PreservationState.vue'
 import DatasetVersionsModal from '@/components/VersionsModal.vue'
 import PublishModal from '@/components/PublishModal.vue'
 
-import distanceInWordsToNow from 'date-fns/distance_in_words_to_now'
-import formatDate from 'date-fns/format'
+import { parseISO, formatDistanceToNow, format as formatDate } from 'date-fns'
+import getApiError from '@/lib/getApiError.js'
 
 // id owner created modified published identifier title{} description{} preservation_state
 const fields = [
@@ -446,28 +609,13 @@ const fields = [
 	},
 ]
 
-function getApiError(error) {
-	let apiError = "API Error"
-	if (error.response) {
-		apiError += " [" + error.response.status + "]"
-		if (error.response.data && error.response.data.msg) {
-			apiError += ": " + error.response.data.msg
-		}
-	} else if (error.message) {
-		apiError += ": " + error.message.toLowerCase()
-	}
-	return apiError
-}
 
 export default {
-	name: "dataset-list",
+	name: "DatasetList",
 	components: {
 		PreservationState,
 		DatasetVersionsModal,
 		'publish-modal': PublishModal,
-	},
-	props: {
-		otherError: Boolean,
 	},
 	data() {
 		return {
@@ -484,6 +632,20 @@ export default {
 			sortDesc: false,
 			perPageOptions: [ 10, 20, 50 ],
 		}
+	},
+	computed: {
+		datasetsView() {
+			return this.$store.state.datasetsView
+		},
+		filterRegExp() {
+			return new RegExp('.*' + this.datasetsView.filterString + '.*', 'ig')
+		},
+		perPageOptionsFiltered() {
+			return this.perPageOptions.filter(pageSize => pageSize < this.datasetsView.filteredCount)
+		},
+	},
+	async created() {
+		await this.fetchDataset()
 	},
 	methods: {
 		async fetchDataset() {
@@ -506,7 +668,7 @@ export default {
 					await this.$auth.logoutDueSessionTimeout()
 					this.$router.push({ name: "home", params: { missingSession: true }})
 				}
-				this.error = getApiError(e)
+				this.error = getApiError(e, "While fetching datasets", "")
 				this.setDatasetList([])
 			} finally {
 				this.isBusy = false
@@ -531,10 +693,9 @@ export default {
 			} catch (e) {
 				if (e.response && e.response.data) {
 					this.publishError = e.response.data
-					console.log("Show modal error")
 					this.$root.$emit('bv::show::modal', 'publishErrorModal')
 				} else {
-					this.error = getApiError(e)
+					this.error = getApiError(e, "While publishing dataset", this.itemToBePublished.id)
 				}
 			} finally {
 				this.publishing = false
@@ -557,19 +718,20 @@ export default {
 					await this.$auth.logoutDueSessionTimeout()
 					this.$router.push({ name: "home", params: { missingSession: true }})
 				}
-				this.error = getApiError(e)
+				this.error = getApiError(e, "While deleting dataset", this.itemToBeDeleted.id)
 			} finally {
 				this.isBusy = false
 				this.deleting = false
 			}
 		},
 		view(extid) {
-			console.log("opening:", `{process.env.VUE_APP_ETSIN_API_URL}/{extid}`)
 			window.open(`${process.env.VUE_APP_ETSIN_API_URL}/${extid}`, '_blank')
 		},
-		friendlyDate: distanceInWordsToNow,
+		friendlyDate(iso) {
+			return formatDistanceToNow(parseISO(iso))
+		},
 		readableIso(iso) {
-			return formatDate(iso, "YYYY-MM-DD HH:mm:ss")
+			return formatDate(parseISO(iso), "yyyy-MM-dd HH:mm:ss")
 		},
 		preferredLanguage(langObj) {
 			if (typeof langObj === "string") {
@@ -586,7 +748,7 @@ export default {
 			return this.datasetsView.showState === 'all' ||
 				(this.datasetsView.showState === 'published' && item.published && !this.isItemPublishedAndHasUpdates(item)) ||
 				(this.datasetsView.showState === 'draft' && !item.published) ||
-				(this.datasetsView.showState === 'unpublishedchanges' && this.isItemPublishedAndHasUpdates(item) )
+				(this.datasetsView.showState === 'unpublishedchanges' && this.isItemPublishedAndHasUpdates(item))
 		},
 		filterTitles(item) {
 			if (!this.datasetsView.filterString) return true // don't filter null.toString()
@@ -652,20 +814,6 @@ export default {
 		setFilterString(state) {
 			this.$store.commit('updateDatasetsView', { filterString: state })
 		},
-	},
-	computed: {
-		datasetsView() {
-			return this.$store.state.datasetsView
-		},
-		filterRegExp() {
-			return new RegExp('.*' + this.datasetsView.filterString + '.*', 'ig')
-		},
-		perPageOptionsFiltered() {
-			return this.perPageOptions.filter(pageSize => pageSize < this.datasetsView.filteredCount)
-		}
-	},
-	async created() {
-		await this.fetchDataset()
 	},
 }
 </script>

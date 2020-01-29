@@ -1,16 +1,4 @@
-/*
-This file is part of Qvain -project.
-
-Author(s):
-	Juhapekka Piiroinen <jp@1337.fi>
-	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
-
-License: GPLv3
-
-See LICENSE file for more information.
-Copyright (C) 2019 Ministry of Culture and Education, Finland.
-All Rights Reserved.
-*/
+/* ADD_LICENSE_HEADER */
 import axios from 'axios'
 
 const apiBaseUrl = "/api"
@@ -60,7 +48,7 @@ export default function qvainApiClient(dataset) {
 
 const apiClient = axios.create({
 	baseURL: apiUrl,
-	timeout: 5000,
+	timeout: 10000,
 	responseType: "json",
 })
 

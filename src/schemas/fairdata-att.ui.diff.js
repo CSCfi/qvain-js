@@ -1,17 +1,4 @@
-/*
-This file is part of Qvain -project.
-
-Author(s):
-	Juhapekka Piiroinen <jp@1337.fi>
-	Jori Niemi <3295718+tahme@users.noreply.github.com>
-	Kauhia <Kauhia@users.noreply.github.com>
-
-License: GPLv3
-
-See LICENSE file for more information.
-Copyright (C) 2019 Ministry of Culture and Education, Finland.
-All Rights Reserved.
-*/
+/* ADD_LICENSE_HEADER */
 // Copy IDA UI and edit only changed fields
 export default (idaUi) => {
 	return {
@@ -25,6 +12,26 @@ export default (idaUi) => {
 		'/properties/remote_resources': {
 			'tab': 'files',
 			'widget': 'schema-array',
+		},
+		'/properties/remote_resources/*/properties/access_url/properties/identifier': {
+			'description': "URL that gives access to a distribution of the dataset. E.g. landing page download. Use when your catalog does not have information on which it is or when it is definitely not a download.",
+			'required': ()=>false,
+		},
+		'/properties/remote_resources/*/properties/access_url/properties/title': {
+			'tab': 'notab',
+		},
+		'/properties/remote_resources/*/properties/access_url/properties/description': {
+			'tab': 'notab',
+		},
+		'/properties/remote_resources/*/properties/download_url/properties/identifier': {
+			'description': "A direct link to a downloadable file in a given format. E.g. CSV file or RDF file.",
+			'required': ()=>false,
+		},
+		'/properties/remote_resources/*/properties/download_url/properties/title': {
+			'tab': 'notab',
+		},
+		'/properties/remote_resources/*/properties/download_url/properties/description': {
+			'tab': 'notab',
 		},
 		'/properties/remote_resources/*/properties/license': {
 			'widget': 'reference-data',

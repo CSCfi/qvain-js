@@ -1,17 +1,4 @@
-/*
-This file is part of Qvain -project.
-
-Author(s):
-	Juhapekka Piiroinen <jp@1337.fi>
-	Eemeli Kouhia <eemeli.kouhia@gofore.com>
-	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
-
-License: GPLv3
-
-See LICENSE file for more information.
-Copyright (C) 2019 Ministry of Culture and Education, Finland.
-All Rights Reserved.
-*/
+/* ADD_LICENSE_HEADER */
 export default {
 	methods: {
 		borderColor(depth) {
@@ -50,7 +37,7 @@ export default {
 			if (depth < 2) return null
 			return {
 				'border-left': `solid ${width}px ${this.borderColor(depth)} !important`,
-				'padding-left':'10px'
+				'padding-left':'10px',
 			}
 		},
 	},

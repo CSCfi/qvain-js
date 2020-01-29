@@ -1,19 +1,4 @@
-/*
-This file is part of Qvain -project.
-
-Author(s):
-	Juhapekka Piiroinen <jp@1337.fi>
-	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
-	Jori Niemi <3295718+tahme@users.noreply.github.com>
-	Aaron Hakala <aaron.hakala@metropolia.fi>
-	Shreyas Deshpande <shreyas.deshpande@csc.fi>
-
-License: GPLv3
-
-See LICENSE file for more information.
-Copyright (C) 2019 Ministry of Culture and Education, Finland.
-All Rights Reserved.
-*/
+/* ADD_LICENSE_HEADER */
 import Vue from 'vue'
 import App from './App.vue'
 
@@ -52,7 +37,7 @@ library.add(fas.faUser, fas.faInfo, fas.faMinus, fas.faPlus, fas.faTimes,
 	fas.faCircleNotch, fas.faList, fas.faListAlt, fas.faUndo, fas.faExternalLinkAlt, fas.faEllipsisV,
 	fas.faSave, fas.faCircle, fas.faSpinner, fas.faSignInAlt, fas.faSignOutAlt, fas.faTable, fas.faUpload,
 	fas.faExclamation, fas.faEdit, fas.faChevronLeft, fas.faChevronRight, fas.faChevronDown,
-	fas.faBackward)
+	fas.faBackward, fas.faUniversalAccess)
 
 store.registerModule('files', FilesStore)
 
@@ -61,7 +46,6 @@ store.registerModule('files', FilesStore)
 const app = new Vue({
 	router,
 	store,
-	render: h => h(App),
 	data: {
 		user: null,
 		language: null,
@@ -69,21 +53,6 @@ const app = new Vue({
 		dismissCountDown: 0,
 		alertText: "hello there!",
 		alertVariant: "dark",
-	},
-	methods: {
-		countDownChanged (dismissCountDown) {
-			this.dismissCountDown = dismissCountDown
-		},
-		showAlert (text, variant) {
-			this.dismissCountDown = this.dismissSecs
-			this.alertText = text
-			this.alertVariant = variant || "dark"
-		},
-		dismissAlert () {
-			this.dismissCountDown = 0
-			this.alertText = null
-			this.alertVariant = "dark"
-		},
 	},
 	computed: {
 		authenticated() {
@@ -99,21 +68,42 @@ const app = new Vue({
 		// load Matomo script, add a PageView
 		if (process.env['VUE_APP_MATOMO_SITE_ID']) {
 			window._paq = []
-			_paq.push(['trackPageView'])
-			_paq.push(['enableLinkTracking']);
+			window._paq.push(['disableCookies'])
+			window._paq.push(['trackPageView'])
+			window._paq.push(['enableLinkTracking']);
 			(function() {
-				var u= "//matomo.rahtiapp.fi/"
-				_paq.push(['setTrackerUrl', u +'piwik.php'])
-				_paq.push(['setSiteId', process.env['VUE_APP_MATOMO_SITE_ID']])
-				var d=document,
+				let u= process.env['VUE_APP_MATOMO_URL']
+				window._paq.push([ 'setTrackerUrl', u + process.env['VUE_APP_MATOMO_TRACKER_PHP'] ])
+				window._paq.push([ 'setSiteId', process.env['VUE_APP_MATOMO_SITE_ID'] ])
+				let d=document,
 					g=d.createElement('script'),
 					s=d.getElementsByTagName('script')[0]
 				g.type='text/javascript'
 				g.async=true
 				g.defer=true
-				g.src= u+'piwik.js'
+				g.src= u+process.env['VUE_APP_MATOMO_SRC']
 				s.parentNode.insertBefore(g,s)
 			})()
 		}
-	}
+	},
+	methods: {
+		countDownChanged (dismissCountDown) {
+			this.dismissCountDown = dismissCountDown
+		},
+		showAlert (text, variant, persist) {
+			if (!persist) {
+				this.dismissCountDown = this.dismissSecs
+			} else {
+				this.dismissCountDown = true // show until manually dismissed
+			}
+			this.alertText = text
+			this.alertVariant = variant || "dark"
+		},
+		dismissAlert () {
+			this.dismissCountDown = 0
+			this.alertText = null
+			this.alertVariant = "dark"
+		},
+	},
+	render: h => h(App),
 }).$mount('#app')

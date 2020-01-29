@@ -1,27 +1,33 @@
-<!--
-This file is part of Qvain -project.
-
-Author(s):
-	Juhapekka Piiroinen <jp@1337.fi>
-	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
-
-License: GPLv3
-
-See LICENSE file for more information.
-Copyright (C) 2019 Ministry of Culture and Education, Finland.
-All Rights Reserved.
--->
+<!-- ADD_LICENSE_HEADER -->
 <template>
-	<record-field :required="required" :wrapped="false" :header="!inArray">
-		<title-component slot="title" :title="makeLabel" />
-		<small slot="help" class="text-muted">
+	<record-field
+		:required="required"
+		:wrapped="false"
+		:header="!inArray"
+	>
+		<title-component
+			slot="title"
+			:title="makeLabel"
+		/>
+		<small
+			slot="help"
+			class="text-muted"
+		>
 			{{ uiDescription }}
 		</small>
 		<div slot="input">
 			<b-form-group>
-				<span slot="label" v-if="makeLabel !== uiLabel">
+				<span
+					v-if="makeLabel !== uiLabel"
+					slot="label"
+				>
 					{{ makeLabel }}
-					<delete-button v-if="inArray" slot="label" @click="deleteMe"/>
+					<delete-button
+						v-if="inArray"
+						slot="label"
+						:disabled="readOnly"
+						@click="deleteMe"
+					/>
 				</span>
 
 				<b-input-group>
@@ -29,9 +35,10 @@ All Rights Reserved.
 						:id="inArray ? 'input-' + property.toString() : property"
 						:placeholder="uiPlaceholder"
 						:value="value"
-						@input.native="updateValue"
 						:state="isValid ? null : false"
-						:options="toOptions" />
+						:options="toOptions"
+						@input.native="updateValue"
+					/>
 				</b-input-group>
 			</b-form-group>
 		</div>
@@ -45,15 +52,22 @@ import DeleteButton from '@/partials/DeleteButton.vue'
 import TitleComponent from '@/partials/Title.vue'
 
 export default {
-	extends: vSchemaBase,
-	name: 'schema-enum',
-	description: 'basic enum widget',
-	schematype: 'string',
+	name: 'SchemaEnum',
 	components: {
 		RecordField,
 		DeleteButton,
 		TitleComponent,
 	},
+	directives: {
+		focus: {
+			inserted: function (el) {
+				el.focus()
+			},
+		},
+	},
+	extends: vSchemaBase,
+	description: 'basic enum widget',
+	schematype: 'string',
 	data: function() {
 		return {
 			feedback: '',
@@ -69,8 +83,20 @@ export default {
 				},
 				13,
 				"last option",
-			].map(x => { return {value: x, text: typeof x === "object" && x !== null ? JSON.stringify(x) : String(x)} }),
+			].map(x => { return { value: x, text: typeof x === "object" && x !== null ? JSON.stringify(x) : String(x) } }),
 		}
+	},
+	computed: {
+		makeLabel: function() {
+			return typeof this.property === 'number' ? '#' + (this.property + 1) : this.uiTitle
+		},
+		toOptions() {
+			return this.schema && this.schema.enum ?
+				this.schema.enum.map(x => { return { value: x, text: typeof x === "object" && x !== null ? JSON.stringify(x) : String(x) } }) : []
+		},
+	},
+	created() {
+		this.setDefault()
 	},
 	methods: {
 		updateValue: function(e) {
@@ -101,25 +127,6 @@ export default {
 				return
 			}
 		},
-	},
-	computed: {
-		makeLabel: function() {
-			return typeof this.property === 'number' ? '#' + (this.property + 1) : this.uiTitle
-		},
-		toOptions() {
-			return this.schema && this.schema.enum ?
-				this.schema.enum.map(x => { return {value: x, text: typeof x === "object" && x !== null ? JSON.stringify(x) : String(x)} }) : []
-		},
-	},
-	directives: {
-		focus: {
-			inserted: function (el) {
-				el.focus()
-			},
-		},
-	},
-	created() {
-		this.setDefault()
 	},
 }
 </script>

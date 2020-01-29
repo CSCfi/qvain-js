@@ -1,19 +1,4 @@
-/*
-This file is part of Qvain -project.
-
-Author(s):
-	Juhapekka Piiroinen <jp@1337.fi>
-	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
-	Kauhia <Kauhia@users.noreply.github.com>
-	Jori Niemi <3295718+tahme@users.noreply.github.com>
-	Eemeli Kouhia <eemeli.kouhia@gofore.com>
-
-License: GPLv3
-
-See LICENSE file for more information.
-Copyright (C) 2019 Ministry of Culture and Education, Finland.
-All Rights Reserved.
-*/
+/* ADD_LICENSE_HEADER */
 import axios from 'axios'
 import { cacheAdapterEnhancer, throttleAdapterEnhancer } from 'axios-extensions'
 /*
@@ -70,7 +55,7 @@ const http = axios.create({
 export default function esApiClient(index, doctype) {
 	return http.get(
 		`${apiUrl}/${index}/${doctype}/_search?size=200&pretty=1&filter_path=hits.hits._source`, {
-			timeout: 5000,
+			timeout: 10000,
 			responseType: 'json',
 		})
 }
@@ -85,7 +70,7 @@ export function esApiSearchClient(index, doctype, searchterm, count) {
 
 	return http.get(`${apiUrl}/${index}/${doctype}/_search`, {
 		params,
-		timeout: 5000,
+		timeout: 10000,
 		responseType: 'json',
 	})
 }

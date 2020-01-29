@@ -1,51 +1,48 @@
-<!--
-This file is part of Qvain -project.
-
-Author(s):
-	Juhapekka Piiroinen <jp@1337.fi>
-	Eemeli Kouhia <eemeli.kouhia@gofore.com>
-	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
-	Kauhia <Kauhia@users.noreply.github.com>
-
-License: GPLv3
-
-See LICENSE file for more information.
-Copyright (C) 2019 Ministry of Culture and Education, Finland.
-All Rights Reserved.
--->
+<!-- ADD_LICENSE_HEADER -->
 <template>
 	<div
+		:id="property"
 		class="container daterange-container"
-		:id="property">
+	>
 		<div class="row">
 			<div class="col-sm-2">
 				<p>
 					{{ title }}
-					<delete-button v-if="inArray" @click="$emit('delete', property)"/>
+					<delete-button
+						v-if="inArray"
+						:disabled="readOnly"
+						@click="$emit('delete', property)"
+					/>
 				</p>
 				<b-badge v-if="timeBetweenString">
 					{{ timeBetweenString }}
 				</b-badge>
-				<div class="error-badges" v-if="toIsEarlierThanFrom">
+				<div
+					v-if="toIsEarlierThanFrom"
+					class="error-badges"
+				>
 					<b-badge
-						variant="danger">
+						variant="danger"
+					>
 						<span>To &lt; From</span>
 					</b-badge>
 				</div>
 			</div>
 			<div class="col">
 				<datetimepicker
+					v-model="start"
 					:title="'From'"
 					:format="schema.properties.start_date.format"
-					v-model="start">
-				</datetimepicker>
+					:disabled="readOnly"
+				/>
 			</div>
 			<div class="col">
 				<datetimepicker
+					v-model="end"
 					:title="'To'"
 					:format="schema.properties.end_date.format"
-					v-model="end">
-				</datetimepicker>
+					:disabled="readOnly"
+				/>
 			</div>
 		</div>
 	</div>
@@ -80,16 +77,16 @@ All Rights Reserved.
 <script>
 import DateTimePicker from '@/components/DateTimePicker.vue'
 import SchemaBase from '@/widgets/base.vue'
-import { distanceInWords } from 'date-fns'
+import { formatDistance, parseISO } from 'date-fns'
 import DeleteButton from '@/partials/DeleteButton.vue'
 
 export default {
-	name: 'date-range',
-	extends: SchemaBase,
+	name: 'DateRange',
 	components: {
 		"datetimepicker": DateTimePicker,
 		DeleteButton,
 	},
+	extends: SchemaBase,
 	data() {
 		return {
 			start: null,
@@ -100,7 +97,11 @@ export default {
 	computed: {
 		timeBetweenString() {
 			if (!this.end || !this.start) { return null }
-			return distanceInWords(this.end, this.start)
+			try { // avoid throwing error on invalid dates, e.g. 0.0.0000
+				return formatDistance(parseISO(this.start), parseISO(this.end))
+			} catch {
+				return null
+			}
 		},
 		title() {
 			return typeof(this.property)=="number" ? '#' + (this.property + 1) : this.schema.title
@@ -112,22 +113,8 @@ export default {
 			if (endDate < startDate) {
 				return true
 			}
-		}
-	},
-	methods: {
-		updateValue() {
-			if (this.isInitializing) { return }
-			this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: {
-				start_date: this.start, end_date: this.end,
-			}})
+			return false
 		},
-	},
-	async created() {
-		this.isInitializing = true
-		this.start = this.value.start_date
-		this.end = this.value.end_date
-		await this.$nextTick()
-		this.isInitializing = false
 	},
 	watch: {
 		start() {
@@ -137,6 +124,21 @@ export default {
 		end() {
 			if (this.isInitializing) { return }
 			this.updateValue()
+		},
+	},
+	async created() {
+		this.isInitializing = true
+		this.start = this.value.start_date
+		this.end = this.value.end_date
+		await this.$nextTick()
+		this.isInitializing = false
+	},
+	methods: {
+		updateValue() {
+			if (this.isInitializing) { return }
+			this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: {
+				start_date: this.start, end_date: this.end,
+			}})
 		},
 	},
 }

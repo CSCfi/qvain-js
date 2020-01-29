@@ -1,13 +1,4 @@
-# This file is part of Qvain -project.
-# 
-# Author(s):
-# 	Juhapekka Piiroinen <juhapekka.piiroinen@csc.fi>
-# 
-# License: GPLv3
-# 
-# See LICENSE file for more information.
-# Copyright (C) 2019 Ministry of Culture and Education, Finland.
-# All Rights Reserved.
+# ADD_LICENSE_HEADER
 ################################################################
 # This contains the base class QvainTestCase with some helper
 # functions for tests.
@@ -50,7 +41,7 @@ class QvainTestCase(TauhkaTestCase):
         # lets ensure that we are on our first initial page
         self.open_url(address)
         self.is_frontend_running()
-        self.wait_until_window_title("Qvain")
+        self.wait_until_window_title_contains("Qvain")
         self.driver.execute_script(
             "document.body.setAttribute('style','\
             -webkit-transition:none !important; \
@@ -64,38 +55,51 @@ class QvainTestCase(TauhkaTestCase):
 
         # we will get a page redirection to another service
         try:
-            self.wait_until_window_title("Login")
-            btn = self.find_element_by_class_name("login-button-container")
-            loginHakaTestBtn = btn.find_elements_by_class_name("login-link")[1]
+            self.wait_until_window_title_contains("local-dev-auth - Login")
+            username_input = self.find_element("username")
+            username_input.send_keys(username)
+            password_input = self.find_element("password")
+            password_input.send_keys(password)
+            login_button = self.find_element("accept")
+            login_button.click()
+
+            self.wait_until_window_title_contains("local-dev-auth - Consent")
+            login_button_consent = self.find_element("accept")
+            login_button_consent.click()
         except TimeoutException:
-            self.wait_until_window_title("Web Login Service")
             try:
-                loginHakaTestBtn = self.find_element_by_text("authn/LoginHakaTest")
-            except NoSuchElementException:
-                loginHakaTestBtn = self.find_element_by_text("Haka Login")
-        loginHakaTestBtn.click()
+                self.wait_until_window_title_contains("Login")
+                btn = self.find_element_by_class_name("login-button-container")
+                loginHakaTestBtn = btn.find_elements_by_class_name("login-link")[1]
+            except TimeoutException:
+                self.wait_until_window_title_contains("Web Login Service")
+                try:
+                    loginHakaTestBtn = self.find_element_by_text("authn/LoginHakaTest")
+                except NoSuchElementException:
+                    loginHakaTestBtn = self.find_element_by_text("Haka Login")
+            loginHakaTestBtn.click()
 
-        # we will get a page redirection to another service again
-        self.wait_until_window_title("Haka — WAYF")
-        self.select_option_by_value(
-            "userIdPSelection",
-            "https://testidp.funet.fi/idp/shibboleth"
-        )
-        userIdpSelectButton = self.find_element_by_name("Select")
-        userIdpSelectButton.click()
+            # we will get a page redirection to another service again
+            self.wait_until_window_title_contains("Haka — WAYF")
+            self.select_option_by_value(
+                "userIdPSelection",
+                "https://testidp.funet.fi/idp/shibboleth"
+            )
+            userIdpSelectButton = self.find_element_by_name("Select")
+            userIdpSelectButton.click()
 
-        # we will get a page redirection to another service again too
-        self.wait_until_window_title("CSC - Haka test IdP")
-        usernameInput = self.find_element("username")
-        usernameInput.send_keys(username)
-        passwordInput = self.find_element("password")
-        passwordInput.send_keys(password)
+            # we will get a page redirection to another service again too
+            self.wait_until_window_title_contains("CSC - Haka test IdP")
+            usernameInput = self.find_element("username")
+            usernameInput.send_keys(username)
+            passwordInput = self.find_element("password")
+            passwordInput.send_keys(password)
 
-        loginButton = self.find_element_by_name("_eventId_proceed")
-        loginButton.click()
+            loginButton = self.find_element_by_name("_eventId_proceed")
+            loginButton.click()
 
         # we should have been redirected back to the our web service
-        self.wait_until_window_title("Qvain")
+        self.wait_until_window_title_contains("Qvain")
 
     def open_usermenu(self):
         userDropdown = self.find_element("usermenu")
@@ -202,3 +206,6 @@ class QvainTestCase(TauhkaTestCase):
 
         # we did not find the option from the list
         raise NoSuchElementException("{option} was not found from {elem} ".format(option=optionValue, elem=elemId))
+
+    def get_url(self):
+        return self.driver.current_url

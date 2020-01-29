@@ -1,17 +1,4 @@
-<!--
-This file is part of Qvain -project.
-
-Author(s):
-	Juhapekka Piiroinen <jp@1337.fi>
-	Eemeli Kouhia <eemeli.kouhia@gofore.com>
-	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
-
-License: GPLv3
-
-See LICENSE file for more information.
-Copyright (C) 2019 Ministry of Culture and Education, Finland.
-All Rights Reserved.
--->
+<!-- ADD_LICENSE_HEADER -->
 <template functional>
 	<span class="title">
 		{{ props.title }}
@@ -20,6 +7,6 @@ All Rights Reserved.
 
 <script>
 export default {
-	name: "title-component",
+	name: "TitleComponent",
 }
 </script>

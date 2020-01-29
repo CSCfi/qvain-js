@@ -1,16 +1,4 @@
-/*
-This file is part of Qvain -project.
-
-Author(s):
-	Juhapekka Piiroinen <jp@1337.fi>
-	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
-
-License: GPLv3
-
-See LICENSE file for more information.
-Copyright (C) 2019 Ministry of Culture and Education, Finland.
-All Rights Reserved.
-*/
+/* ADD_LICENSE_HEADER */
 import keysWithOrder from '@/lib/keysWithOrder.js'
 
 export default {
@@ -42,7 +30,9 @@ export default {
 						tab: myTab,
 						activeTab: context.props.activeTab,
 						required: (context.props.schema.required || []).includes(key),
+						readOnly: context.props.readOnly,
 					},
+					on: context.listeners, // pass events through
 					// don't reuse VNode
 					key: key,
 				})
@@ -53,7 +43,7 @@ export default {
 							props: { 'no-body': true },
 							class: "border-0 my-3 q-skipped-added-card " + (inSameTab ? "q-insametab" : ("q-notinsametab-" + myTab + "-" + uiTab + "-" + context.props.tab)),
 						},
-						[ child ],
+						[child],
 					)
 				}
 				return child
@@ -61,7 +51,7 @@ export default {
 			})
 		)
 	},
-	props: ['schema', 'path', 'value', 'parent', 'property', 'tab', 'activeTab', 'required'],
+	props: [ 'schema', 'path', 'value', 'parent', 'property', 'tab', 'activeTab', 'required', 'readOnly' ],
 	components: {
 		'TabSelector': require('./TabSelector.vue'),
 	},

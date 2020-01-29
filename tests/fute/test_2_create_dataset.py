@@ -1,13 +1,4 @@
-# This file is part of Qvain -project.
-# 
-# Author(s):
-# 	Juhapekka Piiroinen <juhapekka.piiroinen@csc.fi>
-# 
-# License: GPLv3
-# 
-# See LICENSE file for more information.
-# Copyright (C) 2019 Ministry of Culture and Education, Finland.
-# All Rights Reserved.
+# ADD_LICENSE_HEADER
 ################################################################
 # This file contains functional tests for:
 #  - dataset creation
@@ -48,7 +39,7 @@ class TestCreateDataset(QvainTestCase):
         # valid dataset, unpublished
         self.mark_memory_measure("created valid unpublished dataset")
         editor.show()
-        editor.select_schema("Link Remote resources")
+        editor.select_schema("att")
 
         editor.show_content_description_tab()
         editor.set_title("test_create_new_dataset_valid_unpublished")
@@ -71,7 +62,7 @@ class TestCreateDataset(QvainTestCase):
         # invalid dataset, unpublished
         self.mark_memory_measure("created invalid unpublished dataset")
         editor.show()
-        editor.select_schema("Link Remote resources")
+        editor.select_schema("att")
 
         editor.show_content_description_tab()
         editor.set_title("test_create_new_dataset_invalid_unpublished")

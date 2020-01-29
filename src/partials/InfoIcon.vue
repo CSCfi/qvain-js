@@ -1,23 +1,12 @@
-<!--
-This file is part of Qvain -project.
-
-Author(s):
-	Juhapekka Piiroinen <jp@1337.fi>
-	Eemeli Kouhia <eemeli.kouhia@gofore.com>
-	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
-
-License: GPLv3
-
-See LICENSE file for more information.
-Copyright (C) 2019 Ministry of Culture and Education, Finland.
-All Rights Reserved.
--->
+<!-- ADD_LICENSE_HEADER -->
 <template>
-	<font-awesome-icon class="info-icon"
+	<font-awesome-icon
 		v-if="description"
-		:icon="icons.faQuestionCircle"
 		v-b-tooltip.hover.left
-		:title="description"/>
+		class="info-icon"
+		:icon="icons.faQuestionCircle"
+		:title="description"
+	/>
 </template>
 
 <style lang="scss" scoped>
@@ -37,7 +26,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 export default {
-	name: 'info-icon',
+	name: 'InfoIcon',
 	components: {
 		FontAwesomeIcon,
 	},

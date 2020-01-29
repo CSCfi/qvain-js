@@ -6248,11 +6248,13 @@
 					"minItems": 0,
 					"type": "array",
 					"items": {
-						"oneOf": [
+						"anyOf": [
 							{
 								"type": "object",
 								"title": "License dropdown",
-								"required": [],
+								"required": [
+									"identifier"
+								],
 								"$deref": "#/definitions/ResearchDataLicenseDocument",
 								"minProperties": 1,
 								"@id": "http://purl.org/dc/terms/LicenseDocument",
@@ -6327,11 +6329,14 @@
 										"description": "A referenced license document that applies to this content",
 										"@type": "http://www.w3.org/2001/XMLSchema#anyURI",
 										"minLength": 1,
-										"type": "string"
+										"type": "string",
+										"format": "uri"
 									}
 								},
-								"required": [],
-								"additionalProperties": false
+								"required": [
+									"license"
+								],
+								"additionalProperties": true
 							}
 						]
 					}

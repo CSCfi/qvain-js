@@ -1,48 +1,68 @@
-<!--
-This file is part of Qvain -project.
-
-Author(s):
-	Juhapekka Piiroinen <jp@1337.fi>
-	Aaron Hakala <aaron.hakala@metropolia.fi>
-	Jori Niemi <3295718+tahme@users.noreply.github.com>
-	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
-	Eemeli Kouhia <eemeli.kouhia@gofore.com>
-
-License: GPLv3
-
-See LICENSE file for more information.
-Copyright (C) 2019 Ministry of Culture and Education, Finland.
-All Rights Reserved.
--->
+<!-- ADD_LICENSE_HEADER -->
 <template>
-  <div row>
-    <!-- ElasticSearch widget -->
-    <b-form-group id="list-ui-form-group" class="list-ui-form-group" :class="isRequired ? 'required' : ''" :label-cols="uiLabel ? labelCols : 1" :description="uiDescription" :label="uiLabel">
-      <b-input-group>
-        <div v-if="type === 'multiselect'" class="flex-grow-1">
-          <Multiselect v-model="model" @input="setValue" :options="items" v-if="items" :customLabel="customLabel"
-            :optionsLimit="40" :allowEmpty="!isRequired" :showLabels="false" />
-        </div>
-        <b-input-group-append>
-          <b-btn id="list-ui-error-btn" variant="danger" ref="refErrorButton" v-b-tooltip.hover="error" v-if="error">
-            <font-awesome-icon icon="exclamation-triangle" />
-          </b-btn>
-          <b-btn variant="dark" v-b-tooltip.hover="error" title="retry" v-if="error" @click="getList(esIndex, esDoctype)">
-            <font-awesome-icon icon="sync" />
-            <font-awesome-icon icon="sync" spin v-if="busy" />
-          </b-btn>
-        </b-input-group-append>
-      </b-input-group>
-    </b-form-group>
-  </div>
+	<div row>
+		<!-- ElasticSearch widget -->
+		<b-form-group
+			id="list-ui-form-group"
+			class="list-ui-form-group"
+			:class="isRequired ? 'required' : ''"
+			:label-cols="uiLabel ? labelCols : 1"
+			:description="uiDescription"
+			:label="uiLabel"
+		>
+			<b-input-group>
+				<div
+					v-if="type === 'multiselect'"
+					class="flex-grow-1"
+				>
+					<Multiselect
+						v-if="items"
+						v-model="model"
+						:options="items"
+						:custom-label="customLabel"
+						:options-limit="40"
+						:allow-empty="!isRequired"
+						:show-labels="false"
+						:disabled="readOnly"
+						@input="setValue"
+					/>
+				</div>
+				<b-input-group-append>
+					<b-btn
+						v-if="error"
+						id="list-ui-error-btn"
+						ref="refErrorButton"
+						v-b-tooltip.hover="error"
+						variant="danger"
+					>
+						<font-awesome-icon icon="exclamation-triangle" />
+					</b-btn>
+					<b-btn
+						v-if="error"
+						v-b-tooltip.hover="error"
+						variant="dark"
+						title="retry"
+						@click="getList(esIndex, esDoctype)"
+					>
+						<font-awesome-icon icon="sync" />
+						<font-awesome-icon
+							v-if="busy"
+							icon="sync"
+							spin
+						/>
+					</b-btn>
+				</b-input-group-append>
+			</b-input-group>
+		</b-form-group>
+	</div>
 </template>
 
 <style>
 .popover {
-  color: red;
+	color: red;
 }
 .error-popover {
-  background-color: red;
+	background-color: red;
 }
 
 fieldset.list-ui-form-group.required div.form-row legend:after {
@@ -104,9 +124,12 @@ function filterKeys(full, wanted) {
 }
 
 export default {
-	name: 'refdata-list',
+	name: 'RefdataList',
 	description: 'refdata list from Elastic Search',
 	schematype: 'object',
+	components: {
+		Multiselect,
+	},
 	props: {
 		esIndex: {
 			default: 'reference_data',
@@ -142,6 +165,7 @@ export default {
 		setValue: { required: true, type: Function },
 		value: { required: true },
 		type: { type: String },
+		readOnly: { type: Boolean },
 	},
 	data: function() {
 		return {
@@ -151,8 +175,22 @@ export default {
 			busy: false,
 			filterApiFields: true,
 			lang: 'en',
-			apiFields: ['code', 'id', 'label', 'type', 'uri'],
+			apiFields: [ 'code', 'id', 'label', 'type', 'uri' ],
 		}
+	},
+	computed: {
+		groups: function() {
+			return this.items ? Object.keys(this.items).sort() : []
+		},
+		noGroupItems: function() {
+			return this.items && this.items[''] && this.items[''].children
+				? this.items[''].children
+				: []
+		},
+	},
+	created() {
+		this.model = this.value
+		this.getList(this.esIndex, this.esDoctype)
 	},
 	methods: {
 		getList: function(index, doctype) {
@@ -190,9 +228,8 @@ export default {
 					}
 				})
 				.catch(error => {
-					console.log(error)
+					console.error(error)
 					this.error = 'error calling ElasticSearch API'
-					console.log(Object.keys(error))
 					if (error.response && error.response.status) {
 						this.error += ': ' + error.response.status + (error.response.statusText ? '(' + error.response.statusText + ')' : '')
 					}
@@ -214,29 +251,12 @@ export default {
 			return -1
 		},
 	},
-	computed: {
-		groups: function() {
-			return this.items ? Object.keys(this.items).sort() : []
-		},
-		noGroupItems: function() {
-			return this.items && this.items[''] && this.items[''].children
-				? this.items[''].children
-				: []
-		},
-	},
-	created() {
-		this.model = this.value
-		this.getList(this.esIndex, this.esDoctype)
-	},
-	components: {
-		Multiselect,
-	},
 }
 </script>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style>
 .input-group {
-  flex-wrap: nowrap;
+	flex-wrap: nowrap;
 }
 </style>
