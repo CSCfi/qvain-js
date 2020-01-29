@@ -53,7 +53,7 @@
 			</div>
 			<div class="item-buttons ml-auto">
 				<b-btn
-					v-if="published && type==='directories'"
+					v-if="published && isCumulative && type==='directories'"
 					variant="primary"
 					class="px-3 py-2"
 					@click="$emit('refresh-directory', single)"
@@ -216,6 +216,11 @@ export default {
 				faPlus,
 			},
 		}
+	},
+	computed: {
+		isCumulative() {
+			return this.$store.state.metadata.cumulativeState === 1
+		},
 	},
 }
 </script>
