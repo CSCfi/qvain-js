@@ -340,6 +340,10 @@ export default new Vuex.Store({
 		},
 	},
 	actions: {
+		clearMetaxRecord({ commit }) {
+			commit('setMetaxRecordError', null)
+			commit('setMetaxRecord', null)
+		},
 		async	fetchMetaxRecord({ state, commit }) {
 			if (state.metadata.metaxIdentifier) {
 				try {
@@ -357,7 +361,7 @@ export default new Vuex.Store({
 					commit('setMetaxRecord', null)
 				}
 			} else {
-				if (state.metaxRecord) {
+				if (state.metaxRecord || state.metaxRecordError) {
 					commit('setMetaxRecordError', null)
 					commit('setMetaxRecord', null)
 				}

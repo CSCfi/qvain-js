@@ -250,6 +250,7 @@
 				<b-col v-if="selectedCatalog">
 					<b-form
 						:key="refreshCounter"
+						novalidate
 						@submit.prevent
 					>
 						<tab-selector
@@ -759,6 +760,7 @@ export default {
 			this.$store.commit('loadHints', {})
 			this.$store.commit('loadData', undefined)
 			this.$store.commit('resetMetadata')
+			this.$store.dispatch('clearMetaxRecord')
 		},
 		async reloadDataset() {
 			this.confirmUnsavedChanges("Do you want to reload the dataset?", "No, I do not want to.", async value => {
@@ -775,7 +777,7 @@ export default {
 			try {
 				const { data } = await apiClient.get(`/datasets/${id}`)
 				this.$store.commit('resetMetadata')
-				this.$store.commit('setMetaxRecord', null)
+				this.$store.dispatch('clearMetaxRecord')
 				this.selectedCatalog = this.getCatalogForData(data)
 				this.$store.commit('loadSchema', this.selectedCatalog.schema)
 				this.$store.commit('loadHints', this.selectedCatalog.ui)
@@ -866,7 +868,9 @@ export default {
 		updateAutocomplete() {
 			// New autocomplete values are saved when a form is submitted or the submit button is clicked.
 			// The form prevents the triggered event from reloading the page.
-			this.$refs.submit.click() // click hidden submit button
+			if (this.$refs.submit) {
+				this.$refs.submit.click() // click hidden submit button
+			}
 		},
 	},
 	beforeRouteUpdate(to, form, next) {
