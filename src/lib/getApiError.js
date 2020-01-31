@@ -1,4 +1,16 @@
-/* ADD_LICENSE_HEADER */
+/*
+This file is part of Qvain -project.
+
+Author(s):
+	Shreyas Deshpande <31839853+ShreyasDeshpande@users.noreply.github.com>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+*/
 /*
 This function returns well texted error message
 */
