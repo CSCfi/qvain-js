@@ -362,8 +362,7 @@ export default new Vuex.Store({
 				}
 			} else {
 				if (state.metaxRecord || state.metaxRecordError) {
-					commit('setMetaxRecordError', null)
-					commit('setMetaxRecord', null)
+					commit('clearMetaxRecord')
 				}
 			}
 		},
