@@ -177,6 +177,10 @@ export default new Vuex.Store({
 		setDeletedItem(state, payload) {
 			Vue.set(state.deletedItems[payload.category], payload.identifier, payload.val)
 		},
+		clearMetaxRecord(state) {
+			Vue.set(state, 'metaxRecord', null)
+			Vue.set(state, 'metaxRecordError', null)
+		},
 		setMetaxRecord(state, payload) {
 			Vue.set(state, 'metaxRecord', payload)
 		},
@@ -357,9 +361,8 @@ export default new Vuex.Store({
 					commit('setMetaxRecord', null)
 				}
 			} else {
-				if (state.metaxRecord) {
-					commit('setMetaxRecordError', null)
-					commit('setMetaxRecord', null)
+				if (state.metaxRecord || state.metaxRecordError) {
+					commit('clearMetaxRecord')
 				}
 			}
 		},
