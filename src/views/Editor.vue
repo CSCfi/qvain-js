@@ -452,7 +452,7 @@ export default {
 				this.$store.commit('setMetadata', {
 					isOldVersion: !!(qvainData && qvainData.next),
 					isDeprecated: !!(qvainData && qvainData.deprecated),
-					isReadOnly: !!(qvainData && qvainData.preservation_state >= 80),
+					isReadOnly: !!(qvainData && qvainData.preservation_state >= 80 && qvainData.preservation_state != 100 && qvainData.preservation_state != 130),
 					isPas: !!(qvainData && (qvainData.data_catalog === "urn:nbn:fi:att:data-catalog-pas" || qvainData.preservation_state > 0)),
 					isPublished: !!(qvainData && this.qvainData.published),
 					isPublishedAndUpdateAvailable: !!(qvainData && this.qvainData.modified > this.qvainData.synced),
