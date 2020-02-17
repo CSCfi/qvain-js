@@ -53,7 +53,7 @@
 			</div>
 			<div class="item-buttons ml-auto">
 				<b-btn
-					v-if="published && isCumulative && type==='directories'"
+					v-if="false && published && isCumulative && type==='directories'"
 					variant="primary"
 					class="px-3 py-2"
 					@click="$emit('refresh-directory', single)"
