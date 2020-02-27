@@ -1,4 +1,17 @@
-/* ADD_LICENSE_HEADER */
+/*
+This file is part of Qvain -project.
+
+Author(s):
+	Juhapekka Piiroinen <jp@1337.fi>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
+
+License: GPLv3
+
+See LICENSE file for more information.
+Copyright (C) 2019 Ministry of Culture and Education, Finland.
+All Rights Reserved.
+*/
 /*
 	Make a deep clone of an object, removing specified keys and values and pruning empty branches and leaves.
 	Only supports JSON primitive types.
