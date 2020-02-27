@@ -6,7 +6,6 @@ Author(s):
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
 	Jori Niemi <3295718+tahme@users.noreply.github.com>
 	Aaron Hakala <aaron.hakala@metropolia.fi>
-	Shreyas Deshpande <shreyas.deshpande@csc.fi>
 
 License: GPLv3
 
@@ -78,28 +77,6 @@ const app = new Vue({
 		language(val) {
 			this.showAlert("language set to: " + val)
 		},
-	},
-	mounted() {
-		// load Matomo script, add a PageView
-		if (process.env['VUE_APP_MATOMO_SITE_ID']) {
-			window._paq = []
-			window._paq.push(['disableCookies'])
-			window._paq.push(['trackPageView'])
-			window._paq.push(['enableLinkTracking']);
-			(function() {
-				let u= process.env['VUE_APP_MATOMO_URL']
-				window._paq.push([ 'setTrackerUrl', u + process.env['VUE_APP_MATOMO_TRACKER_PHP'] ])
-				window._paq.push([ 'setSiteId', process.env['VUE_APP_MATOMO_SITE_ID'] ])
-				let d=document,
-					g=d.createElement('script'),
-					s=d.getElementsByTagName('script')[0]
-				g.type='text/javascript'
-				g.async=true
-				g.defer=true
-				g.src= u+process.env['VUE_APP_MATOMO_SRC']
-				s.parentNode.insertBefore(g,s)
-			})()
-		}
 	},
 	methods: {
 		countDownChanged (dismissCountDown) {
