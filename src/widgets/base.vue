@@ -4,8 +4,8 @@ This file is part of Qvain -project.
 Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
-	Jori Niemi <3295718+tahme@users.noreply.github.com>
 	Kauhia <Kauhia@users.noreply.github.com>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
 	Eemeli Kouhia <eemeli.kouhia@gofore.com>
 
 License: GPLv3
@@ -15,8 +15,7 @@ Copyright (C) 2019 Ministry of Culture and Education, Finland.
 All Rights Reserved.
 -->
 <template>
-	<div>
-	</div>
+	<div />
 </template>
 
 <script>
@@ -39,60 +38,19 @@ import genid from '@/lib/genid.js'
  */
 
 export default {
-	name: 'schema-base',
+	name: 'SchemaBase',
 	description: "base widget that all ui widgets inherit from",
-	props: ['schema', 'value', 'valtype', 'parent', 'property', 'path', 'tab', 'activeTab', 'depth', 'hasTypeError', 'required'],
-	methods: {
-		newPath: function(prop) {
-			return this.path + '/' + prop
-		},
-		nestedTitle: function(object, defaultPrefix) {
-			const objectType = object['@type']
-			if (objectType === 'Person' && object.name) {
-				return object.name
-			}
-
-			if (objectType === 'Person') {
-				return defaultPrefix+`(Person)`
-			}
-
-			if (objectType === 'Organization') {
-				// the highest organization level is nested deepest
-				let obj = object
-				while (obj.is_part_of) {
-					obj = obj.is_part_of
-				}
-				const title = this.$store.getters.getStringFromMultiLanguage(obj.name)
-				if (title) {
-					return title
-				}
-			}
-			if (objectType === 'Organization') {
-				return defaultPrefix+`(Organization)`
-			}
-
-			return defaultPrefix
-		},
-		propUi: function(prop) {
-			const ui = this.$store.getters.uiForPath(this.newPath('properties/'+prop))
-
-			// if there was a $ref, use that ref's ui as default and load this path's on top of it
-			if (this.schema['properties'][prop]['$deref']) {
-				return Object.assign({}, this.$store.state.hints[this.schema['properties'][prop]['$deref']], ui)
-			}
-			return ui
-		},
-	},
+	props: [ 'schema', 'value', 'valtype', 'parent', 'property', 'path', 'tab', 'activeTab', 'depth', 'hasTypeError', 'required', 'readOnly' ],
 	computed: {
 		isVisible() {
-			return this.ui.visible ? this.ui.visible(this.$store.state.record) : true;
+			return this.ui.visible ? this.ui.visible(this.$store.state.record, this.property) : true
 		},
 		isRequired() {
-			return this.ui.required ? this.ui.required(this.$store.state.record) : this.required;
+			return this.ui.required ? this.ui.required(this.$store.state.record) : this.required
 		},
 		isValid() {
 			const statefromStore = this.$store.state.vState[this.path].v
-			return statefromStore !== null ? statefromStore : true;
+			return statefromStore !== null ? statefromStore : true
 		},
 		errors() {
 			const errorsFromStore = this.$store.state.vState[this.path].e
@@ -171,7 +129,50 @@ export default {
 		}
 	},
 	created() {
-		this.$store.commit('initStateFor', this.path)
+		if (!this.$store.state.vState[this.path]) {
+			this.$store.commit('initStateFor', this.path)
+		}
+	},
+	methods: {
+		newPath: function(prop) {
+			return this.path + '/' + prop
+		},
+		nestedTitle: function(object, defaultPrefix) {
+			const objectType = object['@type']
+			if (objectType === 'Person' && object.name) {
+				return object.name
+			}
+
+			if (objectType === 'Person') {
+				return defaultPrefix+`(Person)`
+			}
+
+			if (objectType === 'Organization') {
+				// the highest organization level is nested deepest
+				let obj = object
+				while (obj.is_part_of) {
+					obj = obj.is_part_of
+				}
+				const title = this.$store.getters.getStringFromMultiLanguage(obj.name)
+				if (title) {
+					return title
+				}
+			}
+			if (objectType === 'Organization') {
+				return defaultPrefix+`(Organization)`
+			}
+
+			return defaultPrefix
+		},
+		propUi: function(prop) {
+			const ui = this.$store.getters.uiForPath(this.newPath('properties/'+prop))
+
+			// if there was a $ref, use that ref's ui as default and load this path's on top of it
+			if (this.schema['properties'][prop]['$deref']) {
+				return Object.assign({}, this.$store.state.hints[this.schema['properties'][prop]['$deref']], ui)
+			}
+			return ui
+		},
 	},
 }
 </script>

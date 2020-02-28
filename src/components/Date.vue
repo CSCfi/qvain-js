@@ -4,9 +4,9 @@ This file is part of Qvain -project.
 Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
 	Eemeli Kouhia <eemeli.kouhia@gofore.com>
-	Kauhia <Kauhia@users.noreply.github.com>
 	Jori Niemi <3295718+tahme@users.noreply.github.com>
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Kauhia <Kauhia@users.noreply.github.com>
 
 License: GPLv3
 
@@ -15,18 +15,29 @@ Copyright (C) 2019 Ministry of Culture and Education, Finland.
 All Rights Reserved.
 -->
 <template>
-	<record-field v-if="isVisible" :required="isRequired" :wrapped="wrapped">
-		<title-component slot="title" :title="uiLabel" />
-		<small slot="help" class="text-muted">
+	<record-field
+		v-if="isVisible"
+		:required="isRequired"
+		:wrapped="wrapped"
+	>
+		<title-component
+			slot="title"
+			:title="uiLabel"
+		/>
+		<small
+			slot="help"
+			class="text-muted"
+		>
 			{{ uiDescription }}
 		</small>
 
 		<b-row slot="input">
 			<b-col>
 				<datepicker
+					v-model="date"
 					:format="schema.format"
-					v-model="date">
-				</datepicker>
+					:disabled="readOnly"
+				/>
 			</b-col>
 		</b-row>
 	</record-field>
@@ -35,33 +46,30 @@ All Rights Reserved.
 <script>
 import Datepicker from '@/components/DateTimePicker.vue'
 import SchemaBase from '@/widgets/base.vue'
-import DeleteButton from '@/partials/DeleteButton.vue'
-import InfoIcon from '@/partials/InfoIcon.vue'
 import RecordField from '@/composites/RecordField.vue'
 import TitleComponent from '@/partials/Title.vue'
 
 export default {
-	name: 'date',
-	extends: SchemaBase,
+	name: 'Date',
 	components: {
 		Datepicker,
-		DeleteButton,
-		InfoIcon,
 		RecordField,
 		TitleComponent,
 	},
+	extends: SchemaBase,
 	props: {
 		wrapped: { type: Boolean, default: false },
 	},
 	data() {
 		return {
 			date: null,
-			initializing: true
+			initializing: true,
 		}
 	},
-	methods: {
-		clear() {
-			this.date = null
+	watch: {
+		date() {
+			if(this.initializing) return
+			this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: this.date })
 		},
 	},
 	async created() {
@@ -70,10 +78,9 @@ export default {
 		await this.$nextTick()
 		this.initializing = false
 	},
-	watch: {
-		date() {
-			if(this.initializing) return;
-			this.$store.commit('updateValue', { p: this.parent, prop: this.property, val: this.date })
+	methods: {
+		clear() {
+			this.date = null
 		},
 	},
 }

@@ -89,6 +89,24 @@ Auth.prototype.setUser = function(user) {
 	this._user = user
 }
 
+// Send a request to the backend periodically to keep the user session alive
+Auth.prototype.enableHeartbeat = function() {
+	this._heartbeat = setInterval(async () => {
+		if (this.getHaveSession()) {
+			await this.getSession()
+		} else {
+			this.disableHeartbeat()
+		}
+	},  15*60*1000)
+}
+
+Auth.prototype.disableHeartbeat = function() {
+	if (this._heartbeat) {
+		clearInterval(this._heartbeat)
+		this._heartbeat = null
+	}
+}
+
 Auth.prototype.logoutDueSessionTimeout = async function() {
 	await this.logout(true)
 }
@@ -116,6 +134,7 @@ Auth.prototype.logout = async function(doNotRedirect) {
 	this.setUser(null)
 	this.clearHaveSession()
 	this.clearLoginError()
+	this.disableHeartbeat()
 	return true
 }
 
@@ -169,9 +188,11 @@ Auth.prototype.loadSession = async function() {
 		this.setUser(UserFromSession(session))
 		this.setHaveSession(true)
 		this.clearLoginError()
+		this.enableHeartbeat()
 		success = true
 	} else {
 		this.clearHaveSession()
+		this.disableHeartbeat()
 	}
 	this.loading.state = false
 	return success

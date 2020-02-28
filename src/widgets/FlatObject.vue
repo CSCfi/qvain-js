@@ -13,7 +13,10 @@ Copyright (C) 2019 Ministry of Culture and Education, Finland.
 All Rights Reserved.
 -->
 <template>
-	<b-card no-body class="my-3 p-0 m-0 border-0">
+	<b-card
+		no-body
+		class="my-3 p-0 m-0 border-0"
+	>
 		<b-list-group flush>
 			<b-list-group-item
 				v-for="propName in sortedProps"
@@ -25,7 +28,7 @@ All Rights Reserved.
 					v-if="shouldCreateProp(propName)"
 					:key="propName"
 					:schema="schema['properties'][propName]"
-					:required="(schema.required || []).includes(propName)"
+					:required="isPropRequired(propName)"
 					:path="newPath('properties/' + propName)"
 					:value="value[propName]"
 					:parent="value"
@@ -33,6 +36,7 @@ All Rights Reserved.
 					:tab="myTab"
 					:active-tab="activeTab"
 					:depth="depth"
+					:read-only="readOnly"
 				/>
 			</b-list-group-item>
 		</b-list-group>
@@ -57,29 +61,6 @@ export default {
 	data: function() {
 		return {
 		}
-	},
-	methods: {
-		isPropHidden(prop) {
-			const ui = this.propUi(prop)
-			return prop === '@type' || !this.shouldCreateProp(prop) || (ui.tab && ui.tab !== this.activeTab) || ui.visible === false || this.skipped.includes(prop)
-		},
-		shouldCreateProp(prop) {
-			if (prop === 'is_part_of') {
-				return false
-			}
-			if (!this.isPostponedProp(prop)) return true
-			if (prop in this.value) return true
-			return false
-		},
-		isPostponedProp(prop) {
-			return this.postponedProps.includes(prop)
-		},
-		addProp(prop) {
-			this.$store.commit('addProp', {
-				val: this.value,
-				prop: prop,
-			})
-		},
 	},
 	computed: {
 		vState() {
@@ -113,6 +94,38 @@ export default {
 		},
 		postponedProps() {
 			return this.ui['postponed'] || []
+		},
+	},
+	methods: {
+		isPropRequired(prop) {
+			const ui = this.propUi(prop)
+			if (ui.required) {
+				return ui.required(this.$store.state.record)
+			} else {
+				return (this.schema.required || []).includes(prop)
+			}
+		},
+		isPropHidden(prop) {
+			const ui = this.propUi(prop)
+			return prop === '@type' || !this.shouldCreateProp(prop) || (ui.tab && ui.tab !== this.activeTab)
+			|| (ui.visible && ui.visible(this.$store.state.record, prop) === false) || this.skipped.includes(prop)
+		},
+		shouldCreateProp(prop) {
+			if (prop === 'is_part_of') {
+				return false
+			}
+			if (!this.isPostponedProp(prop)) return true
+			if (prop in this.value) return true
+			return false
+		},
+		isPostponedProp(prop) {
+			return this.postponedProps.includes(prop)
+		},
+		addProp(prop) {
+			this.$store.commit('addProp', {
+				val: this.value,
+				prop: prop,
+			})
 		},
 	},
 }

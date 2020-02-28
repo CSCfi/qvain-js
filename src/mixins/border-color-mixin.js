@@ -50,7 +50,7 @@ export default {
 			if (depth < 2) return null
 			return {
 				'border-left': `solid ${width}px ${this.borderColor(depth)} !important`,
-				'padding-left':'10px'
+				'padding-left':'10px',
 			}
 		},
 	},

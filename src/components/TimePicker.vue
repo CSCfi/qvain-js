@@ -3,6 +3,7 @@ This file is part of Qvain -project.
 
 Author(s):
 	Juhapekka Piiroinen <juhapekka.piiroinen@csc.fi>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
 
 License: GPLv3
 
@@ -19,31 +20,38 @@ All Rights Reserved.
 		</div>
 		<input
 			:value="timeString"
+			placeholder="hh:mm:ss"
+			class="form-control"
+			:disabled="disabled"
+			aria-label="Time"
 			@input="validate"
 			@change="submitChange"
-			placeholder="hh:mm:ss"
-			class="form-control" />
+			@keyup.enter="submitChange"
+		>
 	</div>
 </template>
 
 <script>
+
+import { parse as parseDate, format as formatDate } from 'date-fns'
+
 export default {
-	name: 'timepicker',
+	name: 'Timepicker',
 	model: {
 		prop: 'value',
-		event: 'input'
+		event: 'input',
 	},
 	props: {
 		format: String,
 		value: String,
+		disabled: Boolean,
 	},
 	data() {
 		return {
 			internalValue: null,
 			initialValue: null,
 			isInitializing: true,
-			inputRegexp: /^[\d:]+$/,
-			timeRegexp: /^((0[0-9]|1\d|2[0-3]|[0-9])|((0[0-9]|1\d|2[0-3]|[0-9]):){1}(([0-5][0-9]|[0-9]):?){1,2})$/
+			invalidInputRegexp: /[^\d:.]/g,
 		}
 	},
 	computed: {
@@ -56,52 +64,54 @@ export default {
 				if (this.timeRegexp.test(newValue)) {
 					this.internalValue = newValue
 				}
-			}
+			},
 		},
 	},
+	created() {
+		this.internalValue = this.value
+		this.initialValue = this.value
+		this.isInitializing = false
+	},
 	methods: {
+		normalizeTime(str) {
+			// Parse time string, convert it into HH:mm:ss format.
+			// Missing minutes and seconds are set to 0.
+			const now = new Date() // required by date-fns for filling missing day/month/year even though we don't need them here
+			str = str.replace(/\./g, ':') // allow '.' as separator in the input, replace with ':'
+			const formats = [ 'H', 'H:', 'H:m', 'H:m:', 'H:m:s' ]
+			for (let i=0; i<formats.length; i++) {
+				const date = parseDate(str, formats[i],  now)
+				if (date != 'Invalid Date') {
+					return formatDate(date, 'HH:mm:ss')
+				}
+			}
+			return null
+		},
 		submitChange(event) {
 			if (this.isInitializing) { return }
 			let newValue = event.target.value
 			if (!newValue || newValue === '') {
-				this.internalValue = newValue
 				this.initialValue = newValue
-				this.$emit('input', newValue)
-			} else if (this.timeRegexp.test(newValue)) {
-				let hours = newValue.split(":")
-				const parts = hours.length
-				for(var i=0; i<hours.length; i++) {
-					hours[i] = hours[i].padStart(2, '0')
-				}
-				for (var i=0; i<3-parts; i++) {
-					hours.push("00")
-				}
-				newValue = hours.join(":")
-				this.internalValue = newValue
-				this.initialValue = newValue
-				this.$emit('input', newValue)
 			} else {
-				this.internalValue = this.initialValue
-				this.$emit('input', this.internalValue)
+				newValue = this.normalizeTime(newValue)
+				if (newValue) {
+					this.initialValue = newValue
+				}
 			}
+			this.internalValue = this.initialValue
+			this.$emit('input', this.internalValue)
+			this.$forceUpdate()
 		},
 		validate(event) {
 			if (this.isInitializing) { return }
 			const newValue = event.target.value
-			if (this.timeRegexp.test(newValue)) {
+			if (newValue.match(this.invalidInputRegexp)) {
+				this.internalValue = newValue.replace(this.invalidInputRegexp, "")
+				this.$forceUpdate()
+			} else {
 				this.internalValue = newValue
-				this.initialValue = this.internalValue
-			} else if (!this.inputRegexp.test(newValue) && newValue !== '') {
-				this.internalValue = this.initialValue
-				this.$forceUpdate();
 			}
 		},
 	},
-	created() {
-		this.isInitializing = true
-		this.internalValue = this.value
-		this.initialValue = this.value
-		this.isInitializing = false
-	}
 }
 </script>

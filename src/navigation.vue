@@ -4,8 +4,8 @@ This file is part of Qvain -project.
 Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
 	Aaron Hakala <aaron.hakala@metropolia.fi>
-	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
 	Jori Niemi <3295718+tahme@users.noreply.github.com>
+	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
 
 License: GPLv3
 
@@ -14,58 +14,110 @@ Copyright (C) 2019 Ministry of Culture and Education, Finland.
 All Rights Reserved.
 -->
 <template>
-	<b-navbar id="app-topbar" toggleable="sm" type="dark" variant="primary">
-		<b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
+	<b-navbar
+		id="app-topbar"
+		toggleable="sm"
+		type="dark"
+		variant="primary"
+	>
+		<b-navbar-toggle target="nav_collapse" />
 
 		<b-navbar-brand to="/">
-			<img src="/static/imgs/Qvain_neg_300px.png" class="d-inline-block align-top" alt="Fairdata: Qvain">
+			<img
+				src="/static/imgs/Qvain_neg_300px.png"
+				class="d-inline-block align-top"
+				alt="Fairdata: Qvain"
+			>
 		</b-navbar-brand>
 
-		<b-collapse is-nav id="nav_collapse">
-
+		<b-collapse
+			id="nav_collapse"
+			is-nav
+		>
 			<b-navbar-nav>
-				<b-button variant="primary" target="_blank" rel="noopener noreferrer" href="https://www.fairdata.fi/en/qvain/qvain-user-guide/">
-					<font-awesome-icon icon="info" />&nbsp;
-					User Guide
-				</b-button>
+				<b-nav-item
+					link-classes="btn btn-primary"
+					target="_blank"
+					rel="noopener noreferrer"
+					href="https://www.fairdata.fi/en/qvain/qvain-user-guide/"
+				>
+					<font-awesome-icon
+						icon="info"
+						class="mr-2"
+					/>User Guide
+				</b-nav-item>
+
+				<b-nav-item
+					link-classes="btn btn-primary"
+					to="/accessibility"
+				>
+					<font-awesome-icon
+						icon="universal-access"
+						class="mr-2"
+					/>Accessibility Statement
+				</b-nav-item>
 			</b-navbar-nav>
 
 			<!-- right-aligned items -->
-			<b-navbar-nav id="usermenu" class="ml-auto right-nav-items" >
-				<b-nav-text v-if="$auth.loading.state" class="user-nav load-placeholder" key="user-loading">
-					<font-awesome-icon icon="circle-notch" spin />
+			<b-navbar-nav
+				id="usermenu"
+				class="ml-auto right-nav-items"
+			>
+				<b-nav-text
+					v-if="$auth.loading.state"
+					key="user-loading"
+					class="user-nav load-placeholder"
+				>
+					<font-awesome-icon
+						icon="circle-notch"
+						spin
+					/>
 				</b-nav-text>
 
-				<b-button-group v-else>
-					<b-button v-if="$auth.loggedIn" id="usermenu_userinfo" variant="primary" to="/userinfo" >
-						<font-awesome-icon icon="user" class="text-light mr-2" fixed-width /> <a id="usermenu_fullname">{{ $auth.user.name }}</a>
-					</b-button>
+				<template v-else>
+					<b-nav-item
+						v-if="$auth.loggedIn"
+						id="usermenu_userinfo"
+						link-classes="btn btn-primary"
+						to="/userinfo"
+					>
+						<font-awesome-icon
+							icon="user"
+							class="mr-2"
+						/><span id="usermenu_fullname">{{ $auth.user.name }}</span>
+					</b-nav-item>
 
-					<b-button v-if="$auth.loggedIn || $auth.getLoginError()" id="usermenu_signout" variant="primary" @click="logout()">
-						<font-awesome-icon icon="sign-out-alt" />
-						&nbsp;
-						Sign out
-					</b-button>
-					<b-button v-else id="usermenu_login" class="user-nav" key="user-login" variant="primary" :href="$auth.loginUrl">
-						<font-awesome-icon icon="sign-in-alt" />
-						&nbsp;
-						Login
-					</b-button>
-				</b-button-group>
+					<b-nav-item
+						v-if="$auth.loggedIn || $auth.getLoginError()"
+						id="usermenu_signout"
+						link-classes="btn btn-primary"
+						@click="logout()"
+					>
+						<font-awesome-icon
+							icon="sign-out-alt"
+							class="mr-2"
+						/>Sign out
+					</b-nav-item>
+					<b-nav-item
+						v-else
+						id="usermenu_login"
+						key="user-login"
+						link-classes="user-nav btn btn-primary"
+						:href="$auth.loginUrl"
+					>
+						<font-awesome-icon
+							icon="sign-in-alt"
+							class="mr-2"
+						/>Login
+					</b-nav-item>
+				</template>
 			</b-navbar-nav>
 		</b-collapse>
 	</b-navbar>
 </template>
-
 <script>
 export default {
-	name: 'navigation',
-	data: function() {
-		return {
-		}
-	},
-	computed: {
-	},
+	name: 'Navigation',
 	methods: {
 		async logout() {
 			if (!await this.$auth.logout()) {

@@ -5,7 +5,6 @@ Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
 	Eemeli Kouhia <eemeli.kouhia@gofore.com>
 	Jori Niemi <3295718+tahme@users.noreply.github.com>
-	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
 
 License: GPLv3
 
@@ -14,13 +13,22 @@ Copyright (C) 2019 Ministry of Culture and Education, Finland.
 All Rights Reserved.
 -->
 <template functional>
-	<span class="pointer delete-button" variant="link" v-on:click="listeners.click">
-		<font-awesome-icon icon="trash" fixed-width class="icon" />
+	<span
+		class="delete-button"
+		:class="{pointer: !props.disabled, disabled: props.disabled}"
+		variant="link"
+		@click="(e)=>props.disabled ? null : listeners.click(e)"
+	>
+		<font-awesome-icon
+			icon="trash"
+			fixed-width
+			class="icon"
+		/>
 	</span>
 </template>
 
 <style lang="scss" scoped>
-.delete-button {
+.delete-button:not(.disabled) {
 	padding: 4px 4px;
 	border-radius: 4px;
 
@@ -33,10 +41,19 @@ All Rights Reserved.
 		background: rgba(0,0,0,0.1);
 	}
 }
+
+.disabled {
+	color: #ccc;
+}
 </style>
 
 <script>
 export default {
-	name: 'delete-button',
+	name: 'DeleteButton',
+	props: {
+		disabled: {
+			type: Boolean,
+		},
+	},
 }
 </script>

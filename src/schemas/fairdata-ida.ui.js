@@ -65,7 +65,7 @@ export default {
 		'order': [ "name", "email", "identifier" ],
 	},
 	'#/definitions/Document': {
-		'visible': false,
+		'visible': (record, prop) => prop !== "homepage",
 	},
 	'/properties/title': {
 		'tab': 'description',
@@ -280,18 +280,23 @@ export default {
 	},
 	'/properties/creator/*/oneOf/0/properties/name': {
 		'description': 'Please write your name in first_name last_name fashion if possible',
+		'autocomplete': 'name',
 	},
 	'/properties/contributor/*/oneOf/0/properties/name': {
 		'description': 'Please write your name in first_name last_name fashion if possible',
+		'autocomplete': 'name',
 	},
 	'/properties/rights_holder/*/oneOf/0/properties/name': {
 		'description': 'Please write your name in first_name last_name fashion if possible',
+		'autocomplete': 'name',
 	},
 	'/properties/curator/*/oneOf/0/properties/name': {
 		'description': 'Please write your name in first_name last_name fashion if possible',
+		'autocomplete': 'name',
 	},
 	'/properties/publisher/oneOf/0/properties/name': {
 		'description': 'Please write your name in first_name last_name fashion if possible',
+		'autocomplete': 'name',
 	},
 	'/properties/creator/*/oneOf/*/properties/contributor_type': {
 		'tab': 'extra',
@@ -827,7 +832,7 @@ export default {
 	},
 	'/properties/access_rights/properties/license/*': {
 		props: {
-			oneOfFunc: value => {
+			choiceFunc: value => {
 				if (value && value.identifier) {
 					return 0
 				}
@@ -838,7 +843,7 @@ export default {
 			},
 		},
 	},
-	'/properties/access_rights/properties/license/*/oneOf/0': {
+	'/properties/access_rights/properties/license/*/anyOf/0': {
 		'widget': 'reference-data',
 		'props': {
 			'esIndex': "reference_data",
@@ -855,7 +860,7 @@ export default {
 		'description': "A license agreement signifies what a user is allowed to do with the data.",
 		'help': "Select a license agreement for your dataset.",
 	},
-	'/properties/access_rights/properties/license/*/oneOf/1': {
+	'/properties/access_rights/properties/license/*/anyOf/1': {
 		'title': ' ',
 	},
 	'/properties/modified': {
@@ -922,5 +927,8 @@ export default {
 	},
 	'**/telephone': {
 		'tab': 'extra',
+	},
+	'**/email': {
+		'autocomplete': 'email',
 	},
 }

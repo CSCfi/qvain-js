@@ -24,7 +24,7 @@ All Rights Reserved.
 <script>
 
 export default {
-	name: 'wrapper',
+	name: 'Wrapper',
 	props: {
 		wrapped: { type: Boolean, default: false },
 		error: { type: Boolean, default: false },
@@ -35,7 +35,7 @@ export default {
 <style lang="scss" scoped>
 .wrapper {
 	padding: 1em;
-	border: 1px solid #efefef;
+	border: 1px solid #e9e9e9;
 }
 
 .error {

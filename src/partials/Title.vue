@@ -4,7 +4,6 @@ This file is part of Qvain -project.
 Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
 	Eemeli Kouhia <eemeli.kouhia@gofore.com>
-	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
 
 License: GPLv3
 
@@ -20,6 +19,6 @@ All Rights Reserved.
 
 <script>
 export default {
-	name: "title-component",
+	name: "TitleComponent",
 }
 </script>

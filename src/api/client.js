@@ -4,6 +4,7 @@ This file is part of Qvain -project.
 Author(s):
 	Juhapekka Piiroinen <jp@1337.fi>
 	Wouter Van Hemel <wouter.van.hemel@helsinki.fi>
+	Jori Niemi <3295718+tahme@users.noreply.github.com>
 
 License: GPLv3
 
@@ -60,7 +61,7 @@ export default function qvainApiClient(dataset) {
 
 const apiClient = axios.create({
 	baseURL: apiUrl,
-	timeout: 5000,
+	timeout: 10000,
 	responseType: "json",
 })
 

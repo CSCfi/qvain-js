@@ -14,7 +14,10 @@ All Rights Reserved.
 -->
 <template>
 	<div class="icon">
-		<font-awesome-icon icon="exclamation-triangle" fixed-width />
+		<font-awesome-icon
+			icon="exclamation-triangle"
+			fixed-width
+		/>
 	</div>
 </template>
 

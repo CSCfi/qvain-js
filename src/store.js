@@ -22,12 +22,21 @@ import cloneWithPrune from './lib/cloneWithPrune.js'
 import getDotted from 'lodash.get'
 import hasDotted from 'lodash.has'
 import vuePointer from '../vendor/json-pointer/index.js'
+import axios from 'axios'
 
 Vue.use(Vuex)
+
+const metaxAPI = axios.create({
+	baseURL: process.env.VUE_APP_METAX_API_URL,
+	timeout: 10000,
+	responseType: 'json',
+})
 
 export default new Vuex.Store({
 	state: {
 		record: undefined,
+		metaxRecord: null, // the published version of the current record
+		metaxRecordError: null,
 		schema: {},
 		hints: {},
 		metadata: {},
@@ -65,7 +74,10 @@ export default new Vuex.Store({
 			state.metadata = Object.assign({}, state.metadata, payload)
 		},
 		resetMetadata(state) {
-			state.metadata = {}
+			// reset to default values
+			state.metadata = {
+				cumulativeState: 0,
+			}
 		},
 		loadData(state, record) {
 			Vue.set(state, 'record', record)
@@ -165,7 +177,7 @@ export default new Vuex.Store({
 		},
 		initStateFor(state, path) {
 			if (!state.vState[path]) {
-				Vue.set(state.vState, path, {e: [], v: null})
+				Vue.set(state.vState, path, { e: [], v: null })
 			}
 		},
 		cleanStateFor(state, path) {
@@ -181,6 +193,16 @@ export default new Vuex.Store({
 		},
 		setDeletedItem(state, payload) {
 			Vue.set(state.deletedItems[payload.category], payload.identifier, payload.val)
+		},
+		clearMetaxRecord(state) {
+			Vue.set(state, 'metaxRecord', null)
+			Vue.set(state, 'metaxRecordError', null)
+		},
+		setMetaxRecord(state, payload) {
+			Vue.set(state, 'metaxRecord', payload)
+		},
+		setMetaxRecordError(state, payload) {
+			Vue.set(state, 'metaxRecordError', payload)
 		},
 	},
 	getters: {
@@ -200,7 +222,7 @@ export default new Vuex.Store({
 				.map((key, index, array) => {
 					if (isNaN(key)) {
 						return key
-					} else if (array[index - 1] === 'oneOf') {
+					} else if (array[index - 1] === 'oneOf' || array[index - 1] === 'anyOf') {
 						return key
 					} else {
 						return '*'
@@ -268,6 +290,98 @@ export default new Vuex.Store({
 				}
 			}
 			return Object.values(multi)[0] || null
-		}
+		},
+		getFileAndDirectoryChanges: (state) => (selected) => {
+			let files = []
+			let directories = []
+
+			if (state.metaxRecord && state.metaxRecord.research_dataset) {
+				files = state.metaxRecord.research_dataset.files || []
+				directories = state.metaxRecord.research_dataset.directories || []
+			}
+
+			// apply a function to values in array, returns an object with key-value pairs
+			const toMap = function(items, func) {
+				return items.reduce((map, item)=>{
+					map[item.identifier] = func(item)
+					return map
+				}, {})
+			}
+
+			const metaxFiles = toMap(files, v => v)
+			const metaxDirs = toMap(directories, v => v)
+			const qvainFiles = toMap(selected.files, v => v)
+			const qvainDirs = toMap(selected.directories, v => v)
+
+			const addedFiles = Object.values(qvainFiles).filter(v => !(v.identifier in metaxFiles))
+			const addedDirs = Object.values(qvainDirs).filter(v => !(v.identifier in metaxDirs))
+			const removedFiles = Object.values(metaxFiles).filter(v => !(v.identifier in qvainFiles))
+			const removedDirs = Object.values(metaxDirs).filter(v => !(v.identifier in qvainDirs))
+			const existingFiles = Object.values(qvainFiles).filter(v => v.identifier in metaxFiles)
+			const existingDirs = Object.values(qvainDirs).filter(v => v.identifier in metaxDirs)
+
+			const isAddedFiles = toMap(addedFiles, () => true)
+			const isAddedDirs = toMap(addedDirs, () => true)
+			const isEditedFiles = toMap(existingFiles, (v) => JSON.stringify(v) !== JSON.stringify(metaxFiles[v.identifier]))
+			const isEditedDirs = toMap(existingDirs, (v) => JSON.stringify(v) !== JSON.stringify(metaxDirs[v.identifier]))
+
+			const items = {}
+			if (addedFiles.length || addedDirs.length) {
+				items.added = {
+					directories: addedDirs,
+					files: addedFiles,
+				}
+			}
+
+			if (existingFiles.length || existingDirs.length) {
+				items.existing = {
+					directories: existingDirs,
+					files: existingFiles,
+				}
+			}
+
+			if (removedFiles.length || removedDirs.length) {
+				items.removed = {
+					directories: removedDirs,
+					files: removedFiles,
+				}
+			}
+
+			return {
+				items,
+				isEdited: {
+					directories: isEditedDirs,
+					files: isEditedFiles,
+				},
+				isAdded: {
+					directories: isAddedDirs,
+					files: isAddedFiles,
+				},
+			}
+		},
+	},
+	actions: {
+		async	fetchMetaxRecord({ state, commit }) {
+			if (state.metadata.metaxIdentifier) {
+				try {
+					// keep cached version if identifier has not changed
+					const recordIdentifier = (state.metaxRecord && state.metaxRecord.identifier) || null
+					if (state.metadata.metaxIdentifier !== recordIdentifier) {
+						const { data } = await metaxAPI.get('/datasets/'+state.metadata.metaxIdentifier)
+						commit('setMetaxRecordError', null)
+						commit('setMetaxRecord', data)
+					}
+				} catch (error) {
+					const msg = error.response && (error.response.data && error.response.data.detail || error.response.data) || error.message
+					commit('setMetaxRecordError',
+						`Error retrieving information from Metax for dataset with identifier ${ state.metadata.metaxIdentifier }: ${ msg }`)
+					commit('setMetaxRecord', null)
+				}
+			} else {
+				if (state.metaxRecord || state.metaxRecordError) {
+					commit('clearMetaxRecord')
+				}
+			}
+		},
 	},
 })

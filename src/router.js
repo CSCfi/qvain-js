@@ -23,6 +23,7 @@ import Editor from './views/Editor.vue'
 import UserInfo from './views/UserInfo.vue'
 import Login from './auth/Login.vue'
 import Config from './views/Config.vue'
+import Accessibility from './views/Accessibility.vue'
 
 Vue.use(VueRouter)
 
@@ -31,6 +32,7 @@ const routes = [
 	{ path: '/', name: "home", component: Welcome, props: true },
 	{ path: '/login', component: Login, props: false },
 	{ path: '/datasets', name: "datasets", component: Datasets, props: true, meta: { auth: true }},
+	{ path: '/accessibility', component: Accessibility, props: false },
 	{ path: '/config', component: Config, props: false },
 	{ path: '/userinfo', component: UserInfo, props: false, meta: { auth: true }},
 	{ path: '/dataset/:id', name: "editor", component: Editor, props: true, meta: { auth: true }, children: [

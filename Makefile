@@ -26,7 +26,7 @@ security: node_modules dependency-check
 	@echo "== Completed OWASP Dependency Check =="
 
 lint: node_modules
-	-@./node_modules/.bin/eslint --ext .js --ignore-path ./src/schemas/*.js src
+	@./node_modules/.bin/eslint --ext .js,.vue src
 
 audit: node_modules
 	@echo

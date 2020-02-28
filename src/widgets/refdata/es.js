@@ -70,7 +70,7 @@ const http = axios.create({
 export default function esApiClient(index, doctype) {
 	return http.get(
 		`${apiUrl}/${index}/${doctype}/_search?size=200&pretty=1&filter_path=hits.hits._source`, {
-			timeout: 5000,
+			timeout: 10000,
 			responseType: 'json',
 		})
 }
@@ -85,7 +85,7 @@ export function esApiSearchClient(index, doctype, searchterm, count) {
 
 	return http.get(`${apiUrl}/${index}/${doctype}/_search`, {
 		params,
-		timeout: 5000,
+		timeout: 10000,
 		responseType: 'json',
 	})
 }
