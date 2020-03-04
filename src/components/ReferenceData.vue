@@ -145,6 +145,12 @@
 					</span>
 				</p>
 			</div>
+			<div
+				v-if="extraText"
+				class="pt-2"
+			>
+				{{ extraText }}
+			</div>
 		</div>
 	</record-field>
 </template>
@@ -184,6 +190,7 @@ export default {
 		header: { type: Boolean, default: true },
 		preservedFields: { type: Array, default: () => [] },
 		allowEmpty: { type: Boolean, default: true },
+		extraTextFunc: { type: Function, default: () => "" },
 	},
 	data() {
 		return {
@@ -201,6 +208,9 @@ export default {
 		}
 	},
 	computed: {
+		extraText() {
+			return this.extraTextFunc(this.value)
+		},
 		getPlaceholder() {
 			return this.placeholder || (this.async ?
 				'Type to search for available options' :

@@ -759,6 +759,13 @@ export default {
 			'count': 100,
 			'grouped': false,
 			'wrapped': true,
+			'extraTextFunc': (value) => {
+				if (value && value.identifier == "http://uri.suomi.fi/codelist/fairdata/access_type/code/permit") {
+					return `By default the dataset owner (the original describer) can approve the applications. In addition, functionality is under development to allow chosen representatives (only or in addition to the owner) of the dataset's organization to make the approvals. By using the access type "Requires permission" the dataset owner agrees to these upcoming changes.`
+				} else {
+					return ""
+				}
+			},
 		},
 		'placeholder': "– choose access type –",
 		'title': "access type",
